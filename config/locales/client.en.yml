@@ -1,0 +1,25 @@
+en:
+  js:
+    encrypt:
+      title: 'Encryption'
+      composer:
+        encrypt: 'Encrypt message?'
+      preferences:
+        status_enabled: "You have enabled encryption and activated it on this device."
+        status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."
+        status_disabled: "You have not enabled encryption on this account."
+
+        passphrase_placeholder: "passphrase"
+        passphrase2_placeholder: "retype passphrase"
+        passphrase_mismatch: "The two passphrases you entered do not match."
+
+        notice_enable: |
+          <p>In order to enable encryption, you must choose a passphrase.</p>
+          <p>Forgetting this passphrase will lead to the loss of all encrypted messages.</p>
+          <p>After you enabled encryption, you must activate encryption on all other devices entering the same passphrase.</p>
+        notice_active: |
+          <p>Please enter the encryption passphrase you used on other devices.<p>
+
+        activate: 'Activate Encrypted Messages'
+        enable: 'Enable Encrypted Messages'
+        disable: 'Disable Encrypted Messages'

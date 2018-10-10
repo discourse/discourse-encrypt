@@ -1,0 +1,34 @@
+{{#if siteSettings.encrypt_enabled}}
+  <div class="control-group pref-title">
+    <label class="control-label">{{i18n 'encrypt.title'}}</label>
+    <div class="controls">
+      {{#if isEnabled}}
+        {{#if isActive}}
+          <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
+          {{d-button icon="unlock" action="disableEncrypt" label="encrypt.preferences.disable"}}
+        {{else}}
+          <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
+          {{{i18n 'encrypt.preferences.notice_active'}}}
+          <p>{{input type="password" value=passphrase  disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}</p>
+          <p>{{d-button class="btn-primary" icon="lock" action="activateEncrypt" disabled=inProgress label="encrypt.preferences.enable"}}</p>
+        {{/if}}
+      {{else}}
+        <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>
+        {{#if passphraseInput}}
+          {{{i18n 'encrypt.preferences.notice_enable'}}}
+          <p>{{input type="password" value=passphrase  disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}</p>
+          <p>{{input type="password" value=passphrase2 disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase2_placeholder")}}</p>
+          {{#if passphraseMismatch}}
+            <p>{{i18n 'encrypt.preferences.passphrase_mismatch'}}</p>
+          {{/if}}
+          <p>
+            {{d-button class="btn-primary" icon="lock" action="enableEncrypt" disabled=(or passphraseMismatch inProgress) label="encrypt.preferences.enable"}}
+            {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
+          </p>
+        {{else}}
+          {{d-button icon="lock" action="showPassphraseInput" label="encrypt.preferences.enable"}}
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
