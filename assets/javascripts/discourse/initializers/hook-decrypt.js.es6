@@ -31,13 +31,14 @@ function decryptElements(containerSelector, elementSelector, cookPlaintext) {
       return;
     }
 
+    $(this).data("decrypted", true);
+
     const [_, privateKey] = await loadKeyPairFromIndexedDb(); // eslint-disable-line no-unused-vars
     const key = await importKey(keys[topicId], privateKey);
 
     const ciphertext = $el.text().trim();
     const plaintext = await decrypt(key, ciphertext);
 
-    $(this).data("decrypted", true);
     if (cookPlaintext) {
       cookAsync(plaintext).then(cooked => $el.html(cooked.string));
     } else {
@@ -53,9 +54,6 @@ function decryptAll() {
   decryptElements("article.onscreen-post", ".cooked", true);
   decryptElements("h1", ".fancy-title");
   decryptElements(".topic-list-item, .latest-topic-list-item", ".title");
-
-  // TODO: Avoid polling for encrypted messages.
-  Ember.run.later(decryptAll, 1000);
 }
 
 export default {
@@ -82,6 +80,15 @@ export default {
       }
     });
 
-    decryptAll();
+    // Schedule decryption after all elements were rendered.
+    var self = this;
+    Ember.Component.reopen({
+      didInsertElement: function() {
+        this._super();
+        Ember.run.scheduleOnce("afterRender", this, () => {
+          Ember.run.debounce(self, decryptAll, 10);
+        });
+      }
+    });
   }
 };
