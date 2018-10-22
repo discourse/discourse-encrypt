@@ -22,3 +22,17 @@ export async function getEncryptionStatus() {
 
   return ENCRYPT_DISBLED;
 }
+
+export async function hideComponentIfDisabled(component) {
+  const status = await getEncryptionStatus();
+  component.set("isEncryptEnabled", status === ENCRYPT_ENABLED);
+  component.set("isEncryptActive", status === ENCRYPT_ACTIVE);
+
+  component.appEvents.on("encrypt:status-changed", async () => {
+    const newStatus = await getEncryptionStatus();
+    component.set("isEncryptEnabled", newStatus === ENCRYPT_ENABLED);
+    component.set("isEncryptActive", newStatus === ENCRYPT_ACTIVE);
+  });
+
+  // TODO: Call appEvents.off('encrypt:status-changed').
+}

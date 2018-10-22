@@ -1,6 +1,10 @@
 import Composer from "discourse/models/composer";
 import { ajax } from "discourse/lib/ajax";
 import {
+  default as computed,
+  observes
+} from "ember-addons/ember-computed-decorators";
+import {
   encrypt,
   exportKey,
   generateKey,
@@ -28,9 +32,7 @@ export default {
 
         const title = this.get("title");
         const reply = this.get("reply");
-        const usernames = this.get("targetUsernames")
-          .split(",")
-          .concat([this.get("user.username")]);
+        const usernames = this.get("recipients");
 
         const key = await generateKey();
         const publicKeys = await ajax("/encrypt/userkeys", {
@@ -70,6 +72,34 @@ export default {
           });
           return result;
         });
+      },
+
+      @observes("targetUsernames")
+      async checkKeys() {
+        if (!this.get("isEncrypted")) {
+          return;
+        }
+
+        const usernames = this.get("recipients");
+        const keys = await ajax("/encrypt/userkeys", {
+          type: "GET",
+          data: { usernames }
+        });
+
+        for (let i = 0; i < usernames.length; ++i) {
+          const username = usernames[i];
+          if (!keys[username]) {
+            bootbox.alert(
+              I18n.t("encrypt.composer.user_has_no_key", { username })
+            );
+            return;
+          }
+        }
+      },
+
+      @computed("targetUsernames")
+      recipients(targetUsernames) {
+        return targetUsernames.split(",").concat([this.get("user.username")]);
       }
     });
   }
