@@ -10,11 +10,12 @@ import {
   importPrivateKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
-
+import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
-  loadKeyPairFromIndexedDb,
-  saveKeyPairToIndexedDb
-} from "discourse/plugins/discourse-encrypt/lib/keys_db";
+  ENCRYPT_DISBLED,
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
 // Handlebars offers `if` but no other helpers for conditions, which eventually
@@ -23,14 +24,7 @@ registerHelper("or", ([a, b]) => a || b);
 
 export default {
   async setupComponent(args, component) {
-    const serverPublicKey = args.model.get("custom_fields.encrypt_public_key");
-    const serverPrivateKey = args.model.get(
-      "custom_fields.encrypt_private_key"
-    );
-    const [
-      clientPublicKey,
-      clientPrivateKey
-    ] = await loadKeyPairFromIndexedDb();
+    const status = await getEncryptionStatus();
 
     component.setProperties({
       model: args.model,
@@ -47,12 +41,9 @@ export default {
        *       progress. */
       inProgress: false,
       /** @var Whether the encryption is enabled or not. */
-      isEnabled: !!serverPublicKey && !!serverPrivateKey,
+      isEnabled: status !== ENCRYPT_DISBLED,
       /** @var Whether the encryption is active on this device. */
-      isActive:
-        !!clientPublicKey &&
-        !!clientPrivateKey &&
-        serverPublicKey === (await exportPublicKey(clientPublicKey)),
+      isActive: status === ENCRYPT_ACTIVE,
       // TOOD: Check out if there is a way to define functions like this in the
       //       `export default` scope.
       passphraseMismatch: function() {
@@ -120,35 +111,47 @@ export default {
       const privateStr = this.get("model.custom_fields.encrypt_private_key");
 
       // Decrypting key-pair with passphrase.
-      const passphrase = this.get("passphrase");
-      const publicKey = await importPublicKey(publicStr);
-      const privateKey = await importPrivateKey(
-        privateStr,
-        await generatePassphraseKey(passphrase)
-      );
+      try {
+        const passphrase = this.get("passphrase");
+        const publicKey = await importPublicKey(publicStr);
+        const privateKey = await importPrivateKey(
+          privateStr,
+          await generatePassphraseKey(passphrase)
+        );
 
-      // Saving to IndexedDB.
-      await saveKeyPairToIndexedDb(publicKey, privateKey);
+        // Saving to IndexedDB.
+        await saveKeyPairToIndexedDb(publicKey, privateKey);
 
-      // Resetting state.
-      this.send("hidePassphraseInput");
-      this.setProperties({
-        inProgress: false,
-        isEnabled: true,
-        isActive: true
-      });
+        // Letting other components know.
+        this.appEvents.trigger("encrypt:status-changed");
+
+        // Resetting state.
+        this.send("hidePassphraseInput");
+        this.setProperties({
+          inProgress: false,
+          isEnabled: true,
+          isActive: true
+        });
+      } catch (e) {
+        this.set("inProgress", false);
+        bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
+      }
     },
 
     disableEncrypt() {
       this.set("inProgress", true);
+
+      // TODO: Delete client keys.
+
       ajax("/encrypt/keys", { type: "DELETE" })
-        .then(() =>
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
           this.setProperties({
             inProgress: false,
             isEnabled: false,
             isActive: false
-          })
-        )
+          });
+        })
         .catch(popupAjaxError);
     }
   }

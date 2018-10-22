@@ -39,20 +39,22 @@ export default {
         });
 
         const userKeys = {};
-        usernames.forEach(async username => {
+        for (let i = 0; i < usernames.length; ++i) {
+          const username = usernames[i];
           if (publicKeys[username]) {
             userKeys[username] = await exportKey(
               key,
               await importPublicKey(publicKeys[username])
             );
           } else {
-            // TODO: Warn user that the recipient does not have encryption
-            // enabled.
             // TODO: Maybe there should be a check for keys as soon as the
             // target usernames field changes.
-            console.log("There is no key for " + username + ".");
+            bootbox.alert(
+              I18n.t("encrypt.composer.user_has_no_key", { username })
+            );
+            return;
           }
-        });
+        }
 
         // Swapping the encrypted contents.
         this.set("title", await encrypt(key, title));

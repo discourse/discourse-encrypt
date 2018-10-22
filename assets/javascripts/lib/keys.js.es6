@@ -19,6 +19,27 @@ import {
 const PASSPHRASE_SALT = "e85c53e7f119d41fd7895cdc9d7bb9dd"; // TODO
 
 /*
+ * Utilities
+ * =========
+ */
+
+/**
+ * Exports a key to a buffer.
+ *
+ * It does this by exporting it first to JWK, then to a string and finally to a
+ * buffer.
+ *
+ * @param key
+ *
+ * @return A promise of a buffer.
+ */
+function exportKeyToBuffer(key) {
+  return window.crypto.subtle
+    .exportKey("jwk", key)
+    .then(jwk => stringToBuffer(JSON.stringify(jwk)));
+}
+
+/*
  * User keypairs
  * =============
  */
@@ -28,19 +49,19 @@ const PASSPHRASE_SALT = "e85c53e7f119d41fd7895cdc9d7bb9dd"; // TODO
  *
  * @return Array A tuple of a public and private key.
  */
-export async function generateKeyPair() {
-  const keyPair = await window.crypto.subtle.generateKey(
-    {
-      name: "RSA-OAEP",
-      modulusLength: 4096,
-      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: { name: "SHA-256" }
-    },
-    true,
-    ["encrypt", "decrypt"]
-  );
-
-  return [keyPair.publicKey, keyPair.privateKey];
+export function generateKeyPair() {
+  return window.crypto.subtle
+    .generateKey(
+      {
+        name: "RSA-OAEP",
+        modulusLength: 4096,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+        hash: { name: "SHA-256" }
+      },
+      true,
+      ["encrypt", "decrypt"]
+    )
+    .then(keyPair => [keyPair.publicKey, keyPair.privateKey]);
 }
 
 /**
@@ -50,8 +71,8 @@ export async function generateKeyPair() {
  *
  * @return String
  */
-export async function exportPublicKey(publicKey) {
-  return await window.crypto.subtle
+export function exportPublicKey(publicKey) {
+  return window.crypto.subtle
     .exportKey("jwk", publicKey)
     .then(jwk => bufferToBase64(stringToBuffer(JSON.stringify(jwk))));
 }
@@ -63,8 +84,8 @@ export async function exportPublicKey(publicKey) {
  *
  * @return CryptoKey
  */
-export async function importPublicKey(publicKey) {
-  return await window.crypto.subtle.importKey(
+export function importPublicKey(publicKey) {
+  return window.crypto.subtle.importKey(
     "jwk",
     JSON.parse(bufferToString(base64ToBuffer(publicKey))),
     {
@@ -85,17 +106,11 @@ export async function importPublicKey(publicKey) {
  * @return String
  */
 export async function exportPrivateKey(privateKey, key) {
+  /** @var Insecure buffer containing the private key. */
+  const buffer = await exportKeyToBuffer(privateKey);
+
   /** @var Random initialization vector for AES-CBC. */
   const iv = window.crypto.getRandomValues(new Uint8Array(16));
-
-  /** @var Insecure serialization of private key. */
-  const jwk = await window.crypto.subtle.exportKey("jwk", privateKey);
-
-  /** @var Insecure JSON string of private key. */
-  const json = JSON.stringify(jwk);
-
-  /** @var Insecure buffer containing the private key. */
-  const buffer = stringToBuffer(json);
 
   /** @var Encrypted buffer containing private key. */
   const encryptedBuffer = await window.crypto.subtle.encrypt(
@@ -112,7 +127,7 @@ export async function exportPrivateKey(privateKey, key) {
  * Imports a private key.
  *
  * @param privateKey
- * @param key        Key used to decrypt `privateKey`.
+ * @param key         Key used to decrypt `privateKey`.
  *
  * @return CryptoKey
  */
@@ -124,7 +139,7 @@ export async function importPrivateKey(privateKey, key) {
   const encryptedBuffer = base64ToBuffer(privateKey.substring(24));
 
   /** @var Insecure serialization of private key. */
-  const jwk = await window.crypto.subtle.decrypt(
+  const jwkBuffer = await window.crypto.subtle.decrypt(
     { name: "AES-CBC", iv: iv },
     key,
     encryptedBuffer
@@ -132,7 +147,7 @@ export async function importPrivateKey(privateKey, key) {
 
   return await window.crypto.subtle.importKey(
     "jwk",
-    JSON.parse(bufferToString(jwk)),
+    JSON.parse(bufferToString(jwkBuffer)),
     {
       name: "RSA-OAEP",
       hash: { name: "SHA-256" }
@@ -159,8 +174,8 @@ export function generatePassphraseKey(passphrase) {
       "deriveBits",
       "deriveKey"
     ])
-    .then(key => {
-      return window.crypto.subtle.deriveKey(
+    .then(key =>
+      window.crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
           salt: hexToBuffer(PASSPHRASE_SALT),
@@ -174,8 +189,8 @@ export function generatePassphraseKey(passphrase) {
         },
         false,
         ["encrypt", "decrypt"]
-      );
-    });
+      )
+    );
 }
 
 /*
@@ -188,8 +203,8 @@ export function generatePassphraseKey(passphrase) {
  *
  * @return Promise A promise of a key.
  */
-export async function generateKey() {
-  return await window.crypto.subtle.generateKey(
+export function generateKey() {
+  return window.crypto.subtle.generateKey(
     {
       name: "AES-CBC",
       length: 256
@@ -202,20 +217,14 @@ export async function generateKey() {
 /**
  * Exports a symmetric key, but encrypts it first.
  *
- * @param symmetricKey
- * @param key           Key used to encrypt `symmetricKey`.
+ * @param key
+ * @param userKey   Key used to encrypt `key`.
  *
  * @return String
  */
-export async function exportKey(symmetricKey, key) {
-  /** @var Insecure serialization of private key. */
-  const jwk = await window.crypto.subtle.exportKey("jwk", symmetricKey);
-
-  /** @var Insecure JSON string of private key. */
-  const json = JSON.stringify(jwk);
-
+export async function exportKey(key, userKey) {
   /** @var Insecure buffer containing the private key. */
-  const buffer = stringToBuffer(json);
+  const buffer = await exportKeyToBuffer(key);
 
   /** @var Encrypted buffer containing private key. */
   const encryptedBuffer = await window.crypto.subtle.encrypt(
@@ -223,7 +232,7 @@ export async function exportKey(symmetricKey, key) {
       name: "RSA-OAEP",
       hash: { name: "SHA-256" }
     },
-    key,
+    userKey,
     buffer
   );
 
@@ -234,14 +243,14 @@ export async function exportKey(symmetricKey, key) {
 /**
  * Imports a symmetric key.
  *
- * @param symmetricKey
  * @param key
+ * @param userKey   Key used to decrypt `key`.
  *
  * @return CryptoKey
  */
-export async function importKey(symmetricKey, key) {
+export async function importKey(key, userKey) {
   /** @var Encrypted buffer containing private key. */
-  const encryptedBuffer = base64ToBuffer(symmetricKey);
+  const encryptedBuffer = base64ToBuffer(key);
 
   /** @var Insecure serialization of private key. */
   const jwk = await window.crypto.subtle.decrypt(
@@ -249,7 +258,7 @@ export async function importKey(symmetricKey, key) {
       name: "RSA-OAEP",
       hash: { name: "SHA-256" }
     },
-    key,
+    userKey,
     encryptedBuffer
   );
 
@@ -269,18 +278,24 @@ export async function importKey(symmetricKey, key) {
  * Encrypts a message with a symmetric key.
  *
  * @param key
- * @param message
+ * @param plaintext
  *
  * @return String
  */
-export async function encrypt(key, message) {
+export async function encrypt(key, plaintext) {
+  /** @var Initialization vector for AES-CBC. */
   const iv = window.crypto.getRandomValues(new Uint8Array(16));
-  const buffer = stringToBuffer(message);
+
+  /** @var Insecure buffer containing the message. */
+  const buffer = stringToBuffer(plaintext);
+
+  /** @var Encrypted buffer containing message. */
   const encryptedBuffer = await window.crypto.subtle.encrypt(
     { name: "AES-CBC", iv: iv },
     key,
     buffer
   );
+
   return bufferToBase64(iv) + bufferToBase64(encryptedBuffer);
 }
 
@@ -288,17 +303,23 @@ export async function encrypt(key, message) {
  * Decrypt a message with a symmetric key.
  *
  * @param key
- * @param message
+ * @param ciphertext
  *
  * @return String
  */
-export async function decrypt(key, message) {
-  const iv = base64ToBuffer(message.substring(0, 24));
-  const encryptedBuffer = base64ToBuffer(message.substring(24));
+export async function decrypt(key, ciphertext) {
+  /** @var Initialization vector for AES-CBC. */
+  const iv = base64ToBuffer(ciphertext.substring(0, 24));
+
+  /** @var Encrypted buffer containing message. */
+  const encryptedBuffer = base64ToBuffer(ciphertext.substring(24));
+
+  /** @var Insecure buffer containing the message. */
   const buffer = await window.crypto.subtle.decrypt(
     { name: "AES-CBC", iv: iv },
     key,
     encryptedBuffer
   );
+
   return bufferToString(buffer);
 }

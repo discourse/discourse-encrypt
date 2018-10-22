@@ -2,8 +2,15 @@ en:
   js:
     encrypt:
       title: 'Encryption'
+
+      notice:
+        info: You have enabled encryption, but it is not active on this device. To read any encrypted private messages, please activate it first.
+        enable: Follow the instructions from user preferences screen to do that.
+
       composer:
         encrypt: 'Encrypt message?'
+        user_has_no_key: 'User {{username}} did not enable encryption and has no keys.'
+
       preferences:
         status_enabled: "You have enabled encryption and activated it on this device."
         status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."
@@ -12,6 +19,7 @@ en:
         passphrase_placeholder: "passphrase"
         passphrase2_placeholder: "retype passphrase"
         passphrase_mismatch: "The two passphrases you entered do not match."
+        passphrase_invalid: "The passphrase you entered is incorrect."
 
         notice_enable: |
           <p>In order to enable encryption, you must choose a passphrase.</p>
