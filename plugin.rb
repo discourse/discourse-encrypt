@@ -64,6 +64,16 @@ after_initialize do
 
         render json: { success: true }
       end
+
+      def delete_topickeys
+        topic_id = params.require(:topic_id)
+        usernames = params.require(:users)
+
+        users = Hash[User.where(username: usernames).map { |u| [u.username, u] }]
+        usernames.each { |u| Store.remove("key_#{topic_id}_#{users[u].id}") }
+
+        render json: { success: true }
+      end
     end
   end
 
@@ -88,6 +98,7 @@ after_initialize do
     delete '/encrypt/keys'      => 'encrypt#delete'
     get    '/encrypt/userkeys'  => 'encrypt#get_userkeys'
     put    '/encrypt/topickeys' => 'encrypt#put_topickeys'
+    delete '/encrypt/topickeys' => 'encrypt#delete_topickeys'
   end
 
   Discourse::Application.routes.append do

@@ -51,12 +51,26 @@ export default {
     });
 
     TopicDetails.reopen({
-      removeAllowedUser() {
-        console.log("removeAllowedUser", this, ...arguments);
+      async removeAllowedUser(user) {
+        // TODO: This is part of a hack around `_super` not working properly
+        // when used in `async` functions.
+        // https://github.com/emberjs/ember.js/issues/15291
+        let { _super } = this;
+        const topic = this.get("topic");
+        if (!topic.get("user_key")) {
+          return _super.call(this, ...arguments);
+        }
+
+        await ajax("/encrypt/topickeys", {
+          type: "DELETE",
+          data: { topic_id: topic.get("id"), users: [user.username] }
+        });
+
         // TODO: Generate a new topic key.
         // TODO: Re-encrypt and edit all posts in topic.
         // TODO: Re-encrypt and save keys for all users.
-        return this._super(...arguments);
+
+        return _super.call(this, ...arguments);
       }
     });
   }
