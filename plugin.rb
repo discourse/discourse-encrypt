@@ -59,8 +59,7 @@ after_initialize do
         keys = params.require(:keys)
 
         users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
-
-        keys.each { | u, k | Store.set("key_#{topic_id}_#{users[u].id}", k) }
+        keys.each { |u, k| Store.set("key_#{topic_id}_#{users[u].id}", k) }
 
         render json: { success: true }
       end
@@ -77,19 +76,19 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:topic_view, :user_key, false) do
+  add_to_serializer(:topic_view, :topic_key, false) do
     return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.topic.id}_#{scope.user.id}")
   end
 
-  add_to_serializer(:topic_view, :include_user_key?) do
+  add_to_serializer(:topic_view, :include_topic_key?) do
     return scope.user
   end
 
-  add_to_serializer(:topic_list_item, :user_key, false) do
+  add_to_serializer(:topic_list_item, :topic_key, false) do
     return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
   end
 
-  add_to_serializer(:topic_list_item, :include_user_key?) do
+  add_to_serializer(:topic_list_item, :include_topic_key?) do
     return scope.user
   end
 

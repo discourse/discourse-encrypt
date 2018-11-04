@@ -14,11 +14,10 @@ export default {
   initialize() {
     Topic.reopen({
       async createInvite(username) {
-        // TODO: This is part of a hack around `_super` not working properly
-        // when used in `async` functions.
-        // https://github.com/emberjs/ember.js/issues/15291
+        // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
-        if (!this.get("user_key")) {
+
+        if (!this.get("topic_key")) {
           return _super.call(this, ...arguments);
         }
 
@@ -34,8 +33,8 @@ export default {
           return;
         }
 
-        const [_, privateKey] = await loadKeyPairFromIndexedDb(); // eslint-disable-line no-unused-vars
-        const key = await importKey(this.get("user_key"), privateKey);
+        const privateKey = (await loadKeyPairFromIndexedDb())[1];
+        const key = await importKey(this.get("topic_key"), privateKey);
         const userkey = await exportKey(
           key,
           await importPublicKey(publicKeys[username])
@@ -52,12 +51,11 @@ export default {
 
     TopicDetails.reopen({
       async removeAllowedUser(user) {
-        // TODO: This is part of a hack around `_super` not working properly
-        // when used in `async` functions.
-        // https://github.com/emberjs/ember.js/issues/15291
+        // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
+
         const topic = this.get("topic");
-        if (!topic.get("user_key")) {
+        if (!topic.get("topic_key")) {
           return _super.call(this, ...arguments);
         }
 

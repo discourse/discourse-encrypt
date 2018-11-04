@@ -2,6 +2,7 @@ en:
   js:
     encrypt:
       title: 'Encryption'
+      decrypting: 'Decrypting...'
 
       notice:
         info: You have enabled encryption, but it is not active on this device. To read any encrypted private messages, please activate it first.
