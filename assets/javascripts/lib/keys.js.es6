@@ -270,7 +270,7 @@ export async function importKey(key, userKey) {
       length: 256
     },
     true,
-    ["decrypt"]
+    ["encrypt", "decrypt"]
   );
 }
 

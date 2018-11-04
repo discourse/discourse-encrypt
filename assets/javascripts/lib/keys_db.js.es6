@@ -17,7 +17,7 @@ const isSafari = !!navigator.userAgent.match(/Version\/(\d+).+?Safari/);
  *
  * @return String
  */
-export function exportKey(key) {
+function exportKey(key) {
   return window.crypto.subtle
     .exportKey("jwk", key)
     .then(jwk => JSON.stringify(jwk));
@@ -30,7 +30,7 @@ export function exportKey(key) {
  *
  * @return CryptoKey
  */
-export function importKey(key, op) {
+function importKey(key, op) {
   return window.crypto.subtle.importKey(
     "jwk",
     JSON.parse(key),
