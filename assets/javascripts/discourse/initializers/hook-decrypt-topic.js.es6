@@ -17,7 +17,7 @@ function decryptElements(containerSelector, elementSelector) {
     }
 
     const topicId = $(this).data("topic-id");
-    const $el = $(this).find(elementSelector);
+    const $el = elementSelector ? $(this).find(elementSelector) : $(this);
     if (!topicId || !hasTopicKey(topicId) || !$el.length) {
       return;
     }
@@ -49,6 +49,7 @@ export default {
                 ".title"
               );
               decryptElements("a.topic-link", "span");
+              decryptElements("a.topic-link");
             },
             100
           );
