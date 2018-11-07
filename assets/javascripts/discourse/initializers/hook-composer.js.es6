@@ -27,19 +27,36 @@ export default {
     // Decode composer on reply reload. This usually occurs when a post is
     // edited.
     const appEvents = container.lookup("app-events:main");
-    appEvents.on("composer:reply-reloaded", () => {
-      const model = container.lookup("controller:composer").get("model");
+    appEvents.on("composer:reply-reloaded", model => {
+      let topicId;
 
+      // Try get topic ID from topic model.
       const topic = model.get("topic");
-      const topicId = topic.get("id");
-      if (!hasTopicKey(topicId)) {
-        return;
+      if (topic) {
+        topicId = topic.get("id");
       }
 
-      getTopicKey(topicId).then(key => {
-        decrypt(key, model.get("title")).then(msg => model.set("title", msg));
-        decrypt(key, model.get("reply")).then(msg => model.set("reply", msg));
-      });
+      // Try get topic ID from draft key.
+      if (!topicId) {
+        const draftKey = model.get("draftKey");
+        if (draftKey && draftKey.indexOf("topic_") === 0) {
+          topicId = draftKey.substring("topic_".length);
+        }
+      }
+
+      if (hasTopicKey(topicId)) {
+        getTopicKey(topicId).then(key => {
+          const title = model.get("title");
+          if (title) {
+            decrypt(key, title).then(msg => model.set("title", msg));
+          }
+
+          const reply = model.get("reply");
+          if (reply) {
+            decrypt(key, reply).then(msg => model.set("reply", msg));
+          }
+        });
+      }
     });
 
     // Encrypt the Composer contents on-the-fly right before it is sent over
