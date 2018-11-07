@@ -95,6 +95,9 @@ export function hasTopicKey(topicId) {
  */
 export async function getEncryptionStatus() {
   const user = Discourse.User.current();
+  if (!user) {
+    return ENCRYPT_DISBLED;
+  }
 
   const sPubKey = user.get("custom_fields.encrypt_public_key");
   const sPrvKey = user.get("custom_fields.encrypt_private_key");
