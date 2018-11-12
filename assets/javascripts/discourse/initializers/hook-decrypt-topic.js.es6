@@ -11,7 +11,7 @@ import {
  * @param elementSelector   Encrypted element selector
  */
 function decryptElements(containerSelector, elementSelector) {
-  $(containerSelector).each(async function() {
+  $(containerSelector).each(function() {
     if ($(this).data("decrypted")) {
       return;
     }
@@ -35,7 +35,6 @@ export default {
   name: "hook-decrypt-topic",
 
   initialize() {
-    // Hook components to trigger decryption after each render.
     var self = this;
     Ember.Component.reopen({
       didRender() {

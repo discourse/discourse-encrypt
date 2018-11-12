@@ -30,11 +30,12 @@ const topicKeys = {};
  *
  * @return CryptoKey
  */
-export async function getPrivateKey() {
-  if (!privateKey) {
-    privateKey = (await loadKeyPairFromIndexedDb())[1];
+export function getPrivateKey() {
+  if (privateKey) {
+    return Promise.resolve(privateKey);
   }
-  return privateKey;
+
+  return loadKeyPairFromIndexedDb().then(keyPair => (privateKey = keyPair[1]));
 }
 
 /**
@@ -60,21 +61,18 @@ export function putTopicKey(topicId, key) {
  *
  * @return CryptoKey
  */
-export async function getTopicKey(topicId) {
+export function getTopicKey(topicId) {
   let key = topicKeys[topicId];
+
   if (!key) {
-    return;
+    return Promise.reject();
+  } else if (key instanceof CryptoKey) {
+    return Promise.resolve(key);
+  } else {
+    return getPrivateKey()
+      .then(privKey => importKey(key, privKey))
+      .then(topicKey => (topicKeys[topicId] = topicKey));
   }
-
-  if (!(key instanceof CryptoKey)) {
-    if (!privateKey) {
-      privateKey = (await loadKeyPairFromIndexedDb())[1];
-    }
-    key = await importKey(key, privateKey);
-  }
-
-  topicKeys[topicId] = key;
-  return key;
 }
 
 /**
@@ -93,25 +91,30 @@ export function hasTopicKey(topicId) {
  *
  * @return Integer Encryption status
  */
-export async function getEncryptionStatus() {
+export function getEncryptionStatus() {
   const user = Discourse.User.current();
   if (!user) {
-    return ENCRYPT_DISBLED;
+    return Promise.resolve(ENCRYPT_DISBLED);
   }
 
   const sPubKey = user.get("custom_fields.encrypt_public_key");
   const sPrvKey = user.get("custom_fields.encrypt_private_key");
 
-  if (sPubKey && sPrvKey) {
-    const [cPubKey, cPrvKey] = await loadKeyPairFromIndexedDb();
-    if (cPubKey && cPrvKey && sPubKey === (await exportPublicKey(cPubKey))) {
-      return ENCRYPT_ACTIVE;
-    } else {
-      return ENCRYPT_ENABLED;
-    }
+  if (!sPubKey || !sPrvKey) {
+    return Promise.resolve(ENCRYPT_DISBLED);
   }
 
-  return ENCRYPT_DISBLED;
+  return loadKeyPairFromIndexedDb()
+    .then(([cPubKey, cPrvKey]) =>
+      Promise.all([cPubKey, cPrvKey, cPubKey ? exportPublicKey(cPubKey) : null])
+    )
+    .then(([cPubKey, cPrvKey, cPubKeyExported]) => {
+      if (cPubKey && cPrvKey && sPubKey === cPubKeyExported) {
+        return ENCRYPT_ACTIVE;
+      } else {
+        return ENCRYPT_ENABLED;
+      }
+    });
 }
 
 /**
@@ -122,7 +125,7 @@ export async function getEncryptionStatus() {
  *
  * @param component
  */
-export async function hideComponentIfDisabled(component) {
+export function hideComponentIfDisabled(component) {
   let handler = () => {
     getEncryptionStatus().then(newStatus => {
       component.set("isEncryptEnabled", newStatus === ENCRYPT_ENABLED);

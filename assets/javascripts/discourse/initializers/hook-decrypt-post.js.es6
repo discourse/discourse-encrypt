@@ -11,7 +11,6 @@ export default {
   name: "hook-decrypt-post",
 
   initialize() {
-    // Hook post-contents widget.
     withPluginApi("0.8.25", api => {
       api.reopenWidget("post-contents", {
         html(attrs, state) {

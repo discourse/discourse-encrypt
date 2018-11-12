@@ -12,10 +12,10 @@ import {
   generateKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
-import { loadKeyPairFromIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
   getTopicKey,
-  hasTopicKey
+  hasTopicKey,
+  getPrivateKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
@@ -48,12 +48,12 @@ export default {
         getTopicKey(topicId).then(key => {
           const title = model.get("title");
           if (title) {
-            decrypt(key, title).then(msg => model.set("title", msg));
+            decrypt(key, title).then(t => model.set("title", t));
           }
 
           const reply = model.get("reply");
           if (reply) {
-            decrypt(key, reply).then(msg => model.set("reply", msg));
+            decrypt(key, reply).then(r => model.set("reply", r));
           }
         });
       }
@@ -62,87 +62,109 @@ export default {
     // Encrypt the Composer contents on-the-fly right before it is sent over
     // to the server.
     Composer.reopen({
-      async save() {
+      save() {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
 
+        const title = this.get("title");
+        const reply = this.get("reply");
+
+        // Edited posts already have a topic key.
         if (this.get("topic.topic_key")) {
-          const privateKey = (await loadKeyPairFromIndexedDb())[1];
-          const key = await importKey(this.get("topic.topic_key"), privateKey);
-
-          this.set("title", await encrypt(key, this.get("title")));
-          this.set("reply", await encrypt(key, this.get("reply")));
-
-          return _super.call(this, ...arguments);
+          return getPrivateKey()
+            .then(key => importKey(this.get("topic.topic_key"), key))
+            .then(key =>
+              Promise.all([
+                encrypt(key, title).then(t => this.set("title", t)),
+                encrypt(key, reply).then(r => this.set("reply", r))
+              ])
+            )
+            .then(() => _super.call(this, ...arguments));
         }
 
+        // Not encrypted messages.
         if (!this.get("isEncrypted")) {
           return _super.call(this, ...arguments);
         }
 
-        const title = this.get("title");
-        const reply = this.get("reply");
+        // Generating a new topic key.
+        const p0 = generateKey();
+
+        // Encrypting user keys.
         const usernames = this.get("recipients");
+        const p1 = p0.then(key =>
+          ajax("/encrypt/userkeys", {
+            type: "GET",
+            data: { usernames }
+          }).then(userKeys => {
+            const promises = [];
 
-        const key = await generateKey();
-        const publicKeys = await ajax("/encrypt/userkeys", {
-          type: "GET",
-          data: { usernames }
-        });
+            for (let i = 0; i < usernames.length; ++i) {
+              const username = usernames[i];
+              if (!userKeys[username]) {
+                promises.push(Promise.reject(username));
+              } else {
+                promises.push(
+                  importPublicKey(userKeys[username]).then(userKey =>
+                    exportKey(key, userKey)
+                  )
+                );
+              }
+            }
 
-        const userKeys = {};
-        for (let i = 0; i < usernames.length; ++i) {
-          const username = usernames[i];
-          if (publicKeys[username]) {
-            userKeys[username] = await exportKey(
-              key,
-              await importPublicKey(publicKeys[username])
-            );
-          } else {
-            bootbox.alert(
-              I18n.t("encrypt.composer.user_has_no_key", { username })
-            );
-            return;
-          }
-        }
+            return Promise.all(promises);
+          })
+        );
 
-        // Swapping the encrypted contents.
-        this.set("title", await encrypt(key, title));
-        this.set("reply", await encrypt(key, reply));
+        // Encrypting title and reply.
+        const p2 = p0.then(key => encrypt(key, title));
+        const p3 = p0.then(key => encrypt(key, reply));
 
-        // Saving the topic, restoring the result and returning the result.
-        return _super.call(this, ...arguments).then(async result => {
-          this.setProperties({ title, reply });
-          const topicId = result.responseJson.post.topic_id;
-          await ajax("/encrypt/topickeys", {
-            type: "PUT",
-            data: { topic_id: topicId, keys: userKeys }
-          });
-          return result;
-        });
+        // Send user keys, title and reply encryption to the server.
+        return Promise.all([p1, p2, p3])
+          .then(([keys, encTitle, encReply]) => {
+            const userKeys = {};
+            for (let i = 0; i < keys.length; ++i) {
+              userKeys[usernames[i]] = keys[i];
+            }
+
+            this.set("title", encTitle);
+            this.set("reply", encReply);
+
+            return Promise.all([userKeys, _super.call(this, ...arguments)]);
+          }).then(([userKeys, result]) => {
+            const topicId = result.responseJson.post.topic_id;
+            ajax("/encrypt/topickeys", {
+              type: "PUT",
+              data: { topic_id: topicId, keys: userKeys }
+            });
+
+            return result;
+          })
+          .finally(() => this.setProperties({ title, reply }));
       },
 
       @observes("targetUsernames")
-      async checkKeys() {
+      checkKeys() {
         if (!this.get("isEncrypted")) {
           return;
         }
 
         const usernames = this.get("recipients");
-        const keys = await ajax("/encrypt/userkeys", {
+        ajax("/encrypt/userkeys", {
           type: "GET",
           data: { usernames }
-        });
-
-        for (let i = 0; i < usernames.length; ++i) {
-          const username = usernames[i];
-          if (!keys[username]) {
-            bootbox.alert(
-              I18n.t("encrypt.composer.user_has_no_key", { username })
-            );
-            return;
+        }).then(userKeys => {
+          for (let i = 0; i < usernames.length; ++i) {
+            const username = usernames[i];
+            if (!userKeys[username]) {
+              bootbox.alert(
+                I18n.t("encrypt.composer.user_has_no_key", { username })
+              );
+              return;
+            }
           }
-        }
+        });
       },
 
       @computed("targetUsernames")

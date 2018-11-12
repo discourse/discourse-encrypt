@@ -64,40 +64,44 @@ function openIndexedDb() {
 /**
  * Save a key pair to plugin's Indexed DB.
  *
- * @param publicKey
- * @param privateKey
+ * @param pubKey
+ * @param privKey
  *
  * @return Promise
  */
-export async function saveKeyPairToIndexedDb(publicKey, privateKey) {
+export function saveKeyPairToIndexedDb(pubKey, privKey) {
   if (isSafari) {
-    publicKey = await exportKey(publicKey);
-    privateKey = await exportKey(privateKey);
+    pubKey = exportKey(pubKey);
+    privKey = exportKey(privKey);
   }
 
-  return new Promise((resolve, reject) => {
-    let req = openIndexedDb();
+  return Promise.all([pubKey, privKey]).then(
+    ([publicKey, privateKey]) =>
+      new Promise((resolve, reject) => {
+        let req = openIndexedDb();
 
-    req.onerror = evt => reject(evt);
+        req.onerror = evt => reject(evt);
 
-    req.onsuccess = evt => {
-      let db = evt.target.result;
-      let tx = db.transaction("keys", "readwrite");
-      let st = tx.objectStore("keys");
+        req.onsuccess = evt => {
+          let db = evt.target.result;
+          let tx = db.transaction("keys", "readwrite");
+          let st = tx.objectStore("keys");
 
-      let dataReq = st.add({ publicKey, privateKey });
-      dataReq.onsuccess = dataEvt => resolve(dataEvt);
-      dataReq.onerror = dataEvt => console.log("Error saving keys.", dataEvt);
-    };
-  });
+          let dataReq = st.add({ publicKey, privateKey });
+          dataReq.onsuccess = dataEvt => resolve(dataEvt);
+          dataReq.onerror = dataEvt =>
+            console.log("Error saving keys.", dataEvt);
+        };
+      })
+  );
 }
 
 /**
- * Loads all key pairs from plugin's IndexedDB.
+ * Gets the last stored key-pair from plugin's IndexedDB.
  *
- * @return Promise
+ * @return Array A tuple consisting of public and private key.
  */
-function loadKeyPairsFromIndexedDb() {
+export function loadKeyPairFromIndexedDb() {
   return new Promise((resolve, reject) => {
     let req = openIndexedDb();
 
@@ -112,28 +116,20 @@ function loadKeyPairsFromIndexedDb() {
       dataReq.onsuccess = dataEvt => resolve(dataEvt.target.result);
       dataReq.onerror = dataEvt => console.log("Error loading keys.", dataEvt);
     };
+  }).then(keyPairs => {
+    if (!keyPairs || keyPairs.length === 0) {
+      return [undefined, undefined];
+    }
+
+    let keyPair = keyPairs[keyPairs.length - 1];
+
+    if (isSafari) {
+      return Promise.all([
+        importKey(keyPair.publicKey, "encrypt"),
+        importKey(keyPair.privateKey, "decrypt")
+      ]);
+    }
+
+    return [keyPair.publicKey, keyPair.privateKey];
   });
-}
-
-/**
- * Gets the last stored key-pair from plugin's IndexedDB.
- *
- * @return Array A tuple consisting of public and private key.
- */
-export async function loadKeyPairFromIndexedDb() {
-  const keyPairs = await loadKeyPairsFromIndexedDb();
-  if (!keyPairs || keyPairs.length === 0) {
-    return [undefined, undefined];
-  }
-
-  let keyPair = keyPairs[keyPairs.length - 1];
-
-  if (isSafari) {
-    return [
-      await importKey(keyPair.publicKey, "encrypt"),
-      await importKey(keyPair.privateKey, "decrypt")
-    ];
-  }
-
-  return [keyPair.publicKey, keyPair.privateKey];
 }

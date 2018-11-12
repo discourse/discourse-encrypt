@@ -105,22 +105,19 @@ export function importPublicKey(publicKey) {
  *
  * @return String
  */
-export async function exportPrivateKey(privateKey, key) {
-  /** @var Insecure buffer containing the private key. */
-  const buffer = await exportKeyToBuffer(privateKey);
+export function exportPrivateKey(privateKey, key) {
+  return exportKeyToBuffer(privateKey)
+    .then(buffer => {
+      const iv = window.crypto.getRandomValues(new Uint8Array(16));
+      const encrypted = window.crypto.subtle.encrypt(
+        { name: "AES-CBC", iv: iv },
+        key,
+        buffer
+      );
 
-  /** @var Random initialization vector for AES-CBC. */
-  const iv = window.crypto.getRandomValues(new Uint8Array(16));
-
-  /** @var Encrypted buffer containing private key. */
-  const encryptedBuffer = await window.crypto.subtle.encrypt(
-    { name: "AES-CBC", iv: iv },
-    key,
-    buffer
-  );
-
-  // The Base64 IV should have a constant length of 24 bytes.
-  return bufferToBase64(iv) + bufferToBase64(encryptedBuffer);
+      return Promise.all([iv, encrypted]);
+    })
+    .then(([iv, buffer]) => bufferToBase64(iv) + bufferToBase64(buffer));
 }
 
 /**
@@ -131,30 +128,24 @@ export async function exportPrivateKey(privateKey, key) {
  *
  * @return CryptoKey
  */
-export async function importPrivateKey(privateKey, key) {
-  /** @var Initialization vector for AES-CBC. */
+export function importPrivateKey(privateKey, key) {
   const iv = base64ToBuffer(privateKey.substring(0, 24));
+  const encrypted = base64ToBuffer(privateKey.substring(24));
 
-  /** @var Encrypted buffer containing private key. */
-  const encryptedBuffer = base64ToBuffer(privateKey.substring(24));
-
-  /** @var Insecure serialization of private key. */
-  const jwkBuffer = await window.crypto.subtle.decrypt(
-    { name: "AES-CBC", iv: iv },
-    key,
-    encryptedBuffer
-  );
-
-  return await window.crypto.subtle.importKey(
-    "jwk",
-    JSON.parse(bufferToString(jwkBuffer)),
-    {
-      name: "RSA-OAEP",
-      hash: { name: "SHA-256" }
-    },
-    true,
-    ["decrypt"]
-  );
+  return window.crypto.subtle
+    .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
+    .then(jwkBuffer =>
+      window.crypto.subtle.importKey(
+        "jwk",
+        JSON.parse(bufferToString(jwkBuffer)),
+        {
+          name: "RSA-OAEP",
+          hash: { name: "SHA-256" }
+        },
+        true,
+        ["decrypt"]
+      )
+    );
 }
 
 /*
@@ -222,22 +213,19 @@ export function generateKey() {
  *
  * @return String
  */
-export async function exportKey(key, userKey) {
-  /** @var Insecure buffer containing the private key. */
-  const buffer = await exportKeyToBuffer(key);
-
-  /** @var Encrypted buffer containing private key. */
-  const encryptedBuffer = await window.crypto.subtle.encrypt(
-    {
-      name: "RSA-OAEP",
-      hash: { name: "SHA-256" }
-    },
-    userKey,
-    buffer
-  );
-
-  // The Base64 IV should have a constant length of 24 bytes.
-  return bufferToBase64(encryptedBuffer);
+export function exportKey(key, userKey) {
+  return exportKeyToBuffer(key)
+    .then(buffer =>
+      window.crypto.subtle.encrypt(
+        {
+          name: "RSA-OAEP",
+          hash: { name: "SHA-256" }
+        },
+        userKey,
+        buffer
+      )
+    )
+    .then(encrypted => bufferToBase64(encrypted));
 }
 
 /**
@@ -248,30 +236,28 @@ export async function exportKey(key, userKey) {
  *
  * @return CryptoKey
  */
-export async function importKey(key, userKey) {
-  /** @var Encrypted buffer containing private key. */
-  const encryptedBuffer = base64ToBuffer(key);
-
-  /** @var Insecure serialization of private key. */
-  const jwk = await window.crypto.subtle.decrypt(
-    {
-      name: "RSA-OAEP",
-      hash: { name: "SHA-256" }
-    },
-    userKey,
-    encryptedBuffer
-  );
-
-  return await window.crypto.subtle.importKey(
-    "jwk",
-    JSON.parse(bufferToString(jwk)),
-    {
-      name: "AES-CBC",
-      length: 256
-    },
-    true,
-    ["encrypt", "decrypt"]
-  );
+export function importKey(key, userKey) {
+  return window.crypto.subtle
+    .decrypt(
+      {
+        name: "RSA-OAEP",
+        hash: { name: "SHA-256" }
+      },
+      userKey,
+      base64ToBuffer(key)
+    )
+    .then(jwk =>
+      window.crypto.subtle.importKey(
+        "jwk",
+        JSON.parse(bufferToString(jwk)),
+        {
+          name: "AES-CBC",
+          length: 256
+        },
+        true,
+        ["encrypt", "decrypt"]
+      )
+    );
 }
 
 /**
@@ -282,21 +268,13 @@ export async function importKey(key, userKey) {
  *
  * @return String
  */
-export async function encrypt(key, plaintext) {
-  /** @var Initialization vector for AES-CBC. */
+export function encrypt(key, plaintext) {
   const iv = window.crypto.getRandomValues(new Uint8Array(16));
-
-  /** @var Insecure buffer containing the message. */
   const buffer = stringToBuffer(plaintext);
 
-  /** @var Encrypted buffer containing message. */
-  const encryptedBuffer = await window.crypto.subtle.encrypt(
-    { name: "AES-CBC", iv: iv },
-    key,
-    buffer
-  );
-
-  return bufferToBase64(iv) + bufferToBase64(encryptedBuffer);
+  return window.crypto.subtle
+    .encrypt({ name: "AES-CBC", iv: iv }, key, buffer)
+    .then(encrypted => bufferToBase64(iv) + bufferToBase64(encrypted));
 }
 
 /**
@@ -307,19 +285,13 @@ export async function encrypt(key, plaintext) {
  *
  * @return String
  */
-export async function decrypt(key, ciphertext) {
-  /** @var Initialization vector for AES-CBC. */
+export function decrypt(key, ciphertext) {
+  console.warn("decrypt", key, ciphertext);
+
   const iv = base64ToBuffer(ciphertext.substring(0, 24));
+  const encrypted = base64ToBuffer(ciphertext.substring(24));
 
-  /** @var Encrypted buffer containing message. */
-  const encryptedBuffer = base64ToBuffer(ciphertext.substring(24));
-
-  /** @var Insecure buffer containing the message. */
-  const buffer = await window.crypto.subtle.decrypt(
-    { name: "AES-CBC", iv: iv },
-    key,
-    encryptedBuffer
-  );
-
-  return bufferToString(buffer);
+  return window.crypto.subtle
+    .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
+    .then(buffer => bufferToString(buffer));
 }
