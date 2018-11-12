@@ -49,6 +49,7 @@ export default {
               );
               decryptElements("a.topic-link", "span");
               decryptElements("a.topic-link");
+              decryptElements("a.raw-topic-link");
             },
             100
           );

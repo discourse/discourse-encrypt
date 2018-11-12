@@ -92,6 +92,14 @@ after_initialize do
     return scope.user
   end
 
+  add_to_serializer(:suggested_topic, :topic_key, false) do
+    return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+  end
+
+  add_to_serializer(:suggested_topic, :include_topic_key?) do
+    return scope.user
+  end
+
   DiscourseEncrypt::Engine.routes.draw do
     put    '/encrypt/keys'      => 'encrypt#put'
     delete '/encrypt/keys'      => 'encrypt#delete'

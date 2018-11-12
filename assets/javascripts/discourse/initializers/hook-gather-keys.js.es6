@@ -11,6 +11,12 @@ export default {
       if (storeKey.includes("topic_")) {
         const topic = PreloadStore.data[storeKey];
         putTopicKey(topic.id, topic.topic_key);
+        if (topic.related_messages) {
+          for (let i = 0; i < topic.related_messages.length; ++i) {
+            const relatedTopic = topic.related_messages[i];
+            putTopicKey(relatedTopic.id, relatedTopic.topic_key);
+          }
+        }
       }
     }
 
