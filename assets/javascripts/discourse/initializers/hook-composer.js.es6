@@ -13,6 +13,7 @@ import {
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
+  putTopicKey,
   getTopicKey,
   hasTopicKey,
   getPrivateKey
@@ -131,9 +132,11 @@ export default {
             this.set("title", encTitle);
             this.set("reply", encReply);
 
-            return Promise.all([userKeys, _super.call(this, ...arguments)]);
-          }).then(([userKeys, result]) => {
+            return Promise.all([p0, userKeys, _super.call(this, ...arguments)]);
+          })
+          .then(([key, userKeys, result]) => {
             const topicId = result.responseJson.post.topic_id;
+            putTopicKey(topicId, key);
             ajax("/encrypt/topickeys", {
               type: "PUT",
               data: { topic_id: topicId, keys: userKeys }
