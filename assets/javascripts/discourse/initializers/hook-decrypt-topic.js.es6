@@ -1,3 +1,4 @@
+import { iconHTML } from "discourse-common/lib/icon-library";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   hasTopicKey,
@@ -27,7 +28,7 @@ function decryptElements(containerSelector, elementSelector) {
 
     getTopicKey(topicId)
       .then(key => decrypt(key, ciphertext))
-      .then(plaintext => $el.html(plaintext));
+      .then(plaintext => $el.html(iconHTML("unlock") + " " + plaintext));
   });
 }
 
