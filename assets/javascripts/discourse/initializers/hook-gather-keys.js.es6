@@ -1,6 +1,9 @@
 import PreloadStore from "preload-store";
 import Topic from "discourse/models/topic";
-import { putTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  putTopicKey,
+  putTopicTitle
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-gather-keys",
@@ -10,11 +13,17 @@ export default {
     for (var storeKey in PreloadStore.data) {
       if (storeKey.includes("topic_")) {
         const topic = PreloadStore.data[storeKey];
-        putTopicKey(topic.id, topic.topic_key);
+
+        if (topic.topic_key) {
+          putTopicKey(topic.id, topic.topic_key);
+          putTopicTitle(topic.id, topic.encrypted_title);
+        }
+
         if (topic.related_messages) {
           for (let i = 0; i < topic.related_messages.length; ++i) {
             const relatedTopic = topic.related_messages[i];
             putTopicKey(relatedTopic.id, relatedTopic.topic_key);
+            putTopicTitle(relatedTopic.id, relatedTopic.encrypted_title);
           }
         }
       }
@@ -23,7 +32,11 @@ export default {
     // Hook `Topic` model to gather encrypted topic keys.
     Topic.reopenClass({
       create(args) {
-        putTopicKey(args.id, args.topic_key);
+        if (args.topic_key) {
+          putTopicKey(args.id, args.topic_key);
+          putTopicTitle(args.id, args.encrypted_title);
+        }
+
         return this._super(...arguments);
       }
     });

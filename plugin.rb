@@ -28,7 +28,7 @@ after_initialize do
       skip_before_action :check_xhr
 
       def put
-        public_key  = params.permit(:public_key)
+        public_key  = params[:public_key]
         private_key = params.require(:private_key)
 
         current_user.custom_fields['encrypt_public_key'] = public_key if public_key
@@ -56,10 +56,17 @@ after_initialize do
 
       def put_topickeys
         topic_id = params.require(:topic_id)
-        keys = params.require(:keys)
+        title = params.require(:title)
+        keys = params[:keys]
 
-        users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
-        keys.each { |u, k| Store.set("key_#{topic_id}_#{users[u].id}", k) }
+        topic = Topic.find_by(id: topic_id)
+        topic.custom_fields["encrypted_title"] = title
+        topic.save!
+
+        if keys
+          users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
+          keys.each { |u, k| Store.set("key_#{topic_id}_#{users[u].id}", k) }
+        end
 
         render json: { success: true }
       end
@@ -76,28 +83,28 @@ after_initialize do
     end
   end
 
+  add_to_serializer(:topic_view, :encrypted_title) do
+    object.topic.custom_fields["encrypted_title"]
+  end
+
   add_to_serializer(:topic_view, :topic_key, false) do
-    return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.topic.id}_#{scope.user.id}")
+    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.topic.id}_#{scope.user.id}")
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
-    return scope.user
+    scope.user
   end
 
-  add_to_serializer(:topic_list_item, :topic_key, false) do
-    return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+  add_to_serializer(:basic_topic, :encrypted_title) do
+    object.custom_fields["encrypted_title"]
   end
 
-  add_to_serializer(:topic_list_item, :include_topic_key?) do
-    return scope.user
+  add_to_serializer(:basic_topic, :topic_key, false) do
+    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
   end
 
-  add_to_serializer(:suggested_topic, :topic_key, false) do
-    return PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
-  end
-
-  add_to_serializer(:suggested_topic, :include_topic_key?) do
-    return scope.user
+  add_to_serializer(:basic_topic, :include_topic_key?) do
+    scope.user
   end
 
   DiscourseEncrypt::Engine.routes.draw do

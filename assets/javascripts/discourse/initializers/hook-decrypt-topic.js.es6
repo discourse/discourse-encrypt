@@ -1,8 +1,7 @@
 import { iconHTML } from "discourse-common/lib/icon-library";
-import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  hasTopicKey,
-  getTopicKey
+  hasTopicTitle,
+  getTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
@@ -19,16 +18,12 @@ function decryptElements(containerSelector, elementSelector) {
 
     const topicId = $(this).data("topic-id");
     const $el = elementSelector ? $(this).find(elementSelector) : $(this);
-    if (!topicId || !hasTopicKey(topicId) || !$el.length) {
+    if (!topicId || !hasTopicTitle(topicId) || !$el.length) {
       return;
     }
 
     $(this).data("decrypted", true);
-    const ciphertext = $el.text().trim();
-
-    getTopicKey(topicId)
-      .then(key => decrypt(key, ciphertext))
-      .then(plaintext => $el.html(iconHTML("unlock") + " " + plaintext));
+    getTopicTitle(topicId).then(t => $el.html(iconHTML("unlock") + " " + t));
   });
 }
 

@@ -16,7 +16,8 @@ import {
   putTopicKey,
   getTopicKey,
   hasTopicKey,
-  getPrivateKey
+  getPrivateKey,
+  getTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
@@ -46,12 +47,11 @@ export default {
       }
 
       if (hasTopicKey(topicId)) {
-        getTopicKey(topicId).then(key => {
-          const title = model.get("title");
-          if (title) {
-            decrypt(key, title).then(t => model.set("title", t));
-          }
+        getTopicTitle(topicId)
+          .then(t => model.set("title", t))
+          .catch(() => {});
 
+        getTopicKey(topicId).then(key => {
           const reply = model.get("reply");
           if (reply) {
             decrypt(key, reply).then(r => model.set("reply", r));
@@ -74,13 +74,20 @@ export default {
         if (this.get("topic.topic_key")) {
           return getPrivateKey()
             .then(key => importKey(this.get("topic.topic_key"), key))
-            .then(key =>
-              Promise.all([
-                encrypt(key, title).then(t => this.set("title", t)),
-                encrypt(key, reply).then(r => this.set("reply", r))
-              ])
-            )
-            .then(() => _super.call(this, ...arguments));
+            .then(key => {
+              const p0 = encrypt(key, reply).then(r => this.set("reply", r));
+              const p1 = encrypt(key, title).then(encTitle => {
+                this.set("title", I18n.t("encrypt.encrypted_topic_title"));
+                ajax("/encrypt/topickeys", {
+                  type: "PUT",
+                  data: { topic_id: this.get("topic.id"), title: encTitle }
+                });
+              });
+
+              return Promise.all([p0, p1]);
+            })
+            .then(() => _super.call(this, ...arguments))
+            .finally(() => this.setProperties({ title, reply }));
         }
 
         // Not encrypted messages.
@@ -129,17 +136,19 @@ export default {
               userKeys[usernames[i]] = keys[i];
             }
 
-            this.set("title", encTitle);
+            this.set("title", I18n.t("encrypt.encrypted_topic_title"));
             this.set("reply", encReply);
 
-            return Promise.all([p0, userKeys, _super.call(this, ...arguments)]);
+            const result = _super.call(this, ...arguments);
+            return Promise.all([p0, encTitle, userKeys, result]);
           })
-          .then(([key, userKeys, result]) => {
+          .then(([key, encTitle, userKeys, result]) => {
             const topicId = result.responseJson.post.topic_id;
+
             putTopicKey(topicId, key);
             ajax("/encrypt/topickeys", {
               type: "PUT",
-              data: { topic_id: topicId, keys: userKeys }
+              data: { topic_id: topicId, title: encTitle, keys: userKeys }
             });
 
             return result;

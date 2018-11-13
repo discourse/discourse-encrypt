@@ -1,6 +1,7 @@
 import {
   exportPublicKey,
-  importKey
+  importKey,
+  decrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import { loadKeyPairFromIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
@@ -24,6 +25,11 @@ let privateKey;
  * @var Dictionary of all topic keys (topic_id => key).
  */
 const topicKeys = {};
+
+/**
+ * @var Dictionary of all encrypted topic titles.
+ */
+const topicTitles = {};
 
 /**
  * Gets user's private key.
@@ -73,6 +79,21 @@ export function getTopicKey(topicId) {
       .then(privKey => importKey(key, privKey))
       .then(topicKey => (topicKeys[topicId] = topicKey));
   }
+}
+
+export function putTopicTitle(topicId, title) {
+  if (topicId && !topicTitles[topicId]) {
+    topicTitles[topicId] = title;
+  }
+}
+
+export function hasTopicTitle(topicId) {
+  return !!topicTitles[topicId];
+}
+
+export function getTopicTitle(topicId) {
+  const title = topicTitles[topicId];
+  return getTopicKey(topicId).then(key => decrypt(key, title));
 }
 
 /**
