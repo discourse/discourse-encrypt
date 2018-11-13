@@ -19,6 +19,8 @@ en:
 
         passphrase_placeholder: "passphrase"
         passphrase2_placeholder: "retype passphrase"
+        passphrase_enter: "Please choose a secure passphrase to encrypt your key."
+        passphrase_insecure: "Please choose a stronger passphrase (at least 15 characters)."
         passphrase_mismatch: "The two passphrases you entered do not match."
         passphrase_invalid: "The passphrase you entered is incorrect."
 

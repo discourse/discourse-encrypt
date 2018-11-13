@@ -45,10 +45,16 @@ export default {
         isActive: status === ENCRYPT_ACTIVE,
         // TOOD: Check out if there is a way to define functions like this in
         //       the `export default` scope.
-        passphraseMismatch: function() {
+        passphraseStatus: function() {
           const passphrase = component.get("passphrase");
           const passphrase2 = component.get("passphrase2");
-          return !passphrase || !passphrase2 || passphrase !== passphrase2;
+          if (!passphrase) {
+            return "encrypt.preferences.passphrase_enter";
+          } else if (passphrase.length < 15) {
+            return "encrypt.preferences.passphrase_insecure";
+          } else if (passphrase !== passphrase2) {
+            return "encrypt.preferences.passphrase_mismatch";
+          }
         }.property("passphrase", "passphrase2")
       });
     });

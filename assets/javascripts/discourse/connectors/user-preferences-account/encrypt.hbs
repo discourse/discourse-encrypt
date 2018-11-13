@@ -18,11 +18,11 @@
           {{{i18n 'encrypt.preferences.notice_enable'}}}
           <p>{{input type="password" value=passphrase  disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}</p>
           <p>{{input type="password" value=passphrase2 disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase2_placeholder")}}</p>
-          {{#if passphraseMismatch}}
-            <p>{{i18n 'encrypt.preferences.passphrase_mismatch'}}</p>
+          {{#if passphraseStatus}}
+            <p>{{i18n passphraseStatus}}</p>
           {{/if}}
           <p>
-            {{d-button class="btn-primary" icon="lock" action="enableEncrypt" disabled=(or passphraseMismatch inProgress) label="encrypt.preferences.enable"}}
+            {{d-button class="btn-primary" icon="lock" action="enableEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.enable"}}
             {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
           </p>
         {{else}}
