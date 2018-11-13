@@ -41,7 +41,9 @@ export function getPrivateKey() {
     return Promise.resolve(privateKey);
   }
 
-  return loadKeyPairFromIndexedDb().then(keyPair => (privateKey = keyPair[1]));
+  return loadKeyPairFromIndexedDb().then(
+    keyPair => ((privateKey = keyPair[1]) ? privateKey : Promise.reject())
+  );
 }
 
 /**

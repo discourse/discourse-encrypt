@@ -23,32 +23,35 @@ function decryptElements(containerSelector, elementSelector) {
     }
 
     $(this).data("decrypted", true);
-    getTopicTitle(topicId).then(t => $el.html(iconHTML("unlock") + " " + t));
+    getTopicTitle(topicId)
+      .then(t => $el.html(iconHTML("unlock") + " " + t))
+      .catch(() => $(this).data("decrypted", null));
   });
+}
+
+/**
+ * Decrypts all title elements.
+ */
+export function decryptTitles() {
+  decryptElements("h1", ".fancy-title");
+  decryptElements(".topic-list-item, .latest-topic-list-item", ".title");
+  decryptElements("a.topic-link", "span");
+  decryptElements("a.topic-link");
+  decryptElements("a.raw-topic-link");
 }
 
 export default {
   name: "hook-decrypt-topic",
 
-  initialize() {
+  initialize(container) {
+    const appEvents = container.lookup("app-events:main");
+    appEvents.on("encrypt:status-changed", decryptTitles);
+
     var self = this;
     Ember.Component.reopen({
       didRender() {
         Ember.run.scheduleOnce("afterRender", this, () => {
-          Ember.run.debounce(
-            self,
-            () => {
-              decryptElements("h1", ".fancy-title");
-              decryptElements(
-                ".topic-list-item, .latest-topic-list-item",
-                ".title"
-              );
-              decryptElements("a.topic-link", "span");
-              decryptElements("a.topic-link");
-              decryptElements("a.raw-topic-link");
-            },
-            100
-          );
+          Ember.run.debounce(self, decryptTitles, 100);
         });
         return this._super();
       }

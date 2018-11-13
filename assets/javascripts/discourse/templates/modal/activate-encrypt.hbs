@@ -1,0 +1,15 @@
+{{#d-modal-body title="encrypt.title"}}
+  {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+  {{/if}}
+  <div>
+    <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
+    {{{i18n 'encrypt.preferences.notice_active'}}}
+    {{input type="password" value=passphrase disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}
+  </div>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button class="btn btn-primary" icon="unlock" label="encrypt.preferences.activate" action="activate"}}
+  {{d-modal-cancel close=(action "cancel")}}
+</div>

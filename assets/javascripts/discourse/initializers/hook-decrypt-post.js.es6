@@ -6,6 +6,7 @@ import {
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
+import showModal from "discourse/lib/show-modal";
 
 export default {
   name: "hook-decrypt-post",
@@ -27,7 +28,11 @@ export default {
           if (hasTopicKey(topicId)) {
             const ciphertext = $(attrs.cooked).text();
             attrs.cooked =
-              renderSpinner("small") + " " + I18n.t("encrypt.decrypting");
+              "<div class='alert alert-info'>" +
+              renderSpinner("small") +
+              " " +
+              I18n.t("encrypt.decrypting") +
+              "</div>";
 
             getTopicKey(topicId)
               .then(key => decrypt(key, ciphertext))
@@ -35,6 +40,10 @@ export default {
               .then(cooked => {
                 state.decrypted = cooked.string;
                 this.scheduleRerender();
+              })
+              .catch(() => {
+                state.decrypting = false;
+                showModal("activate-encrypt", { model: this });
               });
           }
 

@@ -3,6 +3,7 @@ en:
     encrypt:
       title: 'Encryption'
       decrypting: 'Decrypting...'
+      decryption_failed: "This message could not be decrypted."
 
       encrypted_topic_title: "A secret message"
 
