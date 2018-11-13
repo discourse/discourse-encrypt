@@ -28,10 +28,10 @@ after_initialize do
       skip_before_action :check_xhr
 
       def put
-        public_key  = params.require(:public_key)
+        public_key  = params.permit(:public_key)
         private_key = params.require(:private_key)
 
-        current_user.custom_fields['encrypt_public_key'] = public_key
+        current_user.custom_fields['encrypt_public_key'] = public_key if public_key
         current_user.custom_fields['encrypt_private_key'] = private_key
         current_user.save!
 

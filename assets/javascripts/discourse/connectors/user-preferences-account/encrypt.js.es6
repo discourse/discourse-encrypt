@@ -161,21 +161,48 @@ export default {
         });
     },
 
-    disableEncrypt() {
+    changeEncrypt() {
       this.set("inProgress", true);
 
-      // TODO: Delete client keys.
+      const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
+      const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
 
-      ajax("/encrypt/keys", { type: "DELETE" })
+      const oldPassphrase = this.get("old_passphrase");
+      const passphrase = this.get("passphrase");
+
+      // 1. a. Decrypt private key with old passphrase.
+      // 1. b. Generate new passphrase key.
+      const p0 = generatePassphraseKey(oldPassphrase).then(passphraseKey =>
+        importPrivateKey(oldPrivateStr, passphraseKey)
+      );
+      const p1 = generatePassphraseKey(passphrase);
+
+      Promise.all([p0, p1])
+
+        // 2. Encrypt private key with new passphrase key.
+        .then(([privateKey, passphraseKey]) =>
+          exportPrivateKey(privateKey, passphraseKey)
+        )
+
+        // 3. Send old public key (unchanged) and new private key back to
+        // server.
+        .then(privateStr =>
+          ajax("/encrypt/keys", {
+            type: "PUT",
+            data: { private_key: privateStr }
+          })
+        )
+
+        // 4. Reset component status.
         .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
-          this.setProperties({
-            inProgress: false,
-            isEnabled: false,
-            isActive: false
-          });
+          this.send("hidePassphraseInput");
+          this.set("inProgress", false);
         })
-        .catch(popupAjaxError);
+
+        .catch(() => {
+          this.set("inProgress", false);
+          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
+        });
     }
   }
 };

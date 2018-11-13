@@ -17,6 +17,7 @@ en:
         status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."
         status_disabled: "You have not enabled encryption on this account."
 
+        old_passphrase_placeholder: "old passphrase"
         passphrase_placeholder: "passphrase"
         passphrase2_placeholder: "retype passphrase"
         passphrase_enter: "Please choose a secure passphrase to encrypt your key."
@@ -33,4 +34,4 @@ en:
 
         activate: 'Activate Encrypted Messages'
         enable: 'Enable Encrypted Messages'
-        disable: 'Disable Encrypted Messages'
+        change: 'Change Passphrase'

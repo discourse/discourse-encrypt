@@ -5,7 +5,19 @@
       {{#if isEnabled}}
         {{#if isActive}}
           <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
-          {{d-button icon="unlock" action="disableEncrypt" label="encrypt.preferences.disable"}}
+          {{#if passphraseInput}}
+            <p>{{input type="password" value=old_passphrase disabled=inProgress placeholder=(i18n "encrypt.preferences.old_passphrase_placeholder")}}</p>
+            <p>{{input type="password" value=passphrase     disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}</p>
+            <p>{{input type="password" value=passphrase2    disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase2_placeholder")}}</p>
+            {{#if passphraseStatus}}
+              <p>{{i18n passphraseStatus}}</p>
+            {{/if}}
+
+            {{d-button class="btn-primary" icon="lock" action="changeEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
+            {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
+          {{else}}
+            {{d-button icon="unlock" action="showPassphraseInput" label="encrypt.preferences.change"}}
+          {{/if}}
         {{else}}
           <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
           {{{i18n 'encrypt.preferences.notice_active'}}}
