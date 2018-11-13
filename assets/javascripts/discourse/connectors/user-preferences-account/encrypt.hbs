@@ -13,16 +13,16 @@
               <p>{{i18n passphraseStatus}}</p>
             {{/if}}
 
-            {{d-button class="btn-primary" icon="lock" action="changeEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
+            {{d-button class="btn-primary" icon="exchange" action="changeEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
             {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
           {{else}}
-            {{d-button icon="unlock" action="showPassphraseInput" label="encrypt.preferences.change"}}
+            {{d-button icon="exchange" action="showPassphraseInput" label="encrypt.preferences.change"}}
           {{/if}}
         {{else}}
           <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
           {{{i18n 'encrypt.preferences.notice_active'}}}
           <p>{{input type="password" value=passphrase  disabled=inProgress placeholder=(i18n "encrypt.preferences.passphrase_placeholder")}}</p>
-          <p>{{d-button class="btn-primary" icon="lock" action="activateEncrypt" disabled=inProgress label="encrypt.preferences.enable"}}</p>
+          <p>{{d-button class="btn-primary" icon="unlock" action="activateEncrypt" disabled=inProgress label="encrypt.preferences.activate"}}</p>
         {{/if}}
       {{else}}
         <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>

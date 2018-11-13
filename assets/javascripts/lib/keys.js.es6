@@ -286,8 +286,6 @@ export function encrypt(key, plaintext) {
  * @return String
  */
 export function decrypt(key, ciphertext) {
-  console.warn("decrypt", key, ciphertext);
-
   const iv = base64ToBuffer(ciphertext.substring(0, 24));
   const encrypted = base64ToBuffer(ciphertext.substring(24));
 
