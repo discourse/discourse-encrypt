@@ -96,6 +96,8 @@ export default {
 
         // 3. Save keys to server.
         .then(([keyPair, publicStr, privateStr]) => {
+          this.set("model.custom_fields.encrypt_public_key", publicStr);
+          this.set("model.custom_fields.encrypt_private_key", privateStr);
           const saveKeys = ajax("/encrypt/keys", {
             type: "PUT",
             data: { public_key: publicStr, private_key: privateStr }
@@ -183,12 +185,13 @@ export default {
 
         // 3. Send old public key (unchanged) and new private key back to
         // server.
-        .then(privateStr =>
-          ajax("/encrypt/keys", {
+        .then(privateStr => {
+          this.set("model.custom_fields.encrypt_private_key", privateStr);
+          return ajax("/encrypt/keys", {
             type: "PUT",
             data: { private_key: privateStr }
-          })
-        )
+          });
+        })
 
         // 4. Reset component status.
         .then(() => {
