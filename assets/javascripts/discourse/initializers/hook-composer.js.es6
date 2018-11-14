@@ -104,24 +104,29 @@ export default {
           ajax("/encrypt/userkeys", {
             type: "GET",
             data: { usernames }
-          }).then(userKeys => {
-            const promises = [];
-
-            for (let i = 0; i < usernames.length; ++i) {
-              const username = usernames[i];
-              if (!userKeys[username]) {
-                promises.push(Promise.reject(username));
-              } else {
-                promises.push(
-                  importPublicKey(userKeys[username]).then(userKey =>
-                    exportKey(key, userKey)
-                  )
-                );
-              }
-            }
-
-            return Promise.all(promises);
           })
+            .then(userKeys => {
+              const promises = [];
+
+              for (let i = 0; i < usernames.length; ++i) {
+                const username = usernames[i];
+                if (!userKeys[username]) {
+                  promises.push(Promise.reject(username));
+                } else {
+                  promises.push(
+                    importPublicKey(userKeys[username]).then(userKey =>
+                      exportKey(key, userKey)
+                    )
+                  );
+                }
+              }
+
+              return Promise.all(promises);
+            })
+            .catch(username => {
+              bootbox.alert(I18n.t("encrypt.composer.user_has_no_key", { username }));
+              return Promise.reject(username);
+            })
         );
 
         // Encrypting title and reply.
