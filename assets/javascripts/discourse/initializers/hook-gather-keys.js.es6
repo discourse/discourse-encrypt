@@ -14,10 +14,8 @@ export default {
       if (storeKey.includes("topic_")) {
         const topic = PreloadStore.data[storeKey];
 
-        if (topic.topic_key) {
-          putTopicKey(topic.id, topic.topic_key);
-          putTopicTitle(topic.id, topic.encrypted_title);
-        }
+        putTopicKey(topic.id, topic.topic_key);
+        putTopicTitle(topic.id, topic.encrypted_title);
 
         if (topic.related_messages) {
           for (let i = 0; i < topic.related_messages.length; ++i) {

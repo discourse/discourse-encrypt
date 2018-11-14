@@ -1,5 +1,4 @@
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import {
   generatePassphraseKey,
   importPrivateKey,
@@ -53,15 +52,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
     cancel() {
       const model = this.get("model");
-
-      model.state.decrypting = true;
-      model.state.decrypted =
-        "<div class='alert alert-error'>" +
-        iconHTML("times") +
-        " " +
-        I18n.t("encrypt.decryption_failed") +
-        "</div>";
-
+      model.state.decrypting = false;
+      model.state.decrypted = true;
       model.scheduleRerender();
       this.send("closeModal");
     }
