@@ -124,7 +124,9 @@ export default {
               return Promise.all(promises);
             })
             .catch(username => {
-              bootbox.alert(I18n.t("encrypt.composer.user_has_no_key", { username }));
+              bootbox.alert(
+                I18n.t("encrypt.composer.user_has_no_key", { username })
+              );
               return Promise.reject(username);
             })
         );
@@ -163,11 +165,12 @@ export default {
 
       @observes("targetUsernames")
       checkKeys() {
-        if (!this.get("isEncrypted")) {
+        const usernames = this.get("recipients");
+        if (usernames.length === 0) {
+          this.set("isEncryptedEnabled", false);
           return;
         }
 
-        const usernames = this.get("recipients");
         ajax("/encrypt/userkeys", {
           type: "GET",
           data: { usernames }
@@ -175,18 +178,28 @@ export default {
           for (let i = 0; i < usernames.length; ++i) {
             const username = usernames[i];
             if (!userKeys[username]) {
-              bootbox.alert(
-                I18n.t("encrypt.composer.user_has_no_key", { username })
-              );
+              if (this.get("isEncrypted")) {
+                bootbox.alert(
+                  I18n.t("encrypt.composer.user_has_no_key", { username })
+                );
+              }
+
+              this.set("isEncryptedEnabled", true);
+              this.set("isEncrypted", false);
               return;
             }
           }
+
+          this.set("isEncryptedEnabled", false);
+          this.set("isEncrypted", true);
         });
       },
 
       @computed("targetUsernames")
       recipients(targetUsernames) {
-        return targetUsernames.split(",").concat([this.get("user.username")]);
+        return targetUsernames !== ""
+          ? targetUsernames.split(",").concat([this.get("user.username")])
+          : [];
       }
     });
   }
