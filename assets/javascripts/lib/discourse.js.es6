@@ -41,8 +41,8 @@ export function getPrivateKey() {
     return Promise.resolve(privateKey);
   }
 
-  return loadKeyPairFromIndexedDb().then(
-    keyPair => ((privateKey = keyPair[1]) ? privateKey : Promise.reject())
+  return loadKeyPairFromIndexedDb().then(keyPair =>
+    (privateKey = keyPair[1]) ? privateKey : Promise.reject()
   );
 }
 
@@ -63,8 +63,6 @@ export function putTopicKey(topicId, key) {
 /**
  * Gets a topic key from storage.
  *
- * The returned key will also be a `CryptoKey` object.
- *
  * @param topicId
  *
  * @return CryptoKey
@@ -83,21 +81,6 @@ export function getTopicKey(topicId) {
   }
 }
 
-export function putTopicTitle(topicId, title) {
-  if (topicId && !topicTitles[topicId]) {
-    topicTitles[topicId] = title;
-  }
-}
-
-export function hasTopicTitle(topicId) {
-  return !!topicTitles[topicId];
-}
-
-export function getTopicTitle(topicId) {
-  const title = topicTitles[topicId];
-  return getTopicKey(topicId).then(key => decrypt(key, title));
-}
-
 /**
  * Checks if there is a topic key for a topic.
  *
@@ -107,6 +90,41 @@ export function getTopicTitle(topicId) {
  */
 export function hasTopicKey(topicId) {
   return !!topicKeys[topicId];
+}
+
+/**
+ * Puts a topic title into storage.
+ *
+ * @param topicId
+ * @param key
+ */
+export function putTopicTitle(topicId, title) {
+  if (topicId && !topicTitles[topicId]) {
+    topicTitles[topicId] = title;
+  }
+}
+
+/**
+ * Gets a topic title from storage.
+ *
+ * @param topicId
+ *
+ * @return String
+ */
+export function getTopicTitle(topicId) {
+  const title = topicTitles[topicId];
+  return getTopicKey(topicId).then(key => decrypt(key, title));
+}
+
+/**
+ * Checks if there is an encrypted topic title for a topic.
+ *
+ * @param topicId
+ *
+ * @return Boolean
+ */
+export function hasTopicTitle(topicId) {
+  return !!topicTitles[topicId];
 }
 
 /**
