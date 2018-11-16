@@ -6,6 +6,9 @@
 
 enabled_site_setting :encrypt_enabled
 
+# Register custom stylesheet for `encrypted-checkbox` component.
+register_asset "stylesheets/common/encrypt.scss"
+
 # Register custom user fields to store user's key pair (public and private key).
 DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_public_key"
 DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_private_key"

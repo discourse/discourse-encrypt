@@ -2,7 +2,8 @@ import Composer from "discourse/models/composer";
 import { ajax } from "discourse/lib/ajax";
 import {
   default as computed,
-  observes
+  observes,
+  on
 } from "ember-addons/ember-computed-decorators";
 import {
   encrypt,
@@ -163,11 +164,18 @@ export default {
           .finally(() => this.setProperties({ title, reply }));
       },
 
+      @on("init")
+      initEncrypt() {
+        this.set("isEncryptedDisabled", false);
+        this.set("isEncrypted", true);
+      },
+
       @observes("targetUsernames")
       checkKeys() {
         const usernames = this.get("recipients");
         if (usernames.length === 0) {
-          this.set("isEncryptedEnabled", false);
+          this.set("isEncryptedDisabled", false);
+          this.set("isEncrypted", true);
           return;
         }
 
@@ -184,14 +192,19 @@ export default {
                 );
               }
 
-              this.set("isEncryptedEnabled", true);
+              this.set("isEncryptedDisabled", true);
               this.set("isEncrypted", false);
               return;
             }
           }
 
-          this.set("isEncryptedEnabled", false);
-          this.set("isEncrypted", true);
+          // Remember user preferences. If user enters a recipient, unchecks
+          // encryption and then adds another recipient, this will not revert
+          // his uncheck.
+          if (this.get("isEncryptedDisabled")) {
+            this.set("isEncryptedDisabled", false);
+            this.set("isEncrypted", true);
+          }
         });
       },
 
