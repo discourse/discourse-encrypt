@@ -24,7 +24,20 @@ function decryptElements(containerSelector, elementSelector) {
 
     $(this).data("decrypted", true);
     getTopicTitle(topicId)
-      .then(t => $el.html(iconHTML("unlock") + " " + t))
+      .then(title => {
+        const icon = iconHTML("user-secret", {
+          title: "encrypt.encrypted_icon_title"
+        });
+
+        // Replace glyph if exists or else add to title.
+        const $glyph = $(`h1[data-topic-id=${topicId}] .private-message-glyph`);
+        if ($glyph.length) {
+          $glyph.html(icon);
+          $el.html(title);
+        } else {
+          $el.html(icon + " " + title);
+        }
+      })
       .catch(() => $(this).data("decrypted", null));
   });
 }
