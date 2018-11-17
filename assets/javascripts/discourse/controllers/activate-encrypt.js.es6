@@ -8,7 +8,11 @@ import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
+    const models = this.get("models") || [];
+    models.push(this.get("model"));
+
     this.setProperties({
+      models: models,
       passphrase: "",
       error: ""
     });
@@ -40,7 +44,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
         // 3. Reset component status.
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.get("model").scheduleRerender();
+          this.get("models").forEach(model => model.scheduleRerender());
+          this.set("models", null);
           this.send("closeModal");
         })
 
@@ -51,10 +56,12 @@ export default Ember.Controller.extend(ModalFunctionality, {
     },
 
     cancel() {
-      const model = this.get("model");
-      model.state.decrypting = false;
-      model.state.decrypted = true;
-      model.scheduleRerender();
+      this.get("models").forEach(model => {
+        model.state.decrypting = false;
+        model.state.decrypted = true;
+        model.scheduleRerender();
+      });
+      this.set("models", null);
       this.send("closeModal");
     }
   }
