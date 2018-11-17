@@ -28,7 +28,7 @@ export default {
     // Composer.serializeOnCreate("is_encrypted", "isEncrypted");
 
     // Decode composer on reply reload. This usually occurs when a post is
-    // edited.
+    // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
     appEvents.on("composer:reply-reloaded", model => {
       let topicId;
