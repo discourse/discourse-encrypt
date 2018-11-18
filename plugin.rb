@@ -121,6 +121,14 @@ after_initialize do
     object.custom_fields["encrypted_title"]
   end
 
+  add_to_serializer(:listable_topic, :encrypted_title) do
+    object.custom_fields["encrypted_title"]
+  end
+
+  add_to_serializer(:topic_list_item, :encrypted_title) do
+    object.custom_fields["encrypted_title"]
+  end
+
   # +topic_key+
   #
   # Topic's key encrypted with user's public key.
@@ -141,6 +149,22 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
+    scope.user
+  end
+
+  add_to_serializer(:listable_topic, :topic_key, false) do
+    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+  end
+
+  add_to_serializer(:listable_topic, :include_topic_key?) do
+    scope.user
+  end
+
+  add_to_serializer(:topic_list_item, :topic_key, false) do
+    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+  end
+
+  add_to_serializer(:topic_list_item, :include_topic_key?) do
     scope.user
   end
 
