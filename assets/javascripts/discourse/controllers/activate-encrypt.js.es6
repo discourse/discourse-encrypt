@@ -18,6 +18,15 @@ export default Ember.Controller.extend(ModalFunctionality, {
     });
   },
 
+  onClose() {
+    this.get("models").forEach(model => {
+      model.state.decrypting = false;
+      model.state.decrypted = true;
+      model.scheduleRerender();
+    });
+    this.set("models", null);
+  },
+
   actions: {
     activate() {
       this.set("inProgress", true);
@@ -53,16 +62,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
           this.set("inProgress", false);
           this.set("error", I18n.t("encrypt.preferences.passphrase_invalid"));
         });
-    },
-
-    cancel() {
-      this.get("models").forEach(model => {
-        model.state.decrypting = false;
-        model.state.decrypted = true;
-        model.scheduleRerender();
-      });
-      this.set("models", null);
-      this.send("closeModal");
     }
   }
 });
