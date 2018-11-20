@@ -42,5 +42,6 @@ en:
           <p>Please enter the encryption passphrase you used on other devices.<p>
 
         activate: 'Activate Encrypted Messages'
+        deactivate: 'Deactive Encryption on this Device'
         enable: 'Enable Encrypted Messages'
         change: 'Change Passphrase'

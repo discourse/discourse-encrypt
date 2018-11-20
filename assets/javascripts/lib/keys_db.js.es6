@@ -1,3 +1,8 @@
+/**
+ * Name of IndexedDb used for storing keypairs.
+ */
+const INDEXED_DB_NAME = "discourse-encrypt";
+
 /*
  * Checks if this is running in Apple's Safari.
  *
@@ -48,10 +53,15 @@ function importKey(key, op) {
  *
  * @return IDBOpenDBRequest
  */
-function openIndexedDb() {
-  let req = window.indexedDB.open("discourse-encrypt", 1);
+function openIndexedDb(create) {
+  let req = window.indexedDB.open(INDEXED_DB_NAME, 1);
 
   req.onupgradeneeded = evt => {
+    if (!create) {
+      evt.target.transaction.abort();
+      return;
+    }
+
     let db = evt.target.result;
     if (!db.objectStoreNames.contains("keys")) {
       db.createObjectStore("keys", { keyPath: "id", autoIncrement: true });
@@ -78,7 +88,7 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
   return Promise.all([pubKey, privKey]).then(
     ([publicKey, privateKey]) =>
       new Promise((resolve, reject) => {
-        let req = openIndexedDb();
+        let req = openIndexedDb(true);
 
         req.onerror = evt => reject(evt);
 
@@ -88,9 +98,11 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
           let st = tx.objectStore("keys");
 
           let dataReq = st.add({ publicKey, privateKey });
-          dataReq.onsuccess = dataEvt => resolve(dataEvt);
-          dataReq.onerror = dataEvt =>
-            console.log("Error saving keys.", dataEvt);
+          dataReq.onsuccess = dataEvt => {
+            resolve(dataEvt);
+            db.close();
+          };
+          dataReq.onerror = dataEvt => reject(dataEvt);
         };
       })
   );
@@ -103,9 +115,9 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
  */
 export function loadKeyPairFromIndexedDb() {
   return new Promise((resolve, reject) => {
-    let req = openIndexedDb();
+    let req = openIndexedDb(false);
 
-    req.onerror = evt => reject(evt);
+    req.onerror = () => resolve();
 
     req.onsuccess = evt => {
       let db = evt.target.result;
@@ -113,8 +125,11 @@ export function loadKeyPairFromIndexedDb() {
       let st = tx.objectStore("keys");
 
       let dataReq = st.getAll();
-      dataReq.onsuccess = dataEvt => resolve(dataEvt.target.result);
-      dataReq.onerror = dataEvt => console.log("Error loading keys.", dataEvt);
+      dataReq.onsuccess = dataEvt => {
+        resolve(dataEvt.target.result);
+        db.close();
+      };
+      dataReq.onerror = dataEvt => reject(dataEvt);
     };
   }).then(keyPairs => {
     if (!keyPairs || keyPairs.length === 0) {
@@ -131,5 +146,20 @@ export function loadKeyPairFromIndexedDb() {
     }
 
     return [keyPair.publicKey, keyPair.privateKey];
+  });
+}
+
+/**
+ * Deletes plugin's IndexedDB and all user keys.
+ *
+ * @return Promise
+ */
+export function deleteIndexedDb() {
+  return new Promise((resolve, reject) => {
+    let req = window.indexedDB.deleteDatabase(INDEXED_DB_NAME);
+
+    req.onsuccess = evt => resolve(evt);
+    req.onerror = evt => reject(evt);
+    req.onblocked = evt => reject(evt);
   });
 }

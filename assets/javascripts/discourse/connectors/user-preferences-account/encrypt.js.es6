@@ -8,7 +8,10 @@ import {
   importPrivateKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
-import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+import {
+  saveKeyPairToIndexedDb,
+  deleteIndexedDb
+} from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
   ENCRYPT_DISBLED,
   ENCRYPT_ACTIVE,
@@ -203,6 +206,12 @@ export default {
           this.set("inProgress", false);
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
         });
+    },
+
+    deactivateEncrypt() {
+      deleteIndexedDb().then(() => {
+        this.appEvents.trigger("encrypt:status-changed");
+      });
     }
   }
 };
