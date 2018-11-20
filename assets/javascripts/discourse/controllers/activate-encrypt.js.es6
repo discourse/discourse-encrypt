@@ -19,7 +19,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
   },
 
   onClose() {
-    this.get("models").forEach(model => {
+    const models = this.get("models") || [];
+    models.forEach(model => {
       model.state.decrypting = false;
       model.state.decrypted = true;
       model.scheduleRerender();
