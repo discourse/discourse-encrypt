@@ -166,16 +166,20 @@ export default {
 
       @on("init")
       initEncrypt() {
-        this.set("isEncryptedDisabled", false);
-        this.set("isEncrypted", true);
+        this.setProperties({
+          isEncryptedDisabled: false,
+          isEncrypted: false
+        });
       },
 
       @observes("targetUsernames")
       checkKeys() {
         const usernames = this.get("recipients");
         if (usernames.length === 0) {
-          this.set("isEncryptedDisabled", false);
-          this.set("isEncrypted", true);
+          this.setProperties({
+            isEncryptedDisabled: false,
+            isEncrypted: true
+          });
           return;
         }
 
@@ -192,8 +196,10 @@ export default {
                 );
               }
 
-              this.set("isEncryptedDisabled", true);
-              this.set("isEncrypted", false);
+              this.setProperties({
+                isEncryptedDisabled: true,
+                isEncrypted: false
+              });
               return;
             }
           }
@@ -202,8 +208,10 @@ export default {
           // encryption and then adds another recipient, this will not revert
           // his uncheck.
           if (this.get("isEncryptedDisabled")) {
-            this.set("isEncryptedDisabled", false);
-            this.set("isEncrypted", true);
+            this.setProperties({
+              isEncryptedDisabled: false,
+              isEncrypted: true
+            });
           }
         });
       },
