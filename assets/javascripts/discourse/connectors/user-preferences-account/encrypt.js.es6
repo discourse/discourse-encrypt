@@ -94,11 +94,11 @@ export default {
             passphraseKey => exportPrivateKey(privateKey, passphraseKey)
           );
 
-          return Promise.all([keyPair, publicStr, privateStr]);
+          return Promise.all([publicStr, privateStr]);
         })
 
         // 3. Save keys to server.
-        .then(([keyPair, publicStr, privateStr]) => {
+        .then(([publicStr, privateStr]) => {
           this.set("model.custom_fields.encrypt_public_key", publicStr);
           this.set("model.custom_fields.encrypt_private_key", privateStr);
           const saveKeys = ajax("/encrypt/keys", {
@@ -106,15 +106,25 @@ export default {
             data: { public_key: publicStr, private_key: privateStr }
           });
 
-          return Promise.all([keyPair, saveKeys]);
+          return Promise.all([publicStr, privateStr, saveKeys]);
         })
 
-        // 4. Save key pair in local IndexedDb.
-        .then(([[publicKey, privateKey]]) =>
+        // 4. Re-import keys but this time as `unextractable`.
+        .then(([publicStr, privateStr]) =>
+          Promise.all([
+            importPublicKey(publicStr),
+            generatePassphraseKey(this.get("passphrase")).then(passphraseKey =>
+              importPrivateKey(privateStr, passphraseKey)
+            )
+          ])
+        )
+
+        // 5. Save key pair in local IndexedDb.
+        .then(([publicKey, privateKey]) =>
           saveKeyPairToIndexedDb(publicKey, privateKey)
         )
 
-        // 5. Reset component status.
+        // 6. Reset component status.
         .then(() => {
           this.send("hidePassphraseInput");
           this.setProperties({
@@ -175,7 +185,8 @@ export default {
       // 1. a. Decrypt private key with old passphrase.
       // 1. b. Generate new passphrase key.
       const p0 = generatePassphraseKey(oldPassphrase).then(passphraseKey =>
-        importPrivateKey(oldPrivateStr, passphraseKey)
+        // Import key as extractable so it can be later exported.
+        importPrivateKey(oldPrivateStr, passphraseKey, true)
       );
       const p1 = generatePassphraseKey(passphrase);
 

@@ -9,6 +9,8 @@ import {
   hexToBuffer
 } from "discourse/plugins/discourse-encrypt/lib/buffers";
 
+import { isSafari } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+
 /**
  * Salt used in generating passphrase keys.
  *
@@ -125,10 +127,11 @@ export function exportPrivateKey(privateKey, key) {
  *
  * @param privateKey
  * @param key         Key used to decrypt `privateKey`.
+ * @param extractable Whether imported key can be further exported or not.
  *
  * @return CryptoKey
  */
-export function importPrivateKey(privateKey, key) {
+export function importPrivateKey(privateKey, key, extractable) {
   const iv = base64ToBuffer(privateKey.substring(0, 24));
   const encrypted = base64ToBuffer(privateKey.substring(24));
 
@@ -142,7 +145,7 @@ export function importPrivateKey(privateKey, key) {
           name: "RSA-OAEP",
           hash: { name: "SHA-256" }
         },
-        true,
+        isSafari || extractable,
         ["decrypt"]
       )
     );

@@ -13,7 +13,7 @@ const INDEXED_DB_NAME = "discourse-encrypt";
  *         - https://bugs.webkit.org/show_bug.cgi?id=177350
  *         - https://bugs.webkit.org/show_bug.cgi?id=182972
  */
-const isSafari = !!navigator.userAgent.match(/Version\/(\d+).+?Safari/);
+export const isSafari = !!navigator.userAgent.match(/Version\/(\d+).+?Safari/);
 
 /**
  * Exports a public key.
