@@ -220,8 +220,15 @@ export default {
     },
 
     deactivateEncrypt() {
+      this.setProperties("inProgress", true);
+
       deleteIndexedDb().then(() => {
         this.appEvents.trigger("encrypt:status-changed");
+        this.setProperties({
+          inProgress: false,
+          isEnabled: true,
+          isActive: false
+        });
       });
     }
   }
