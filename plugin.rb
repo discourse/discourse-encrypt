@@ -104,6 +104,8 @@ after_initialize do
     end
   end
 
+  add_preloaded_topic_list_custom_field("encrypted_title")
+
   # Send plugin-specific topic data to client via serializers.
   #
   # +TopicViewSerializer+ and +BasicTopicSerializer+ should cover all topics
