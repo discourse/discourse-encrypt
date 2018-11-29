@@ -67,6 +67,7 @@ export default {
       this.setProperties({
         passphrase: "",
         passphrase2: "",
+        oldPassphrase: "",
         passphraseInput: true
       });
     },
@@ -75,6 +76,7 @@ export default {
       this.setProperties({
         passphrase: "",
         passphrase2: "",
+        oldPassphrase: "",
         passphraseInput: false
       });
     },
@@ -183,7 +185,7 @@ export default {
       const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
       const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
 
-      const oldPassphrase = this.get("old_passphrase");
+      const oldPassphrase = this.get("oldPassphrase");
       const passphrase = this.get("passphrase");
 
       // 1. a. Decrypt private key with old passphrase.

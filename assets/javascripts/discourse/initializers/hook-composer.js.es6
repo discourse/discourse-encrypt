@@ -24,9 +24,6 @@ import {
 export default {
   name: "hook-composer",
   initialize(container) {
-    // Send `is_encrypted` over to the server via POST.
-    // Composer.serializeOnCreate("is_encrypted", "isEncrypted");
-
     // Decode composer on reply reload. This usually occurs when a post is
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
