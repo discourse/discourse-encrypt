@@ -105,6 +105,7 @@ after_initialize do
   end
 
   add_preloaded_topic_list_custom_field("encrypted_title")
+  CategoryList.preloaded_topic_custom_fields << "encrypted_title"
 
   module PostExtensions
 
