@@ -1,4 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { registerHelper } from "discourse-common/lib/helpers";
 import {
   exportPrivateKey,
@@ -132,7 +133,9 @@ export default {
             isEnabled: true,
             isActive: true
           });
-        });
+        })
+
+        .catch(popupAjaxError);
     },
 
     activateEncrypt() {
@@ -177,6 +180,7 @@ export default {
     changeEncrypt() {
       this.set("inProgress", true);
 
+      const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
       const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
 
       const oldPassphrase = this.get("old_passphrase");
@@ -203,7 +207,7 @@ export default {
           this.set("model.custom_fields.encrypt_private_key", privateStr);
           return ajax("/encrypt/keys", {
             type: "PUT",
-            data: { private_key: privateStr }
+            data: { public_key: oldPublicStr, private_key: privateStr }
           });
         })
 

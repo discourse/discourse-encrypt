@@ -39,14 +39,22 @@ after_initialize do
       #                 the private key is updated (changed passphrase).
       # +private_key+:: Serialized private key.
       def put
-        public_key  = params[:public_key]
+        public_key  = params.require(:public_key)
         private_key = params.require(:private_key)
 
-        current_user.custom_fields['encrypt_public_key'] = public_key if public_key
+        old_public_key = current_user.custom_fields['encrypt_public_key']
+        old_private_key = current_user.custom_fields['encrypt_private_key']
+
+        # Check if encryption is already enabled (but not changing passphrase).
+        if old_public_key && old_public_key != public_key
+          return render_json_error(I18n.t("encrypt.enabled_already"), status: 409)
+        end
+
+        current_user.custom_fields['encrypt_public_key'] = public_key
         current_user.custom_fields['encrypt_private_key'] = private_key
         current_user.save!
 
-        render json: { success: true }
+        render json: success_json
       end
 
       # Gets public keys of a set of users.
