@@ -1,10 +1,14 @@
 #reply-control {
   .reply-to {
     .d-icon {
-      margin-left: 5px;
+      margin: 0 5px;
       &.disabled {
         color: $primary-low-mid;
       }
+    }
+
+    .error {
+      color: $danger;
     }
   }
 }

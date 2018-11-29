@@ -1,5 +1,8 @@
 {{#if model.creatingPrivateMessage}}
   {{#if isEncryptActive}}
     {{encrypted-checkbox checked=model.isEncrypted disabled=model.isEncryptedDisabled}}
+    {{#if model.encryptError}}
+      <span class="error">{{model.encryptError}}</span>
+    {{/if}}
   {{/if}}
 {{/if}}
