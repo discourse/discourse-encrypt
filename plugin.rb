@@ -106,8 +106,10 @@ after_initialize do
 
   add_preloaded_topic_list_custom_field("encrypted_title")
 
-  # Monkey-patch Post's excerpt method to hide encrypted message.
   module PostExtensions
+
+    # Patch method to hide excerpt of encrypted message (i.e. in push
+    # notifications).
     def excerpt(maxlength = nil, options = {})
       if topic.custom_fields["encrypted_title"]
         maxlength ||= SiteSetting.post_excerpt_maxlength
@@ -116,6 +118,16 @@ after_initialize do
       end
 
       super(maxlength, options)
+    end
+
+    # Hide version (staff) and public version (regular users) because post
+    # revisions will not be decrypted.
+    def version
+      topic.custom_fields["encrypted_title"] ? 1 : super
+    end
+
+    def public_version
+      topic.custom_fields["encrypted_title"] ? 1 : super
     end
   end
 
