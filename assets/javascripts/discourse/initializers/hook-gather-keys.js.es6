@@ -38,5 +38,15 @@ export default {
         return this._super(...arguments);
       }
     });
+
+    Topic.reopen({
+      updateFromJson(json) {
+        if (json.topic_key) {
+          putTopicKey(json.id, json.topic_key);
+          putTopicTitle(json.id, json.encrypted_title);
+        }
+        return this._super(...arguments);
+      }
+    });
   }
 };
