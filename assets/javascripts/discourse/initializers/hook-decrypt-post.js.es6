@@ -25,9 +25,17 @@ export default {
             return this._super(...arguments);
           }
 
+          // Check if post has been updated (if last decrypted ciphertext
+          // is different than the current ciphertext).
+          const ciphertext = $(attrs.cooked).text();
+          if (state.encrypted && state.encrypted !== ciphertext) {
+            state.decrypting = false;
+            state.decrypted = undefined;
+          }
+
           if (hasTopicKey(topicId) && !state.decrypted) {
+            state.encrypted = ciphertext;
             state.decrypting = true;
-            const ciphertext = $(attrs.cooked).text();
 
             getTopicKey(topicId)
               .then(key => decrypt(key, ciphertext))
