@@ -17,6 +17,17 @@ export const ENCRYPT_ENABLED = 1;
 export const ENCRYPT_ACTIVE = 2;
 
 /**
+ * Useful variables for key import and export format.
+ */
+export const PACKED_KEY_COLUMNS = 71;
+export const PACKED_KEY_HEADER =
+  "============== BEGIN EXPORTED DISCOURSE ENCRYPT KEY PAIR ==============";
+export const PACKED_KEY_SEPARATOR =
+  "-----------------------------------------------------------------------";
+export const PACKED_KEY_FOOTER =
+  "=============== END EXPORTED DISCOURSE ENCRYPT KEY PAIR ===============";
+
+/**
  * @var User's public key used to encrypt topic keys and drafts for private message.
  */
 let publicKey;

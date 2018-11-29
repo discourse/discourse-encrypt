@@ -1,6 +1,7 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { registerHelper } from "discourse-common/lib/helpers";
+import showModal from "discourse/lib/show-modal";
 import {
   exportPrivateKey,
   exportPublicKey,
@@ -263,6 +264,10 @@ export default {
           isEncryptActive: false
         });
       });
+    },
+
+    export() {
+      showModal("export-keypair");
     }
   }
 };

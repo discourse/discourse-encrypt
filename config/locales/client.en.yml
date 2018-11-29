@@ -43,3 +43,7 @@ en:
         deactivate: "Deactive Encryption on this Device"
         enable: "Enable Encrypted Messages"
         change: "Change Passphrase"
+
+      export:
+        title: "Export Encryption Keypair"
+        instructions: "You may export your keypair for safe keeping in case you forget your passphrase. Please note that the exported keypair is unprotected."
