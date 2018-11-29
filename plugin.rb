@@ -81,19 +81,23 @@ after_initialize do
       #               This parameter is optional when editing a topic's title.
       def put_topickeys
         topic_id = params.require(:topic_id)
-        title = params.require(:title)
+        title = params[:title]
         keys = params[:keys]
 
-        topic = Topic.find_by(id: topic_id)
-        topic.custom_fields["encrypted_title"] = title
-        topic.save!
+        if title
+          # Title may be missing when inviting new users into conversation.
+          topic = Topic.find_by(id: topic_id)
+          topic.custom_fields["encrypted_title"] = title
+          topic.save!
+        end
 
         if keys
+          # Keys may be missing when editing a conversation.
           users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
           keys.each { |u, k| Store.set("key_#{topic_id}_#{users[u].id}", k) }
         end
 
-        render json: { success: true }
+        render json: success_json
       end
 
       # Deletes topic keys for a set of users.
