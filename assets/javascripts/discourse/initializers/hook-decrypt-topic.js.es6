@@ -37,6 +37,9 @@ function decryptElements(containerSelector, elementSelector) {
         } else {
           $el.html(icon + " " + title);
         }
+
+        // TODO: Hide quick-edit button for the time being.
+        $(".edit-topic").hide();
       })
       .catch(() => $(this).data("decrypted", null));
   });
