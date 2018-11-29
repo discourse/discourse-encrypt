@@ -106,6 +106,23 @@ after_initialize do
 
   add_preloaded_topic_list_custom_field("encrypted_title")
 
+  # Monkey-patch Post's excerpt method to hide encrypted message.
+  module PostExtensions
+    def excerpt(maxlength = nil, options = {})
+      if topic.custom_fields["encrypted_title"]
+        maxlength ||= SiteSetting.post_excerpt_maxlength
+
+        return I18n.t("encrypt.encrypted_excerpt")[0..maxlength]
+      end
+
+      super(maxlength, options)
+    end
+  end
+
+  class ::Post
+    prepend PostExtensions
+  end
+
   # Send plugin-specific topic data to client via serializers.
   #
   # +TopicViewSerializer+ and +BasicTopicSerializer+ should cover all topics

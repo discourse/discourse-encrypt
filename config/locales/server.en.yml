@@ -1,3 +1,5 @@
 en:
+  encrypt:
+    encrypted_excerpt: "This message is encrypted, please read it in the browser."
   site_settings:
     encrypt_enabled: "Enable encrypted private messages."
