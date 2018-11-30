@@ -5,20 +5,10 @@ import {
 
 import {
   stringToBuffer,
-  bufferToString,
-  hexToBuffer
+  bufferToString
 } from "discourse/plugins/discourse-encrypt/lib/buffers";
 
 import { isSafari } from "discourse/plugins/discourse-encrypt/lib/keys_db";
-
-/**
- * Salt used in generating passphrase keys.
- *
- * The salt must be a string of 16-bytes in hex format.
- *
- * @var String
- */
-const PASSPHRASE_SALT = "e85c53e7f119d41fd7895cdc9d7bb9dd"; // TODO
 
 /*
  * Utilities
@@ -157,12 +147,24 @@ export function importPrivateKey(privateKey, key, extractable) {
  */
 
 /**
+ * Generates a random passphrase salt.
+ *
+ * @return String
+ */
+export function generateSalt() {
+  return bufferToBase64(window.crypto.getRandomValues(new Uint8Array(16)));
+}
+
+/**
  * Generates a key out of a passphrase, used to encrypt the private key of a
  * user's key pair.
  *
+ * @param passphrase
+ * @param salt
+ *
  * @return Promise A promise of a key.
  */
-export function generatePassphraseKey(passphrase) {
+export function generatePassphraseKey(passphrase, salt) {
   return window.crypto.subtle
     .importKey("raw", stringToBuffer(passphrase), { name: "PBKDF2" }, false, [
       "deriveBits",
@@ -172,7 +174,7 @@ export function generatePassphraseKey(passphrase) {
       window.crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
-          salt: hexToBuffer(PASSPHRASE_SALT),
+          salt: base64ToBuffer(salt),
           iterations: 100,
           hash: "SHA-256"
         },

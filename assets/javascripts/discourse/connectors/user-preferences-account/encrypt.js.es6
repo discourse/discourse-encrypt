@@ -5,6 +5,7 @@ import {
   exportPrivateKey,
   exportPublicKey,
   generateKeyPair,
+  generateSalt,
   generatePassphraseKey,
   importPrivateKey,
   importPublicKey
@@ -92,32 +93,34 @@ export default {
           const [publicKey, privateKey] = keyPair;
 
           const passphrase = this.get("passphrase");
+          const salt = generateSalt();
           const publicStr = exportPublicKey(publicKey);
-          const privateStr = generatePassphraseKey(passphrase).then(
+          const privateStr = generatePassphraseKey(passphrase, salt).then(
             passphraseKey => exportPrivateKey(privateKey, passphraseKey)
           );
 
-          return Promise.all([publicStr, privateStr]);
+          return Promise.all([publicStr, privateStr, salt]);
         })
 
         // 3. Save keys to server.
-        .then(([publicStr, privateStr]) => {
+        .then(([publicStr, privateStr, salt]) => {
           this.set("model.custom_fields.encrypt_public_key", publicStr);
           this.set("model.custom_fields.encrypt_private_key", privateStr);
+          this.set("model.custom_fields.encrypt_salt", salt);
           const saveKeys = ajax("/encrypt/keys", {
             type: "PUT",
-            data: { public_key: publicStr, private_key: privateStr }
+            data: { public_key: publicStr, private_key: privateStr, salt }
           });
 
-          return Promise.all([publicStr, privateStr, saveKeys]);
+          return Promise.all([publicStr, privateStr, salt, saveKeys]);
         })
 
         // 4. Re-import keys but this time as `unextractable`.
-        .then(([publicStr, privateStr]) =>
+        .then(([publicStr, privateStr, salt]) =>
           Promise.all([
             importPublicKey(publicStr),
-            generatePassphraseKey(this.get("passphrase")).then(passphraseKey =>
-              importPrivateKey(privateStr, passphraseKey)
+            generatePassphraseKey(this.get("passphrase"), salt).then(
+              passphraseKey => importPrivateKey(privateStr, passphraseKey)
             )
           ])
         )
@@ -145,13 +148,14 @@ export default {
 
       const publicStr = this.get("model.custom_fields.encrypt_public_key");
       const privateStr = this.get("model.custom_fields.encrypt_private_key");
+      const salt = this.get("model.custom_fields.encrypt_salt");
       const passphrase = this.get("passphrase");
 
       // 1. a. Import public key from string.
       // 1. b. Import private from string (using passphrase).
       const importPub = importPublicKey(publicStr);
-      const importPrv = generatePassphraseKey(passphrase).then(passphraseKey =>
-        importPrivateKey(privateStr, passphraseKey)
+      const importPrv = generatePassphraseKey(passphrase, salt).then(
+        passphraseKey => importPrivateKey(privateStr, passphraseKey)
       );
 
       Promise.all([importPub, importPrv])
@@ -184,17 +188,18 @@ export default {
 
       const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
       const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
-
+      const oldSalt = this.get("model.custom_fields.encrypt_salt");
       const oldPassphrase = this.get("oldPassphrase");
+      const salt = generateSalt();
       const passphrase = this.get("passphrase");
 
       // 1. a. Decrypt private key with old passphrase.
       // 1. b. Generate new passphrase key.
-      const p0 = generatePassphraseKey(oldPassphrase).then(passphraseKey =>
+      const p0 = generatePassphraseKey(oldPassphrase, oldSalt).then(
         // Import key as extractable so it can be later exported.
-        importPrivateKey(oldPrivateStr, passphraseKey, true)
+        passphraseKey => importPrivateKey(oldPrivateStr, passphraseKey, true)
       );
-      const p1 = generatePassphraseKey(passphrase);
+      const p1 = generatePassphraseKey(passphrase, salt);
 
       Promise.all([p0, p1])
 
@@ -207,9 +212,10 @@ export default {
         // server.
         .then(privateStr => {
           this.set("model.custom_fields.encrypt_private_key", privateStr);
+          this.set("model.custom_fields.encrypt_salt", salt);
           return ajax("/encrypt/keys", {
             type: "PUT",
-            data: { public_key: oldPublicStr, private_key: privateStr }
+            data: { public_key: oldPublicStr, private_key: privateStr, salt }
           });
         })
 

@@ -35,13 +35,14 @@ export default Ember.Controller.extend(ModalFunctionality, {
       const user = Discourse.User.current();
       const publicStr = user.get("custom_fields.encrypt_public_key");
       const privateStr = user.get("custom_fields.encrypt_private_key");
+      const salt = user.get("custom_fields.encrypt_salt");
       const passphrase = this.get("passphrase");
 
       // 1. a. Import public key from string.
       // 1. b. Import private from string (using passphrase).
       const importPub = importPublicKey(publicStr);
-      const importPrv = generatePassphraseKey(passphrase).then(passphraseKey =>
-        importPrivateKey(privateStr, passphraseKey)
+      const importPrv = generatePassphraseKey(passphrase, salt).then(
+        passphraseKey => importPrivateKey(privateStr, passphraseKey)
       );
 
       Promise.all([importPub, importPrv])

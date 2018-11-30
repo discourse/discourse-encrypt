@@ -6,13 +6,15 @@
 
 enabled_site_setting :encrypt_enabled
 
-# Register custom stylesheet for `encrypted-checkbox` component.
+# Register custom stylesheet.
 register_asset "stylesheets/common/encrypt.scss"
 [ "exchange", "lock", "times", "unlock" ].each { |i| register_svg_icon i }
 
-# Register custom user fields to store user's key pair (public and private key).
+# Register custom user fields to store user's key pair (public and private key)
+# and passphrase salt.
 DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_public_key"
 DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_private_key"
+DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_salt"
 
 after_initialize do
 
@@ -44,17 +46,17 @@ after_initialize do
       def put
         public_key  = params.require(:public_key)
         private_key = params.require(:private_key)
-
-        old_public_key = current_user.custom_fields['encrypt_public_key']
-        _old_private_key = current_user.custom_fields['encrypt_private_key']
+        salt        = params.require(:salt)
 
         # Check if encryption is already enabled (but not changing passphrase).
+        old_public_key = current_user.custom_fields['encrypt_public_key']
         if old_public_key && old_public_key != public_key
           return render_json_error(I18n.t("encrypt.enabled_already"), status: 409)
         end
 
-        current_user.custom_fields['encrypt_public_key'] = public_key
+        current_user.custom_fields['encrypt_public_key']  = public_key
         current_user.custom_fields['encrypt_private_key'] = private_key
+        current_user.custom_fields['encrypt_salt']        = salt
         current_user.save!
 
         render json: success_json
