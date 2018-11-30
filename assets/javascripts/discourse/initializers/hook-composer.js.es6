@@ -221,9 +221,9 @@ export default {
 
       @computed("targetUsernames")
       recipients(targetUsernames) {
-        return targetUsernames !== ""
-          ? targetUsernames.split(",").concat([this.get("user.username")])
-          : [];
+        const recipients = targetUsernames ? targetUsernames.split(",") : [];
+        recipients.push(this.get("user.username"));
+        return recipients;
       }
     });
   }
