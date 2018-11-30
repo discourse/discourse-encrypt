@@ -80,10 +80,7 @@ export function importPublicKey(publicKey) {
   return window.crypto.subtle.importKey(
     "jwk",
     JSON.parse(bufferToString(base64ToBuffer(publicKey))),
-    {
-      name: "RSA-OAEP",
-      hash: { name: "SHA-256" }
-    },
+    { name: "RSA-OAEP", hash: { name: "SHA-256" } },
     true,
     ["encrypt"]
   );
@@ -131,10 +128,7 @@ export function importPrivateKey(privateKey, key, extractable) {
       window.crypto.subtle.importKey(
         "jwk",
         JSON.parse(bufferToString(jwkBuffer)),
-        {
-          name: "RSA-OAEP",
-          hash: { name: "SHA-256" }
-        },
+        { name: "RSA-OAEP", hash: { name: "SHA-256" } },
         isSafari || extractable,
         ["decrypt"]
       )
@@ -179,10 +173,7 @@ export function generatePassphraseKey(passphrase, salt) {
           hash: "SHA-256"
         },
         key,
-        {
-          name: "AES-CBC",
-          length: 256
-        },
+        { name: "AES-CBC", length: 256 },
         false,
         ["encrypt", "decrypt"]
       )
@@ -201,10 +192,7 @@ export function generatePassphraseKey(passphrase, salt) {
  */
 export function generateKey() {
   return window.crypto.subtle.generateKey(
-    {
-      name: "AES-CBC",
-      length: 256
-    },
+    { name: "AES-CBC", length: 256 },
     true,
     ["encrypt", "decrypt"]
   );
@@ -222,10 +210,7 @@ export function exportKey(key, userKey) {
   return exportKeyToBuffer(key)
     .then(buffer =>
       window.crypto.subtle.encrypt(
-        {
-          name: "RSA-OAEP",
-          hash: { name: "SHA-256" }
-        },
+        { name: "RSA-OAEP", hash: { name: "SHA-256" } },
         userKey,
         buffer
       )
@@ -244,10 +229,7 @@ export function exportKey(key, userKey) {
 export function importKey(key, userKey) {
   return window.crypto.subtle
     .decrypt(
-      {
-        name: "RSA-OAEP",
-        hash: { name: "SHA-256" }
-      },
+      { name: "RSA-OAEP", hash: { name: "SHA-256" } },
       userKey,
       base64ToBuffer(key)
     )
@@ -255,10 +237,7 @@ export function importKey(key, userKey) {
       window.crypto.subtle.importKey(
         "jwk",
         JSON.parse(bufferToString(jwk)),
-        {
-          name: "AES-CBC",
-          length: 256
-        },
+        { name: "AES-CBC", length: 256 },
         true,
         ["encrypt", "decrypt"]
       )
