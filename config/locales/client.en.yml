@@ -13,10 +13,6 @@ en:
         unchecked: "Click the lock symbol to encrypt this message."
         disabled: "One of the recipients did not enable encryption."
 
-      notice:
-        info: "You have enabled encryption, but it is not active on this device. To read any encrypted private messages, please activate it first."
-        enable: "Follow the instructions from user preferences screen to do that."
-
       composer:
         encrypt: "Encrypt message?"
         user_has_no_key: "Message will not be encrypted, {{username}} has not enabled encryption yet."
