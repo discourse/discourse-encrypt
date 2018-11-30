@@ -8,6 +8,7 @@ import {
 import {
   encrypt,
   decrypt,
+  rsaDecrypt,
   exportKey,
   importKey,
   generateKey,
@@ -28,33 +29,54 @@ export default {
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
     appEvents.on("composer:reply-reloaded", model => {
-      let topicId;
+      let decTitle, decReply;
 
-      // Try get topic ID from topic model.
-      const topic = model.get("topic");
-      if (topic) {
-        topicId = topic.get("id");
-      }
+      if (model.get("draftKey") === Composer.NEW_PRIVATE_MESSAGE_KEY) {
+        /*
+         * Decrypt private message drafts.
+         */
+        const p = getPrivateKey();
+        decTitle = p.then(key => rsaDecrypt(key, model.get("title")));
+        decReply = p.then(key => rsaDecrypt(key, model.get("reply")));
+      } else {
+        /*
+         * Decrypt replies.
+         */
+        let topicId;
 
-      // Try get topic ID from draft key.
-      if (!topicId) {
-        const draftKey = model.get("draftKey");
-        if (draftKey && draftKey.indexOf("topic_") === 0) {
-          topicId = draftKey.substring("topic_".length);
+        // Try get topic ID from topic model.
+        const topic = model.get("topic");
+        if (topic) {
+          topicId = topic.get("id");
+        }
+
+        // Try get topic ID from draft key.
+        if (!topicId) {
+          const draftKey = model.get("draftKey");
+          if (draftKey && draftKey.indexOf("topic_") === 0) {
+            topicId = draftKey.substring("topic_".length);
+          }
+        }
+
+        if (hasTopicKey(topicId)) {
+          decTitle = getTopicTitle(topicId);
+          const reply = model.get("reply");
+          if (reply) {
+            decReply = getTopicKey(topicId).then(key => decrypt(key, reply));
+          }
         }
       }
 
-      if (hasTopicKey(topicId)) {
-        getTopicTitle(topicId)
-          .then(t => model.set("title", t))
+      if (decTitle) {
+        decTitle
+          .then(title => model.setProperties({ title, isEncrypted: true }))
           .catch(() => {});
+      }
 
-        getTopicKey(topicId).then(key => {
-          const reply = model.get("reply");
-          if (reply) {
-            decrypt(key, reply).then(r => model.set("reply", r));
-          }
-        });
+      if (decReply) {
+        decReply
+          .then(reply => model.setProperties({ reply, isEncrypted: true }))
+          .catch(() => {});
       }
     });
 

@@ -296,3 +296,35 @@ export function decrypt(key, ciphertext) {
     .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
     .then(buffer => bufferToString(buffer));
 }
+
+/**
+ * Encrypts a message with a RSA public key.
+ *
+ * @param key
+ * @param plaintext
+ *
+ * @return String
+ */
+export function rsaEncrypt(key, plaintext) {
+  const buffer = stringToBuffer(plaintext);
+
+  return window.crypto.subtle
+    .encrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, buffer)
+    .then(encrypted => bufferToBase64(encrypted));
+}
+
+/**
+ * Decrypts a message with a RSA public key.
+ *
+ * @param key
+ * @param ciphertext
+ *
+ * @return String
+ */
+export function rsaDecrypt(key, ciphertext) {
+  const encrypted = stringToBuffer(ciphertext);
+
+  return window.crypto.subtle
+    .decrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, encrypted)
+    .then(buffer => bufferToString(buffer));
+}

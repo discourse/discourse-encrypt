@@ -17,6 +17,11 @@ export const ENCRYPT_ENABLED = 1;
 export const ENCRYPT_ACTIVE = 2;
 
 /**
+ * @var User's public key used to encrypt topic keys and drafts for private message.
+ */
+let publicKey;
+
+/**
  * @var User's private key used to decrypt topic keys.
  */
 let privateKey;
@@ -32,18 +37,41 @@ const topicKeys = {};
 const topicTitles = {};
 
 /**
+ * Gets a user's key pair from the database and caches it for future usage.
+ *
+ * @return Tuple of two public and private CryptoKey.
+ */
+export function getKeyPair() {
+  return loadKeyPairFromIndexedDb().then(keyPair => {
+    if (!keyPair || !keyPair[0] || !keyPair[1]) {
+      return Promise.reject();
+    }
+
+    [publicKey, privateKey] = keyPair;
+    return keyPair;
+  });
+}
+
+/**
+ * Gets user's public key.
+ *
+ * @return CryptoKey
+ */
+export function getPublicKey() {
+  return publicKey
+    ? Promise.resolve(publicKey)
+    : getKeyPair().then(keyPair => keyPair[0]);
+}
+
+/**
  * Gets user's private key.
  *
  * @return CryptoKey
  */
 export function getPrivateKey() {
-  if (privateKey) {
-    return Promise.resolve(privateKey);
-  }
-
-  return loadKeyPairFromIndexedDb().then(keyPair =>
-    (privateKey = keyPair[1]) ? privateKey : Promise.reject()
-  );
+  return privateKey
+    ? Promise.resolve(privateKey)
+    : getKeyPair().then(keyPair => keyPair[1]);
 }
 
 /**

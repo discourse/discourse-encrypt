@@ -1,8 +1,13 @@
 import {
   hasTopicKey,
-  getTopicKey
+  getTopicKey,
+  getPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { encrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
+import {
+  encrypt,
+  rsaEncrypt
+} from "discourse/plugins/discourse-encrypt/lib/keys";
+import Composer from "discourse/models/composer";
 import Draft from "discourse/models/draft";
 
 export default {
@@ -13,20 +18,38 @@ export default {
       save(key, sequence, data) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
+        let encTitle, encReply;
 
-        if (key.indexOf("topic_") === 0) {
-          const topicId = key.substr("topic_".length);
-
-          if (hasTopicKey(topicId)) {
-            const p0 = getTopicKey(topicId);
-            const p1 = p0.then(topicKey => encrypt(topicKey, data.title));
-            const p2 = p0.then(topicKey => encrypt(topicKey, data.reply));
-            Promise.all([p1, p2]).then(([title, reply]) => {
-              data.title = title;
-              data.reply = reply;
-              return _super.call(this, ...arguments);
-            });
+        if (key === Composer.NEW_PRIVATE_MESSAGE_KEY) {
+          /*
+           * Encrypt private message drafts.
+           */
+          // TODO: Avoid using the container.
+          const container = Discourse.__container__;
+          const controller = container.lookup("controller:composer");
+          if (controller.get("model.isEncrypted")) {
+            const p = getPublicKey();
+            encTitle = p.then(publicKey => rsaEncrypt(publicKey, data.title));
+            encReply = p.then(publicKey => rsaEncrypt(publicKey, data.reply));
           }
+        } else if (key.indexOf("topic_") === 0) {
+          /*
+           * Encrypt replies.
+           */
+          const topicId = key.substr("topic_".length);
+          if (hasTopicKey(topicId)) {
+            const p = getTopicKey(topicId);
+            encTitle = p.then(topicKey => encrypt(topicKey, data.title));
+            encReply = p.then(topicKey => encrypt(topicKey, data.reply));
+          }
+        }
+
+        if (encTitle && encReply) {
+          return Promise.all([encTitle, encReply]).then(([title, reply]) => {
+            data.title = title;
+            data.reply = reply;
+            return _super.call(this, ...arguments);
+          });
         }
 
         return _super.call(this, ...arguments);
