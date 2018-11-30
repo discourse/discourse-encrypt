@@ -197,8 +197,12 @@ export function getEncryptionStatus() {
 export function hideComponentIfDisabled(component) {
   let handler = () => {
     getEncryptionStatus().then(newStatus => {
-      component.set("isEncryptEnabled", newStatus === ENCRYPT_ENABLED);
-      component.set("isEncryptActive", newStatus === ENCRYPT_ACTIVE);
+      Ember.run(() =>
+        component.setProperties({
+          isEncryptEnabled: newStatus === ENCRYPT_ENABLED,
+          isEncryptActive: newStatus === ENCRYPT_ACTIVE
+        })
+      );
     });
   };
 
