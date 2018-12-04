@@ -72,7 +72,7 @@ export default {
 
         return ajax("/encrypt/topic", {
           type: "DELETE",
-          data: { topic_id: topic.get("id"), users: [user.username] }
+          data: { topic_id: topic.get("id"), usernames: [user.username] }
         }).then(() => _super.call(this, ...arguments));
       }
     });

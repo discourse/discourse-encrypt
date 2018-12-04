@@ -113,12 +113,17 @@ after_initialize do
       # +usernames+::   Array of usernames.
       def topic_delete
         topic_id = params.require(:topic_id)
-        usernames = params.require(:users)
+        usernames = params.require(:usernames)
 
-        users = Hash[User.where(username: usernames).map { |u| [u.username, u] }]
-        usernames.each { |u| Store.remove("key_#{topic_id}_#{users[u].id}") }
+        topic = Topic.find_by(id: topic_id)
+        if !Guardian.new(current_user).can_see_topic?(topic)
+          return render json: failed_json
+        end
 
-        render json: { success: true }
+        users = User.where(username: usernames)
+        users.each { |u| Store.remove("key_#{topic_id}_#{u.id}") }
+
+        render json: success_json
       end
     end
   end
