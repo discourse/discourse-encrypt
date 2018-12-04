@@ -129,7 +129,7 @@ export function rsaEncrypt(key, plaintext) {
  * @return Promise<String>
  */
 export function rsaDecrypt(key, ciphertext) {
-  const encrypted = stringToBuffer(ciphertext);
+  const encrypted = base64ToBuffer(ciphertext);
 
   return window.crypto.subtle
     .decrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, encrypted)

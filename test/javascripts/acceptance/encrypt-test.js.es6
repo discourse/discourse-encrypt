@@ -8,6 +8,22 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
+/*
+ * Checks if a string is not contained in a string.
+ *
+ * @param haystack
+ * @param needle
+ * @param message
+ */
+QUnit.assert.notContains = function notContains(haystack, needle, message) {
+  this.pushResult({
+    result: haystack.indexOf(needle) === -1,
+    actual: haystack,
+    expected: "not to contain " + needle,
+    message
+  });
+};
+
 /**
  * @var Secret passphrase used for testing purposes.
  */
