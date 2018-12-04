@@ -16,6 +16,8 @@ DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_private_key"
 
 after_initialize do
 
+  Rails.configuration.filter_parameters << :private_key
+
   module ::DiscourseEncrypt
     PLUGIN_NAME = 'discourse-encrypt'
 
@@ -44,7 +46,7 @@ after_initialize do
         private_key = params.require(:private_key)
 
         old_public_key = current_user.custom_fields['encrypt_public_key']
-        old_private_key = current_user.custom_fields['encrypt_private_key']
+        _old_private_key = current_user.custom_fields['encrypt_private_key']
 
         # Check if encryption is already enabled (but not changing passphrase).
         if old_public_key && old_public_key != public_key
