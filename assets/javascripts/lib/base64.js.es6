@@ -20,6 +20,7 @@ export function base64ToBuffer(str) {
 
   let ret = new Uint8Array(length);
 
+  /* eslint-disable no-bitwise */
   for (let i = 0, j = 0; i < length; i += 3) {
     let enc1 = BASE64.indexOf(str.charAt(j++));
     let enc2 = BASE64.indexOf(str.charAt(j++));
@@ -27,9 +28,10 @@ export function base64ToBuffer(str) {
     let enc4 = BASE64.indexOf(str.charAt(j++));
 
     ret[i] = (enc1 << 2) | (enc2 >> 4);
-    if (enc3 != 64) ret[i + 1] = ((enc2 & 15) << 4) | (enc3 >> 2);
-    if (enc4 != 64) ret[i + 2] = ((enc3 & 3) << 6) | enc4;
+    if (enc3 !== 64) ret[i + 1] = ((enc2 & 15) << 4) | (enc3 >> 2);
+    if (enc4 !== 64) ret[i + 2] = ((enc3 & 3) << 6) | enc4;
   }
+  /* eslint-enable no-bitwise */
 
   return ret;
 }
@@ -47,6 +49,7 @@ export function bufferToBase64(buffer) {
   let bytes = new Uint8Array(buffer);
   let length = bytes.byteLength - (bytes.byteLength % 3);
 
+  /* eslint-disable no-bitwise */
   for (let i = 0; i < length; i = i + 3) {
     let bits = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
     let enc1 = (bits >> 18) & 63;
@@ -70,6 +73,7 @@ export function bufferToBase64(buffer) {
     let enc3 = (bits << 2) & 63;
     ret += BASE64[enc1] + BASE64[enc2] + BASE64[enc3] + "=";
   }
+  /* eslint-enable no-bitwise */
 
   return ret;
 }
