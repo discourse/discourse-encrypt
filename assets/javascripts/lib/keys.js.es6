@@ -11,27 +11,6 @@ import {
 import { isSafari } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
 /*
- * Utilities
- * =========
- */
-
-/**
- * Exports a key to a buffer.
- *
- * It does this by exporting it first to JWK, then to a string and finally to a
- * buffer.
- *
- * @param key
- *
- * @return A promise of a buffer.
- */
-function exportKeyToBuffer(key) {
-  return window.crypto.subtle
-    .exportKey("jwk", key)
-    .then(jwk => stringToBuffer(JSON.stringify(jwk)));
-}
-
-/*
  * User keypairs
  * =============
  */
@@ -39,7 +18,8 @@ function exportKeyToBuffer(key) {
 /**
  * Generates a cryptographically secure key pair.
  *
- * @return Array A tuple of a public and private key.
+ * @return Promise<[CryptoKey, CryptoKey]> A promise of a tuple of a public and
+ *                                         private key.
  */
 export function generateKeyPair() {
   return window.crypto.subtle
@@ -51,7 +31,7 @@ export function generateKeyPair() {
         hash: { name: "SHA-256" }
       },
       true,
-      ["encrypt", "decrypt"]
+      ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
     )
     .then(keyPair => [keyPair.publicKey, keyPair.privateKey]);
 }
@@ -61,7 +41,7 @@ export function generateKeyPair() {
  *
  * @param publicKey
  *
- * @return String
+ * @return Promise<String>
  */
 export function exportPublicKey(publicKey) {
   return window.crypto.subtle
@@ -74,7 +54,7 @@ export function exportPublicKey(publicKey) {
  *
  * @param publicKey
  *
- * @return CryptoKey
+ * @return Promise<CryptoKey>
  */
 export function importPublicKey(publicKey) {
   return window.crypto.subtle.importKey(
@@ -82,7 +62,7 @@ export function importPublicKey(publicKey) {
     JSON.parse(bufferToString(base64ToBuffer(publicKey))),
     { name: "RSA-OAEP", hash: { name: "SHA-256" } },
     true,
-    ["encrypt"]
+    ["encrypt", "wrapKey"]
   );
 }
 
@@ -92,21 +72,13 @@ export function importPublicKey(publicKey) {
  * @param privateKey
  * @param key         Key used to encrypt `privateKey`.
  *
- * @return String
+ * @return Promise<String>
  */
 export function exportPrivateKey(privateKey, key) {
-  return exportKeyToBuffer(privateKey)
-    .then(buffer => {
-      const iv = window.crypto.getRandomValues(new Uint8Array(16));
-      const encrypted = window.crypto.subtle.encrypt(
-        { name: "AES-CBC", iv: iv },
-        key,
-        buffer
-      );
-
-      return Promise.all([iv, encrypted]);
-    })
-    .then(([iv, buffer]) => bufferToBase64(iv) + bufferToBase64(buffer));
+  const iv = window.crypto.getRandomValues(new Uint8Array(16));
+  return window.crypto.subtle
+    .wrapKey("jwk", privateKey, key, { name: "AES-CBC", iv })
+    .then(buffer => bufferToBase64(iv) + bufferToBase64(buffer));
 }
 
 /**
@@ -116,23 +88,52 @@ export function exportPrivateKey(privateKey, key) {
  * @param key         Key used to decrypt `privateKey`.
  * @param extractable Whether imported key can be further exported or not.
  *
- * @return CryptoKey
+ * @return Promise<CryptoKey>
  */
 export function importPrivateKey(privateKey, key, extractable) {
   const iv = base64ToBuffer(privateKey.substring(0, 24));
-  const encrypted = base64ToBuffer(privateKey.substring(24));
+  const wrapped = base64ToBuffer(privateKey.substring(24));
+  return window.crypto.subtle.unwrapKey(
+    "jwk",
+    wrapped,
+    key,
+    { name: "AES-CBC", iv },
+    { name: "RSA-OAEP", hash: { name: "SHA-256" } },
+    isSafari || extractable,
+    ["decrypt", "unwrapKey"]
+  );
+}
+
+/**
+ * Encrypts a message with a RSA public key.
+ *
+ * @param key
+ * @param plaintext
+ *
+ * @return Promise<String>
+ */
+export function rsaEncrypt(key, plaintext) {
+  const buffer = stringToBuffer(plaintext);
 
   return window.crypto.subtle
-    .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
-    .then(jwkBuffer =>
-      window.crypto.subtle.importKey(
-        "jwk",
-        JSON.parse(bufferToString(jwkBuffer)),
-        { name: "RSA-OAEP", hash: { name: "SHA-256" } },
-        isSafari || extractable,
-        ["decrypt"]
-      )
-    );
+    .encrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, buffer)
+    .then(encrypted => bufferToBase64(encrypted));
+}
+
+/**
+ * Decrypts a message with a RSA public key.
+ *
+ * @param key
+ * @param ciphertext
+ *
+ * @return Promise<String>
+ */
+export function rsaDecrypt(key, ciphertext) {
+  const encrypted = stringToBuffer(ciphertext);
+
+  return window.crypto.subtle
+    .decrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, encrypted)
+    .then(buffer => bufferToString(buffer));
 }
 
 /*
@@ -156,7 +157,7 @@ export function generateSalt() {
  * @param passphrase
  * @param salt
  *
- * @return Promise A promise of a key.
+ * @return Promise<CryptoKey>
  */
 export function generatePassphraseKey(passphrase, salt) {
   return window.crypto.subtle
@@ -169,26 +170,26 @@ export function generatePassphraseKey(passphrase, salt) {
         {
           name: "PBKDF2",
           salt: base64ToBuffer(salt),
-          iterations: 100,
+          iterations: 128000,
           hash: "SHA-256"
         },
         key,
         { name: "AES-CBC", length: 256 },
         false,
-        ["encrypt", "decrypt"]
+        ["wrapKey", "unwrapKey"]
       )
     );
 }
 
 /*
- * Conversation keys
- * =================
+ * Topic keys
+ * ==========
  */
 
 /**
- * Generates a symmetric key used to encrypt conversation keys.
+ * Generates a symmetric key used to encrypt topic keys.
  *
- * @return Promise A promise of a key.
+ * @return Promise<CryptoKey>
  */
 export function generateKey() {
   return window.crypto.subtle.generateKey(
@@ -199,49 +200,40 @@ export function generateKey() {
 }
 
 /**
- * Exports a symmetric key, but encrypts it first.
+ * Exports a symmetric key, but wraps (encrypts) it first.
  *
  * @param key
- * @param userKey   Key used to encrypt `key`.
+ * @param publicKey   Key used to wrap the symmetric key.
  *
- * @return String
+ * @return Promise<String>
  */
-export function exportKey(key, userKey) {
-  return exportKeyToBuffer(key)
-    .then(buffer =>
-      window.crypto.subtle.encrypt(
-        { name: "RSA-OAEP", hash: { name: "SHA-256" } },
-        userKey,
-        buffer
-      )
-    )
-    .then(encrypted => bufferToBase64(encrypted));
+export function exportKey(key, publicKey) {
+  return window.crypto.subtle
+    .wrapKey("raw", key, publicKey, {
+      name: "RSA-OAEP",
+      hash: { name: "SHA-256" }
+    })
+    .then(wrapped => bufferToBase64(wrapped));
 }
 
 /**
- * Imports a symmetric key.
+ * Imports a symmetric key, but unwraps (decrypts) it first.
  *
  * @param key
- * @param userKey   Key used to decrypt `key`.
+ * @param privateKey  Key used to unwrap the symmetric key.
  *
- * @return CryptoKey
+ * @return Promise<CryptoKey>
  */
-export function importKey(key, userKey) {
-  return window.crypto.subtle
-    .decrypt(
-      { name: "RSA-OAEP", hash: { name: "SHA-256" } },
-      userKey,
-      base64ToBuffer(key)
-    )
-    .then(jwk =>
-      window.crypto.subtle.importKey(
-        "jwk",
-        JSON.parse(bufferToString(jwk)),
-        { name: "AES-CBC", length: 256 },
-        true,
-        ["encrypt", "decrypt"]
-      )
-    );
+export function importKey(key, privateKey) {
+  return window.crypto.subtle.unwrapKey(
+    "raw",
+    base64ToBuffer(key),
+    privateKey,
+    { name: "RSA-OAEP", hash: { name: "SHA-256" } },
+    { name: "AES-CBC", length: 256 },
+    true,
+    ["encrypt", "decrypt"]
+  );
 }
 
 /**
@@ -250,7 +242,7 @@ export function importKey(key, userKey) {
  * @param key
  * @param plaintext
  *
- * @return String
+ * @return Promise<String>
  */
 export function encrypt(key, plaintext) {
   const iv = window.crypto.getRandomValues(new Uint8Array(16));
@@ -267,7 +259,7 @@ export function encrypt(key, plaintext) {
  * @param key
  * @param ciphertext
  *
- * @return String
+ * @return Promise<String>
  */
 export function decrypt(key, ciphertext) {
   const iv = base64ToBuffer(ciphertext.substring(0, 24));
@@ -275,37 +267,5 @@ export function decrypt(key, ciphertext) {
 
   return window.crypto.subtle
     .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
-    .then(buffer => bufferToString(buffer));
-}
-
-/**
- * Encrypts a message with a RSA public key.
- *
- * @param key
- * @param plaintext
- *
- * @return String
- */
-export function rsaEncrypt(key, plaintext) {
-  const buffer = stringToBuffer(plaintext);
-
-  return window.crypto.subtle
-    .encrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, buffer)
-    .then(encrypted => bufferToBase64(encrypted));
-}
-
-/**
- * Decrypts a message with a RSA public key.
- *
- * @param key
- * @param ciphertext
- *
- * @return String
- */
-export function rsaDecrypt(key, ciphertext) {
-  const encrypted = stringToBuffer(ciphertext);
-
-  return window.crypto.subtle
-    .decrypt({ name: "RSA-OAEP", hash: { name: "SHA-256" } }, key, encrypted)
     .then(buffer => bufferToString(buffer));
 }
