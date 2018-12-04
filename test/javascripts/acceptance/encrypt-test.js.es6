@@ -90,7 +90,7 @@ acceptance("Encrypt", {
   },
 
   pretend(server, helper) {
-    server.get("/encrypt/userkeys", request => {
+    server.get("/encrypt/user", request => {
       const response = {};
       request.queryParams["usernames"].forEach(u => (response[u] = keys[u][2]));
       return helper.response(response);

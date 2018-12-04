@@ -27,7 +27,7 @@ export default {
         );
 
         // Getting user's key.
-        const userKeyPromise = ajax("/encrypt/userkeys", {
+        const userKeyPromise = ajax("/encrypt/user", {
           type: "GET",
           data: { usernames: [username] }
         })
@@ -47,7 +47,7 @@ export default {
         return Promise.all([topicKeyPromise, userKeyPromise])
           .then(([topicKey, userKey]) => exportKey(topicKey, userKey))
           .then(key =>
-            ajax("/encrypt/topickeys", {
+            ajax("/encrypt/topic", {
               type: "PUT",
               data: { topic_id: this.get("id"), keys: { [username]: key } }
             })
@@ -70,7 +70,7 @@ export default {
         // TODO: Re-encrypt and edit all posts in topic.
         // TODO: Re-encrypt and save keys for all users.
 
-        return ajax("/encrypt/topickeys", {
+        return ajax("/encrypt/topic", {
           type: "DELETE",
           data: { topic_id: topic.get("id"), users: [user.username] }
         }).then(() => _super.call(this, ...arguments));

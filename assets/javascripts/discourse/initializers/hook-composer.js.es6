@@ -98,7 +98,7 @@ export default {
               const p0 = encrypt(key, reply).then(r => this.set("reply", r));
               const p1 = encrypt(key, title).then(encTitle => {
                 this.set("title", I18n.t("encrypt.encrypted_topic_title"));
-                ajax("/encrypt/topickeys", {
+                ajax("/encrypt/topic", {
                   type: "PUT",
                   data: { topic_id: this.get("topic.id"), title: encTitle }
                 });
@@ -121,7 +121,7 @@ export default {
         // Encrypting user keys.
         const usernames = this.get("recipients");
         const p1 = p0.then(key =>
-          ajax("/encrypt/userkeys", {
+          ajax("/encrypt/user", {
             type: "GET",
             data: { usernames }
           })
@@ -173,7 +173,7 @@ export default {
             const topicId = result.responseJson.post.topic_id;
 
             putTopicKey(topicId, key);
-            ajax("/encrypt/topickeys", {
+            ajax("/encrypt/topic", {
               type: "PUT",
               data: { topic_id: topicId, title: encTitle, keys: userKeys }
             });
@@ -204,7 +204,7 @@ export default {
           return;
         }
 
-        ajax("/encrypt/userkeys", {
+        ajax("/encrypt/user", {
           type: "GET",
           data: { usernames }
         }).then(userKeys => {
