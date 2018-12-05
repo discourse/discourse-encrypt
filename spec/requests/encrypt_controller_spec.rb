@@ -38,7 +38,7 @@ describe ::DiscourseEncrypt::EncryptController do
     store.set("key_#{topic.id}_#{user2.id}", '-- the key of user2 --')
   end
 
-  context '#keys_put' do
+  context '#update_keys' do
     it 'does not work when not logged in' do
       put '/encrypt/keys', params: {
         public_key: '-- the public key --',
@@ -97,7 +97,7 @@ describe ::DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#user_get' do
+  context '#show_user' do
     it 'does not work when not logged in' do
       get '/encrypt/user', params: { usernames: [ 'user', 'user2', 'other' ] }
       expect(response.status).to eq(404)
@@ -117,7 +117,7 @@ describe ::DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#topic_put' do
+  context '#update_topic' do
     it 'does not work when not logged in' do
       put '/encrypt/topic', params: {
         topic_id: topic.id,
@@ -202,7 +202,7 @@ describe ::DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#topic_delete' do
+  context '#destroy_topic' do
     it 'does not work when not logged in' do
       delete '/encrypt/topic', params: { topic_id: topic.id, usernames: [ 'user' ] }
 

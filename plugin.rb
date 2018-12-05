@@ -43,7 +43,7 @@ after_initialize do
       # +public_key+::  Serialized public key. This parameter is optional when
       #                 the private key is updated (changed passphrase).
       # +private_key+:: Serialized private key.
-      def keys_put
+      def update_keys
         public_key  = params.require(:public_key)
         private_key = params.require(:private_key)
         salt        = params.require(:salt)
@@ -68,7 +68,7 @@ after_initialize do
       # +usernames+::   Array of usernames.
       #
       # Returns a hash of usernames and public keys.
-      def user_get
+      def show_user
         usernames = params.require(:usernames)
 
         keys = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields['encrypt_public_key']] }]
@@ -84,7 +84,7 @@ after_initialize do
       #               topic custom field.
       # +keys+::      Hash of usernames and keys to be saved in plugin's store.
       #               This parameter is optional when editing a topic's title.
-      def topic_put
+      def update_topic
         topic_id = params.require(:topic_id)
 
         topic = Topic.find_by(id: topic_id)
@@ -111,7 +111,7 @@ after_initialize do
       #
       # Params:
       # +usernames+::   Array of usernames.
-      def topic_delete
+      def destroy_topic
         topic_id = params.require(:topic_id)
         usernames = params.require(:usernames)
 
@@ -225,10 +225,10 @@ after_initialize do
   end
 
   DiscourseEncrypt::Engine.routes.draw do
-    put    '/encrypt/keys'  => 'encrypt#keys_put'
-    get    '/encrypt/user'  => 'encrypt#user_get'
-    put    '/encrypt/topic' => 'encrypt#topic_put'
-    delete '/encrypt/topic' => 'encrypt#topic_delete'
+    put    '/encrypt/keys'  => 'encrypt#update_keys'
+    get    '/encrypt/user'  => 'encrypt#show_user'
+    put    '/encrypt/topic' => 'encrypt#update_topic'
+    delete '/encrypt/topic' => 'encrypt#destroy_topic'
   end
 
   Discourse::Application.routes.append do
