@@ -8,7 +8,7 @@ import {
 QUnit.module("discourse-encrypt:lib:keys_db");
 
 test("Indexed Database API", async assert => {
-  try{
+  try {
     await deleteIndexedDb();
   } catch (e) {}
 
@@ -26,7 +26,7 @@ test("Indexed Database API", async assert => {
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
 
-  try{
+  try {
     await deleteIndexedDb();
   } catch (e) {}
 });
