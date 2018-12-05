@@ -22,9 +22,9 @@ en:
         status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."
         status_disabled: "You have not enabled encryption on this account."
 
-        old_passphrase_placeholder: "old passphrase"
-        passphrase_placeholder: "passphrase"
-        passphrase2_placeholder: "retype passphrase"
+        old_passphrase_label: "Old passphrase:"
+        passphrase_label: "Passphrase:"
+        passphrase2_label: "Retype passphrase:"
         passphrase_enter: "Please choose a secure passphrase to encrypt your key."
         passphrase_insecure: "Please choose a stronger passphrase (at least 15 characters)."
         passphrase_mismatch: "The two passphrases you entered do not match."
