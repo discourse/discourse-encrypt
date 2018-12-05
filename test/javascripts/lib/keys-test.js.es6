@@ -69,6 +69,20 @@ test("encrypt & decrypt", async assert => {
   const key = await generateKey();
   const plaintext = "this is a message";
   const ciphertext = await encrypt(key, plaintext);
+
+  /*
+   * Length of ciphertext is computed as sum:
+   *   - input length (UTF-16, input size = output size for AES-GCM)
+   *   - tag length is 128-bits
+   *   - IV has 12 bytes
+   *
+   * Base64 is used for encoding, so every 3 bytes become 4 bytes.
+   */
+  let length =
+    4 * Math.ceil((plaintext.length * 2 + 128 / 8) / 3) + // base64(tag + ciphertext).length
+    4 * Math.ceil(12 / 3); // base64(iv).length
+  assert.equal(ciphertext.length, length);
+
   const plaintext2 = await decrypt(key, ciphertext);
   assert.equal(plaintext, plaintext2);
 });

@@ -75,9 +75,9 @@ export function importPublicKey(publicKey) {
  * @return Promise<String>
  */
 export function exportPrivateKey(privateKey, key) {
-  const iv = window.crypto.getRandomValues(new Uint8Array(16));
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
   return window.crypto.subtle
-    .wrapKey("jwk", privateKey, key, { name: "AES-CBC", iv })
+    .wrapKey("jwk", privateKey, key, { name: "AES-GCM", iv })
     .then(buffer => bufferToBase64(iv) + bufferToBase64(buffer));
 }
 
@@ -91,13 +91,13 @@ export function exportPrivateKey(privateKey, key) {
  * @return Promise<CryptoKey>
  */
 export function importPrivateKey(privateKey, key, extractable) {
-  const iv = base64ToBuffer(privateKey.substring(0, 24));
-  const wrapped = base64ToBuffer(privateKey.substring(24));
+  const iv = base64ToBuffer(privateKey.substring(0, 16));
+  const wrapped = base64ToBuffer(privateKey.substring(16));
   return window.crypto.subtle.unwrapKey(
     "jwk",
     wrapped,
     key,
-    { name: "AES-CBC", iv },
+    { name: "AES-GCM", iv },
     { name: "RSA-OAEP", hash: { name: "SHA-256" } },
     isSafari || extractable,
     ["decrypt", "unwrapKey"]
@@ -174,7 +174,7 @@ export function generatePassphraseKey(passphrase, salt) {
           hash: "SHA-256"
         },
         key,
-        { name: "AES-CBC", length: 256 },
+        { name: "AES-GCM", length: 256 },
         false,
         ["wrapKey", "unwrapKey"]
       )
@@ -193,7 +193,7 @@ export function generatePassphraseKey(passphrase, salt) {
  */
 export function generateKey() {
   return window.crypto.subtle.generateKey(
-    { name: "AES-CBC", length: 256 },
+    { name: "AES-GCM", length: 256 },
     true,
     ["encrypt", "decrypt"]
   );
@@ -230,7 +230,7 @@ export function importKey(key, privateKey) {
     base64ToBuffer(key),
     privateKey,
     { name: "RSA-OAEP", hash: { name: "SHA-256" } },
-    { name: "AES-CBC", length: 256 },
+    { name: "AES-GCM", length: 256 },
     true,
     ["encrypt", "decrypt"]
   );
@@ -245,11 +245,11 @@ export function importKey(key, privateKey) {
  * @return Promise<String>
  */
 export function encrypt(key, plaintext) {
-  const iv = window.crypto.getRandomValues(new Uint8Array(16));
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
   const buffer = stringToBuffer(plaintext);
 
   return window.crypto.subtle
-    .encrypt({ name: "AES-CBC", iv: iv }, key, buffer)
+    .encrypt({ name: "AES-GCM", iv: iv, tagLength: 128 }, key, buffer)
     .then(encrypted => bufferToBase64(iv) + bufferToBase64(encrypted));
 }
 
@@ -262,10 +262,10 @@ export function encrypt(key, plaintext) {
  * @return Promise<String>
  */
 export function decrypt(key, ciphertext) {
-  const iv = base64ToBuffer(ciphertext.substring(0, 24));
-  const encrypted = base64ToBuffer(ciphertext.substring(24));
+  const iv = base64ToBuffer(ciphertext.substring(0, 16));
+  const encrypted = base64ToBuffer(ciphertext.substring(16));
 
   return window.crypto.subtle
-    .decrypt({ name: "AES-CBC", iv: iv }, key, encrypted)
+    .decrypt({ name: "AES-GCM", iv: iv, tagLength: 128 }, key, encrypted)
     .then(buffer => bufferToString(buffer));
 }
