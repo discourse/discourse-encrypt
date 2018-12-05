@@ -8,8 +8,8 @@ require 'rails_helper'
 
     let(:user) { Fabricate(:user) }
 
-    let(:topic) { Fabricate(:topic) }
-    let(:unencrypted_topic) { Fabricate(:topic) }
+  let(:topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+  let(:unencrypted_topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
 
     before do
       topic.custom_fields['encrypted_title'] = '-- the encrypted title --'

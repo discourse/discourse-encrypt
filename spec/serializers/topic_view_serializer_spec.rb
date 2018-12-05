@@ -6,10 +6,10 @@ describe TopicViewSerializer do
 
   let(:user) { Fabricate(:user) }
 
-  let(:topic) { Fabricate(:topic) }
+  let(:topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
   let(:topic_view) { TopicView.new(topic.id, user) }
 
-  let(:unencrypted_topic) { Fabricate(:topic) }
+  let(:unencrypted_topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
   let(:unencrypted_topic_view) { TopicView.new(unencrypted_topic.id, user) }
 
   before do

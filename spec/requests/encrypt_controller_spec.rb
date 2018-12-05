@@ -8,7 +8,16 @@ describe ::DiscourseEncrypt::EncryptController do
   let(:user2) { Fabricate(:user, username: 'user2') }
   let(:other_user) { Fabricate(:user, username: 'other') }
 
-  let(:topic) { Fabricate(:topic) }
+  let(:topic) {
+    Fabricate(
+      :private_message_topic,
+      topic_allowed_users: [
+        Fabricate.build(:topic_allowed_user, user: user),
+        Fabricate.build(:topic_allowed_user, user: user2)
+      ]
+    )
+  }
+
   let(:other_topic) { Fabricate(:topic) }
 
   before do

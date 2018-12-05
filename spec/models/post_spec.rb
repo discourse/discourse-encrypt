@@ -4,10 +4,10 @@ describe Post do
 
   let(:user) { Fabricate(:user) }
 
-  let(:topic) { Fabricate(:topic) }
+  let(:topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
   let(:post) { Fabricate(:post, topic: topic, user: user) }
 
-  let(:topic2) { Fabricate(:topic) }
+  let(:topic2) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
   let(:post2) { Fabricate(:post, topic: topic2, user: user) }
 
   before do
