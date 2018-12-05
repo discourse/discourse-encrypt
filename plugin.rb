@@ -197,7 +197,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
-    scope.user
+    scope&.user.present?
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
@@ -205,7 +205,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
-    scope.user
+    scope&.user.present?
   end
 
   add_to_serializer(:listable_topic, :topic_key, false) do
@@ -213,7 +213,7 @@ after_initialize do
   end
 
   add_to_serializer(:listable_topic, :include_topic_key?) do
-    scope.user
+    scope&.user.present?
   end
 
   add_to_serializer(:topic_list_item, :topic_key, false) do
@@ -221,7 +221,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_list_item, :include_topic_key?) do
-    scope.user
+    scope&.user.present?
   end
 
   DiscourseEncrypt::Engine.routes.draw do
