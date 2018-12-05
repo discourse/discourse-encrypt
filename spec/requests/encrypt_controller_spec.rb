@@ -118,7 +118,24 @@ describe ::DiscourseEncrypt::EncryptController do
   end
 
   context '#topic_put' do
-    it 'does not work when logged in' do
+    it 'does not work when not logged in' do
+      put '/encrypt/topic', params: {
+        topic_id: topic.id,
+        title: '-- other encrypted title --',
+        keys: {
+          user: '-- other key of user --',
+          user2: '-- other key of user2 --'
+        }
+      }
+
+      expect(topic.custom_fields['encrypted_title']).to eq('-- the encrypted title --')
+      expect(store.get("key_#{topic.id}_#{user.id}")).to eq('-- the key of user --')
+      expect(store.get("key_#{topic.id}_#{user2.id}")).to eq('-- the key of user2 --')
+    end
+
+    it 'does not work for users who cannot see topic' do
+      sign_in(other_user)
+
       put '/encrypt/topic', params: {
         topic_id: topic.id,
         title: '-- other encrypted title --',
@@ -186,7 +203,17 @@ describe ::DiscourseEncrypt::EncryptController do
   end
 
   context '#topic_delete' do
-    it 'does not work when logged in' do
+    it 'does not work when not logged in' do
+      delete '/encrypt/topic', params: { topic_id: topic.id, usernames: [ 'user' ] }
+
+      expect(response.status).to eq(403)
+      expect(store.get("key_#{topic.id}_#{user.id}")).to eq('-- the key of user --')
+      expect(store.get("key_#{topic.id}_#{user2.id}")).to eq('-- the key of user2 --')
+    end
+
+    it 'does not work for users who cannot see topic' do
+      sign_in(other_user)
+
       delete '/encrypt/topic', params: { topic_id: topic.id, usernames: [ 'user' ] }
 
       expect(response.status).to eq(403)

@@ -89,7 +89,7 @@ after_initialize do
 
         topic = Topic.find_by(id: topic_id)
         if !Guardian.new(current_user).can_see_topic?(topic)
-          return render json: failed_json
+          return render json: failed_json, status: 403
         end
 
         if title = params[:title]
@@ -117,7 +117,7 @@ after_initialize do
 
         topic = Topic.find_by(id: topic_id)
         if !Guardian.new(current_user).can_see_topic?(topic)
-          return render json: failed_json
+          return render json: failed_json, status: 403
         end
 
         users = User.where(username: usernames)
