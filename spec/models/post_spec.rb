@@ -26,9 +26,7 @@ describe Post do
   it 'hides version for encrypted posts' do
     expect(post.version).to eq(1)
     expect(post.public_version).to eq(1)
-  end
 
-  it 'shows real version for unencrypted posts' do
     expect(post2.version).to eq(2)
     expect(post2.public_version).to eq(2)
   end
