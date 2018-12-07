@@ -8,11 +8,11 @@ import { loadKeyPairFromIndexedDb } from "discourse/plugins/discourse-encrypt/li
 /**
  * Possible states of the encryption system.
  *
- * @var ENCRYPT_DISBLED User does not have any generated keys
+ * @var ENCRYPT_DISABLED User does not have any generated keys
  * @var ENCRYPT_ENABLED User has keys, but only on server
  * @var ENCRYPT_ACTIVE  User has imported server keys into browser
  */
-export const ENCRYPT_DISBLED = 0;
+export const ENCRYPT_DISABLED = 0;
 export const ENCRYPT_ENABLED = 1;
 export const ENCRYPT_ACTIVE = 2;
 
@@ -163,14 +163,14 @@ export function hasTopicTitle(topicId) {
 export function getEncryptionStatus() {
   const user = Discourse.User.current();
   if (!user) {
-    return Promise.resolve(ENCRYPT_DISBLED);
+    return Promise.resolve(ENCRYPT_DISABLED);
   }
 
   const sPubKey = user.get("custom_fields.encrypt_public_key");
   const sPrvKey = user.get("custom_fields.encrypt_private_key");
 
   if (!sPubKey || !sPrvKey) {
-    return Promise.resolve(ENCRYPT_DISBLED);
+    return Promise.resolve(ENCRYPT_DISABLED);
   }
 
   return loadKeyPairFromIndexedDb()
@@ -207,6 +207,7 @@ export function hideComponentIfDisabled(component) {
   };
 
   handler();
-  component.appEvents.on("encrypt:status-changed", handler);
-  // TODO: Call appEvents.off("encrypt:status-changed").
+  component.appEvents.on("encrypt:status-changed", component, handler);
+
+  return handler;
 }

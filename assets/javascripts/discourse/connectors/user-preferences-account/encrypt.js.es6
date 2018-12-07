@@ -15,9 +15,10 @@ import {
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
-  ENCRYPT_DISBLED,
+  ENCRYPT_DISABLED,
   ENCRYPT_ACTIVE,
-  getEncryptionStatus
+  getEncryptionStatus,
+  hideComponentIfDisabled
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
@@ -27,39 +28,42 @@ registerHelper("or", ([a, b]) => a || b);
 
 export default {
   setupComponent(args, component) {
-    getEncryptionStatus().then(status => {
-      component.setProperties({
-        model: args.model,
-        save: args.save,
-        /** @var Value of passphrase input.
-         *       It should stay in memory for as little time as possible.
-         *       Clear it often.
-         */
-        passphrase: "",
-        passphrase2: "",
-        /** @var Whether the passphrase input is shown. */
-        passphraseInput: false,
-        /** @var Whether any operation (AJAX request, key generation, etc.) is
-         *       in progress. */
-        inProgress: false,
-        /** @var Whether the encryption is enabled or not. */
-        isEnabled: status !== ENCRYPT_DISBLED,
-        /** @var Whether the encryption is active on this device. */
-        isActive: status === ENCRYPT_ACTIVE,
-        // TOOD: Check out if there is a way to define functions like this in
-        //       the `export default` scope.
-        passphraseStatus: function() {
-          const passphrase = component.get("passphrase");
-          const passphrase2 = component.get("passphrase2");
-          if (!passphrase) {
-            return "encrypt.preferences.passphrase_enter";
-          } else if (passphrase.length < 15) {
-            return "encrypt.preferences.passphrase_insecure";
-          } else if (passphrase !== passphrase2) {
-            return "encrypt.preferences.passphrase_mismatch";
-          }
-        }.property("passphrase", "passphrase2")
-      });
+    component.setProperties({
+      model: args.model,
+      handler: hideComponentIfDisabled(component),
+      save: args.save,
+      /** @var Value of passphrase input.
+       *       It should stay in memory for as little time as possible.
+       *       Clear it often.
+       */
+      passphrase: "",
+      passphrase2: "",
+      /** @var Whether the passphrase input is shown. */
+      passphraseInput: false,
+      /** @var Whether any operation (AJAX request, key generation, etc.) is
+       *       in progress. */
+      inProgress: false,
+      /** @var Whether the encryption is enabled or not. */
+      isEncryptEnabled: false,
+      /** @var Whether the encryption is active on this device. */
+      isEncryptActive: false,
+      // TOOD: Check out if there is a way to define functions like this in
+      //       the `export default` scope.
+      passphraseStatus: function() {
+        const passphrase = component.get("passphrase");
+        const passphrase2 = component.get("passphrase2");
+        if (!passphrase) {
+          return "encrypt.preferences.passphrase_enter";
+        } else if (passphrase.length < 15) {
+          return "encrypt.preferences.passphrase_insecure";
+        } else if (passphrase !== passphrase2) {
+          return "encrypt.preferences.passphrase_mismatch";
+        }
+      }.property("passphrase", "passphrase2"),
+      willDestroyElement() {
+        this._super(...arguments);
+        this.appEvents.off("encrypt:status-changed", this, this.get("handler"));
+      }
     });
   },
 
@@ -131,14 +135,18 @@ export default {
         )
 
         // 6. Reset component status.
-        .then(() => {
-          this.send("hidePassphraseInput");
-          this.setProperties({
-            inProgress: false,
-            isEnabled: true,
-            isActive: true
-          });
-        })
+        .then(() =>
+          Ember.run(() => {
+            this.appEvents.trigger("encrypt:status-changed");
+
+            this.send("hidePassphraseInput");
+            this.setProperties({
+              inProgress: false,
+              isEncryptEnabled: true,
+              isEncryptActive: true
+            });
+          })
+        )
 
         .catch(popupAjaxError);
     },
@@ -166,16 +174,18 @@ export default {
         )
 
         // 3. Reset component status.
-        .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
+        .then(() =>
+          Ember.run(() => {
+            this.appEvents.trigger("encrypt:status-changed");
 
-          this.send("hidePassphraseInput");
-          this.setProperties({
-            inProgress: false,
-            isEnabled: true,
-            isActive: true
-          });
-        })
+            this.send("hidePassphraseInput");
+            this.setProperties({
+              inProgress: false,
+              isEncryptEnabled: true,
+              isEncryptActive: true
+            });
+          })
+        )
 
         .catch(() => {
           this.set("inProgress", false);
@@ -238,8 +248,8 @@ export default {
         this.appEvents.trigger("encrypt:status-changed");
         this.setProperties({
           inProgress: false,
-          isEnabled: true,
-          isActive: false
+          isEncryptEnabled: true,
+          isEncryptActive: false
         });
       });
     }

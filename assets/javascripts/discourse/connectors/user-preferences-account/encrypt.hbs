@@ -2,8 +2,8 @@
   <div class="control-group pref-title">
     <label class="control-label">{{i18n 'encrypt.title'}}</label>
     <div class="controls">
-      {{#if isEnabled}}
-        {{#if isActive}}
+      {{#if isEncryptEnabled}}
+        {{#if isEncryptActive}}
           <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
           {{#if passphraseInput}}
             <form>
