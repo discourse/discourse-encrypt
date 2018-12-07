@@ -36,7 +36,7 @@ export default {
               bootbox.alert(
                 I18n.t("encrypt.composer.user_has_no_key", { username })
               );
-              return Promise.reject(username);
+              return Ember.RSVP.Promise.reject(username);
             }
 
             return userKeys[username];
@@ -44,7 +44,7 @@ export default {
           .then(key => importPublicKey(key));
 
         // Send topic's key encrypted with user's key.
-        return Promise.all([topicKeyPromise, userKeyPromise])
+        return Ember.RSVP.Promise.all([topicKeyPromise, userKeyPromise])
           .then(([topicKey, userKey]) => exportKey(topicKey, userKey))
           .then(key =>
             ajax("/encrypt/topic", {

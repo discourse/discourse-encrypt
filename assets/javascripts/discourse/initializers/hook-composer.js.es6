@@ -104,7 +104,7 @@ export default {
                 });
               });
 
-              return Promise.all([p0, p1]);
+              return Ember.RSVP.Promise.all([p0, p1]);
             })
             .then(() => _super.call(this, ...arguments))
             .finally(() => this.setProperties({ title, reply }));
@@ -131,7 +131,7 @@ export default {
               for (let i = 0; i < usernames.length; ++i) {
                 const username = usernames[i];
                 if (!userKeys[username]) {
-                  promises.push(Promise.reject(username));
+                  promises.push(Ember.RSVP.Promise.reject(username));
                 } else {
                   promises.push(
                     importPublicKey(userKeys[username]).then(userKey =>
@@ -141,13 +141,13 @@ export default {
                 }
               }
 
-              return Promise.all(promises);
+              return Ember.RSVP.Promise.all(promises);
             })
             .catch(username => {
               bootbox.alert(
                 I18n.t("encrypt.composer.user_has_no_key", { username })
               );
-              return Promise.reject(username);
+              return Ember.RSVP.Promise.reject(username);
             })
         );
 
@@ -156,7 +156,7 @@ export default {
         const p3 = p0.then(key => encrypt(key, reply));
 
         // Send user keys, title and reply encryption to the server.
-        return Promise.all([p1, p2, p3])
+        return Ember.RSVP.Promise.all([p1, p2, p3])
           .then(([keys, encTitle, encReply]) => {
             const userKeys = {};
             for (let i = 0; i < keys.length; ++i) {
@@ -167,7 +167,7 @@ export default {
             this.set("reply", encReply);
 
             const result = _super.call(this, ...arguments);
-            return Promise.all([p0, encTitle, userKeys, result]);
+            return Ember.RSVP.Promise.all([p0, encTitle, userKeys, result]);
           })
           .then(([key, encTitle, userKeys, result]) => {
             const topicId = result.responseJson.post.topic_id;

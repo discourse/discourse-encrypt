@@ -45,11 +45,13 @@ export default {
         }
 
         if (encTitle && encReply) {
-          return Promise.all([encTitle, encReply]).then(([title, reply]) => {
-            data.title = title;
-            data.reply = reply;
-            return _super.call(this, ...arguments);
-          });
+          return Ember.RSVP.Promise.all([encTitle, encReply]).then(
+            ([title, reply]) => {
+              data.title = title;
+              data.reply = reply;
+              return _super.call(this, ...arguments);
+            }
+          );
         }
 
         return _super.call(this, ...arguments);

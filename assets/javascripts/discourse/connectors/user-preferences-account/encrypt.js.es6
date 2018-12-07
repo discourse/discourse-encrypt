@@ -103,7 +103,7 @@ export default {
             passphraseKey => exportPrivateKey(privateKey, passphraseKey)
           );
 
-          return Promise.all([publicStr, privateStr, salt]);
+          return Ember.RSVP.Promise.all([publicStr, privateStr, salt]);
         })
 
         // 3. Save keys to server.
@@ -116,12 +116,17 @@ export default {
             data: { public_key: publicStr, private_key: privateStr, salt }
           });
 
-          return Promise.all([publicStr, privateStr, salt, saveKeys]);
+          return Ember.RSVP.Promise.all([
+            publicStr,
+            privateStr,
+            salt,
+            saveKeys
+          ]);
         })
 
         // 4. Re-import keys but this time as `unextractable`.
         .then(([publicStr, privateStr, salt]) =>
-          Promise.all([
+          Ember.RSVP.Promise.all([
             importPublicKey(publicStr),
             generatePassphraseKey(this.get("passphrase"), salt).then(
               passphraseKey => importPrivateKey(privateStr, passphraseKey)
@@ -135,18 +140,16 @@ export default {
         )
 
         // 6. Reset component status.
-        .then(() =>
-          Ember.run(() => {
-            this.appEvents.trigger("encrypt:status-changed");
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
 
-            this.send("hidePassphraseInput");
-            this.setProperties({
-              inProgress: false,
-              isEncryptEnabled: true,
-              isEncryptActive: true
-            });
-          })
-        )
+          this.send("hidePassphraseInput");
+          this.setProperties({
+            inProgress: false,
+            isEncryptEnabled: true,
+            isEncryptActive: true
+          });
+        })
 
         .catch(popupAjaxError);
     },
@@ -166,7 +169,7 @@ export default {
         passphraseKey => importPrivateKey(privateStr, passphraseKey)
       );
 
-      Promise.all([importPub, importPrv])
+      Ember.RSVP.Promise.all([importPub, importPrv])
 
         // 2. Save key pair in local IndexedDb.
         .then(([publicKey, privateKey]) =>
@@ -174,18 +177,16 @@ export default {
         )
 
         // 3. Reset component status.
-        .then(() =>
-          Ember.run(() => {
-            this.appEvents.trigger("encrypt:status-changed");
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
 
-            this.send("hidePassphraseInput");
-            this.setProperties({
-              inProgress: false,
-              isEncryptEnabled: true,
-              isEncryptActive: true
-            });
-          })
-        )
+          this.send("hidePassphraseInput");
+          this.setProperties({
+            inProgress: false,
+            isEncryptEnabled: true,
+            isEncryptActive: true
+          });
+        })
 
         .catch(() => {
           this.set("inProgress", false);
@@ -211,7 +212,7 @@ export default {
       );
       const p1 = generatePassphraseKey(passphrase, salt);
 
-      Promise.all([p0, p1])
+      Ember.RSVP.Promise.all([p0, p1])
 
         // 2. Encrypt private key with new passphrase key.
         .then(([privateKey, passphraseKey]) =>

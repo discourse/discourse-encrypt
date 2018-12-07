@@ -44,7 +44,7 @@ const topicTitles = {};
 export function getKeyPair() {
   return loadKeyPairFromIndexedDb().then(keyPair => {
     if (!keyPair || !keyPair[0] || !keyPair[1]) {
-      return Promise.reject();
+      return Ember.RSVP.Promise.reject();
     }
 
     [publicKey, privateKey] = keyPair;
@@ -59,7 +59,7 @@ export function getKeyPair() {
  */
 export function getPublicKey() {
   return publicKey
-    ? Promise.resolve(publicKey)
+    ? Ember.RSVP.Promise.resolve(publicKey)
     : getKeyPair().then(keyPair => keyPair[0]);
 }
 
@@ -70,7 +70,7 @@ export function getPublicKey() {
  */
 export function getPrivateKey() {
   return privateKey
-    ? Promise.resolve(privateKey)
+    ? Ember.RSVP.Promise.resolve(privateKey)
     : getKeyPair().then(keyPair => keyPair[1]);
 }
 
@@ -99,9 +99,9 @@ export function getTopicKey(topicId) {
   let key = topicKeys[topicId];
 
   if (!key) {
-    return Promise.reject();
+    return Ember.RSVP.Promise.reject();
   } else if (key instanceof CryptoKey) {
-    return Promise.resolve(key);
+    return Ember.RSVP.Promise.resolve(key);
   } else {
     return getPrivateKey()
       .then(privKey => importKey(key, privKey))
@@ -163,19 +163,23 @@ export function hasTopicTitle(topicId) {
 export function getEncryptionStatus() {
   const user = Discourse.User.current();
   if (!user) {
-    return Promise.resolve(ENCRYPT_DISABLED);
+    return Ember.RSVP.Promise.resolve(ENCRYPT_DISABLED);
   }
 
   const sPubKey = user.get("custom_fields.encrypt_public_key");
   const sPrvKey = user.get("custom_fields.encrypt_private_key");
 
   if (!sPubKey || !sPrvKey) {
-    return Promise.resolve(ENCRYPT_DISABLED);
+    return Ember.RSVP.Promise.resolve(ENCRYPT_DISABLED);
   }
 
   return loadKeyPairFromIndexedDb()
     .then(([cPubKey, cPrvKey]) =>
-      Promise.all([cPubKey, cPrvKey, cPubKey ? exportPublicKey(cPubKey) : null])
+      Ember.RSVP.Promise.all([
+        cPubKey,
+        cPrvKey,
+        cPubKey ? exportPublicKey(cPubKey) : null
+      ])
     )
     .then(([cPubKey, cPrvKey, cPubKeyExported]) => {
       if (cPubKey && cPrvKey && sPubKey === cPubKeyExported) {
@@ -197,12 +201,10 @@ export function getEncryptionStatus() {
 export function hideComponentIfDisabled(component) {
   let handler = () => {
     getEncryptionStatus().then(newStatus => {
-      Ember.run(() =>
-        component.setProperties({
-          isEncryptEnabled: newStatus === ENCRYPT_ENABLED,
-          isEncryptActive: newStatus === ENCRYPT_ACTIVE
-        })
-      );
+      component.setProperties({
+        isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
+        isEncryptActive: newStatus === ENCRYPT_ACTIVE
+      });
     });
   };
 

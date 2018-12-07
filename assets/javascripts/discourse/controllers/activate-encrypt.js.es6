@@ -45,7 +45,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
         passphraseKey => importPrivateKey(privateStr, passphraseKey)
       );
 
-      Promise.all([importPub, importPrv])
+      Ember.RSVP.Promise.all([importPub, importPrv])
 
         // 2. Save key pair in local IndexedDb.
         .then(([publicKey, privateKey]) =>

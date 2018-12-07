@@ -77,7 +77,7 @@ function openIndexedDb(create) {
  * @param pubKey
  * @param privKey
  *
- * @return Promise
+ * @return Ember.RSVP.Promise
  */
 export function saveKeyPairToIndexedDb(pubKey, privKey) {
   if (isSafari) {
@@ -85,9 +85,9 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
     privKey = exportKey(privKey);
   }
 
-  return Promise.all([pubKey, privKey]).then(
+  return Ember.RSVP.Promise.all([pubKey, privKey]).then(
     ([publicKey, privateKey]) =>
-      new Promise((resolve, reject) => {
+      new Ember.RSVP.Promise((resolve, reject) => {
         let req = openIndexedDb(true);
 
         req.onerror = evt => reject(evt);
@@ -114,7 +114,7 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
  * @return Array A tuple consisting of public and private key.
  */
 export function loadKeyPairFromIndexedDb() {
-  return new Promise((resolve, reject) => {
+  return new Ember.RSVP.Promise((resolve, reject) => {
     let req = openIndexedDb(false);
 
     req.onerror = () => resolve();
@@ -139,7 +139,7 @@ export function loadKeyPairFromIndexedDb() {
     let keyPair = keyPairs[keyPairs.length - 1];
 
     if (isSafari) {
-      return Promise.all([
+      return Ember.RSVP.Promise.all([
         importKey(keyPair.publicKey, "encrypt"),
         importKey(keyPair.privateKey, "decrypt")
       ]);
@@ -152,10 +152,10 @@ export function loadKeyPairFromIndexedDb() {
 /**
  * Deletes plugin's IndexedDB and all user keys.
  *
- * @return Promise
+ * @return Ember.RSVP.Promise
  */
 export function deleteIndexedDb() {
-  return new Promise((resolve, reject) => {
+  return new Ember.RSVP.Promise((resolve, reject) => {
     let req = window.indexedDB.deleteDatabase(INDEXED_DB_NAME);
 
     req.onsuccess = evt => resolve(evt);
