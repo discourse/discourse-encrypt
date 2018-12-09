@@ -35,7 +35,7 @@ function exportKey(key) {
  *
  * @return CryptoKey
  */
-function importKey(key, op) {
+function importKey(key, ops) {
   return window.crypto.subtle.importKey(
     "jwk",
     JSON.parse(key),
@@ -44,7 +44,7 @@ function importKey(key, op) {
       hash: { name: "SHA-256" }
     },
     true,
-    [op]
+    ops
   );
 }
 
@@ -140,8 +140,8 @@ export function loadKeyPairFromIndexedDb() {
 
     if (isSafari) {
       return Ember.RSVP.Promise.all([
-        importKey(keyPair.publicKey, "encrypt"),
-        importKey(keyPair.privateKey, "decrypt")
+        importKey(keyPair.publicKey, ["encrypt", "wrapKey"]),
+        importKey(keyPair.privateKey, ["decrypt", "unwrapKey"])
       ]);
     }
 
