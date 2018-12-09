@@ -14,12 +14,7 @@ import {
   saveKeyPairToIndexedDb,
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
-import {
-  ENCRYPT_DISABLED,
-  ENCRYPT_ACTIVE,
-  getEncryptionStatus,
-  hideComponentIfDisabled
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { hideComponentIfDisabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
 // Handlebars offers `if` but no other helpers for conditions, which eventually

@@ -27,8 +27,8 @@
               {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
             </form>
           {{else}}
-            {{d-button icon="exchange" action="showPassphraseInput" label="encrypt.preferences.change"}}
-            {{d-button icon="times" action="deactivateEncrypt" label="encrypt.preferences.deactivate"}}
+            {{d-button icon="exchange" action="showPassphraseInput" label="encrypt.preferences.change" id="change"}}
+            {{d-button icon="times" action="deactivateEncrypt" label="encrypt.preferences.deactivate" id="deactivate"}}
           {{/if}}
         {{else}}
           <form>

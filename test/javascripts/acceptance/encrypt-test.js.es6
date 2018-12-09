@@ -17,6 +17,7 @@ import {
   ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { default as userFixtures } from "fixtures/user_fixtures";
+import { parsePostData } from "helpers/create-pretender";
 
 /*
  * Checks if a string is not contained in a string.
@@ -76,19 +77,18 @@ async function getKeyPair(passsphrase) {
 async function setEncryptionStatus(status) {
   const user = Discourse.User.current();
 
-  // Disable encryption first.
-  user.set("custom_fields.encrypt_public_key", null);
-  user.set("custom_fields.encrypt_private_key", null);
+  // Resetting IndexedDB.
   try {
     await deleteIndexedDb();
   } catch (e) {}
 
-  if (status === ENCRYPT_DISABLED) {
-    return;
-  }
+  // Generating a new key pair if enabling or creating a dummy one if disabling.
+  const keyPair =
+    status !== ENCRYPT_DISABLED
+      ? await getKeyPair(PASSPHRASE)
+      : [null, null, null, null, null];
 
-  // Enable on server-side.
-  const keyPair = await getKeyPair(PASSPHRASE);
+  // Overwriting server-side fields.
   const [publicKey, privateKey, publicStr, privateStr, salt] = keyPair;
   user.set("custom_fields.encrypt_public_key", publicStr);
   user.set("custom_fields.encrypt_private_key", privateStr);
@@ -108,7 +108,7 @@ async function setEncryptionStatus(status) {
     return [200, { "Content-Type": "application/json" }, json];
   });
 
-  // Activate on client-side.
+  // Activating encryption on client-side.
   if (status === ENCRYPT_ACTIVE) {
     await saveKeyPairToIndexedDb(publicKey, privateKey);
   }
@@ -117,6 +117,7 @@ async function setEncryptionStatus(status) {
   return (keys[user.username] = keyPair);
 }
 
+// TODO: Figure out why `await` is not enough.
 function sleep(time) {
   return new Promise(resolve => {
     setTimeout(() => resolve(), time);
@@ -133,6 +134,7 @@ acceptance("Encrypt", {
     XMLHttpRequest.prototype.send = function(body) {
       if (body && globalAssert) {
         globalAssert.notContains(body, PLAINTEXT, "does not leak plaintext");
+        globalAssert.notContains(body, PASSPHRASE, "does not leak passphrase");
       }
       return this.send_(...arguments);
     };
@@ -166,16 +168,18 @@ test("posting does not leak plaintext", async assert => {
 
   await visit("/");
   await click("#create-topic");
+  await sleep(1500);
 
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
+  await sleep(1500);
 
   await click(".reply-details a");
   await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
 
   await click("button.create");
-  await sleep(3000);
+  await sleep(1500);
 
   globalAssert = null;
 });
@@ -191,33 +195,89 @@ test("enabling works", async assert => {
   });
 
   await visit("/u/eviltrout/preferences");
-  await sleep(3000);
+  await sleep(1500);
 
   await click(".encrypt button");
-
   await fillIn(".encrypt #passphrase", PASSPHRASE);
   await fillIn(".encrypt #passphrase2", PASSPHRASE);
   await click(".encrypt button.btn-primary");
-  await sleep(3000);
+  await sleep(1500);
+  await sleep(1500);
 
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
   const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
+  await sleep(1500);
 });
 
 test("activation works", async assert => {
   await setEncryptionStatus(ENCRYPT_ENABLED);
 
   await visit("/u/eviltrout/preferences");
-  await sleep(3000);
+  await sleep(1500);
 
   await fillIn(".encrypt #passphrase", PASSPHRASE);
   await click(".encrypt button.btn-primary");
-  await sleep(3000);
+  await sleep(1500);
 
   const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
+  await sleep(1500);
+});
+
+test("changing passphrase works", async assert => {
+  await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+  let ajaxRequested = false;
+  /* global server */
+  server.put("/encrypt/keys", request => {
+    const params = parsePostData(request.requestBody);
+    assert.equal(
+      params["public_key"],
+      keys["eviltrout"][2],
+      "old and new public keys match"
+    );
+    assert.notEqual(
+      params["private_key"],
+      keys["eviltrout"][3],
+      "old and new private keys do not match"
+    );
+    ajaxRequested = true;
+    return [200, { "Content-Type": "application/json" }, { success: "OK" }];
+  });
+
+  await visit("/u/eviltrout/preferences");
+  await sleep(1500);
+
+  await click(".encrypt button#change");
+  await fillIn(".encrypt #oldPassphrase", PASSPHRASE);
+  await fillIn(".encrypt #passphrase", "new" + PASSPHRASE + "passphrase");
+  await fillIn(".encrypt #passphrase2", "new" + PASSPHRASE + "passphrase");
+  await click(".encrypt button.btn-primary");
+  await sleep(1500);
+
+  assert.ok(ajaxRequested, "AJAX request to save keys was made");
+
+  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  assert.ok(publicKey instanceof CryptoKey);
+  assert.ok(privateKey instanceof CryptoKey);
+  await sleep(1500);
+});
+
+test("deactivation works", async assert => {
+  await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+  await visit("/u/eviltrout/preferences");
+  await sleep(1500);
+
+  await click(".encrypt button#deactivate");
+  await sleep(1500);
+
+  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  assert.equal(publicKey, null);
+  assert.equal(privateKey, null);
+  await sleep(1500);
 });
