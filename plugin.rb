@@ -193,7 +193,9 @@ after_initialize do
   # paired private key.
 
   add_to_serializer(:topic_view, :topic_key, false) do
-    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.topic.id}_#{scope.user.id}")
+    if object.topic.private_message?
+      PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.topic.id}_#{scope.user.id}")
+    end
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
@@ -201,7 +203,9 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
-    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    if object.private_message?
+      PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    end
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
@@ -209,7 +213,9 @@ after_initialize do
   end
 
   add_to_serializer(:listable_topic, :topic_key, false) do
-    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    if object.private_message?
+      PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    end
   end
 
   add_to_serializer(:listable_topic, :include_topic_key?) do
@@ -217,7 +223,9 @@ after_initialize do
   end
 
   add_to_serializer(:topic_list_item, :topic_key, false) do
-    PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    if object.private_message?
+      PluginStore.get(DiscourseEncrypt::PLUGIN_NAME, "key_#{object.id}_#{scope.user.id}")
+    end
   end
 
   add_to_serializer(:topic_list_item, :include_topic_key?) do
