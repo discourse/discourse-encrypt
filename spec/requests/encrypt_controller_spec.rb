@@ -125,6 +125,7 @@ describe ::DiscourseEncrypt::EncryptController do
         }
       }
 
+      expect(response.status).to eq(403)
       expect(topic.custom_fields['encrypted_title']).to eq('-- the encrypted title --')
       expect(store.get("key_#{topic.id}_#{user.id}")).to eq('-- the key of user --')
       expect(store.get("key_#{topic.id}_#{user2.id}")).to eq('-- the key of user2 --')
@@ -142,6 +143,7 @@ describe ::DiscourseEncrypt::EncryptController do
         }
       }
 
+      expect(response.status).to eq(403)
       expect(topic.custom_fields['encrypted_title']).to eq('-- the encrypted title --')
       expect(store.get("key_#{topic.id}_#{user.id}")).to eq('-- the key of user --')
       expect(store.get("key_#{topic.id}_#{user2.id}")).to eq('-- the key of user2 --')

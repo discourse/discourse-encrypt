@@ -16,10 +16,10 @@ describe BasicTopicSerializer do
     store.set("key_#{topic.id}_#{user.id}", '-- the key of user --')
   end
 
-  it 'does not contain user-specific encrypted fields when scope is missing' do
+  it 'does not contain encrypted fields when scope is missing' do
     serialized = described_class.new(topic, root: false).as_json
 
-    expect(serialized[:encrypted_title]).to eq('-- the encrypted title --')
+    expect(serialized[:encrypted_title]).to eq(nil)
     expect(serialized[:topic_key]).to eq(nil)
   end
 

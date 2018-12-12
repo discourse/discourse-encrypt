@@ -29,7 +29,7 @@ describe TopicViewSerializer do
     expect(serialized[:topic_key]).to eq(nil)
 
     serialized = described_class.new(topic_view, scope: Guardian.new, root: false).as_json
-    expect(serialized[:encrypted_title]).to eq('-- the encrypted title --')
+    expect(serialized[:encrypted_title]).to eq(nil)
     expect(serialized[:topic_key]).to eq(nil)
   end
 
