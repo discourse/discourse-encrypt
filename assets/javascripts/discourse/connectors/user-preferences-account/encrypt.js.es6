@@ -28,10 +28,11 @@ export default {
       component.setProperties({
         model: args.model,
         handler: hideComponentIfDisabled(component),
-        /** @var Value of passphrase input.
+        /** @var Value of passphrase input (old, current and retyped).
          *       It should stay in memory for as little time as possible.
          *       Clear it often.
          */
+        oldPassphrase: "",
         passphrase: "",
         passphrase2: "",
         /** @var Whether the passphrase input is shown. */
