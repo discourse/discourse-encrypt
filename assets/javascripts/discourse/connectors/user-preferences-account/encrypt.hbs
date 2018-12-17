@@ -2,15 +2,51 @@
   <div class="control-group pref-title">
     <label class="control-label">{{i18n 'encrypt.title'}}</label>
     <div class="controls">
-      {{#if isEncryptEnabled}}
-        {{#if isEncryptActive}}
-          <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
+      {{#if isCurrentUser}}
+        {{#if isEncryptEnabled}}
+          {{#if isEncryptActive}}
+            <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
+            {{#if passphraseInput}}
+              <form>
+                <p>
+                  <label for="">{{i18n "encrypt.preferences.old_passphrase_label"}}</label>
+                  {{input type="password" value=oldPassphrase id="oldPassphrase" autocomplete="current-password" disabled=inProgress}}
+                </p>
+                <p>
+                  <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
+                  {{input type="password" value=passphrase id="passphrase" autocomplete="new-password" disabled=inProgress}}
+                </p>
+                <p>
+                  <label for="">{{i18n "encrypt.preferences.passphrase2_label"}}</label>
+                  {{input type="password" value=passphrase2 id="passphrase2" autocomplete="new-password" disabled=inProgress}}
+                </p>
+                {{#if passphraseStatus}}
+                  <p class="text-danger">{{i18n passphraseStatus}}</p>
+                {{/if}}
+
+                {{d-button class="btn-primary" icon="exchange" action="changeEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
+                {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
+              </form>
+            {{else}}
+              {{d-button icon="exchange" action="showPassphraseInput" label="encrypt.preferences.change" id="change"}}
+              {{d-button icon="times" action="deactivateEncrypt" label="encrypt.preferences.deactivate" id="deactivate"}}
+            {{/if}}
+          {{else}}
+            <form>
+              <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
+              {{{i18n 'encrypt.preferences.notice_active'}}}
+              <p>
+                <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
+                {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
+              </p>
+              <p>{{d-button class="btn-primary" icon="unlock" action="activateEncrypt" disabled=inProgress label="encrypt.preferences.activate"}}</p>
+            </form>
+          {{/if}}
+        {{else}}
+          <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>
           {{#if passphraseInput}}
             <form>
-              <p>
-                <label for="">{{i18n "encrypt.preferences.old_passphrase_label"}}</label>
-                {{input type="password" value=oldPassphrase id="oldPassphrase" autocomplete="current-password" disabled=inProgress}}
-              </p>
+              {{{i18n 'encrypt.preferences.notice_enable'}}}
               <p>
                 <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
                 {{input type="password" value=passphrase id="passphrase" autocomplete="new-password" disabled=inProgress}}
@@ -22,48 +58,20 @@
               {{#if passphraseStatus}}
                 <p class="text-danger">{{i18n passphraseStatus}}</p>
               {{/if}}
-
-              {{d-button class="btn-primary" icon="exchange" action="changeEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
-              {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
+              <p>
+                {{d-button class="btn-primary" icon="lock" action="enableEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.enable"}}
+                {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
+              </p>
             </form>
           {{else}}
-            {{d-button icon="exchange" action="showPassphraseInput" label="encrypt.preferences.change" id="change"}}
-            {{d-button icon="times" action="deactivateEncrypt" label="encrypt.preferences.deactivate" id="deactivate"}}
+            {{d-button icon="lock" action="showPassphraseInput" label="encrypt.preferences.enable"}}
           {{/if}}
-        {{else}}
-          <form>
-            <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
-            {{{i18n 'encrypt.preferences.notice_active'}}}
-            <p>
-              <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-              {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
-            </p>
-            <p>{{d-button class="btn-primary" icon="unlock" action="activateEncrypt" disabled=inProgress label="encrypt.preferences.activate"}}</p>
-          </form>
         {{/if}}
       {{else}}
-        <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>
-        {{#if passphraseInput}}
-          <form>
-            {{{i18n 'encrypt.preferences.notice_enable'}}}
-            <p>
-              <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-              {{input type="password" value=passphrase id="passphrase" autocomplete="new-password" disabled=inProgress}}
-            </p>
-            <p>
-              <label for="">{{i18n "encrypt.preferences.passphrase2_label"}}</label>
-              {{input type="password" value=passphrase2 id="passphrase2" autocomplete="new-password" disabled=inProgress}}
-            </p>
-            {{#if passphraseStatus}}
-              <p class="text-danger">{{i18n passphraseStatus}}</p>
-            {{/if}}
-            <p>
-              {{d-button class="btn-primary" icon="lock" action="enableEncrypt" disabled=(or passphraseStatus inProgress) label="encrypt.preferences.enable"}}
-              {{d-button action="hidePassphraseInput" disabled=inProgress label="cancel"}}
-            </p>
-          </form>
+        {{#if isEncryptEnabled}}
+          <p>{{i18n 'encrypt.preferences.status_enabled_other'}}</p>
         {{else}}
-          {{d-button icon="lock" action="showPassphraseInput" label="encrypt.preferences.enable"}}
+          <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
         {{/if}}
       {{/if}}
     </div>

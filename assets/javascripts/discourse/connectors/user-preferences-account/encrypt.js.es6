@@ -23,43 +23,57 @@ registerHelper("or", ([a, b]) => a || b);
 
 export default {
   setupComponent(args, component) {
-    component.setProperties({
-      model: args.model,
-      handler: hideComponentIfDisabled(component),
-      save: args.save,
-      /** @var Value of passphrase input.
-       *       It should stay in memory for as little time as possible.
-       *       Clear it often.
-       */
-      passphrase: "",
-      passphrase2: "",
-      /** @var Whether the passphrase input is shown. */
-      passphraseInput: false,
-      /** @var Whether any operation (AJAX request, key generation, etc.) is
-       *       in progress. */
-      inProgress: false,
-      /** @var Whether the encryption is enabled or not. */
-      isEncryptEnabled: false,
-      /** @var Whether the encryption is active on this device. */
-      isEncryptActive: false,
-      // TOOD: Check out if there is a way to define functions like this in
-      //       the `export default` scope.
-      passphraseStatus: function() {
-        const passphrase = component.get("passphrase");
-        const passphrase2 = component.get("passphrase2");
-        if (!passphrase) {
-          return "encrypt.preferences.passphrase_enter";
-        } else if (passphrase.length < 15) {
-          return "encrypt.preferences.passphrase_insecure";
-        } else if (passphrase !== passphrase2) {
-          return "encrypt.preferences.passphrase_mismatch";
+    const currentUser = Discourse.User.current();
+    if (args.model.get("id") === currentUser.get("id")) {
+      component.setProperties({
+        model: args.model,
+        handler: hideComponentIfDisabled(component),
+        /** @var Value of passphrase input.
+         *       It should stay in memory for as little time as possible.
+         *       Clear it often.
+         */
+        passphrase: "",
+        passphrase2: "",
+        /** @var Whether the passphrase input is shown. */
+        passphraseInput: false,
+        /** @var Whether any operation (AJAX request, key generation, etc.) is
+         *       in progress. */
+        inProgress: false,
+        /** @var Whether current user is the same as model user. */
+        isCurrentUser: true,
+        /** @var Whether the encryption is enabled or not. */
+        isEncryptEnabled: false,
+        /** @var Whether the encryption is active on this device. */
+        isEncryptActive: false,
+        // TOOD: Check out if there is a way to define functions like this in
+        //       the `export default` scope.
+        passphraseStatus: function() {
+          const passphrase = component.get("passphrase");
+          const passphrase2 = component.get("passphrase2");
+          if (!passphrase) {
+            return "encrypt.preferences.passphrase_enter";
+          } else if (passphrase.length < 15) {
+            return "encrypt.preferences.passphrase_insecure";
+          } else if (passphrase !== passphrase2) {
+            return "encrypt.preferences.passphrase_mismatch";
+          }
+        }.property("passphrase", "passphrase2"),
+        willDestroyElement() {
+          this._super(...arguments);
+          this.appEvents.off(
+            "encrypt:status-changed",
+            this,
+            this.get("handler")
+          );
         }
-      }.property("passphrase", "passphrase2"),
-      willDestroyElement() {
-        this._super(...arguments);
-        this.appEvents.off("encrypt:status-changed", this, this.get("handler"));
-      }
-    });
+      });
+    } else {
+      component.setProperties({
+        model: args.model,
+        isCurrentUser: false,
+        isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public_key")
+      });
+    }
   },
 
   actions: {

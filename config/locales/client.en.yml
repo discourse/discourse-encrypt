@@ -19,8 +19,10 @@ en:
 
       preferences:
         status_enabled: "You have enabled encryption and activated it on this device."
+        status_enabled_other: "This user has enabled encryption and can receive encrypted messages."
         status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."
         status_disabled: "You have not enabled encryption on this account."
+        status_disabled_other: "This user did not enable encryption and cannot receive encrypted messages."
 
         old_passphrase_label: "Old passphrase:"
         passphrase_label: "Passphrase:"
