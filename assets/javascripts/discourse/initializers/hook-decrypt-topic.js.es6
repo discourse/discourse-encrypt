@@ -71,10 +71,8 @@ export default {
     var self = this;
     Ember.Component.reopen({
       didRender() {
-        Ember.run.scheduleOnce("afterRender", this, () => {
-          Ember.run.debounce(self, decryptTitles, 250);
-        });
-        return this._super();
+        Ember.run.debounce(self, decryptTitles, 500);
+        return this._super(...arguments);
       }
     });
   }
