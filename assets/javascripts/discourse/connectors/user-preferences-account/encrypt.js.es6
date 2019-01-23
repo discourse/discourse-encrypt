@@ -49,17 +49,6 @@ export default {
         isEncryptActive: false,
         // TOOD: Check out if there is a way to define functions like this in
         //       the `export default` scope.
-        passphraseStatus: function() {
-          const passphrase = component.get("passphrase");
-          const passphrase2 = component.get("passphrase2");
-          if (!passphrase) {
-            return "encrypt.preferences.passphrase_enter";
-          } else if (passphrase.length < 15) {
-            return "encrypt.preferences.passphrase_insecure";
-          } else if (passphrase !== passphrase2) {
-            return "encrypt.preferences.passphrase_mismatch";
-          }
-        }.property("passphrase", "passphrase2"),
         willDestroyElement() {
           this._super(...arguments);
           this.appEvents.off(
@@ -69,6 +58,21 @@ export default {
           );
         }
       });
+      Ember.defineProperty(
+        component,
+        "passphraseStatus",
+        Ember.computed("passphrase", "passphrase2", function() {
+          const passphrase = component.get("passphrase");
+          const passphrase2 = component.get("passphrase2");
+          if (!passphrase) {
+            return "encrypt.preferences.passphrase_enter";
+          } else if (passphrase.length < 15) {
+            return "encrypt.preferences.passphrase_insecure";
+          } else if (passphrase !== passphrase2) {
+            return "encrypt.preferences.passphrase_mismatch";
+          }
+        })
+      );
     } else {
       component.setProperties({
         model: args.model,
