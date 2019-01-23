@@ -25,6 +25,11 @@ import {
 export default {
   name: "hook-composer",
   initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (!siteSettings.encrypt_enabled) {
+      return;
+    }
+
     // Decode composer on reply reload. This usually occurs when a post is
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");

@@ -13,7 +13,12 @@ import showModal from "discourse/lib/show-modal";
 export default {
   name: "hook-decrypt-post",
 
-  initialize() {
+  initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (!siteSettings.encrypt_enabled) {
+      return;
+    }
+
     withPluginApi("0.8.25", api => {
       api.reopenWidget("post-contents", {
         html(attrs, state) {

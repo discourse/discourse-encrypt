@@ -60,6 +60,11 @@ export default {
   name: "hook-decrypt-topic",
 
   initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (!siteSettings.encrypt_enabled) {
+      return;
+    }
+
     const appEvents = container.lookup("app-events:main");
     appEvents.on("encrypt:status-changed", decryptTitles);
 

@@ -8,7 +8,12 @@ import {
 export default {
   name: "hook-gather-keys",
 
-  initialize() {
+  initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (!siteSettings.encrypt_enabled) {
+      return;
+    }
+
     // Go through the `PreloadStore` and look for any preloaded topic keys.
     for (var storeKey in PreloadStore.data) {
       if (storeKey.includes("topic_")) {

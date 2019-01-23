@@ -13,7 +13,12 @@ import Draft from "discourse/models/draft";
 export default {
   name: "hook-draft",
 
-  initialize() {
+  initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (!siteSettings.encrypt_enabled) {
+      return;
+    }
+
     Draft.reopenClass({
       save(key, sequence, data) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
