@@ -60,6 +60,16 @@
                 <p class="text-danger">{{i18n passphraseStatus}}</p>
               {{/if}}
               <p>
+                <label>
+                {{input type="checkbox" checked=importKey}}
+                {{i18n "encrypt.preferences.import_key"}}
+                </label>
+              </p>
+              {{#if importKey}}
+                {{{i18n 'encrypt.preferences.notice_import'}}}
+                {{textarea class="imported-keypair" value=key}}
+              {{/if}}
+              <p>
                 {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=(or passphraseStatus inProgress) label="encrypt.preferences.enable"}}
                 {{d-button action=(action "hidePassphraseInput") disabled=inProgress label="cancel"}}
               </p>

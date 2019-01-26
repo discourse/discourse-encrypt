@@ -59,10 +59,11 @@ export function exportPublicKey(publicKey) {
  * Imports a public key.
  *
  * @param publicKey
+ * @param usages
  *
  * @return Ember.RSVP.Promise<CryptoKey>
  */
-export function importPublicKey(publicKey) {
+export function importPublicKey(publicKey, usages) {
   return new Ember.RSVP.Promise((resolve, reject) => {
     window.crypto.subtle
       .importKey(
@@ -70,7 +71,7 @@ export function importPublicKey(publicKey) {
         JSON.parse(bufferToString(base64ToBuffer(publicKey))),
         { name: "RSA-OAEP", hash: { name: "SHA-256" } },
         true,
-        ["encrypt", "wrapKey"]
+        usages ? usages : ["encrypt", "wrapKey"]
       )
       .then(resolve, reject);
   });

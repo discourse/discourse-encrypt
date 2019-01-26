@@ -16,6 +16,11 @@ import {
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import { hideComponentIfDisabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  PACKED_KEY_HEADER,
+  PACKED_KEY_SEPARATOR,
+  PACKED_KEY_FOOTER
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
 // Handlebars offers `if` but no other helpers for conditions, which eventually
@@ -47,6 +52,10 @@ export default {
         isEncryptEnabled: false,
         /** @var Whether the encryption is active on this device. */
         isEncryptActive: false,
+        /** @var Whether it is an import operation. */
+        importKey: false,
+        /** @var Key to be imported .*/
+        key: "",
         // TOOD: Check out if there is a way to define functions like this in
         //       the `export default` scope.
         willDestroyElement() {
@@ -104,10 +113,29 @@ export default {
     enableEncrypt() {
       this.set("inProgress", true);
 
-      // 1. Generate key pair.
-      generateKeyPair()
-        // 2. a. Export public key to string.
-        // 2. b. Export private key to a string (using passphrase).
+      // 1. Generate new key pair or import existing one.
+      let keyPairPromise;
+      if (this.get("importKey")) {
+        const str = (this.get("key") || PACKED_KEY_SEPARATOR)
+          .replace(PACKED_KEY_HEADER, "")
+          .replace(PACKED_KEY_FOOTER, "")
+          .split(PACKED_KEY_SEPARATOR);
+
+        const publicStr = str[0].split(/\s+/).map(x => x.trim()).join("");
+        const privateStr = str[1].split(/\s+/).map(x => x.trim()).join("");
+        console.log("importing key", publicStr, privateStr);
+
+        keyPairPromise = Promise.all([
+          importPublicKey(publicStr),
+          importPublicKey(privateStr, ["decrypt", "unwrapKey"])
+        ]);
+      } else {
+        keyPairPromise = generateKeyPair();
+      }
+
+      // 2. a. Export public key to string.
+      // 2. b. Export private key to a string (using passphrase).
+      keyPairPromise
         .then(keyPair => {
           const [publicKey, privateKey] = keyPair;
 
@@ -162,7 +190,9 @@ export default {
           this.setProperties({
             inProgress: false,
             isEncryptEnabled: true,
-            isEncryptActive: true
+            isEncryptActive: true,
+            importKey: false,
+            key: ""
           });
         })
 
