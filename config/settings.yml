@@ -2,3 +2,4 @@ plugins:
   encrypt_enabled:
     client: true
     default: true
+    refresh: true
