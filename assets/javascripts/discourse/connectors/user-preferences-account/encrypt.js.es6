@@ -123,7 +123,6 @@ export default {
 
         const publicStr = str[0].split(/\s+/).map(x => x.trim()).join("");
         const privateStr = str[1].split(/\s+/).map(x => x.trim()).join("");
-        console.log("importing key", publicStr, privateStr);
 
         keyPairPromise = Promise.all([
           importPublicKey(publicStr),

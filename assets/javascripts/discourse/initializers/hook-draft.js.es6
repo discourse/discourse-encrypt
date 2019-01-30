@@ -29,8 +29,6 @@ export default {
           /*
            * Encrypt private message drafts.
            */
-          // TODO: Avoid using the container.
-          const container = Discourse.__container__;
           const controller = container.lookup("controller:composer");
           if (controller.get("model.isEncrypted")) {
             const p = getPublicKey();
