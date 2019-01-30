@@ -121,8 +121,14 @@ export default {
           .replace(PACKED_KEY_FOOTER, "")
           .split(PACKED_KEY_SEPARATOR);
 
-        const publicStr = str[0].split(/\s+/).map(x => x.trim()).join("");
-        const privateStr = str[1].split(/\s+/).map(x => x.trim()).join("");
+        const publicStr = str[0]
+          .split(/\s+/)
+          .map(x => x.trim())
+          .join("");
+        const privateStr = str[1]
+          .split(/\s+/)
+          .map(x => x.trim())
+          .join("");
 
         keyPairPromise = Promise.all([
           importPublicKey(publicStr),
