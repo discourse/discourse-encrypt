@@ -1,13 +1,16 @@
 /**
  * Name of IndexedDb used for storing keypairs.
  */
-const INDEXED_DB_NAME = "discourse-encrypt";
+const DB_NAME = "discourse-encrypt";
 
 /*
  * Checks if this is running in Apple's Safari.
  *
- * Safari's implementation of IndexedDb cannot store CryptoKeys, so JWK's are
- * used instead.
+ * Safari's implementation of IndexedDb cannot store CryptoKeys, so local
+ * storage is used instead.
+ *
+ * Moreover, the Discourse Hub app uses `SFSafariViewController` which does not
+ * have a persistent storage for IndexedDb.
  *
  * TODO: Remove `isSafari`, `exportKey` and `importKey` if Safari was fixed.
  *         - https://bugs.webkit.org/show_bug.cgi?id=177350
@@ -54,7 +57,7 @@ function importKey(key, ops) {
  * @return IDBOpenDBRequest
  */
 function openIndexedDb(create) {
-  let req = window.indexedDB.open(INDEXED_DB_NAME, 1);
+  let req = window.indexedDB.open(DB_NAME, 1);
 
   req.onupgradeneeded = evt => {
     if (!create) {
@@ -81,8 +84,13 @@ function openIndexedDb(create) {
  */
 export function saveKeyPairToIndexedDb(pubKey, privKey) {
   if (isSafari) {
-    pubKey = exportKey(pubKey);
-    privKey = exportKey(privKey);
+    return Ember.RSVP.Promise.all([exportKey(pubKey), exportKey(privKey)]).then(
+      ([publicKey, privateKey]) => {
+        const keyPairStr = JSON.stringify([publicKey, privateKey]);
+        window.localStorage.setItem(DB_NAME, keyPairStr);
+        return Ember.RSVP.resolve();
+      }
+    );
   }
 
   return Ember.RSVP.Promise.all([pubKey, privKey]).then(
@@ -114,6 +122,17 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
  * @return Array A tuple consisting of public and private key.
  */
 export function loadKeyPairFromIndexedDb() {
+  if (isSafari) {
+    const keyPair = JSON.parse(window.localStorage.getItem(DB_NAME));
+    if (!keyPair) {
+      return Ember.RSVP.resolve([undefined, undefined]);
+    }
+    return Ember.RSVP.Promise.all([
+      importKey(keyPair[0], ["encrypt", "wrapKey"]),
+      importKey(keyPair[1], ["decrypt", "unwrapKey"])
+    ]);
+  }
+
   return new Ember.RSVP.Promise((resolve, reject) => {
     let req = openIndexedDb(false);
 
@@ -137,14 +156,6 @@ export function loadKeyPairFromIndexedDb() {
     }
 
     let keyPair = keyPairs[keyPairs.length - 1];
-
-    if (isSafari) {
-      return Ember.RSVP.Promise.all([
-        importKey(keyPair.publicKey, ["encrypt", "wrapKey"]),
-        importKey(keyPair.privateKey, ["decrypt", "unwrapKey"])
-      ]);
-    }
-
     return [keyPair.publicKey, keyPair.privateKey];
   });
 }
@@ -155,8 +166,13 @@ export function loadKeyPairFromIndexedDb() {
  * @return Ember.RSVP.Promise
  */
 export function deleteIndexedDb() {
+  if (isSafari) {
+    window.localStorage.removeItem(DB_NAME);
+    return Ember.RSVP.resolve();
+  }
+
   return new Ember.RSVP.Promise((resolve, reject) => {
-    let req = window.indexedDB.deleteDatabase(INDEXED_DB_NAME);
+    let req = window.indexedDB.deleteDatabase(DB_NAME);
 
     req.onsuccess = evt => resolve(evt);
     req.onerror = evt => reject(evt);
