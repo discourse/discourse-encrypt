@@ -4,3 +4,4 @@ en:
     enabled_already: "You have already enabled encrypted messages."
   site_settings:
     encrypt_enabled: "Enable encrypted private messages."
+    encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."

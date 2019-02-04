@@ -3,3 +3,7 @@ plugins:
     client: true
     default: true
     refresh: true
+  encrypt_groups:
+    default: ""
+    client: true
+    type: list

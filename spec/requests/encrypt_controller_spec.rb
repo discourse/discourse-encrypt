@@ -38,6 +38,30 @@ describe ::DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(403)
     end
 
+    it 'does not work when user is not allowed' do
+      group = Fabricate(:group)
+      SiteSetting.encrypt_groups = group.name
+
+      user = Fabricate(:user)
+      sign_in(user)
+
+      put '/encrypt/keys', params: {
+        public_key: '-- the public key --',
+        private_key: '-- the private key --',
+        salt: '-- the salt --'
+      }
+      expect(response.status).to eq(403)
+
+      Fabricate(:group_user, group: group, user: user)
+
+      put '/encrypt/keys', params: {
+        public_key: '-- the public key --',
+        private_key: '-- the private key --',
+        salt: '-- the salt --'
+      }
+      expect(response.status).to eq(200)
+    end
+
     it 'saves user keys' do
       sign_in(user3)
 

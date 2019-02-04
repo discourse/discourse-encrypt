@@ -31,6 +31,10 @@ export default {
   setupComponent(args, component) {
     const currentUser = Discourse.User.current();
     if (args.model.get("id") === currentUser.get("id")) {
+      const groups = (args.model.get("groups") || []).map(group =>
+        group.get("name")
+      );
+      const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
       component.setProperties({
         model: args.model,
         handler: hideComponentIfDisabled(component),
@@ -48,6 +52,10 @@ export default {
         inProgress: false,
         /** @var Whether current user is the same as model user. */
         isCurrentUser: true,
+        /** @var Whether plugin is enabled for current user. */
+        isPluginEnabled:
+          Discourse.SiteSettings.encrypt_groups.length === 0 ||
+          groups.some(group => encryptGroups.includes(group)),
         /** @var Whether the encryption is enabled or not. */
         isEncryptEnabled: false,
         /** @var Whether the encryption is active on this device. */

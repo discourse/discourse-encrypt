@@ -126,7 +126,7 @@ function sleep(time) {
 
 acceptance("Encrypt", {
   loggedIn: true,
-  settings: { encrypt_enabled: true },
+  settings: { encrypt_enabled: true, encrypt_groups: "" },
 
   beforeEach() {
     // Hook `XMLHttpRequest` to search for leaked plaintext.

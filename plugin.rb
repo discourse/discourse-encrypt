@@ -48,6 +48,11 @@ after_initialize do
         private_key = params.require(:private_key)
         salt        = params.require(:salt)
 
+        # Check if encrypt settings are visible to user.
+        groups = current_user.groups.pluck(:name)
+        encrypt_groups = SiteSetting.encrypt_groups.split("|")
+        raise Discourse::InvalidAccess if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
+
         # Check if encryption is already enabled (but not changing passphrase).
         old_public_key = current_user.custom_fields['encrypt_public_key']
         if old_public_key && old_public_key != public_key
