@@ -8,6 +8,8 @@ en:
       encrypted_topic_title: "A secret message"
       encrypted_icon_title: "This message is end-to-end encrypted."
 
+      encrypted_uploads: "Uploads cannot be encrypted at this time."
+
       checkbox:
         checked: "This message will be end-to-end encrypted."
         unchecked: "Click the lock symbol to encrypt this message."
