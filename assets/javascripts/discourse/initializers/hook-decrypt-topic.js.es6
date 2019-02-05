@@ -33,7 +33,7 @@ function decryptElements(containerSelector, elementSelector) {
         const $glyph = $(`h1[data-topic-id=${topicId}] .private-message-glyph`);
         if ($glyph.length) {
           $glyph.html(icon);
-          $el.html(title);
+          $el.html(escapeExpression(title));
         } else {
           $el.html(icon + " " + title);
         }
