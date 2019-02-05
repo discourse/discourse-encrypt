@@ -34,6 +34,10 @@ export default {
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
     appEvents.on("composer:reply-reloaded", model => {
+      if (!model.get("privateMessage")) {
+        return;
+      }
+
       let decTitle, decReply;
 
       if (model.get("draftKey") === Composer.NEW_PRIVATE_MESSAGE_KEY) {
@@ -91,6 +95,9 @@ export default {
       save() {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
+        if (!this.get("privateMessage")) {
+          return _super.call(this, ...arguments);
+        }
 
         const title = this.get("title");
         const reply = this.get("reply");
