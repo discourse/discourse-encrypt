@@ -153,11 +153,15 @@ after_initialize do
     # Hide version (staff) and public version (regular users) because post
     # revisions will not be decrypted.
     def version
-      topic&.custom_fields["encrypted_title"] ? 1 : super
+      has_encrypted_title? ? 1 : super
     end
 
     def public_version
-      topic&.custom_fields["encrypted_title"] ? 1 : super
+      has_encrypted_title? ? 1 : super
+    end
+
+    def has_encrypted_title?
+      !!(topic && topic.custom_fields && topic.custom_fields["encrypted_title"])
     end
   end
 
