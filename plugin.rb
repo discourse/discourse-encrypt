@@ -141,9 +141,8 @@ after_initialize do
     # Patch method to hide excerpt of encrypted message (i.e. in push
     # notifications).
     def excerpt(maxlength = nil, options = {})
-      if topic.custom_fields["encrypted_title"]
+      if has_encrypted_title?
         maxlength ||= SiteSetting.post_excerpt_maxlength
-
         return I18n.t("encrypt.encrypted_excerpt")[0..maxlength]
       end
 
