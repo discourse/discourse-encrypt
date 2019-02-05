@@ -1,4 +1,4 @@
-import { acceptance } from "helpers/qunit-helpers";
+import { acceptance, replaceCurrentUser } from "helpers/qunit-helpers";
 import {
   exportPrivateKey,
   exportPublicKey,
@@ -168,12 +168,8 @@ test("posting does not leak plaintext", async assert => {
 
   await visit("/");
   await click("#create-topic");
-  await sleep(1500);
-
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
-  await sleep(1500);
-
   await click(".reply-details a");
   await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
@@ -195,8 +191,6 @@ test("enabling works", async assert => {
   });
 
   await visit("/u/eviltrout/preferences");
-  await sleep(1500);
-
   await click(".encrypt button");
   await fillIn(".encrypt #passphrase", PASSPHRASE);
   await fillIn(".encrypt #passphrase2", PASSPHRASE);
@@ -216,8 +210,6 @@ test("activation works", async assert => {
   await setEncryptionStatus(ENCRYPT_ENABLED);
 
   await visit("/u/eviltrout/preferences");
-  await sleep(1500);
-
   await fillIn(".encrypt #passphrase", PASSPHRASE);
   await click(".encrypt button.btn-primary");
   await sleep(1500);
@@ -250,8 +242,6 @@ test("changing passphrase works", async assert => {
   });
 
   await visit("/u/eviltrout/preferences");
-  await sleep(1500);
-
   await click(".encrypt button#change");
   await fillIn(".encrypt #oldPassphrase", PASSPHRASE);
   await fillIn(".encrypt #passphrase", "new" + PASSPHRASE + "passphrase");
@@ -271,8 +261,6 @@ test("deactivation works", async assert => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   await visit("/u/eviltrout/preferences");
-  await sleep(1500);
-
   await click(".encrypt button#deactivate");
   await sleep(1500);
 
@@ -280,4 +268,45 @@ test("deactivation works", async assert => {
   assert.equal(publicKey, null);
   assert.equal(privateKey, null);
   await sleep(1500);
+});
+
+test("encrypt settings visible only to allowed groups", async assert => {
+  await setEncryptionStatus(ENCRYPT_DISABLED);
+
+  await visit("/u/eviltrout/preferences");
+
+  assert.ok(find(".encrypt").text().length > 0, "encrypt settings are visible");
+
+  Discourse.SiteSettings.encrypt_groups = "allowed_group";
+
+  replaceCurrentUser({
+    groups: [
+      Ember.Object.create({
+        id: 1,
+        name: "not_allowed_group"
+      })
+    ]
+  });
+
+  await visit("/u/eviltrout/preferences");
+  assert.ok(
+    find(".encrypt").text().length === 0,
+    "encrypt settings are not visible"
+  );
+
+  replaceCurrentUser({
+    groups: [
+      Ember.Object.create({
+        id: 1,
+        name: "not_allowed_group"
+      }),
+      Ember.Object.create({
+        id: 2,
+        name: "allowed_group"
+      })
+    ]
+  });
+
+  await visit("/u/eviltrout/preferences");
+  assert.ok(find(".encrypt").text().length > 0, "encrypt settings are visible");
 });
