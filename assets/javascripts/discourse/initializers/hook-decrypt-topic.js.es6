@@ -1,7 +1,9 @@
+import { escapeExpression } from "discourse/lib/utilities";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import {
   hasTopicTitle,
-  getTopicTitle
+  getTopicTitle,
+  isEncryptEnabled
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
@@ -60,8 +62,8 @@ export default {
   name: "hook-decrypt-topic",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
-    if (!siteSettings.encrypt_enabled) {
+    const currentUser = container.lookup("current-user:main");
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

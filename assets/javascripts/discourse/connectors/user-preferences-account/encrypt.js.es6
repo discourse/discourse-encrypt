@@ -15,7 +15,10 @@ import {
   saveKeyPairToIndexedDb,
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
-import { hideComponentIfDisabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  isEncryptEnabled,
+  hideComponentIfDisabled
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   PACKED_KEY_HEADER,
   PACKED_KEY_SEPARATOR,
@@ -27,14 +30,43 @@ import {
 // lead to a lot of JavaScript bloat.
 registerHelper("or", ([a, b]) => a || b);
 
+/**
+ * Checks if a specific user can enable encryption.
+ *
+ * This check ensures that:
+ *    - user already has encryption enabled OR
+ *    - encryption plug-in is enabled AND
+ *    - there is no group restriction or user is in one of the allowed groups.
+ *
+ * @param user
+ *
+ * @return
+ */
+function canEnableEncrypt(user) {
+  if (getEncryptionStatus(user) !== ENCRYPT_DISABLED) {
+    return true;
+  }
+
+  if (Discourse.SiteSettings.encrypt_enabled) {
+    if (Discourse.SiteSettings.encrypt_groups.length === 0) {
+      return true;
+    }
+
+    const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
+    const groups = (user.get("groups") || []).map(group => group.get("name"));
+    if (groups.some(group => encryptGroups.includes(group))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export default {
   setupComponent(args, component) {
     const currentUser = Discourse.User.current();
+    const status = getEncryptionStatus(args.model);
     if (args.model.get("id") === currentUser.get("id")) {
-      const groups = (args.model.get("groups") || []).map(group =>
-        group.get("name")
-      );
-      const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
       component.setProperties({
         model: args.model,
         handler: hideComponentIfDisabled(component),
@@ -53,13 +85,11 @@ export default {
         /** @var Whether current user is the same as model user. */
         isCurrentUser: true,
         /** @var Whether plugin is enabled for current user. */
-        isPluginEnabled:
-          Discourse.SiteSettings.encrypt_groups.length === 0 ||
-          groups.some(group => encryptGroups.includes(group)),
+        canEnableEncrypt: canEnableEncrypt(args.model),
         /** @var Whether the encryption is enabled or not. */
-        isEncryptEnabled: false,
+        isEncryptEnabled: status !== ENCRYPT_DISABLED,
         /** @var Whether the encryption is active on this device. */
-        isEncryptActive: false,
+        isEncryptActive: status === ENCRYPT_ACTIVE,
         /** @var Whether it is an import operation. */
         importKey: false,
         /** @var Key to be imported .*/
@@ -94,6 +124,7 @@ export default {
       component.setProperties({
         model: args.model,
         isCurrentUser: false,
+        canEnableEncrypt: canEnableEncrypt(args.model),
         isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public_key")
       });
     }

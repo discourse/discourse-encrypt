@@ -167,38 +167,28 @@ export function hasTopicTitle(topicId) {
 }
 
 /**
- * Checks the encryption status for current user.
+ * Gets current encryption status.
  *
- * @return Integer Encryption status
+ * @param user
+ *
+ * @return
  */
-export function getEncryptionStatus() {
-  const user = Discourse.User.current();
-  if (!user) {
-    return Ember.RSVP.Promise.resolve(ENCRYPT_DISABLED);
+export function getEncryptionStatus(user) {
+  if (
+    !Discourse.SiteSettings.encrypt_enabled ||
+    !user ||
+    !user.get("custom_fields.encrypt_public_key") ||
+    !user.get("custom_fields.encrypt_private_key") ||
+    !user.get("custom_fields.encrypt_salt")
+  ) {
+    return ENCRYPT_DISABLED;
   }
 
-  const sPubKey = user.get("custom_fields.encrypt_public_key");
-  const sPrvKey = user.get("custom_fields.encrypt_private_key");
-
-  if (!sPubKey || !sPrvKey) {
-    return Ember.RSVP.Promise.resolve(ENCRYPT_DISABLED);
+  if (!window.localStorage.getItem(DB_NAME)) {
+    return ENCRYPT_ENABLED;
   }
 
-  return loadKeyPairFromIndexedDb()
-    .then(([cPubKey, cPrvKey]) =>
-      Ember.RSVP.Promise.all([
-        cPubKey,
-        cPrvKey,
-        cPubKey ? exportPublicKey(cPubKey) : null
-      ])
-    )
-    .then(([cPubKey, cPrvKey, cPubKeyExported]) => {
-      if (cPubKey && cPrvKey && sPubKey === cPubKeyExported) {
-        return ENCRYPT_ACTIVE;
-      } else {
-        return ENCRYPT_ENABLED;
-      }
-    });
+  return ENCRYPT_ACTIVE;
 }
 
 /**
@@ -211,11 +201,11 @@ export function getEncryptionStatus() {
  */
 export function hideComponentIfDisabled(component) {
   let handler = () => {
-    getEncryptionStatus().then(newStatus => {
-      component.setProperties({
-        isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-        isEncryptActive: newStatus === ENCRYPT_ACTIVE
-      });
+    const user = Discourse.User.current();
+    const newStatus = getEncryptionStatus(user);
+    component.setProperties({
+      isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
+      isEncryptActive: newStatus === ENCRYPT_ACTIVE
     });
   };
 

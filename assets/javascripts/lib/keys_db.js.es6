@@ -1,7 +1,7 @@
 /**
  * Name of IndexedDb used for storing keypairs.
  */
-const DB_NAME = "discourse-encrypt";
+export const DB_NAME = "discourse-encrypt";
 
 /*
  * Checks if this is running in Apple's Safari.
@@ -107,6 +107,7 @@ export function saveKeyPairToIndexedDb(pubKey, privKey) {
 
           let dataReq = st.add({ publicKey, privateKey });
           dataReq.onsuccess = dataEvt => {
+            window.localStorage.setItem(DB_NAME, true);
             resolve(dataEvt);
             db.close();
           };
@@ -166,8 +167,9 @@ export function loadKeyPairFromIndexedDb() {
  * @return Ember.RSVP.Promise
  */
 export function deleteIndexedDb() {
+  window.localStorage.removeItem(DB_NAME);
+
   if (isSafari) {
-    window.localStorage.removeItem(DB_NAME);
     return Ember.RSVP.resolve();
   }
 

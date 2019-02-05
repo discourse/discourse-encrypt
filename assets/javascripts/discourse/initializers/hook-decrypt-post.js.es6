@@ -5,7 +5,8 @@ import { cookAsync } from "discourse/lib/text";
 import {
   getTopicKey,
   hasTopicKey,
-  hasTopicTitle
+  hasTopicTitle,
+  isEncryptEnabled
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import showModal from "discourse/lib/show-modal";
@@ -14,8 +15,8 @@ export default {
   name: "hook-decrypt-post",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
-    if (!siteSettings.encrypt_enabled) {
+    const currentUser = container.lookup("current-user:main");
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

@@ -1,11 +1,12 @@
 import { deleteIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+import { isEncryptEnabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-logout",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
-    if (!siteSettings.encrypt_enabled) {
+    const currentUser = container.lookup("current-user:main");
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

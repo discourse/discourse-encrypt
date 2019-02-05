@@ -1,7 +1,10 @@
 import Topic from "discourse/models/topic";
 import TopicDetails from "discourse/models/topic-details";
 import { ajax } from "discourse/lib/ajax";
-import { getPrivateKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  getPrivateKey,
+  isEncryptEnabled
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   exportKey,
   importKey,
@@ -11,7 +14,12 @@ import {
 export default {
   name: "hook-invite",
 
-  initialize() {
+  initialize(container) {
+    const currentUser = container.lookup("current-user:main");
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+      return;
+    }
+
     Topic.reopen({
       createInvite(username) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
