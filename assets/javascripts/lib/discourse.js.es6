@@ -192,3 +192,14 @@ export function getEncryptionStatus(user) {
 
   return ENCRYPT_ACTIVE;
 }
+
+/**
+ * Reloads current page.
+ *
+ * This function is usually called when status change so all initializers
+ * checks can run again.
+ */
+export function reload() {
+  console.log("Reloading...");
+  window.location.reload();
+}

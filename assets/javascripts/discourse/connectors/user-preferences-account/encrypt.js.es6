@@ -21,7 +21,8 @@ import {
   getEncryptionStatus,
   PACKED_KEY_FOOTER,
   PACKED_KEY_HEADER,
-  PACKED_KEY_SEPARATOR
+  PACKED_KEY_SEPARATOR,
+  reload
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
@@ -241,7 +242,7 @@ export default {
             key: ""
           });
 
-          window.location.reload();
+          reload();
         })
 
         .catch(popupAjaxError);
@@ -276,7 +277,7 @@ export default {
           this.send("hidePassphraseInput");
           this.set("inProgress", false);
 
-          window.location.reload();
+          reload();
         })
 
         .catch(() => {
@@ -339,7 +340,7 @@ export default {
       deleteIndexedDb().then(() => {
         this.appEvents.trigger("encrypt:status-changed");
         this.set("inProgress", false);
-        window.location.reload();
+        reload();
       });
     },
 

@@ -16,6 +16,7 @@ import {
   ENCRYPT_ENABLED,
   ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import * as DiscourseEncryptLib from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { default as userFixtures } from "fixtures/user_fixtures";
 import { parsePostData } from "helpers/create-pretender";
 
@@ -129,6 +130,8 @@ acceptance("Encrypt", {
   settings: { encrypt_enabled: true, encrypt_groups: "" },
 
   beforeEach() {
+    sandbox.stub(DiscourseEncryptLib, "reload");
+
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(body) {
