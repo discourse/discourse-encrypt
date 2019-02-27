@@ -1,6 +1,6 @@
 import {
-  stringToBuffer,
-  bufferToString
+  bufferToString,
+  stringToBuffer
 } from "discourse/plugins/discourse-encrypt/lib/buffers";
 
 /*

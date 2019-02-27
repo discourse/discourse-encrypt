@@ -2,12 +2,10 @@ import {
   base64ToBuffer,
   bufferToBase64
 } from "discourse/plugins/discourse-encrypt/lib/base64";
-
 import {
   stringToBuffer,
   bufferToString
 } from "discourse/plugins/discourse-encrypt/lib/buffers";
-
 import { isSafari } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
 /*

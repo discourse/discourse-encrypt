@@ -1,26 +1,27 @@
-import Composer from "discourse/models/composer";
-import { ajax } from "discourse/lib/ajax";
 import {
   default as computed,
   observes,
   on
 } from "ember-addons/ember-computed-decorators";
+import { ajax } from "discourse/lib/ajax";
+import Composer from "discourse/models/composer";
 import {
-  encrypt,
   decrypt,
-  rsaDecrypt,
+  encrypt,
   exportKey,
-  importKey,
   generateKey,
-  importPublicKey
+  importKey,
+  importPublicKey,
+  rsaDecrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  putTopicKey,
-  getTopicKey,
-  hasTopicKey,
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus,
   getPrivateKey,
+  getTopicKey,
   getTopicTitle,
-  isEncryptEnabled
+  hasTopicKey,
+  putTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {

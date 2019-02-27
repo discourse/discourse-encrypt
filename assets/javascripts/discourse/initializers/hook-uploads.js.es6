@@ -1,5 +1,8 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { isEncryptEnabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-uploads",

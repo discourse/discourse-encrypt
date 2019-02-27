@@ -1,15 +1,16 @@
+import Composer from "discourse/models/composer";
+import Draft from "discourse/models/draft";
 import {
   hasTopicKey,
   getTopicKey,
   getPublicKey,
-  isEncryptEnabled
+  getEncryptionStatus,
+  ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
   rsaEncrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
-import Composer from "discourse/models/composer";
-import Draft from "discourse/models/draft";
 
 export default {
   name: "hook-draft",

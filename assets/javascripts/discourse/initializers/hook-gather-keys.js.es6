@@ -3,7 +3,8 @@ import Topic from "discourse/models/topic";
 import {
   putTopicKey,
   putTopicTitle,
-  isEncryptEnabled
+  getEncryptionStatus,
+  ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {

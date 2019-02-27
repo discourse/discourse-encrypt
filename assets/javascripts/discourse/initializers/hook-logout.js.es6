@@ -1,5 +1,8 @@
 import { deleteIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
-import { isEncryptEnabled } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-logout",

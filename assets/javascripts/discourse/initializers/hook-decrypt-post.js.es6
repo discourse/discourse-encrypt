@@ -1,15 +1,17 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { cookAsync } from "discourse/lib/text";
+import showModal from "discourse/lib/show-modal";
+import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
-import { cookAsync } from "discourse/lib/text";
 import {
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus,
+  getPrivateKey,
   getTopicKey,
   hasTopicKey,
-  hasTopicTitle,
-  isEncryptEnabled
+  hasTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { renderSpinner } from "discourse/helpers/loading-spinner";
-import showModal from "discourse/lib/show-modal";
 
 export default {
   name: "hook-decrypt-post",
@@ -43,16 +45,24 @@ export default {
             state.encrypted = ciphertext;
             state.decrypting = true;
 
-            getTopicKey(topicId)
-              .then(key => decrypt(key, ciphertext))
-              .then(plaintext => cookAsync(plaintext))
-              .then(cooked => {
-                state.decrypted = cooked.string;
-                this.scheduleRerender();
-              })
-              .catch(() => {
-                showModal("activate-encrypt", { model: this });
-              });
+            getPrivateKey()
+              .then(() =>
+                getTopicKey(topicId)
+                  .then(key => decrypt(key, ciphertext))
+                  .then(plaintext => cookAsync(plaintext))
+                  .then(cooked => {
+                    state.decrypted = cooked.string;
+                    this.scheduleRerender();
+                  })
+                  // Absence of topic key underlies a bigger error.
+                  .catch(() => {
+                    state.decrypting = false;
+                    state.decrypted = true;
+                    this.scheduleRerender();
+                  })
+              )
+              // Absence of private key means user did not activate encryption.
+              .catch(() => showModal("activate-encrypt", { model: this }));
           }
 
           // Checking if topic is already being decrypted

@@ -1,13 +1,13 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { registerHelper } from "discourse-common/lib/helpers";
 import showModal from "discourse/lib/show-modal";
+import { registerHelper } from "discourse-common/lib/helpers";
 import {
   exportPrivateKey,
   exportPublicKey,
   generateKeyPair,
-  generateSalt,
   generatePassphraseKey,
+  generateSalt,
   importPrivateKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
@@ -16,13 +16,12 @@ import {
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
-  isEncryptEnabled,
-  hideComponentIfDisabled
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
-import {
+  ENCRYPT_ACTIVE,
+  ENCRYPT_DISABLED,
+  getEncryptionStatus,
+  PACKED_KEY_FOOTER,
   PACKED_KEY_HEADER,
-  PACKED_KEY_SEPARATOR,
-  PACKED_KEY_FOOTER
+  PACKED_KEY_SEPARATOR
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
@@ -65,11 +64,10 @@ function canEnableEncrypt(user) {
 export default {
   setupComponent(args, component) {
     const currentUser = Discourse.User.current();
-    const status = getEncryptionStatus(args.model);
     if (args.model.get("id") === currentUser.get("id")) {
+      const status = getEncryptionStatus(args.model);
       component.setProperties({
         model: args.model,
-        handler: hideComponentIfDisabled(component),
         /** @var Value of passphrase input (old, current and retyped).
          *       It should stay in memory for as little time as possible.
          *       Clear it often.
@@ -94,15 +92,21 @@ export default {
         importKey: false,
         /** @var Key to be imported .*/
         key: "",
-        // TOOD: Check out if there is a way to define functions like this in
-        //       the `export default` scope.
+        /** Listens for encryptino status updates. */
+        listener() {
+          const newStatus = getEncryptionStatus(args.model);
+          component.setProperties({
+            isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
+            isEncryptActive: newStatus === ENCRYPT_ACTIVE
+          });
+        },
+        didInsertElement() {
+          this._super(...arguments);
+          this.appEvents.on("encrypt:status-changed", this.get("listener"));
+        },
         willDestroyElement() {
           this._super(...arguments);
-          this.appEvents.off(
-            "encrypt:status-changed",
-            this,
-            this.get("handler")
-          );
+          this.appEvents.off("encrypt:status-changed", this.get("listener"));
         }
       });
       Ember.defineProperty(
@@ -233,11 +237,11 @@ export default {
           this.send("hidePassphraseInput");
           this.setProperties({
             inProgress: false,
-            isEncryptEnabled: true,
-            isEncryptActive: true,
             importKey: false,
             key: ""
           });
+
+          // window.location.reload();
         })
 
         .catch(popupAjaxError);
@@ -270,11 +274,9 @@ export default {
           this.appEvents.trigger("encrypt:status-changed");
 
           this.send("hidePassphraseInput");
-          this.setProperties({
-            inProgress: false,
-            isEncryptEnabled: true,
-            isEncryptActive: true
-          });
+          this.set("inProgress", false);
+
+          // window.location.reload();
         })
 
         .catch(() => {
@@ -336,11 +338,8 @@ export default {
 
       deleteIndexedDb().then(() => {
         this.appEvents.trigger("encrypt:status-changed");
-        this.setProperties({
-          inProgress: false,
-          isEncryptEnabled: true,
-          isEncryptActive: false
-        });
+        this.set("inProgress", false);
+        // window.location.reload();
       });
     },
 

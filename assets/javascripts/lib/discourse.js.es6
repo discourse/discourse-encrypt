@@ -1,9 +1,11 @@
 import {
-  exportPublicKey,
   importKey,
   decrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
-import { loadKeyPairFromIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+import {
+  DB_NAME,
+  loadKeyPairFromIndexedDb
+} from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
 /**
  * Possible states of the encryption system.
@@ -189,28 +191,4 @@ export function getEncryptionStatus(user) {
   }
 
   return ENCRYPT_ACTIVE;
-}
-
-/**
- * Sets `isEncryptEnabled` and `isEncryptActive` flags on the given component.
- *
- * This function is preferred because it waits for application events from the
- * encryption system.
- *
- * @param component
- */
-export function hideComponentIfDisabled(component) {
-  let handler = () => {
-    const user = Discourse.User.current();
-    const newStatus = getEncryptionStatus(user);
-    component.setProperties({
-      isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-      isEncryptActive: newStatus === ENCRYPT_ACTIVE
-    });
-  };
-
-  handler();
-  component.appEvents.on("encrypt:status-changed", component, handler);
-
-  return handler;
 }

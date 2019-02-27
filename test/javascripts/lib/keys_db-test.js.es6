@@ -1,8 +1,8 @@
 import { generateKeyPair } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  saveKeyPairToIndexedDb,
+  deleteIndexedDb,
   loadKeyPairFromIndexedDb,
-  deleteIndexedDb
+  saveKeyPairToIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 
 QUnit.module("discourse-encrypt:lib:keys_db");

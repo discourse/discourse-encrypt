@@ -1,9 +1,9 @@
-import ModalFunctionality from "discourse/mixins/modal-functionality";
 import copyText from "discourse/lib/copy-text";
+import ModalFunctionality from "discourse/mixins/modal-functionality";
 import {
+  exportPublicKey,
   generatePassphraseKey,
-  importPrivateKey,
-  exportPublicKey
+  importPrivateKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   PACKED_KEY_COLUMNS,

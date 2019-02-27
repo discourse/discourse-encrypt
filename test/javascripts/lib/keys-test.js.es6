@@ -1,18 +1,18 @@
 import {
-  generateKeyPair,
-  exportPublicKey,
-  importPublicKey,
-  exportPrivateKey,
-  importPrivateKey,
-  rsaEncrypt,
-  rsaDecrypt,
-  generateSalt,
-  generatePassphraseKey,
-  generateKey,
-  exportKey,
-  importKey,
+  decrypt,
   encrypt,
-  decrypt
+  exportKey,
+  exportPrivateKey,
+  exportPublicKey,
+  generateKey,
+  generateKeyPair,
+  generatePassphraseKey,
+  generateSalt,
+  importKey,
+  importPrivateKey,
+  importPublicKey,
+  rsaDecrypt,
+  rsaEncrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 
 QUnit.module("discourse-encrypt:lib:keys");

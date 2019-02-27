@@ -1,15 +1,16 @@
+import { ajax } from "discourse/lib/ajax";
 import Topic from "discourse/models/topic";
 import TopicDetails from "discourse/models/topic-details";
-import { ajax } from "discourse/lib/ajax";
-import {
-  getPrivateKey,
-  isEncryptEnabled
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   exportKey,
   importKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
+import {
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus,
+  getPrivateKey
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-invite",

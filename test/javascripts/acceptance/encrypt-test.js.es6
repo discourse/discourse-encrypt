@@ -3,13 +3,13 @@ import {
   exportPrivateKey,
   exportPublicKey,
   generateKeyPair,
-  generateSalt,
-  generatePassphraseKey
+  generatePassphraseKey,
+  generateSalt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
+  deleteIndexedDb,
   loadKeyPairFromIndexedDb,
-  saveKeyPairToIndexedDb,
-  deleteIndexedDb
+  saveKeyPairToIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
   ENCRYPT_DISABLED,

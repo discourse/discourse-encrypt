@@ -3,7 +3,8 @@ import { iconHTML } from "discourse-common/lib/icon-library";
 import {
   hasTopicTitle,
   getTopicTitle,
-  isEncryptEnabled
+  getEncryptionStatus,
+  ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
