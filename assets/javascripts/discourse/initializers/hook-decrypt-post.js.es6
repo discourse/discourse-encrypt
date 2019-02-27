@@ -5,7 +5,7 @@ import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  ENCRYPT_ACTIVE,
+  ENCRYPT_DISABLED,
   getEncryptionStatus,
   getPrivateKey,
   getTopicKey,
@@ -18,7 +18,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
       return;
     }
 
