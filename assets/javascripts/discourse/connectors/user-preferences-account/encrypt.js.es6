@@ -241,7 +241,7 @@ export default {
             key: ""
           });
 
-          // window.location.reload();
+          window.location.reload();
         })
 
         .catch(popupAjaxError);
@@ -276,7 +276,7 @@ export default {
           this.send("hidePassphraseInput");
           this.set("inProgress", false);
 
-          // window.location.reload();
+          window.location.reload();
         })
 
         .catch(() => {
@@ -339,7 +339,7 @@ export default {
       deleteIndexedDb().then(() => {
         this.appEvents.trigger("encrypt:status-changed");
         this.set("inProgress", false);
-        // window.location.reload();
+        window.location.reload();
       });
     },
 
