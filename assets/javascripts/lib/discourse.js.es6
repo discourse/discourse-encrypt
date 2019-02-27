@@ -200,6 +200,5 @@ export function getEncryptionStatus(user) {
  * checks can run again.
  */
 export function reload() {
-  console.log("Reloading...");
   window.location.reload();
 }
