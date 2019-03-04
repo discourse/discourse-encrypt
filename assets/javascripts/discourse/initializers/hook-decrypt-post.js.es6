@@ -56,6 +56,7 @@ export default {
                   })
                   // Absence of topic key underlies a bigger error.
                   .catch(() => {
+                    state.encrypted = undefined;
                     state.decrypting = false;
                     state.decrypted = true;
                     this.scheduleRerender();
