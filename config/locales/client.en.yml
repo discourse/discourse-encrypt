@@ -9,6 +9,7 @@ en:
       encrypted_icon_title: "This message is end-to-end encrypted."
 
       encrypted_uploads: "Uploads cannot be encrypted at this time."
+      status_inactive: "You did not activate encryption on this device."
 
       checkbox:
         checked: "This message will be end-to-end encrypted."

@@ -194,6 +194,38 @@ export function getEncryptionStatus(user) {
 }
 
 /**
+ * Checks if a specific user can enable encryption.
+ *
+ * This check ensures that:
+ *    - user already has encryption enabled OR
+ *    - encryption plug-in is enabled AND
+ *    - there is no group restriction or user is in one of the allowed groups.
+ *
+ * @param user
+ *
+ * @return
+ */
+export function canEnableEncrypt(user) {
+  if (getEncryptionStatus(user) !== ENCRYPT_DISABLED) {
+    return true;
+  }
+
+  if (Discourse.SiteSettings.encrypt_enabled) {
+    if (Discourse.SiteSettings.encrypt_groups.length === 0) {
+      return true;
+    }
+
+    const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
+    const groups = (user.get("groups") || []).map(group => group.get("name"));
+    if (groups.some(group => encryptGroups.includes(group))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Reloads current page.
  *
  * This function is usually called when status change so all initializers

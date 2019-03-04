@@ -16,6 +16,7 @@ import {
   deleteIndexedDb
 } from "discourse/plugins/discourse-encrypt/lib/keys_db";
 import {
+  canEnableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
@@ -29,38 +30,6 @@ import {
 // Handlebars offers `if` but no other helpers for conditions, which eventually
 // lead to a lot of JavaScript bloat.
 registerHelper("or", ([a, b]) => a || b);
-
-/**
- * Checks if a specific user can enable encryption.
- *
- * This check ensures that:
- *    - user already has encryption enabled OR
- *    - encryption plug-in is enabled AND
- *    - there is no group restriction or user is in one of the allowed groups.
- *
- * @param user
- *
- * @return
- */
-function canEnableEncrypt(user) {
-  if (getEncryptionStatus(user) !== ENCRYPT_DISABLED) {
-    return true;
-  }
-
-  if (Discourse.SiteSettings.encrypt_enabled) {
-    if (Discourse.SiteSettings.encrypt_groups.length === 0) {
-      return true;
-    }
-
-    const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
-    const groups = (user.get("groups") || []).map(group => group.get("name"));
-    if (groups.some(group => encryptGroups.includes(group))) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 export default {
   setupComponent(args, component) {
