@@ -21,7 +21,8 @@ import {
   getTopicKey,
   getTopicTitle,
   hasTopicKey,
-  putTopicKey
+  putTopicKey,
+  putTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
@@ -111,10 +112,14 @@ export default {
             .then(key => {
               const p0 = encrypt(key, reply).then(r => this.set("reply", r));
               const p1 = encrypt(key, title).then(encTitle => {
+                const topicId = this.get("topic.id");
+
                 this.set("title", I18n.t("encrypt.encrypted_topic_title"));
+                putTopicTitle(topicId, encTitle);
+
                 ajax("/encrypt/topic", {
                   type: "PUT",
-                  data: { topic_id: this.get("topic.id"), title: encTitle }
+                  data: { topic_id: topicId, title: encTitle }
                 });
               });
 
@@ -187,6 +192,8 @@ export default {
             const topicId = result.responseJson.post.topic_id;
 
             putTopicKey(topicId, key);
+            putTopicTitle(topicId, encTitle);
+
             ajax("/encrypt/topic", {
               type: "PUT",
               data: { topic_id: topicId, title: encTitle, keys: userKeys }

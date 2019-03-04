@@ -140,7 +140,7 @@ export function hasTopicKey(topicId) {
  * @param key
  */
 export function putTopicTitle(topicId, title) {
-  if (topicId && !topicTitles[topicId]) {
+  if (topicId && title) {
     topicTitles[topicId] = title;
   }
 }
