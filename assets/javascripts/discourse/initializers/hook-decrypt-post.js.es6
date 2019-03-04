@@ -1,5 +1,7 @@
+import { resolveAllShortUrls } from "pretty-text/image-short-url";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cookAsync } from "discourse/lib/text";
+import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { iconHTML } from "discourse-common/lib/icon-library";
@@ -70,6 +72,7 @@ export default {
           if (state.decrypting) {
             if (state.decrypted) {
               attrs.cooked = state.decrypted;
+              Ember.run.next(() => resolveAllShortUrls(ajax));
             } else {
               attrs.cooked =
                 "<div class='alert alert-info'>" +
