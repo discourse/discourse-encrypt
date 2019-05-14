@@ -1,7 +1,10 @@
-{{#if model.creatingPrivateMessage}}
-  {{#if isEncryptActive}}
-    {{encrypted-checkbox checked=model.isEncrypted disabled=model.isEncryptedDisabled}}
-    {{#if model.encryptError}}
+{{#if isEncryptActive}}
+  {{#if (or model.creatingPrivateMessage model.topic.isPrivateMessage)}}
+    <a {{action clicked}} title={{i18n title}}>
+      {{d-icon (if model.isEncrypted "lock" "unlock") class=(if model.isEncryptedDisabled "disabled")}}
+    </a>
+
+    {{#if model.showEncryptError}}
       <span class="error">{{model.encryptError}}</span>
     {{/if}}
   {{/if}}

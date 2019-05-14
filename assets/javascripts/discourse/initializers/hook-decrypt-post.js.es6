@@ -87,7 +87,8 @@ export default {
               iconHTML("times") +
               " " +
               I18n.t("encrypt.decryption_failed") +
-              "</div>";
+              "</div>" +
+              attrs.cooked;
           }
 
           return this._super(...arguments);

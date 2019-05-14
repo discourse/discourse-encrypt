@@ -207,9 +207,21 @@ export default {
       @on("init")
       initEncrypt() {
         this.setProperties({
-          encryptError: "",
           isEncryptedDisabled: false,
-          isEncrypted: false
+          isEncrypted: false,
+          encryptError: "",
+          showEncryptError: false
+        });
+      },
+
+      @observes("topic")
+      topicUpdated() {
+        const value = hasTopicKey(this.get("topic.id"));
+        this.setProperties({
+          isEncryptedDisabled: false,
+          isEncrypted: value,
+          encryptError: value ? "" : I18n.t("encrypt.cannot_encrypt"),
+          showEncryptError: true
         });
       },
 
@@ -218,9 +230,9 @@ export default {
         const usernames = this.get("recipients");
         if (usernames.length === 0) {
           this.setProperties({
-            encryptError: "",
             isEncryptedDisabled: false,
-            isEncrypted: true
+            isEncrypted: true,
+            encryptError: ""
           });
           return;
         }
@@ -232,18 +244,12 @@ export default {
           for (let i = 0; i < usernames.length; ++i) {
             const username = usernames[i];
             if (!userKeys[username]) {
-              // Show the error message only if user is interested in encrypting
-              // the message (i.e. filled the encrypt checkbox).
-              if (this.get("isEncrypted")) {
-                this.set(
-                  "encryptError",
-                  I18n.t("encrypt.composer.user_has_no_key", { username })
-                );
-              }
-
               this.setProperties({
                 isEncryptedDisabled: true,
-                isEncrypted: false
+                isEncrypted: false,
+                encryptError: I18n.t("encrypt.composer.user_has_no_key", {
+                  username
+                })
               });
               return;
             }
@@ -254,9 +260,9 @@ export default {
           // his uncheck.
           if (this.get("isEncryptedDisabled")) {
             this.setProperties({
-              encryptError: "",
               isEncryptedDisabled: false,
-              isEncrypted: true
+              isEncrypted: true,
+              encryptError: ""
             });
           }
         });
