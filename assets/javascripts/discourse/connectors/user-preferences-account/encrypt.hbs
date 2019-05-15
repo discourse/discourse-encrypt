@@ -40,7 +40,12 @@
                 <label for="password">{{i18n "encrypt.preferences.passphrase_label"}}</label>
                 {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
               </p>
-              <p>{{d-button class="btn-primary" icon="unlock" action=(action "activateEncrypt") disabled=inProgress label="encrypt.preferences.activate"}}</p>
+              <p>
+                {{d-button class="btn-primary" icon="unlock" action=(action "activateEncrypt") disabled=inProgress label="encrypt.preferences.activate"}}
+                {{#if model.staff}}
+                  <span><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></span>
+                {{/if}}
+              </p>
             </form>
           {{/if}}
         {{else}}
@@ -61,8 +66,8 @@
               {{/if}}
               <p>
                 <label>
-                {{input type="checkbox" checked=importKey}}
-                {{i18n "encrypt.preferences.import_key"}}
+                  {{input type="checkbox" checked=importKey}}
+                  {{i18n "encrypt.preferences.import_key"}}
                 </label>
               </p>
               {{#if importKey}}
@@ -81,6 +86,7 @@
       {{else}}
         {{#if isEncryptEnabled}}
           <p>{{i18n 'encrypt.preferences.status_enabled_other'}}</p>
+          <p><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></p>
         {{else}}
           <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
         {{/if}}

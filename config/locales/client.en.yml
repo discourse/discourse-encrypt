@@ -48,10 +48,16 @@ en:
           <p>Please paste the encryption key you previously you previously exported.</p>
 
         activate: "Activate Encrypted Messages"
-        deactivate: "Deactive Encryption on this Device"
+        deactivate: "Deactivate Encryption on this Device"
         enable: "Enable Encrypted Messages"
         change: "Change Passphrase"
+        reset: "Reset Encryption Key"
 
       export:
         title: "Export Encryption Keypair"
         instructions: "You may export your keypair for safe keeping in case you forget your passphrase. Please note that the exported keypair is unprotected."
+
+      reset:
+        title: "Reset Encryption Keypair"
+        instructions: "Are you sure you want to reset your encryption key? This operation deletes the encryption key forever unless it was previously exported."
+        everything: "Uninvite user from any private conversations and delete topic keys."

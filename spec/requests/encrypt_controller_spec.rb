@@ -4,19 +4,18 @@ describe ::DiscourseEncrypt::EncryptController do
 
   let(:store) { PluginStore.new('discourse-encrypt') }
 
-  let(:user) { Fabricate(:user) }
+  let(:user)  { Fabricate(:user) }
   let(:user2) { Fabricate(:user) }
   let(:user3) { Fabricate(:user) }
 
   let(:topic) {
-    topic = Fabricate(
-      :private_message_topic,
-      topic_allowed_users: [
-        Fabricate.build(:topic_allowed_user, user: user),
-        Fabricate.build(:topic_allowed_user, user: user2)
-      ]
-    )
+    topic = Fabricate(:private_message_topic)
     topic.custom_fields['encrypted_title'] = '-- the encrypted title --'
+    topic.save_custom_fields
+
+    Fabricate(:topic_allowed_user, topic: topic, user: user)
+    Fabricate(:topic_allowed_user, topic: topic, user: user2)
+
     topic
   }
 
@@ -258,4 +257,36 @@ describe ::DiscourseEncrypt::EncryptController do
     end
   end
 
+  context '#reset_user' do
+    before do
+      user.custom_fields['encrypt_public_key']  = '-- the public key --'
+      user.custom_fields['encrypt_private_key'] = '-- the private key --'
+      user.custom_fields['encrypt_salt']        = '-- the salt --'
+      user.save_custom_fields
+
+      store.set("key_#{topic.id}_#{user.id}", '-- user key --')
+
+      sign_in(user)
+    end
+
+    it 'resets everything' do
+      user.grant_admin!
+
+      expect { post '/encrypt/reset', params: { user_id: user.id } }
+        .to change { TopicAllowedUser.count }.by(-1)
+        .and change { PluginStoreRow.count }.by(-1)
+        .and change { UserCustomField.count }.by(-3)
+
+      expect(response.status).to eq(200)
+    end
+
+    it 'allows only staff members' do
+      expect { post '/encrypt/reset', params: { user_id: user.id } }
+        .to change { TopicAllowedUser.count }.by(0)
+        .and change { PluginStoreRow.count }.by(0)
+        .and change { UserCustomField.count }.by(0)
+
+      expect(response.status).to eq(403)
+    end
+  end
 end

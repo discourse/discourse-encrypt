@@ -17,6 +17,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     this.setProperties({
       passphrase: "",
       exported: "",
+      inProgress: false,
       error: ""
     });
   },
@@ -43,7 +44,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     export() {
       this.set("inProgress", true);
 
-      const user = Discourse.User.current();
+      const user = this.get("model");
       const publicStr = user.get("custom_fields.encrypt_public_key");
       const privateStr = user.get("custom_fields.encrypt_private_key");
       const salt = user.get("custom_fields.encrypt_salt");

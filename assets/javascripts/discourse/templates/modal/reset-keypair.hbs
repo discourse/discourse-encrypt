@@ -1,0 +1,14 @@
+{{#d-modal-body title="encrypt.reset.title"}}
+  <p>{{i18n "encrypt.reset.instructions"}}</p>
+  <p>
+    <label>
+      {{input type="checkbox" checked=everything disabled=inProgress}}
+      {{i18n "encrypt.reset.everything"}}
+    </label>
+  </p>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button class="btn btn-danger" icon="trash" label="encrypt.reset.title" action=(action "reset") disabled=inProgress}}
+  {{d-modal-cancel close=(action "closeModal")}}
+</div>

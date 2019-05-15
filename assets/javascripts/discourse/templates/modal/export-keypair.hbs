@@ -14,13 +14,10 @@
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{d-button class="btn btn-primary" icon="file-export" label="encrypt.export.title" action=(action "export")}}
   {{#if exported}}
-    {{#if copied}}
-      {{d-button class="btn" icon="clipboard" label="admin.customize.copied_to_clipboard" action=(action "copy")}}
-    {{else}}
-      {{d-button class="btn" icon="clipboard" label="admin.customize.copy_to_clipboard" action=(action "copy")}}
-    {{/if}}
+    {{d-button class="btn btn-primary" icon="clipboard" label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard") action=(action "copy")}}
+  {{else}}
+    {{d-button class="btn btn-primary" icon="file-export" label="encrypt.export.title" action=(action "export") disabled=inProgress}}
   {{/if}}
   {{d-modal-cancel close=(action "closeModal")}}
 </div>

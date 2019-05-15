@@ -314,7 +314,11 @@ export default {
     },
 
     export() {
-      showModal("export-keypair");
+      showModal("export-keypair").set("model", this.get("model"));
+    },
+
+    reset() {
+      showModal("reset-keypair").set("model", this.get("model"));
     }
   }
 };

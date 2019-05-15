@@ -7,17 +7,16 @@
 enabled_site_setting :encrypt_enabled
 
 # Register custom stylesheet.
-register_asset "stylesheets/common/encrypt.scss"
-[ "clipboard", "exchange", "file-export", "lock", "times", "unlock" ].each { |i| register_svg_icon i }
+register_asset 'stylesheets/common/encrypt.scss'
+%w[clipboard exchange file-export lock times trash unlock].each { |i| register_svg_icon(i) }
 
 # Register custom user fields to store user's key pair (public and private key)
 # and passphrase salt.
-DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_public_key"
-DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_private_key"
-DiscoursePluginRegistry.serialized_current_user_fields << "encrypt_salt"
+DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_public_key'
+DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private_key'
+DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_salt'
 
 after_initialize do
-
   Rails.configuration.filter_parameters << :private_key
 
   module ::DiscourseEncrypt
@@ -35,6 +34,7 @@ after_initialize do
       requires_plugin PLUGIN_NAME
 
       before_action :ensure_logged_in
+      before_action :ensure_staff, only: :reset_user
       skip_before_action :check_xhr
 
       # Saves a user's key pair using custom fields.
@@ -50,19 +50,19 @@ after_initialize do
 
         # Check if encrypt settings are visible to user.
         groups = current_user.groups.pluck(:name)
-        encrypt_groups = SiteSetting.encrypt_groups.split("|")
+        encrypt_groups = SiteSetting.encrypt_groups.split('|')
         raise Discourse::InvalidAccess if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
 
         # Check if encryption is already enabled (but not changing passphrase).
         old_public_key = current_user.custom_fields['encrypt_public_key']
         if old_public_key && old_public_key != public_key
-          return render_json_error(I18n.t("encrypt.enabled_already"), status: 409)
+          return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
         end
 
         current_user.custom_fields['encrypt_public_key']  = public_key
         current_user.custom_fields['encrypt_private_key'] = private_key
         current_user.custom_fields['encrypt_salt']        = salt
-        current_user.save!
+        current_user.save_custom_fields
 
         render json: success_json
       end
@@ -93,13 +93,11 @@ after_initialize do
         topic_id = params.require(:topic_id)
 
         topic = Topic.find_by(id: topic_id)
-        if !Guardian.new(current_user).can_see_topic?(topic)
-          return render json: failed_json, status: 403
-        end
+        guardian.ensure_can_see_topic!(topic)
 
         if title = params[:title]
           # Title may be missing when inviting new users into topic.
-          topic.custom_fields["encrypted_title"] = title
+          topic.custom_fields['encrypted_title'] = title
           topic.save!
         end
 
@@ -121,29 +119,58 @@ after_initialize do
         usernames = params.require(:usernames)
 
         topic = Topic.find_by(id: topic_id)
-        if !Guardian.new(current_user).can_see_topic?(topic)
-          return render json: failed_json, status: 403
-        end
+        guardian.ensure_can_see_topic!(topic)
 
         users = User.where(username: usernames)
         users.each { |u| Store.remove("key_#{topic_id}_#{u.id}") }
 
         render json: success_json
       end
+
+      # Resets encryption keys for a user.
+      #
+      # Params:
+      # +user_id+::   ID of user to be reset.
+      def reset_user
+        user_id = params.require(:user_id)
+
+        user = User.find_by(id: user_id)
+        raise Discourse::NotFound if user.blank?
+
+        if params[:everything] == 'true'
+          TopicAllowedUser
+            .joins(topic: :_custom_fields)
+            .where(topic_custom_fields: { name: 'encrypted_title' })
+            .where(topic_allowed_users: { user_id: user.id })
+            .delete_all
+
+          PluginStoreRow
+            .where(plugin_name: 'discourse-encrypt')
+            .where('key LIKE \'key_%_\' || ?', user.id)
+            .delete_all
+        end
+
+        # Delete encryption keys.
+        user.custom_fields.delete('encrypt_public_key')
+        user.custom_fields.delete('encrypt_private_key')
+        user.custom_fields.delete('encrypt_salt')
+        user.save_custom_fields
+
+        render json: success_json
+      end
     end
   end
 
-  add_preloaded_topic_list_custom_field("encrypted_title")
-  CategoryList.preloaded_topic_custom_fields << "encrypted_title"
+  add_preloaded_topic_list_custom_field('encrypted_title')
+  CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
 
   module PostExtensions
-
     # Patch method to hide excerpt of encrypted message (i.e. in push
     # notifications).
     def excerpt(maxlength = nil, options = {})
       if has_encrypted_title?
         maxlength ||= SiteSetting.post_excerpt_maxlength
-        return I18n.t("encrypt.encrypted_excerpt")[0..maxlength]
+        return I18n.t('encrypt.encrypted_excerpt')[0..maxlength]
       end
 
       super(maxlength, options)
@@ -160,7 +187,7 @@ after_initialize do
     end
 
     def has_encrypted_title?
-      !!(topic && topic.custom_fields && topic.custom_fields["encrypted_title"])
+      !!(topic && topic.custom_fields && topic.custom_fields['encrypted_title'])
     end
   end
 
@@ -178,7 +205,7 @@ after_initialize do
   # Topic title encrypted with topic key.
 
   add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.custom_fields["encrypted_title"]
+    object.topic.custom_fields['encrypted_title']
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
@@ -186,7 +213,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
-    object.custom_fields["encrypted_title"]
+    object.custom_fields['encrypted_title']
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
@@ -194,7 +221,7 @@ after_initialize do
   end
 
   add_to_serializer(:listable_topic, :encrypted_title, false) do
-    object.custom_fields["encrypted_title"]
+    object.custom_fields['encrypted_title']
   end
 
   add_to_serializer(:listable_topic, :include_encrypted_title?) do
@@ -202,7 +229,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_list_item, :encrypted_title, false) do
-    object.custom_fields["encrypted_title"]
+    object.custom_fields['encrypted_title']
   end
 
   add_to_serializer(:topic_list_item, :include_encrypted_title?) do
@@ -253,6 +280,7 @@ after_initialize do
     get    '/encrypt/user'  => 'encrypt#show_user'
     put    '/encrypt/topic' => 'encrypt#update_topic'
     delete '/encrypt/topic' => 'encrypt#destroy_topic'
+    post   '/encrypt/reset' => 'encrypt#reset_user'
   end
 
   Discourse::Application.routes.append do
