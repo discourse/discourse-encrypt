@@ -18,7 +18,7 @@ export const DB_NAME = "discourse-encrypt";
  */
 export const isSafari =
   !!navigator.userAgent.match(/Version\/(\d+).+?Safari/) ||
-  !!navigator.userAgent.match(/Discourse\/.*Darwin/);
+  !!navigator.userAgent.match(/(iPad|iPhone|iPod)/);
 
 /**
  * Exports a public key.
