@@ -16,7 +16,9 @@ export const DB_NAME = "discourse-encrypt";
  *         - https://bugs.webkit.org/show_bug.cgi?id=177350
  *         - https://bugs.webkit.org/show_bug.cgi?id=182972
  */
-export const isSafari = !!navigator.userAgent.match(/Version\/(\d+).+?Safari/);
+export const isSafari =
+  !!navigator.userAgent.match(/Version\/(\d+).+?Safari/) ||
+  !!navigator.userAgent.match(/Discourse\/.*Darwin/);
 
 /**
  * Exports a public key.
