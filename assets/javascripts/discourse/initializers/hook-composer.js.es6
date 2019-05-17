@@ -36,58 +36,44 @@ export default {
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
     appEvents.on("composer:reply-reloaded", model => {
-      if (!model.get("privateMessage")) {
-        return;
+      const draftKey = model.get("draftKey");
+
+      let encrypted, decTitle, decReply;
+      if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
+        encrypted = true;
+      } else if (draftKey.indexOf("topic_") === 0) {
+        const topicId = draftKey.substr("topic_".length);
+        encrypted = !!hasTopicKey(topicId);
       }
 
-      let decTitle, decReply;
-
-      if (model.get("draftKey") === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-        /*
-         * Decrypt private message drafts.
-         */
-        const p = getPrivateKey();
-        decTitle = p.then(key => rsaDecrypt(key, model.get("title")));
-        decReply = p.then(key => rsaDecrypt(key, model.get("reply")));
-      } else {
-        /*
-         * Decrypt replies.
-         */
-        let topicId;
-
-        // Try get topic ID from topic model.
-        const topic = model.get("topic");
-        if (topic) {
-          topicId = topic.get("id");
-        }
-
-        // Try get topic ID from draft key.
-        if (!topicId) {
-          const draftKey = model.get("draftKey");
-          if (draftKey && draftKey.indexOf("topic_") === 0) {
-            topicId = draftKey.substring("topic_".length);
-          }
-        }
-
-        if (hasTopicKey(topicId)) {
+      if (encrypted) {
+        if (model.get("action") === "edit" && model.get("originalText")) {
+          const topicId = model.get("topic.id");
           decTitle = getTopicTitle(topicId);
-          const reply = model.get("reply");
-          if (reply) {
-            decReply = getTopicKey(topicId).then(key => decrypt(key, reply));
-          }
+          decReply = getTopicKey(topicId).then(key =>
+            decrypt(key, model.get("reply"))
+          );
+        } else {
+          const pk = getPrivateKey();
+          decTitle =
+            model.get("title") &&
+            pk.then(key => rsaDecrypt(key, model.get("title")));
+          decReply =
+            model.get("reply") &&
+            pk.then(key => rsaDecrypt(key, model.get("reply")));
         }
       }
 
       if (decTitle) {
-        decTitle
-          .then(title => model.setProperties({ title, isEncrypted: true }))
-          .catch(() => {});
+        decTitle.then(title =>
+          model.setProperties({ title, isEncrypted: true })
+        );
       }
 
       if (decReply) {
-        decReply
-          .then(reply => model.setProperties({ reply, isEncrypted: true }))
-          .catch(() => {});
+        decReply.then(reply =>
+          model.setProperties({ reply, isEncrypted: true })
+        );
       }
     });
 
@@ -95,7 +81,9 @@ export default {
     // to the server.
     Composer.reopen({
       getCookedHtml() {
-        return hasTopicKey(this.get("topic.id")) ? "" : this._super(...arguments);
+        return hasTopicKey(this.get("topic.id"))
+          ? ""
+          : this._super(...arguments);
       },
 
       save() {
