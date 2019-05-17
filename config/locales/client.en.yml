@@ -6,6 +6,7 @@ en:
       decryption_failed: "This message could not be decrypted."
 
       encrypted_topic_title: "A secret message"
+      encrypted_topic_raw: "This is a secret message that has been end-to-end encrypted."
       encrypted_icon_title: "This message is end-to-end encrypted."
 
       encrypted_uploads: "Uploads cannot be encrypted at this time."

@@ -166,6 +166,37 @@ after_initialize do
   add_preloaded_topic_list_custom_field('encrypted_title')
   CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
 
+  # Handle new post creation.
+  add_permitted_post_create_param(:encryptedTitle)
+  add_permitted_post_create_param(:encryptedRaw)
+  add_permitted_post_create_param(:encryptedKeys)
+
+  NewPostManager.add_handler do |manager|
+    if manager.args[:archetype] != Archetype.private_message ||
+       !manager.args[:encryptedRaw]
+      next
+    end
+
+    manager.args[:raw] = manager.args[:encryptedRaw]
+    manager.args[:skip_unique_check] = true
+    if title = manager.args[:encryptedTitle]
+      manager.args[:topic_opts] ||= {}
+      manager.args[:topic_opts][:custom_fields] ||= {}
+      manager.args[:topic_opts][:custom_fields][:encrypted_title] = manager.args[:encryptedTitle]
+    end
+
+    result = manager.perform_create_post
+    if result.success?
+      keys = JSON.parse(manager.args[:encryptedKeys])
+      topic_id = result.post.topic_id
+      users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
+
+      keys.each { |u, k| Store.set("key_#{topic_id}_#{users[u].id}", k) }
+    end
+
+    result
+  end
+
   module PostExtensions
     # Patch method to hide excerpt of encrypted message (i.e. in push
     # notifications).

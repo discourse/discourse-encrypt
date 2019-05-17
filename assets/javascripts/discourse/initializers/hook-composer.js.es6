@@ -32,48 +32,10 @@ export default {
       return;
     }
 
-    // Decode composer on reply reload. This usually occurs when a post is
-    // edited or a draft is loaded.
-    const appEvents = container.lookup("app-events:main");
-    appEvents.on("composer:reply-reloaded", model => {
-      const draftKey = model.draftKey;
-
-      let encrypted, decTitle, decReply;
-      if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-        encrypted = true;
-      } else if (draftKey.indexOf("topic_") === 0) {
-        const topicId = draftKey.substr("topic_".length);
-        encrypted = !!hasTopicKey(topicId);
-      }
-
-      if (encrypted) {
-        if (model.action === "edit" && model.originalText) {
-          const topicId = model.get("topic.id");
-          decTitle = getTopicTitle(topicId);
-          decReply = getTopicKey(topicId).then(key =>
-            decrypt(key, model.reply)
-          );
-        } else {
-          const pk = getPrivateKey();
-          decTitle =
-            model.title && pk.then(key => rsaDecrypt(key, model.title));
-          decReply =
-            model.reply && pk.then(key => rsaDecrypt(key, model.reply));
-        }
-      }
-
-      if (decTitle) {
-        decTitle.then(title =>
-          model.setProperties({ title, isEncrypted: true })
-        );
-      }
-
-      if (decReply) {
-        decReply.then(reply =>
-          model.setProperties({ reply, isEncrypted: true })
-        );
-      }
-    });
+    // Register custom fields to be saved for new post.
+    Composer.serializeOnCreate("encryptedTitle", "encryptedTitle");
+    Composer.serializeOnCreate("encryptedRaw", "encryptedRaw");
+    Composer.serializeOnCreate("encryptedKeys", "encryptedKeys");
 
     // Encrypt the Composer contents on-the-fly right before it is sent over
     // to the server.
@@ -136,11 +98,10 @@ export default {
         }
 
         // Generating a new topic key.
-        const p0 = generateKey();
+        const topicKey = generateKey();
 
-        // Encrypting user keys.
         const usernames = this.recipients;
-        const p1 = p0.then(key =>
+        const encryptedKeys = topicKey.then(key =>
           ajax("/encrypt/user", {
             type: "GET",
             data: { usernames }
@@ -171,38 +132,32 @@ export default {
             })
         );
 
-        // Encrypting title and reply.
-        const p2 = p0.then(key => encrypt(key, title));
-        const p3 = p0.then(key => encrypt(key, reply));
+        const encryptedTitle = topicKey.then(key => encrypt(key, title));
+        const encryptedRaw = topicKey.then(key => encrypt(key, reply));
 
         // Send user keys, title and reply encryption to the server.
-        return Ember.RSVP.Promise.all([p1, p2, p3])
-          .then(([keys, encTitle, encReply]) => {
-            const userKeys = {};
-            for (let i = 0; i < keys.length; ++i) {
-              userKeys[usernames[i]] = keys[i];
-            }
+        return Ember.RSVP.Promise.all([
+          encryptedTitle,
+          encryptedRaw,
+          encryptedKeys
+        ]).then(([encTitle, encReply, encKeys]) => {
+          const userKeys = {};
+          for (let i = 0; i < encKeys.length; ++i) {
+            userKeys[usernames[i]] = encKeys[i];
+          }
 
-            this.set("title", I18n.t("encrypt.encrypted_topic_title"));
-            this.set("reply", encReply);
+          this.setProperties({
+            title: I18n.t("encrypt.encrypted_topic_title"),
+            raw: I18n.t("encrypt.encrypted_topic_raw"),
+            encryptedTitle: encTitle,
+            encryptedRaw: encReply,
+            encryptedKeys: JSON.stringify(userKeys)
+          });
 
-            const result = _super.call(this, ...arguments);
-            return Ember.RSVP.Promise.all([p0, encTitle, userKeys, result]);
-          })
-          .then(([key, encTitle, userKeys, result]) => {
-            const topicId = result.responseJson.post.topic_id;
-
-            putTopicKey(topicId, key);
-            putTopicTitle(topicId, encTitle);
-
-            ajax("/encrypt/topic", {
-              type: "PUT",
-              data: { topic_id: topicId, title: encTitle, keys: userKeys }
-            });
-
-            return result;
-          })
-          .finally(() => this.setProperties({ title, reply }));
+          return _super
+            .call(this, ...arguments)
+            .finally(() => this.setProperties({ title: title, raw: reply }));
+        });
       },
 
       @on("init")
@@ -274,6 +229,49 @@ export default {
         const recipients = targetUsernames ? targetUsernames.split(",") : [];
         recipients.push(this.get("user.username"));
         return recipients;
+      }
+    });
+
+    // Decode composer on reply reload. This usually occurs when a post is
+    // edited or a draft is loaded.
+    const appEvents = container.lookup("app-events:main");
+    appEvents.on("composer:reply-reloaded", model => {
+      const draftKey = model.draftKey;
+
+      let encrypted, decTitle, decReply;
+      if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
+        encrypted = true;
+      } else if (draftKey.indexOf("topic_") === 0) {
+        const topicId = draftKey.substr("topic_".length);
+        encrypted = !!hasTopicKey(topicId);
+      }
+
+      if (encrypted) {
+        if (model.action === "edit" && model.originalText) {
+          const topicId = model.get("topic.id");
+          decTitle = getTopicTitle(topicId);
+          decReply = getTopicKey(topicId).then(key =>
+            decrypt(key, model.reply)
+          );
+        } else {
+          const pk = getPrivateKey();
+          decTitle =
+            model.title && pk.then(key => rsaDecrypt(key, model.title));
+          decReply =
+            model.reply && pk.then(key => rsaDecrypt(key, model.reply));
+        }
+      }
+
+      if (decTitle) {
+        decTitle.then(title =>
+          model.setProperties({ title, isEncrypted: true })
+        );
+      }
+
+      if (decReply) {
+        decReply.then(reply =>
+          model.setProperties({ reply, isEncrypted: true })
+        );
       }
     });
   }
