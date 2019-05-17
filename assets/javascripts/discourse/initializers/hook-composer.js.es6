@@ -10,7 +10,6 @@ import {
   encrypt,
   exportKey,
   generateKey,
-  importKey,
   importPublicKey,
   rsaDecrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
