@@ -2,15 +2,11 @@ import Composer from "discourse/models/composer";
 import Draft from "discourse/models/draft";
 import {
   hasTopicKey,
-  getTopicKey,
   getPublicKey,
   getEncryptionStatus,
   ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import {
-  encrypt,
-  rsaEncrypt
-} from "discourse/plugins/discourse-encrypt/lib/keys";
+import { rsaEncrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 
 export default {
   name: "hook-draft",
@@ -22,34 +18,24 @@ export default {
     }
 
     Draft.reopenClass({
-      save(key, sequence, data) {
+      save(draftKey, sequence, data) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
-        let encTitle, encReply;
+        let encrypted, encTitle, encReply;
 
-        if (key === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-          /*
-           * Encrypt private message drafts.
-           */
+        if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
           const controller = container.lookup("controller:composer");
-          if (controller.get("model.isEncrypted")) {
-            const p = getPublicKey();
-            encTitle = p.then(publicKey => rsaEncrypt(publicKey, data.title));
-            encReply = p.then(publicKey => rsaEncrypt(publicKey, data.reply));
-          }
-        } else if (key.indexOf("topic_") === 0) {
-          /*
-           * Encrypt replies.
-           */
-          const topicId = key.substr("topic_".length);
-          if (hasTopicKey(topicId)) {
-            const p = getTopicKey(topicId);
-            encTitle = p.then(topicKey => encrypt(topicKey, data.title));
-            encReply = p.then(topicKey => encrypt(topicKey, data.reply));
-          }
+          encrypted = !!controller.get("model.isEncrypted");
+        } else if (draftKey.indexOf("topic_") === 0) {
+          const topicId = draftKey.substr("topic_".length);
+          encrypted = !!hasTopicKey(topicId);
         }
 
-        if (encTitle && encReply) {
+        if (encrypted) {
+          const pk = getPublicKey();
+          encTitle = data.title && pk.then(key => rsaEncrypt(key, data.title));
+          encReply = data.reply && pk.then(key => rsaEncrypt(key, data.reply));
+
           return Ember.RSVP.Promise.all([encTitle, encReply]).then(
             ([title, reply]) => {
               data.title = title;
