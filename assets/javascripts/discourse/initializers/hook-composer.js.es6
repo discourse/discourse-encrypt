@@ -95,6 +95,10 @@ export default {
     // Encrypt the Composer contents on-the-fly right before it is sent over
     // to the server.
     Composer.reopen({
+      getCookedHtml() {
+        return hasTopicKey(this.get("topic.id")) ? "" : this._super(...arguments);
+      },
+
       save() {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
@@ -105,25 +109,37 @@ export default {
         const title = this.get("title");
         const reply = this.get("reply");
 
-        // Edited posts already have a topic key.
         if (this.get("topic.topic_key")) {
-          return getPrivateKey()
-            .then(key => importKey(this.get("topic.topic_key"), key))
+          putTopicKey(this.get("topic.id"), this.get("topic.topic_key"));
+          return getTopicKey(this.get("topic.id"))
             .then(key => {
-              const p0 = encrypt(key, reply).then(r => this.set("reply", r));
-              const p1 = encrypt(key, title).then(encTitle => {
-                const topicId = this.get("topic.id");
+              const promises = [];
 
-                this.set("title", I18n.t("encrypt.encrypted_topic_title"));
-                putTopicTitle(topicId, encTitle);
+              if (title) {
+                promises.push(
+                  encrypt(key, title).then(encTitle => {
+                    const topicId = this.get("topic.id");
 
-                ajax("/encrypt/topic", {
-                  type: "PUT",
-                  data: { topic_id: topicId, title: encTitle }
-                });
-              });
+                    this.set("title", I18n.t("encrypt.encrypted_topic_title"));
+                    putTopicTitle(topicId, encTitle);
 
-              return Ember.RSVP.Promise.all([p0, p1]);
+                    ajax("/encrypt/topic", {
+                      type: "PUT",
+                      data: { topic_id: topicId, title: encTitle }
+                    });
+                  })
+                );
+              }
+
+              if (reply) {
+                promises.push(
+                  encrypt(key, reply).then(encReply =>
+                    this.set("reply", encReply)
+                  )
+                );
+              }
+
+              return Ember.RSVP.Promise.all(promises);
             })
             .then(() => _super.call(this, ...arguments))
             .finally(() => this.setProperties({ title, reply }));
