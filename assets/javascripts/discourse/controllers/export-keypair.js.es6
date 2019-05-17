@@ -54,7 +54,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
         .then(key => importPrivateKey(privateStr, key, true))
         .then(privateKey => exportPublicKey(privateKey));
 
-      Promise.all([publicStr, exportedPrivateStr])
+      Ember.RSVP.Promise.all([publicStr, exportedPrivateStr])
         .then(([publicKey, privateKey]) => {
           this.setProperties({
             exported: this.packKeyPair(publicKey, privateKey),

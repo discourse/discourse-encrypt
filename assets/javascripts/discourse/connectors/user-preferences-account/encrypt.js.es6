@@ -143,7 +143,7 @@ export default {
           .map(x => x.trim())
           .join("");
 
-        keyPairPromise = Promise.all([
+        keyPairPromise = Ember.RSVP.Promise.all([
           importPublicKey(publicStr),
           importPublicKey(privateStr, ["decrypt", "unwrapKey"])
         ]);

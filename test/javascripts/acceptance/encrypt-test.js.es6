@@ -120,9 +120,7 @@ async function setEncryptionStatus(status) {
 
 // TODO: Figure out why `await` is not enough.
 function sleep(time) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), time);
-  });
+  return new Ember.RSVP.Promise(resolve => setTimeout(resolve, time));
 }
 
 acceptance("Encrypt", {
