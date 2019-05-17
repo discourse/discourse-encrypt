@@ -44,11 +44,11 @@ export default Ember.Controller.extend(ModalFunctionality, {
     export() {
       this.set("inProgress", true);
 
-      const user = this.get("model");
+      const user = this.model;
       const publicStr = user.get("custom_fields.encrypt_public_key");
       const privateStr = user.get("custom_fields.encrypt_private_key");
       const salt = user.get("custom_fields.encrypt_salt");
-      const passphrase = this.get("passphrase");
+      const passphrase = this.passphrase;
 
       const exportedPrivateStr = generatePassphraseKey(passphrase, salt)
         .then(key => importPrivateKey(privateStr, key, true))

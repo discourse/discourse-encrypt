@@ -34,7 +34,7 @@ registerHelper("or", ([a, b]) => a || b);
 export default {
   setupComponent(args, component) {
     const currentUser = Discourse.User.current();
-    if (args.model.get("id") === currentUser.get("id")) {
+    if (args.model.id === currentUser.id) {
       const status = getEncryptionStatus(args.model);
       component.setProperties({
         model: args.model,
@@ -72,19 +72,19 @@ export default {
         },
         didInsertElement() {
           this._super(...arguments);
-          this.appEvents.on("encrypt:status-changed", this.get("listener"));
+          this.appEvents.on("encrypt:status-changed", this.listener);
         },
         willDestroyElement() {
           this._super(...arguments);
-          this.appEvents.off("encrypt:status-changed", this.get("listener"));
+          this.appEvents.off("encrypt:status-changed", this.listener);
         }
       });
       Ember.defineProperty(
         component,
         "passphraseStatus",
         Ember.computed("passphrase", "passphrase2", function() {
-          const passphrase = component.get("passphrase");
-          const passphrase2 = component.get("passphrase2");
+          const passphrase = component.passphrase;
+          const passphrase2 = component.passphrase2;
           if (!passphrase) {
             return "encrypt.preferences.passphrase_enter";
           } else if (passphrase.length < 15) {
@@ -128,8 +128,8 @@ export default {
 
       // 1. Generate new key pair or import existing one.
       let keyPairPromise;
-      if (this.get("importKey")) {
-        const str = (this.get("key") || PACKED_KEY_SEPARATOR)
+      if (this.importKey) {
+        const str = (this.key || PACKED_KEY_SEPARATOR)
           .replace(PACKED_KEY_HEADER, "")
           .replace(PACKED_KEY_FOOTER, "")
           .split(PACKED_KEY_SEPARATOR);
@@ -157,7 +157,7 @@ export default {
         .then(keyPair => {
           const [publicKey, privateKey] = keyPair;
 
-          const passphrase = this.get("passphrase");
+          const passphrase = this.passphrase;
           const salt = generateSalt();
           const publicStr = exportPublicKey(publicKey);
           const privateStr = generatePassphraseKey(passphrase, salt).then(
@@ -189,8 +189,8 @@ export default {
         .then(([publicStr, privateStr, salt]) =>
           Ember.RSVP.Promise.all([
             importPublicKey(publicStr),
-            generatePassphraseKey(this.get("passphrase"), salt).then(
-              passphraseKey => importPrivateKey(privateStr, passphraseKey)
+            generatePassphraseKey(this.passphrase, salt).then(passphraseKey =>
+              importPrivateKey(privateStr, passphraseKey)
             )
           ])
         )
@@ -223,7 +223,7 @@ export default {
       const publicStr = this.get("model.custom_fields.encrypt_public_key");
       const privateStr = this.get("model.custom_fields.encrypt_private_key");
       const salt = this.get("model.custom_fields.encrypt_salt");
-      const passphrase = this.get("passphrase");
+      const passphrase = this.passphrase;
 
       // 1. a. Import public key from string.
       // 1. b. Import private from string (using passphrase).
@@ -261,9 +261,9 @@ export default {
       const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
       const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
       const oldSalt = this.get("model.custom_fields.encrypt_salt");
-      const oldPassphrase = this.get("oldPassphrase");
+      const oldPassphrase = this.oldPassphrase;
       const salt = generateSalt();
-      const passphrase = this.get("passphrase");
+      const passphrase = this.passphrase;
 
       // 1. a. Decrypt private key with old passphrase.
       // 1. b. Generate new passphrase key.
@@ -314,11 +314,11 @@ export default {
     },
 
     export() {
-      showModal("export-keypair").set("model", this.get("model"));
+      showModal("export-keypair").set("model", this.model);
     },
 
     reset() {
-      showModal("reset-keypair").set("model", this.get("model"));
+      showModal("reset-keypair").set("model", this.model);
     }
   }
 };

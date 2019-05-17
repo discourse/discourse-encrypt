@@ -21,12 +21,12 @@ export default {
 
       didInsertElement() {
         this._super(...arguments);
-        this.appEvents.on("encrypt:status-changed", this.get("listener"));
+        this.appEvents.on("encrypt:status-changed", this.listener);
       },
 
       willDestroyElement() {
         this._super(...arguments);
-        this.appEvents.off("encrypt:status-changed", this.get("listener"));
+        this.appEvents.off("encrypt:status-changed", this.listener);
       },
 
       clicked() {

@@ -26,13 +26,13 @@ export default {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
 
-        if (!this.get("topic_key")) {
+        if (!this.topic_key) {
           return _super.call(this, ...arguments);
         }
 
         // Getting this topic's key.
         const topicKeyPromise = getPrivateKey().then(key =>
-          importKey(this.get("topic_key"), key)
+          importKey(this.topic_key, key)
         );
 
         // Getting user's key.
@@ -58,7 +58,7 @@ export default {
           .then(key =>
             ajax("/encrypt/topic", {
               type: "PUT",
-              data: { topic_id: this.get("id"), keys: { [username]: key } }
+              data: { topic_id: this.id, keys: { [username]: key } }
             })
           )
           .then(() => _super.call(this, ...arguments));
@@ -70,8 +70,8 @@ export default {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
 
-        const topic = this.get("topic");
-        if (!topic.get("topic_key")) {
+        const topic = this.topic;
+        if (!topic.topic_key) {
           return _super.call(this, ...arguments);
         }
 
@@ -81,7 +81,7 @@ export default {
 
         return ajax("/encrypt/topic", {
           type: "DELETE",
-          data: { topic_id: topic.get("id"), usernames: [user.username] }
+          data: { topic_id: topic.id, usernames: [user.username] }
         }).then(() => _super.call(this, ...arguments));
       }
     });

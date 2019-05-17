@@ -216,7 +216,7 @@ export function canEnableEncrypt(user) {
     }
 
     const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
-    const groups = (user.get("groups") || []).map(group => group.get("name"));
+    const groups = (user.groups || []).map(group => group.name);
     if (groups.some(group => encryptGroups.includes(group))) {
       return true;
     }

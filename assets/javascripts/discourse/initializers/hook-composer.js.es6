@@ -36,7 +36,7 @@ export default {
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
     appEvents.on("composer:reply-reloaded", model => {
-      const draftKey = model.get("draftKey");
+      const draftKey = model.draftKey;
 
       let encrypted, decTitle, decReply;
       if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
@@ -47,20 +47,18 @@ export default {
       }
 
       if (encrypted) {
-        if (model.get("action") === "edit" && model.get("originalText")) {
+        if (model.action === "edit" && model.originalText) {
           const topicId = model.get("topic.id");
           decTitle = getTopicTitle(topicId);
           decReply = getTopicKey(topicId).then(key =>
-            decrypt(key, model.get("reply"))
+            decrypt(key, model.reply)
           );
         } else {
           const pk = getPrivateKey();
           decTitle =
-            model.get("title") &&
-            pk.then(key => rsaDecrypt(key, model.get("title")));
+            model.title && pk.then(key => rsaDecrypt(key, model.title));
           decReply =
-            model.get("reply") &&
-            pk.then(key => rsaDecrypt(key, model.get("reply")));
+            model.reply && pk.then(key => rsaDecrypt(key, model.reply));
         }
       }
 
@@ -89,12 +87,12 @@ export default {
       save() {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
-        if (!this.get("privateMessage")) {
+        if (!this.privateMessage) {
           return _super.call(this, ...arguments);
         }
 
-        const title = this.get("title");
-        const reply = this.get("reply");
+        const title = this.title;
+        const reply = this.reply;
 
         if (this.get("topic.topic_key")) {
           putTopicKey(this.get("topic.id"), this.get("topic.topic_key"));
@@ -133,7 +131,7 @@ export default {
         }
 
         // Not encrypted messages.
-        if (!this.get("isEncrypted")) {
+        if (!this.isEncrypted) {
           return _super.call(this, ...arguments);
         }
 
@@ -141,7 +139,7 @@ export default {
         const p0 = generateKey();
 
         // Encrypting user keys.
-        const usernames = this.get("recipients");
+        const usernames = this.recipients;
         const p1 = p0.then(key =>
           ajax("/encrypt/user", {
             type: "GET",
@@ -230,7 +228,7 @@ export default {
 
       @observes("targetUsernames")
       checkKeys() {
-        const usernames = this.get("recipients");
+        const usernames = this.recipients;
         if (usernames.length === 0) {
           this.setProperties({
             isEncryptedDisabled: false,
@@ -261,7 +259,7 @@ export default {
           // Remember user preferences. If user enters a recipient, unchecks
           // encryption and then adds another recipient, this will not revert
           // his uncheck.
-          if (this.get("isEncryptedDisabled")) {
+          if (this.isEncryptedDisabled) {
             this.setProperties({
               isEncryptedDisabled: false,
               isEncrypted: true,

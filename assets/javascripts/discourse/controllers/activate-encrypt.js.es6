@@ -8,8 +8,8 @@ import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
-    const models = this.get("models") || [];
-    models.push(this.get("model"));
+    const models = this.models || [];
+    models.push(this.model);
 
     this.setProperties({
       models: models,
@@ -19,7 +19,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
   },
 
   onClose() {
-    const models = this.get("models") || [];
+    const models = this.models || [];
     models.forEach(model => {
       model.state.decrypting = false;
       model.state.decrypted = true;
@@ -36,7 +36,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
       const publicStr = user.get("custom_fields.encrypt_public_key");
       const privateStr = user.get("custom_fields.encrypt_private_key");
       const salt = user.get("custom_fields.encrypt_salt");
-      const passphrase = this.get("passphrase");
+      const passphrase = this.passphrase;
 
       // 1. a. Import public key from string.
       // 1. b. Import private from string (using passphrase).
@@ -55,7 +55,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
         // 3. Reset component status.
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.get("models").forEach(model => model.scheduleRerender());
+          this.models.forEach(model => model.scheduleRerender());
           this.set("models", null);
           this.send("closeModal");
         })

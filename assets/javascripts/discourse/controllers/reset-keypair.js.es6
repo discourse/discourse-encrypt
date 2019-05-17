@@ -18,7 +18,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
         type: "POST",
         data: {
           user_id: this.get("model.id"),
-          everything: this.get("everything")
+          everything: this.everything
         }
       })
         .then(reload)
