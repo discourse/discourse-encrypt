@@ -274,7 +274,7 @@ describe ::DiscourseEncrypt::EncryptController do
     it 'resets everything' do
       user.grant_admin!
 
-      expect { post '/encrypt/reset', params: { user_id: user.id } }
+      expect { post '/encrypt/reset', params: { user_id: user.id, everything: true } }
         .to change { TopicAllowedUser.count }.by(-1)
         .and change { PluginStoreRow.count }.by(-1)
         .and change { UserCustomField.count }.by(-3)
