@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # name: discourse-encrypt
 # about: Provides encrypted communication channels through Discourse.
 # version: 0.1
