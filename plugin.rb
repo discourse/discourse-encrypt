@@ -250,6 +250,14 @@ after_initialize do
     scope&.user.present? && object.private_message?
   end
 
+  add_to_serializer(:notification, :encrypted_title, false) do
+    object.topic.custom_fields['encrypted_title']
+  end
+
+  add_to_serializer(:notification, :include_encrypted_title?) do
+    scope&.user.present? && object.topic.private_message?
+  end
+
   # +topic_key+
   #
   # Topic's key encrypted with user's public key.
@@ -287,6 +295,14 @@ after_initialize do
 
   add_to_serializer(:topic_list_item, :include_topic_key?) do
     scope&.user.present? && object.private_message?
+  end
+
+  add_to_serializer(:notification, :topic_key, false) do
+    DiscourseEncrypt::Store.get("key_#{object.topic.id}_#{scope.user.id}")
+  end
+
+  add_to_serializer(:notification, :include_topic_key?) do
+    scope&.user.present? && object.topic.private_message?
   end
 
   DiscourseEncrypt::Engine.routes.draw do

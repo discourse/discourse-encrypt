@@ -52,11 +52,12 @@ function decryptElements(containerSelector, elementSelector) {
  * Decrypts all title elements.
  */
 export function decryptTitles() {
-  decryptElements("h1", ".fancy-title");
-  decryptElements(".topic-list-item, .latest-topic-list-item", ".title");
-  decryptElements("a.topic-link", "span");
-  decryptElements("a.topic-link");
-  decryptElements("a.raw-topic-link");
+  decryptElements("h1[data-topic-id]", ".fancy-title");
+  decryptElements(".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]", ".title");
+  decryptElements("a.topic-link[data-topic-id]", "span");
+  decryptElements("a.topic-link[data-topic-id]");
+  decryptElements("a.raw-topic-link[data-topic-id]");
+  decryptElements(".notifications span[data-topic-id]");
 }
 
 export default {
