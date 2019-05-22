@@ -242,17 +242,14 @@ export default {
         // 3. Reset component status.
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-
           this.send("hidePassphraseInput");
-          this.set("inProgress", false);
-
           reload();
         })
 
-        .catch(() => {
-          this.set("inProgress", false);
-          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
-        });
+        .catch(() =>
+          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
+        )
+        .finally(() => this.set("inProgress", false));
     },
 
     changeEncrypt() {
@@ -292,25 +289,22 @@ export default {
         })
 
         // 4. Reset component status.
-        .then(() => {
-          this.send("hidePassphraseInput");
-          this.set("inProgress", false);
-        })
-
-        .catch(() => {
-          this.set("inProgress", false);
-          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
-        });
+        .then(() => this.send("hidePassphraseInput"))
+        .catch(() =>
+          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
+        )
+        .finally(() => this.set("inProgress", false));
     },
 
     deactivateEncrypt() {
       this.setProperties("inProgress", true);
 
-      deleteIndexedDb().then(() => {
-        this.appEvents.trigger("encrypt:status-changed");
-        this.set("inProgress", false);
-        reload();
-      });
+      deleteIndexedDb()
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
+          reload();
+        })
+        .finally(() => this.set("inProgress", false));
     },
 
     export() {

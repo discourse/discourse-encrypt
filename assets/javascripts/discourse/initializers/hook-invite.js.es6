@@ -1,16 +1,15 @@
-import { ajax } from "discourse/lib/ajax";
 import Topic from "discourse/models/topic";
-import TopicDetails from "discourse/models/topic-details";
+import { ajax } from "discourse/lib/ajax";
 import {
   exportKey,
-  importKey,
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
-  getPrivateKey
+  hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { getTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   name: "hook-invite",
@@ -22,67 +21,38 @@ export default {
     }
 
     Topic.reopen({
-      createInvite(username) {
+      createInvite(user, group_names, custom_message) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
-
-        if (!this.topic_key) {
+        if (!hasTopicKey(this.id)) {
           return _super.call(this, ...arguments);
         }
 
-        // Getting this topic's key.
-        const topicKeyPromise = getPrivateKey().then(key =>
-          importKey(this.topic_key, key)
-        );
-
-        // Getting user's key.
+        const topicKeyPromise = getTopicKey(this.id);
         const userKeyPromise = ajax("/encrypt/user", {
           type: "GET",
-          data: { usernames: [username] }
+          data: { usernames: [user] }
         })
           .then(userKeys => {
-            if (!userKeys[username]) {
+            if (!userKeys[user]) {
               bootbox.alert(
-                I18n.t("encrypt.composer.user_has_no_key", { username })
+                I18n.t("encrypt.composer.user_has_no_key", { user })
               );
-              return Ember.RSVP.Promise.reject(username);
+              return Ember.RSVP.Promise.reject(user);
             }
 
-            return userKeys[username];
+            return userKeys[user];
           })
           .then(key => importPublicKey(key));
 
-        // Send topic's key encrypted with user's key.
         return Ember.RSVP.Promise.all([topicKeyPromise, userKeyPromise])
           .then(([topicKey, userKey]) => exportKey(topicKey, userKey))
           .then(key =>
-            ajax("/encrypt/topic", {
-              type: "PUT",
-              data: { topic_id: this.id, keys: { [username]: key } }
+            ajax(`/t/${this.get("id")}/invite`, {
+              type: "POST",
+              data: { user, key, group_names, custom_message }
             })
-          )
-          .then(() => _super.call(this, ...arguments));
-      }
-    });
-
-    TopicDetails.reopen({
-      removeAllowedUser(user) {
-        // TODO: https://github.com/emberjs/ember.js/issues/15291
-        let { _super } = this;
-
-        const topic = this.topic;
-        if (!topic.topic_key) {
-          return _super.call(this, ...arguments);
-        }
-
-        // TODO: Generate a new topic key.
-        // TODO: Re-encrypt and edit all posts in topic.
-        // TODO: Re-encrypt and save keys for all users.
-
-        return ajax("/encrypt/topic", {
-          type: "DELETE",
-          data: { topic_id: topic.id, usernames: [user.username] }
-        }).then(() => _super.call(this, ...arguments));
+          );
       }
     });
   }

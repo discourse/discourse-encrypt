@@ -5,7 +5,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
-  name: "hook-uploads",
+  name: "hook-upload",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

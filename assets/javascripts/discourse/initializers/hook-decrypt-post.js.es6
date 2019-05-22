@@ -28,9 +28,6 @@ export default {
       api.reopenWidget("post-contents", {
         html(attrs, state) {
           const topicId = attrs.topicId;
-
-          // An unencrypted topic will not have an encrypted title so we can
-          // return early.
           if (!hasTopicTitle(topicId)) {
             return this._super(...arguments);
           }
