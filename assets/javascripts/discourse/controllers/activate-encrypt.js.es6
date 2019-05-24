@@ -55,7 +55,11 @@ export default Ember.Controller.extend(ModalFunctionality, {
         // 3. Reset component status.
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.models.forEach(model => model.scheduleRerender());
+          this.models.forEach(model => {
+            model.state.decrypting = false;
+            model.state.decrypted = false;
+            model.scheduleRerender();
+          });
           this.set("models", null);
           this.send("closeModal");
         })

@@ -25,6 +25,7 @@ export default {
     }
 
     withPluginApi("0.8.25", api => {
+      api.includePostAttributes("encrypted_raw");
       api.reopenWidget("post-contents", {
         html(attrs, state) {
           const topicId = attrs.topicId;
@@ -32,15 +33,11 @@ export default {
             return this._super(...arguments);
           }
 
-          // Check if post has been updated (if last decrypted ciphertext
-          // is different than the current ciphertext).
-          const ciphertext = $(attrs.cooked).text();
-          if (state.encrypted && state.encrypted !== ciphertext) {
-            state.decrypting = false;
-            state.decrypted = undefined;
-          }
-
-          if (hasTopicKey(topicId) && !state.decrypted) {
+          const ciphertext = attrs.encrypted_raw;
+          if (
+            (!state.decrypted || state.encrypted !== ciphertext) &&
+            hasTopicKey(topicId)
+          ) {
             state.encrypted = ciphertext;
             state.decrypting = true;
 
@@ -50,12 +47,12 @@ export default {
                   .then(key => decrypt(key, ciphertext))
                   .then(plaintext => cookAsync(plaintext))
                   .then(cooked => {
+                    state.decrypting = false;
                     state.decrypted = cooked.string;
                     this.scheduleRerender();
                   })
                   // Absence of topic key underlies a bigger error.
                   .catch(() => {
-                    state.encrypted = undefined;
                     state.decrypting = false;
                     state.decrypted = true;
                     this.scheduleRerender();
@@ -65,19 +62,16 @@ export default {
               .catch(() => showModal("activate-encrypt", { model: this }));
           }
 
-          // Checking if topic is already being decrypted
-          if (state.decrypting) {
-            if (state.decrypted) {
-              attrs.cooked = state.decrypted;
-              Ember.run.next(() => resolveAllShortUrls(ajax));
-            } else {
-              attrs.cooked =
-                "<div class='alert alert-info'>" +
-                renderSpinner("small") +
-                " " +
-                I18n.t("encrypt.decrypting") +
-                "</div>";
-            }
+          if (state.decrypted && state.decrypted !== true) {
+            attrs.cooked = state.decrypted;
+            Ember.run.next(() => resolveAllShortUrls(ajax));
+          } else if (state.decrypting) {
+            attrs.cooked =
+              "<div class='alert alert-info'>" +
+              renderSpinner("small") +
+              " " +
+              I18n.t("encrypt.decrypting") +
+              "</div>";
           } else {
             attrs.cooked =
               "<div class='alert alert-error'>" +

@@ -121,6 +121,15 @@ after_initialize do
   add_preloaded_topic_list_custom_field('encrypted_title')
   CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
 
+  # Hide cooked content.
+  Plugin::Filter.register(:after_post_cook) do |post, cooked|
+    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+\Z/)
+      next "<p>#{I18n.t('js.encrypt.encrypted_topic_raw')}</p>"
+    end
+
+    cooked
+  end
+
   # Handle new post creation.
   add_permitted_post_create_param(:encrypted_title)
   add_permitted_post_create_param(:encrypted_raw)
@@ -153,6 +162,16 @@ after_initialize do
     result
   end
 
+  module TopicExtensions
+    def is_encrypted?
+      !!(private_message? &&
+         custom_fields &&
+         custom_fields['encrypted_title'])
+    end
+  end
+
+  ::Topic.class_eval { prepend TopicExtensions }
+
   module PostExtensions
     # Hide version (staff) and public version (regular users) because post
     # revisions will not be decrypted.
@@ -165,7 +184,7 @@ after_initialize do
     end
 
     def is_encrypted?
-      !!(topic && topic.custom_fields && topic.custom_fields['encrypted_title'])
+      !!(topic && topic.is_encrypted?)
     end
   end
 
@@ -213,6 +232,14 @@ after_initialize do
   #
   # +TopicViewSerializer+ and +BasicTopicSerializer+ should cover all topics
   # that are serialized over to the client.
+
+  add_to_serializer(:post, :encrypted_raw, false) do
+    object.raw
+  end
+
+  add_to_serializer(:post, :include_encrypted_raw?) do
+    object.is_encrypted?
+  end
 
   # +encrypted_title+
   #
