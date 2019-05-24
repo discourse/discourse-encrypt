@@ -29,17 +29,6 @@ export default {
         this.appEvents.off("encrypt:status-changed", this.get("listener"));
       },
 
-      @computed("model.isEncrypted", "model.isEncryptedDisabled")
-      title(checked, disabled) {
-        if (disabled) {
-          return "encrypt.checkbox.disabled";
-        } else if (checked) {
-          return "encrypt.checkbox.checked";
-        } else {
-          return "encrypt.checkbox.unchecked";
-        }
-      },
-
       clicked() {
         this.set("model.showEncryptError", true);
         if (!this.get("model.isEncryptedDisabled")) {

@@ -1,6 +1,6 @@
 {{#if isEncryptActive}}
   {{#if (or model.creatingPrivateMessage model.topic.encrypted_title)}}
-    <a {{action clicked}} title={{i18n title}}>
+    <a {{action clicked}}>
       {{d-icon (if model.isEncrypted "lock" "unlock") class=(if model.isEncryptedDisabled "disabled")}}
     </a>
 
