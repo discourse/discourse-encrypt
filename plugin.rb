@@ -138,8 +138,6 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
-    manager.args[:skip_unique_check] = true
-
     if encrypted_title = manager.args[:encrypted_title]
       manager.args[:topic_opts] ||= {}
       manager.args[:topic_opts][:custom_fields] ||= {}
