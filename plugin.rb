@@ -173,16 +173,6 @@ after_initialize do
   ::Topic.class_eval { prepend TopicExtensions }
 
   module PostExtensions
-    # Hide version (staff) and public version (regular users) because post
-    # revisions will not be decrypted.
-    def version
-      is_encrypted? ? 1 : super
-    end
-
-    def public_version
-      is_encrypted? ? 1 : super
-    end
-
     def is_encrypted?
       !!(topic && topic.is_encrypted?)
     end
@@ -330,6 +320,29 @@ after_initialize do
 
   add_to_serializer(:notification, :include_topic_key?) do
     scope&.user.present? && object.topic.private_message?
+  end
+
+  # +topic_id+ and +raws+
+  #
+  # Topic's ID and previous and current raw values for encrypted topics.
+  #
+  # These values are required by `Post.loadRevision` to decrypt the
+  # ciphertexts and perform client-sided diff.
+
+  add_to_serializer(:post_revision, :topic_id) do
+    post.topic_id
+  end
+
+  add_to_serializer(:post_revision, :include_topic_id?) do
+    post.is_encrypted?
+  end
+
+  add_to_serializer(:post_revision, :raws) do
+    { previous: previous["raw"], current: current["raw"] }
+  end
+
+  add_to_serializer(:post_revision, :include_raws?) do
+    post.is_encrypted?
   end
 
   DiscourseEncrypt::Engine.routes.draw do
