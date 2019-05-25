@@ -317,7 +317,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
-    scope&.user.present? && object.topic.private_message?
+    scope&.user.present? && object&.topic&.private_message?
   end
 
   # +topic_id+ and +raws+
