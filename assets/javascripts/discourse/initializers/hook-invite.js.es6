@@ -7,7 +7,7 @@ import {
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
-  hasTopicKey,
+  hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { getTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 

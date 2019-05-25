@@ -25,12 +25,10 @@ describe Post do
     revisor.revise!(user, raw: 'this post is unencrypted and has been edited')
   end
 
-  it 'hides version for encrypted posts' do
-    expect(post.version).to eq(1)
-    expect(post.public_version).to eq(1)
-
-    expect(post2.version).to eq(2)
-    expect(post2.public_version).to eq(2)
+  context '#is_encrypted?' do
+    it 'works' do
+      expect(post.is_encrypted?).to eq(true)
+    end
   end
 
 end

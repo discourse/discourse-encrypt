@@ -53,7 +53,10 @@ function decryptElements(containerSelector, elementSelector) {
  */
 export function decryptTitles() {
   decryptElements("h1[data-topic-id]", ".fancy-title");
-  decryptElements(".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]", ".title");
+  decryptElements(
+    ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
+    ".title"
+  );
   decryptElements("a.topic-link[data-topic-id]", "span");
   decryptElements("a.topic-link[data-topic-id]");
   decryptElements("a.raw-topic-link[data-topic-id]");

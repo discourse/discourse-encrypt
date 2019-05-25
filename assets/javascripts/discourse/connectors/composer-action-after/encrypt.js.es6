@@ -1,4 +1,3 @@
-import computed from "ember-addons/ember-computed-decorators";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus

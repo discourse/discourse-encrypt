@@ -160,10 +160,6 @@ test("posting does not leak plaintext", async assert => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   globalAssert = assert;
-  /* global server */
-  server.put("/encrypt/topic", () => {
-    return [200, { "Content-Type": "application/json" }, { success: "OK" }];
-  });
 
   const composerActions = selectKit(".composer-actions");
 
