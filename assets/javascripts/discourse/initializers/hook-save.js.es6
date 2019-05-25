@@ -75,6 +75,8 @@ export default {
         let encryptedKeysPromise = Ember.RSVP.Promise.resolve();
         if (args.target_usernames) {
           const usernames = args.target_usernames.split(",");
+          usernames.push(Discourse.User.current().username);
+
           const userKeysPromise = ajax("/encrypt/user", {
             type: "GET",
             data: { usernames }
