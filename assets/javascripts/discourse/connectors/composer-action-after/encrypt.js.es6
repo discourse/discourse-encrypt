@@ -1,21 +1,27 @@
+import { getOwner } from "discourse-common/lib/get-owner";
 import {
   ENCRYPT_ACTIVE,
+  ENCRYPT_DISABLED,
   getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
   setupComponent(args, component) {
-    const currentUser = Discourse.User.current();
+    const currentUser = getOwner(component).lookup("current-user:main");
+    const status = getEncryptionStatus(currentUser);
+
     component.setProperties({
       model: args.model,
-
-      /** @var Whether the encryption is active on this device. */
-      isEncryptActive: getEncryptionStatus(currentUser) === ENCRYPT_ACTIVE,
+      isEncryptEnabled: status !== ENCRYPT_DISABLED,
+      isEncryptActive: status === ENCRYPT_ACTIVE,
 
       /** Listens for encryption status updates. */
       listener() {
         const newStatus = getEncryptionStatus(currentUser);
-        component.set("isEncryptActive", newStatus === ENCRYPT_ACTIVE);
+        component.setProperties({
+          isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
+          isEncryptActive: newStatus === ENCRYPT_ACTIVE,
+        });
       },
 
       didInsertElement() {
@@ -35,5 +41,23 @@ export default {
         }
       }
     });
+
+    Ember.defineProperty(
+      component,
+      "title",
+      Ember.computed(
+        "model.isEncrypted",
+        "model.isEncryptedDisabled",
+        () => {
+          if (this.model.isEncryptedDisabled) {
+            return "encrypt.checkbox.disabled";
+          } else if (this.model.isEncrypted) {
+            return "encrypt.checkbox.checked";
+          } else {
+            return "encrypt.checkbox.unchecked";
+          }
+        }
+      )
+    );
   }
 };
