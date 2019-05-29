@@ -1,4 +1,4 @@
-import { resolveAllShortUrls } from "pretty-text/image-short-url";
+import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cookAsync } from "discourse/lib/text";
 import { ajax } from "discourse/lib/ajax";
