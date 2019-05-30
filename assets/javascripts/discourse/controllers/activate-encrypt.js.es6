@@ -5,6 +5,7 @@ import {
   importPublicKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import { saveKeyPairToIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+import { reload } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
@@ -62,6 +63,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
           });
           this.set("models", null);
           this.send("closeModal");
+          reload();
         })
 
         .catch(() =>
