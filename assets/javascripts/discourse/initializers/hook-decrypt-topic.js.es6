@@ -1,3 +1,4 @@
+import { withPluginApi } from "discourse/lib/plugin-api";
 import { escapeExpression } from "discourse/lib/utilities";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import {
@@ -13,7 +14,9 @@ import {
  * @param containerSelector Item list (container) selector
  * @param elementSelector   Encrypted element selector
  */
-function decryptElements(containerSelector, elementSelector) {
+function decryptElements(containerSelector, elementSelector, opts) {
+  opts = opts || {};
+
   $(containerSelector).each(function() {
     if ($(this).data("decrypted")) {
       return;
@@ -33,16 +36,19 @@ function decryptElements(containerSelector, elementSelector) {
         });
 
         // Replace glyph if exists or else add to title.
-        const $glyph = $(`h1[data-topic-id=${topicId}] .private-message-glyph`);
-        if ($glyph.length) {
-          $glyph.html(icon);
-          $el.html(escapeExpression(title));
-        } else {
+        if (opts.replaceIcon) {
+          const $glyph = $(
+            `h1 .private-message-glyph`
+          );
+          if ($glyph.length) {
+            $glyph.html(icon);
+            $el.html(escapeExpression(title));
+          }
+        } else if (opts.addIcon) {
           $el.html(icon + " " + title);
+        } else {
+          $el.html(title);
         }
-
-        // TODO: Hide quick-edit button for the time being.
-        $(".edit-topic").hide();
       })
       .catch(() => $(this).data("decrypted", null));
   });
@@ -52,15 +58,20 @@ function decryptElements(containerSelector, elementSelector) {
  * Decrypts all title elements.
  */
 export function decryptTitles() {
-  decryptElements("h1[data-topic-id]", ".fancy-title");
+  decryptElements("h1[data-topic-id]", ".fancy-title", { replaceIcon: true });
+  decryptElements("h1 .topic-link", "span", { replaceIcon: true });
   decryptElements(
     ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
-    ".title"
+    ".title",
+    { addIcon: true }
   );
-  decryptElements("a.topic-link[data-topic-id]", "span");
-  decryptElements("a.topic-link[data-topic-id]");
-  decryptElements("a.raw-topic-link[data-topic-id]");
+  decryptElements("a.topic-link[data-topic-id]", "span", { addIcon: true });
+  decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
+  decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
   decryptElements(".notifications span[data-topic-id]");
+
+  // TODO: Hide quick-edit button for the time being.
+  $(".edit-topic").hide();
 }
 
 export default {
@@ -83,6 +94,15 @@ export default {
         });
         return this._super(...arguments);
       }
+    });
+
+    withPluginApi("0.8.31", api => {
+      api.decorateWidget("header:after", helper => {
+        if (helper.widget.state.userVisible) {
+          decryptTitles();
+          Ember.run.debounce(self, decryptTitles, 500);
+        }
+      });
     });
   }
 };

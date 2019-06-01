@@ -1,5 +1,6 @@
 import PreloadStore from "preload-store";
 import Topic from "discourse/models/topic";
+import NotificationAdapter from "discourse/adapters/notification";
 import {
   putTopicKey,
   putTopicTitle,
@@ -34,6 +35,21 @@ export default {
       }
     }
 
+    // Hook `Notification` adapter to gather encrypted topic keys.
+    NotificationAdapter.reopen({
+      find() {
+        return this._super(...arguments).then(result => {
+          result.notifications.forEach(notification => {
+            if (notification.topic_key) {
+              putTopicKey(notification.topic_id, notification.topic_key);
+              putTopicTitle(notification.topic_id, notification.encrypted_title);
+            }
+          });
+          return result;
+        });
+      }
+    });
+
     // Hook `Topic` model to gather encrypted topic keys.
     Topic.reopenClass({
       create(args) {
@@ -41,7 +57,6 @@ export default {
           putTopicKey(args.id, args.topic_key);
           putTopicTitle(args.id, args.encrypted_title);
         }
-
         return this._super(...arguments);
       }
     });
