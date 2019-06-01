@@ -20,7 +20,7 @@ export default {
         const newStatus = getEncryptionStatus(currentUser);
         component.setProperties({
           isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-          isEncryptActive: newStatus === ENCRYPT_ACTIVE,
+          isEncryptActive: newStatus === ENCRYPT_ACTIVE
         });
       },
 
@@ -36,7 +36,7 @@ export default {
 
       clicked() {
         this.set("model.showEncryptError", true);
-        if (!this.get("model.isEncryptedDisabled")) {
+        if (!this.get("model.disableEncryptIndicator")) {
           this.set("model.isEncrypted", !this.get("model.isEncrypted"));
         }
       }
@@ -47,12 +47,12 @@ export default {
       "title",
       Ember.computed(
         "model.isEncrypted",
-        "model.isEncryptedDisabled",
+        "model.disableEncryptIndicator",
         () => {
-          if (this.model.isEncryptedDisabled) {
-            return "encrypt.checkbox.disabled";
-          } else if (this.model.isEncrypted) {
+          if (this.model.isEncrypted) {
             return "encrypt.checkbox.checked";
+          } else if (this.model.disableEncryptIndicator) {
+            return "encrypt.checkbox.disabled";
           } else {
             return "encrypt.checkbox.unchecked";
           }

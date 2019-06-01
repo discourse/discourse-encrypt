@@ -28,41 +28,45 @@ export default {
 
     // Check recipients and show encryption status in composer.
     Composer.reopen({
-      @on("init")
-      initEncrypt() {
+      updateEncryptProperties() {
+        const encryptedTopic = this.topic && this.topic.encrypted_title;
         this.setProperties({
-          isEncryptedDisabled: false,
-          isEncrypted: false,
+          /** @var Whether the current message is going to be encrypted. */
+          isEncrypted: encryptedTopic,
+          /** @var Disable encrypt indicator to enforce encrypted message, if
+                   message is encrypted, or enforce decrypted message if one
+                   of the recipients does not have encryption enabled. */
+          disableEncryptIndicator: encryptedTopic,
+          /** @var Current encryption error. */
           encryptError: "",
+          /** @var Immediately show encryption error if it is fatal. */
           showEncryptError: false
         });
       },
 
-      @observes("topic")
-      topicUpdated() {
-        const value = hasTopicKey(this.get("topic.id"));
-        this.setProperties({
-          isEncryptedDisabled: false,
-          isEncrypted: value,
-          encryptError: value ? "" : I18n.t("encrypt.cannot_encrypt"),
-          showEncryptError: true
-        });
+      @on("init")
+      initEncrypt() {
+        this.updateEncryptProperties();
+      },
+
+      @observes("creatingPrivateMessage", "topic")
+      testasdd() {
+        this.updateEncryptProperties();
       },
 
       @observes("targetUsernames")
       checkKeys() {
-        const targetUsernames = this.get("targetUsernames");
-        const usernames = targetUsernames ? targetUsernames.split(",") : [];
-        usernames.push(this.get("user.username"));
-
-        if (usernames.length === 0) {
+        if (!this.targetUsernames) {
           this.setProperties({
-            isEncryptedDisabled: false,
             isEncrypted: true,
+            disableEncryptIndicator: false,
             encryptError: ""
           });
           return;
         }
+
+        const usernames = this.targetUsernames.split(",");
+        usernames.push(this.user.username);
 
         ajax("/encrypt/user", {
           type: "GET",
@@ -72,23 +76,25 @@ export default {
             const username = usernames[i];
             if (!userKeys[username]) {
               this.setProperties({
-                isEncryptedDisabled: true,
                 isEncrypted: false,
+                disableEncryptIndicator: true,
                 encryptError: I18n.t("encrypt.composer.user_has_no_key", {
                   username
-                })
+                }),
+                showEncryptError: this.showEncryptError || this.isEncrypted
               });
               return;
             }
           }
 
-          // Remember user preferences. If user enters a recipient, unchecks
+          // Automatically enable encryption so people do not forget, but
+          // remember user preferences. If user enters a recipient, unchecks
           // encryption and then adds another recipient, this will not revert
           // his uncheck.
-          if (this.isEncryptedDisabled) {
+          if (this.disableEncryptIndicator) {
             this.setProperties({
-              isEncryptedDisabled: false,
               isEncrypted: true,
+              disableEncryptIndicator: false,
               encryptError: ""
             });
           }
