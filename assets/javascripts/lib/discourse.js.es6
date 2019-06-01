@@ -106,20 +106,20 @@ export function putTopicKey(topicId, key) {
  *
  * @param topicId
  *
- * @return CryptoKey
+ * @return Promise
  */
 export function getTopicKey(topicId) {
   let key = topicKeys[topicId];
 
   if (!key) {
     return Ember.RSVP.Promise.reject();
-  } else if (key instanceof CryptoKey) {
-    return Ember.RSVP.Promise.resolve(key);
-  } else {
-    return getPrivateKey()
-      .then(privKey => importKey(key, privKey))
-      .then(topicKey => (topicKeys[topicId] = topicKey));
+  } else if (!(key instanceof Promise || key instanceof Ember.RSVP.Promise)) {
+    topicKeys[topicId] = getPrivateKey().then(privKey =>
+      importKey(key, privKey)
+    );
   }
+
+  return topicKeys[topicId];
 }
 
 /**
@@ -150,11 +150,22 @@ export function putTopicTitle(topicId, title) {
  *
  * @param topicId
  *
- * @return String
+ * @return Promise
  */
 export function getTopicTitle(topicId) {
-  const title = topicTitles[topicId];
-  return getTopicKey(topicId).then(key => decrypt(key, title));
+  let title = topicTitles[topicId];
+
+  if (!title) {
+    return Ember.RSVP.Promise.reject();
+  } else if (
+    !(title instanceof Promise || title instanceof Ember.RSVP.Promise)
+  ) {
+    topicTitles[topicId] = getTopicKey(topicId).then(key =>
+      decrypt(key, title)
+    );
+  }
+
+  return topicTitles[topicId];
 }
 
 /**
