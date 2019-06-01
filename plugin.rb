@@ -124,10 +124,17 @@ after_initialize do
   # Hide cooked content.
   Plugin::Filter.register(:after_post_cook) do |post, cooked|
     if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+\Z/)
-      next "<p>#{I18n.t('js.encrypt.encrypted_topic_raw')}</p>"
+      next "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
 
     cooked
+  end
+
+  # Hide cooked content in email.
+  on(:reduce_cooked) do |fragment, post|
+    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+\Z/)
+      fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
+    end
   end
 
   # Handle new post creation.
