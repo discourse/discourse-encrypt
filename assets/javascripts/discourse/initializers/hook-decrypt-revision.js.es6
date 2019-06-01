@@ -2,7 +2,7 @@ import Post from "discourse/models/post";
 import { cookAsync } from "discourse/lib/text";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  ENCRYPT_DISABLED,
+  ENCRYPT_ACTIVE,
   getEncryptionStatus,
   getTopicKey,
   hasTopicKey
@@ -13,7 +13,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

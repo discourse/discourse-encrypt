@@ -5,7 +5,7 @@ import {
   hasTopicTitle,
   getTopicTitle,
   getEncryptionStatus,
-  ENCRYPT_DISABLED
+  ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
@@ -79,7 +79,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 
