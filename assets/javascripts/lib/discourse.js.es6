@@ -113,6 +113,8 @@ export function getTopicKey(topicId) {
 
   if (!key) {
     return Ember.RSVP.Promise.reject();
+  } else if (key instanceof CryptoKey) {
+    return Ember.RSVP.Promise.resolve(key);
   } else if (!(key instanceof Promise || key instanceof Ember.RSVP.Promise)) {
     topicKeys[topicId] = getPrivateKey().then(privKey =>
       importKey(key, privKey)
