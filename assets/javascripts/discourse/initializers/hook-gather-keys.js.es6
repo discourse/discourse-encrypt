@@ -42,7 +42,10 @@ export default {
           result.notifications.forEach(notification => {
             if (notification.topic_key) {
               putTopicKey(notification.topic_id, notification.topic_key);
-              putTopicTitle(notification.topic_id, notification.encrypted_title);
+              putTopicTitle(
+                notification.topic_id,
+                notification.encrypted_title
+              );
             }
           });
           return result;

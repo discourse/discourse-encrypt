@@ -37,9 +37,7 @@ function decryptElements(containerSelector, elementSelector, opts) {
 
         // Replace glyph if exists or else add to title.
         if (opts.replaceIcon) {
-          const $glyph = $(
-            `h1 .private-message-glyph`
-          );
+          const $glyph = $(`h1 .private-message-glyph`);
           if ($glyph.length) {
             $glyph.html(icon);
             $el.html(escapeExpression(title));
