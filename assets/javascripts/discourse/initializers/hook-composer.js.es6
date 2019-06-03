@@ -30,9 +30,10 @@ export default {
     Composer.reopen({
       updateEncryptProperties() {
         const encryptedTopic = this.topic && this.topic.encrypted_title;
+        const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
-          isEncrypted: encryptedTopic,
+          isEncrypted: encryptedTopic && canEncryptTopic,
           /** @var Disable encrypt indicator to enforce encrypted message, if
                    message is encrypted, or enforce decrypted message if one
                    of the recipients does not have encryption enabled. */
