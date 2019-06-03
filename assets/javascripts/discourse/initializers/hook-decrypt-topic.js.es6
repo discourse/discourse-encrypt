@@ -49,6 +49,11 @@ function decryptElements(containerSelector, elementSelector, opts) {
         }
       })
       .catch(() => $(this).data("decrypted", null));
+
+    // TODO: Hide quick-edit button for the time being.
+    $(this)
+      .find(".edit-topic")
+      .hide();
   });
 }
 
@@ -67,9 +72,6 @@ export function decryptTitles() {
   decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
   decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
   decryptElements(".notifications span[data-topic-id]");
-
-  // TODO: Hide quick-edit button for the time being.
-  $(".edit-topic").hide();
 }
 
 export default {
