@@ -36,7 +36,7 @@ export default {
           .then(userKeys => {
             if (!userKeys[user]) {
               bootbox.alert(
-                I18n.t("encrypt.composer.user_has_no_key", { user })
+                I18n.t("encrypt.composer.user_has_no_key", { username: user })
               );
               return Ember.RSVP.Promise.reject(user);
             }
