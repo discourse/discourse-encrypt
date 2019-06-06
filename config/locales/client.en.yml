@@ -21,7 +21,7 @@ en:
 
       composer:
         encrypt: "Encrypt message?"
-        user_has_no_key: "Message will not be encrypted, {{username}} has not enabled encryption yet."
+        user_has_no_key: "Unfortunately {{username}} cannot be added to this message because they have not enabled encrypted messages in their preferences."
 
       preferences:
         status_enabled: "You have enabled encryption and activated it on this device."
