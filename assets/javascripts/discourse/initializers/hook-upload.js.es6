@@ -58,22 +58,24 @@ export default {
 
       api.decorateCooked($el => {
         $el.on("click.discourse-encrypt", "a.attachment", function() {
-          const topicId = $(this)
-            .closest("[data-topic-id]")
-            .data("topic-id");
+          const $a = $(this);
+          const topicId = $a.closest("[data-topic-id]").data("topic-id");
           if (!hasTopicKey(topicId)) {
             return true;
           }
 
-          const href = $(this).attr("href");
           new Ember.RSVP.Promise((resolve, reject) => {
             var req = new XMLHttpRequest();
-            req.open("GET", href, true);
+            req.open("GET", $a.attr("href"), true);
             req.responseType = "arraybuffer";
             req.onload = function() {
-              const filename = req
-                .getResponseHeader("Content-Disposition")
-                .match(/filename="(.*?)\.encrypted"/)[1];
+              let filename = req.getResponseHeader("Content-Disposition");
+              if (filename) {
+                // Requires Access-Control-Expose-Headers: Content-Disposition.
+                filename = filename.match(/filename="(.*?)\.encrypted"/)[1];
+              } else {
+                filename = $a.text().replace(/\.encrypted$/, "");
+              }
               resolve([req.response, filename]);
             };
             req.onerror = reject;
