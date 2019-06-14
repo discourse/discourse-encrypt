@@ -1,5 +1,5 @@
 import selectKit from "helpers/select-kit-helper";
-import { acceptance, replaceCurrentUser } from "helpers/qunit-helpers";
+import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import {
   exportPrivateKey,
   exportPublicKey,
@@ -277,7 +277,7 @@ test("encrypt settings visible only to allowed groups", async assert => {
 
   Discourse.SiteSettings.encrypt_groups = "allowed_group";
 
-  replaceCurrentUser({
+  updateCurrentUser({
     groups: [
       Ember.Object.create({
         id: 1,
@@ -292,7 +292,7 @@ test("encrypt settings visible only to allowed groups", async assert => {
     "encrypt settings are not visible"
   );
 
-  replaceCurrentUser({
+  updateCurrentUser({
     groups: [
       Ember.Object.create({
         id: 1,
