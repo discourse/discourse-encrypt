@@ -15,7 +15,7 @@
 
 <div class="modal-footer">
   {{#if exported}}
-    {{d-button class="btn btn-primary" icon="clipboard" label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard") action=(action "copy")}}
+    {{d-button class="btn btn-primary" icon="far-clipboard" label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard") action=(action "copy")}}
   {{else}}
     {{d-button class="btn btn-primary" icon="file-export" label="encrypt.export.title" action=(action "export") disabled=inProgress}}
   {{/if}}

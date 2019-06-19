@@ -1,30 +1,22 @@
+import { registerHelper } from "discourse-common/lib/helpers";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import showModal from "discourse/lib/show-modal";
-import { registerHelper } from "discourse-common/lib/helpers";
 import {
-  exportPrivateKey,
-  exportPublicKey,
-  generateKeyPair,
-  generatePassphraseKey,
-  generateSalt,
-  importPrivateKey,
-  importPublicKey
-} from "discourse/plugins/discourse-encrypt/lib/keys";
-import {
-  saveKeyPairToIndexedDb,
-  deleteIndexedDb
-} from "discourse/plugins/discourse-encrypt/lib/keys_db";
+  deleteDb,
+  saveDbIdentity
+} from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   canEnableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  getEncryptionStatus,
-  PACKED_KEY_FOOTER,
-  PACKED_KEY_HEADER,
-  PACKED_KEY_SEPARATOR,
-  reload
+  getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  exportIdentity,
+  generateIdentity,
+  importIdentity
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 // TODO: I believe this should get into core.
 // Handlebars offers `if` but no other helpers for conditions, which eventually
@@ -126,126 +118,57 @@ export default {
     enableEncrypt() {
       this.set("inProgress", true);
 
-      // 1. Generate new key pair or import existing one.
-      let keyPairPromise;
-      if (this.importKey) {
-        const str = (this.key || PACKED_KEY_SEPARATOR)
-          .replace(PACKED_KEY_HEADER, "")
-          .replace(PACKED_KEY_FOOTER, "")
-          .split(PACKED_KEY_SEPARATOR);
+      const identityPromise = this.importKey
+        ? importIdentity(this.key)
+        : generateIdentity();
 
-        const publicStr = str[0]
-          .split(/\s+/)
-          .map(x => x.trim())
-          .join("");
-        const privateStr = str[1]
-          .split(/\s+/)
-          .map(x => x.trim())
-          .join("");
-
-        keyPairPromise = Ember.RSVP.Promise.all([
-          importPublicKey(publicStr),
-          importPublicKey(privateStr, ["decrypt", "unwrapKey"])
-        ]);
-      } else {
-        keyPairPromise = generateKeyPair();
-      }
-
-      // 2. a. Export public key to string.
-      // 2. b. Export private key to a string (using passphrase).
-      keyPairPromise
-        .then(keyPair => {
-          const [publicKey, privateKey] = keyPair;
-
-          const passphrase = this.passphrase;
-          const salt = generateSalt();
-          const publicStr = exportPublicKey(publicKey);
-          const privateStr = generatePassphraseKey(passphrase, salt).then(
-            passphraseKey => exportPrivateKey(privateKey, passphraseKey)
-          );
-
-          return Ember.RSVP.Promise.all([publicStr, privateStr, salt]);
-        })
-
-        // 3. Save keys to server.
-        .then(([publicStr, privateStr, salt]) => {
-          this.set("model.custom_fields.encrypt_public_key", publicStr);
-          this.set("model.custom_fields.encrypt_private_key", privateStr);
-          this.set("model.custom_fields.encrypt_salt", salt);
-          const saveKeys = ajax("/encrypt/keys", {
+      const saveIdentityPromise = identityPromise
+        .then(identity => exportIdentity(identity, this.passphrase))
+        .then(exported => {
+          this.set("model.custom_fields.encrypt_public", exported.public);
+          this.set("model.custom_fields.encrypt_private", exported.private);
+          return ajax("/encrypt/keys", {
             type: "PUT",
-            data: { public_key: publicStr, private_key: privateStr, salt }
+            data: {
+              public: exported.public,
+              private: exported.private
+            }
           });
+        });
 
-          return Ember.RSVP.Promise.all([
-            publicStr,
-            privateStr,
-            salt,
-            saveKeys
-          ]);
-        })
-
-        // 4. Re-import keys but this time as `unextractable`.
-        .then(([publicStr, privateStr, salt]) =>
-          Ember.RSVP.Promise.all([
-            importPublicKey(publicStr),
-            generatePassphraseKey(this.passphrase, salt).then(passphraseKey =>
-              importPrivateKey(privateStr, passphraseKey)
-            )
-          ])
-        )
-
-        // 5. Save key pair in local IndexedDb.
-        .then(([publicKey, privateKey]) =>
-          saveKeyPairToIndexedDb(publicKey, privateKey)
-        )
-
-        // 6. Reset component status.
+      return Ember.RSVP.Promise.all([
+        identityPromise
+          .then(identity => exportIdentity(identity))
+          .then(exported => importIdentity(exported)),
+        saveIdentityPromise
+      ])
+        .then(results => saveDbIdentity(results[0]))
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-
+          window.location.reload();
+        })
+        .catch(popupAjaxError)
+        .finally(() => {
           this.send("hidePassphraseInput");
           this.setProperties({
             inProgress: false,
             importKey: false,
             key: ""
           });
-
-          reload();
-        })
-
-        .catch(popupAjaxError);
+        });
     },
 
     activateEncrypt() {
       this.set("inProgress", true);
 
-      const publicStr = this.get("model.custom_fields.encrypt_public_key");
-      const privateStr = this.get("model.custom_fields.encrypt_private_key");
-      const salt = this.get("model.custom_fields.encrypt_salt");
-      const passphrase = this.passphrase;
-
-      // 1. a. Import public key from string.
-      // 1. b. Import private from string (using passphrase).
-      const importPub = importPublicKey(publicStr);
-      const importPrv = generatePassphraseKey(passphrase, salt).then(
-        passphraseKey => importPrivateKey(privateStr, passphraseKey)
-      );
-
-      Ember.RSVP.Promise.all([importPub, importPrv])
-
-        // 2. Save key pair in local IndexedDb.
-        .then(([publicKey, privateKey]) =>
-          saveKeyPairToIndexedDb(publicKey, privateKey)
-        )
-
-        // 3. Reset component status.
+      const exported = this.model.custom_fields.encrypt_private;
+      return importIdentity(exported, this.passphrase)
+        .then(identity => saveDbIdentity(identity))
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
           this.send("hidePassphraseInput");
-          reload();
+          window.location.reload();
         })
-
         .catch(() =>
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
         )
@@ -255,40 +178,20 @@ export default {
     changeEncrypt() {
       this.set("inProgress", true);
 
-      const oldPublicStr = this.get("model.custom_fields.encrypt_public_key");
-      const oldPrivateStr = this.get("model.custom_fields.encrypt_private_key");
-      const oldSalt = this.get("model.custom_fields.encrypt_salt");
-      const oldPassphrase = this.oldPassphrase;
-      const salt = generateSalt();
-      const passphrase = this.passphrase;
-
-      // 1. a. Decrypt private key with old passphrase.
-      // 1. b. Generate new passphrase key.
-      const p0 = generatePassphraseKey(oldPassphrase, oldSalt).then(
-        // Import key as extractable so it can be later exported.
-        passphraseKey => importPrivateKey(oldPrivateStr, passphraseKey, true)
-      );
-      const p1 = generatePassphraseKey(passphrase, salt);
-
-      Ember.RSVP.Promise.all([p0, p1])
-
-        // 2. Encrypt private key with new passphrase key.
-        .then(([privateKey, passphraseKey]) =>
-          exportPrivateKey(privateKey, passphraseKey)
-        )
-
-        // 3. Send old public key (unchanged) and new private key back to
-        // server.
-        .then(privateStr => {
-          this.set("model.custom_fields.encrypt_private_key", privateStr);
-          this.set("model.custom_fields.encrypt_salt", salt);
+      const oldIdentity = this.model.custom_fields.encrypt_private;
+      return importIdentity(oldIdentity, this.oldPassphrase)
+        .then(identity => exportIdentity(identity, this.passphrase))
+        .then(exported => {
+          this.set("model.custom_fields.encrypt_public", exported.public);
+          this.set("model.custom_fields.encrypt_private", exported.private);
           return ajax("/encrypt/keys", {
             type: "PUT",
-            data: { public_key: oldPublicStr, private_key: privateStr, salt }
+            data: {
+              public: exported.public,
+              private: exported.private
+            }
           });
         })
-
-        // 4. Reset component status.
         .then(() => this.send("hidePassphraseInput"))
         .catch(() =>
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
@@ -299,10 +202,10 @@ export default {
     deactivateEncrypt() {
       this.setProperties("inProgress", true);
 
-      deleteIndexedDb()
+      deleteDb()
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          reload();
+          window.location.reload();
         })
         .finally(() => this.set("inProgress", false));
     },

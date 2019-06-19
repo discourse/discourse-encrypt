@@ -1,20 +1,64 @@
 import PostAdapter from "discourse/adapters/post";
-import Topic from "discourse/models/topic";
 import { ajax } from "discourse/lib/ajax";
-import {
-  encrypt,
-  exportKey,
-  generateKey,
-  importPublicKey
-} from "discourse/plugins/discourse-encrypt/lib/keys";
+import Topic from "discourse/models/topic";
 import {
   ENCRYPT_ACTIVE,
-  encryptPost,
   getEncryptionStatus,
+  getIdentity,
+  getTopicKey,
+  getUserIdentities,
   hasTopicKey,
   putTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { getTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  encrypt,
+  exportKey,
+  generateKey
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
+
+/**
+ * Adds metadata extracter from the composer.
+ *
+ * @param {Object} metadata
+ *
+ * @return {Object}
+ */
+function addMetadata(metadata) {
+  const controller = Discourse.__container__.lookup("controller:composer");
+  const model = controller.model;
+
+  const currentUser = controller.currentUser;
+  const user = model.user;
+  const topic = model.topic;
+  const post = model.post;
+
+  const now = new Date().toISOString();
+
+  metadata.signed_by_id = currentUser.id;
+  metadata.signed_by_name = currentUser.username;
+  metadata.user_id = user.id;
+  metadata.user_name = user.username;
+  metadata.created_at = post ? post.created_at : now;
+  metadata.updated_at = now;
+
+  if (topic) {
+    metadata.topic_id = topic.id;
+  }
+
+  if (post) {
+    metadata.post_id = post.id;
+  }
+
+  if (post) {
+    metadata.post_number = post.post_number;
+  } else if (topic) {
+    metadata.post_number = topic.highest_post_number;
+  } else {
+    metadata.post_number = 1;
+  }
+
+  return metadata;
+}
 
 export default {
   name: "hook-save",
@@ -51,25 +95,34 @@ export default {
           return _super.call(this, ...arguments);
         }
 
+        const { title, raw } = args;
+
+        let identityPromise = getIdentity();
+
         let topicKey = args.topic_id
           ? getTopicKey(args.topic_id)
           : generateKey();
 
-        let titlePromise = args.title
+        let titlePromise = title
           ? topicKey
-              .then(key => encrypt(key, args.title))
+              .then(key => encrypt(key, title))
               .then(encryptedTitle => {
-                args.title = I18n.t("encrypt.encrypted_topic_title");
                 args.encrypted_title = encryptedTitle;
+                args.title = I18n.t("encrypt.encrypted_topic_title");
               })
           : Ember.RSVP.Promise.resolve();
 
-        let replyPromise = args.raw
-          ? topicKey
-              .then(key => encryptPost(key, args.raw))
+        let replyPromise = raw
+          ? Ember.RSVP.Promise.all([topicKey, identityPromise])
+              .then(([key, identity]) =>
+                encrypt(key, addMetadata({ raw }), {
+                  signKey: identity.signPrivate,
+                  includeUploads: true
+                })
+              )
               .then(encryptedRaw => {
                 args.encrypted_raw = encryptedRaw;
-                args.raw = I18n.t("encrypt.encrypted_topic_raw");
+                args.raw = I18n.t("encrypt.encrypted_post");
               })
           : Ember.RSVP.Promise.resolve();
 
@@ -77,29 +130,20 @@ export default {
         if (args.target_usernames) {
           const usernames = args.target_usernames.split(",");
           usernames.push(Discourse.User.current().username);
+          const identitiesPromise = getUserIdentities(usernames);
 
-          const userKeysPromise = ajax("/encrypt/user", {
-            type: "GET",
-            data: { usernames }
-          });
-
-          encryptedKeysPromise = Promise.all([topicKey, userKeysPromise])
-            .then(([key, userKeys]) => {
+          encryptedKeysPromise = Ember.RSVP.Promise.all([
+            topicKey,
+            identitiesPromise
+          ])
+            .then(([key, identities]) => {
               const promises = [];
-
               for (let i = 0; i < usernames.length; ++i) {
                 const username = usernames[i];
-                if (!userKeys[username]) {
-                  promises.push(Ember.RSVP.Promise.reject(username));
-                } else {
-                  promises.push(
-                    importPublicKey(userKeys[username]).then(userKey =>
-                      exportKey(key, userKey)
-                    )
-                  );
-                }
+                promises.push(
+                  exportKey(key, identities[username].encryptPublic)
+                );
               }
-
               return Ember.RSVP.Promise.all(promises);
             })
             .then(userKeys => {
@@ -122,13 +166,44 @@ export default {
         args.composer_open_duration_msecs = 10000;
         args.typing_duration_msecs = 10000;
 
-        return Promise.all([titlePromise, replyPromise, encryptedKeysPromise])
+        return Ember.RSVP.Promise.all([
+          titlePromise,
+          replyPromise,
+          encryptedKeysPromise
+        ])
           .then(() => _super.call(this, ...arguments))
-          .then(result =>
-            topicKey
-              .then(key => putTopicKey(result.payload.topic_id, key))
-              .then(() => result)
-          );
+          .then(result => {
+            return Ember.RSVP.Promise.all([
+              topicKey.then(key => putTopicKey(result.payload.topic_id, key)),
+              Ember.RSVP.Promise.all([topicKey, identityPromise])
+                .then(([key, identity]) =>
+                  encrypt(
+                    key,
+                    addMetadata({
+                      raw,
+                      topic_id: result.payload.topic_id,
+                      post_id: result.payload.id
+                    }),
+                    {
+                      signKey: identity.signPrivate,
+                      includeUploads: true
+                    }
+                  )
+                )
+                .then(encryptedRaw =>
+                  ajax(
+                    this.pathFor(store, type, result.payload.id),
+                    this.getPayload("PUT", {
+                      post: {
+                        topic_id: result.payload.topic_id,
+                        raw: encryptedRaw,
+                        edit_reason: I18n.t("encrypt.integrity_updated")
+                      }
+                    })
+                  )
+                )
+            ]).then(() => result);
+          });
       },
 
       update(store, type, id, attrs) {
@@ -138,12 +213,20 @@ export default {
           return _super.call(this, ...arguments);
         }
 
-        return getTopicKey(attrs.topic_id)
-          .then(key => encryptPost(key, attrs.raw))
+        return Ember.RSVP.Promise.all([
+          getTopicKey(attrs.topic_id),
+          getIdentity()
+        ])
+          .then(([key, identity]) =>
+            encrypt(key, addMetadata({ raw: attrs.raw }), {
+              signKey: identity.signPrivate,
+              includeUploads: true
+            })
+          )
           .then(encryptedRaw => {
-            attrs.cooked = undefined;
+            delete attrs.cooked;
+            delete attrs.raw_old;
             attrs.raw = encryptedRaw;
-            attrs.raw_old = undefined;
           })
           .then(() => _super.call(this, ...arguments));
       }

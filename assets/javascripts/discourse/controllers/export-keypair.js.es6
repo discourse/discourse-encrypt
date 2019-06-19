@@ -1,16 +1,9 @@
 import copyText from "discourse/lib/copy-text";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import {
-  exportPublicKey,
-  generatePassphraseKey,
-  importPrivateKey
-} from "discourse/plugins/discourse-encrypt/lib/keys";
-import {
-  PACKED_KEY_COLUMNS,
-  PACKED_KEY_HEADER,
-  PACKED_KEY_SEPARATOR,
-  PACKED_KEY_FOOTER
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
+  exportIdentity,
+  importIdentity
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
@@ -26,38 +19,16 @@ export default Ember.Controller.extend(ModalFunctionality, {
     this.onShow();
   },
 
-  packKeyPair(publicKey, privateKey) {
-    const segments = [];
-    segments.push(PACKED_KEY_HEADER);
-    for (let i = 0, len = publicKey.length; i < len; i += PACKED_KEY_COLUMNS) {
-      segments.push(publicKey.substr(i, PACKED_KEY_COLUMNS));
-    }
-    segments.push(PACKED_KEY_SEPARATOR);
-    for (let i = 0, len = privateKey.length; i < len; i += PACKED_KEY_COLUMNS) {
-      segments.push(privateKey.substr(i, PACKED_KEY_COLUMNS));
-    }
-    segments.push(PACKED_KEY_FOOTER);
-    return segments.join("\n");
-  },
-
   actions: {
     export() {
       this.set("inProgress", true);
 
-      const user = this.model;
-      const publicStr = user.get("custom_fields.encrypt_public_key");
-      const privateStr = user.get("custom_fields.encrypt_private_key");
-      const salt = user.get("custom_fields.encrypt_salt");
-      const passphrase = this.passphrase;
-
-      const exportedPrivateStr = generatePassphraseKey(passphrase, salt)
-        .then(key => importPrivateKey(privateStr, key, true))
-        .then(privateKey => exportPublicKey(privateKey));
-
-      Ember.RSVP.Promise.all([publicStr, exportedPrivateStr])
-        .then(([publicKey, privateKey]) => {
+      const userIdentity = this.model.custom_fields.encrypt_private;
+      return importIdentity(userIdentity, this.passphrase, true)
+        .then(identity => exportIdentity(identity))
+        .then(exported => {
           this.setProperties({
-            exported: this.packKeyPair(publicKey, privateKey),
+            exported,
             inProgress: false,
             error: ""
           });

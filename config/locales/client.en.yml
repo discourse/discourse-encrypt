@@ -5,6 +5,11 @@ en:
       decrypting: "Decrypting..."
       decryption_failed: "This message could not be decrypted."
 
+      integrity_check_passed: "The integrity check for this post has passed."
+      integrity_check_failed: "The integrity check for this post has failed."
+      integrity_check_mismatch: "The integrity check for this post has failed because post was modified ({{fields}} mismatch)."
+      integrity_updated: "Updated the integrity signature."
+
       encrypted_topic_title: "A secret message"
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
       encrypted_post_email: "This is a secret message with end to end encryption. You must visit the topic to view it."

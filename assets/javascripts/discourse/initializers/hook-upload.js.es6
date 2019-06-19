@@ -35,7 +35,7 @@ export default {
           getTopicKey(topicId)
             .then(key =>
               window.crypto.subtle.encrypt(
-                { name: "AES-GCM", iv: iv, tagLength: 128 },
+                { name: "AES-GCM", iv, tagLength: 128 },
                 key,
                 reader.result
               )
@@ -87,7 +87,7 @@ export default {
               getTopicKey(topicId)
                 .then(key =>
                   window.crypto.subtle.decrypt(
-                    { name: "AES-GCM", iv: iv, tagLength: 128 },
+                    { name: "AES-GCM", iv, tagLength: 128 },
                     key,
                     content
                   )

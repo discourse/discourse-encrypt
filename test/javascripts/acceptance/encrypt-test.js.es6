@@ -3,15 +3,15 @@ import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import {
   exportPrivateKey,
   exportPublicKey,
-  generateKeyPair,
+  generateIdentity,
   generatePassphraseKey,
   generateSalt
-} from "discourse/plugins/discourse-encrypt/lib/keys";
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
-  deleteIndexedDb,
-  loadKeyPairFromIndexedDb,
-  saveKeyPairToIndexedDb
-} from "discourse/plugins/discourse-encrypt/lib/keys_db";
+  deleteDb,
+  loadDbIdentity,
+  saveDbIdentity
+} from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
@@ -67,7 +67,7 @@ let globalAssert;
 async function getKeyPair(passsphrase) {
   const salt = generateSalt();
   const passphraseKey = await generatePassphraseKey(passsphrase, salt);
-  const [publicKey, privateKey] = await generateKeyPair();
+  const [publicKey, privateKey] = await generateIdentity();
   const publicStr = await exportPublicKey(publicKey);
   const privateStr = await exportPrivateKey(privateKey, passphraseKey);
   return [publicKey, privateKey, publicStr, privateStr, salt];
@@ -81,7 +81,7 @@ async function setEncryptionStatus(status) {
 
   // Resetting IndexedDB.
   try {
-    await deleteIndexedDb();
+    await deleteDb();
   } catch (e) {}
 
   // Generating a new key pair if enabling or creating a dummy one if disabling.
@@ -112,7 +112,7 @@ async function setEncryptionStatus(status) {
 
   // Activating encryption on client-side.
   if (status === ENCRYPT_ACTIVE) {
-    await saveKeyPairToIndexedDb(publicKey, privateKey);
+    await saveDbIdentity(publicKey, privateKey);
   }
 
   // Store key for future use.
@@ -198,7 +198,7 @@ test("enabling works", async assert => {
 
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
-  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  const [publicKey, privateKey] = await loadDbIdentity();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
   await sleep(1500);
@@ -212,7 +212,7 @@ test("activation works", async assert => {
   await click(".encrypt button.btn-primary");
   await sleep(1500);
 
-  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  const [publicKey, privateKey] = await loadDbIdentity();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
   await sleep(1500);
@@ -249,7 +249,7 @@ test("changing passphrase works", async assert => {
 
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
-  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  const [publicKey, privateKey] = await loadDbIdentity();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
   await sleep(1500);
@@ -262,7 +262,7 @@ test("deactivation works", async assert => {
   await click(".encrypt button#deactivate");
   await sleep(1500);
 
-  const [publicKey, privateKey] = await loadKeyPairFromIndexedDb();
+  const [publicKey, privateKey] = await loadDbIdentity();
   assert.equal(publicKey, null);
   assert.equal(privateKey, null);
   await sleep(1500);

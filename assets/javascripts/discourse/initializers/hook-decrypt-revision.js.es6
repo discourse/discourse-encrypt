@@ -1,12 +1,12 @@
-import Post from "discourse/models/post";
 import { cookAsync } from "discourse/lib/text";
+import Post from "discourse/models/post";
 import {
   ENCRYPT_ACTIVE,
-  decryptPost,
   getEncryptionStatus,
   getTopicKey,
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default {
   name: "hook-decrypt-revision",
@@ -25,16 +25,16 @@ export default {
           }
 
           const topicKey = getTopicKey(result.topic_id);
-          return Promise.all([
-            topicKey.then(k => decryptPost(k, result.raws.previous)),
-            topicKey.then(k => decryptPost(k, result.raws.current))
+          return Ember.RSVP.Promise.all([
+            topicKey.then(k => decrypt(k, result.raws.previous)),
+            topicKey.then(k => decrypt(k, result.raws.current))
           ])
             .then(([previous, current]) =>
-              Promise.all([
-                previous,
-                cookAsync(previous),
-                current,
-                cookAsync(current)
+              Ember.RSVP.Promise.all([
+                previous.raw,
+                cookAsync(previous.raw),
+                current.raw,
+                cookAsync(current.raw)
               ])
             )
             .then(([prevRaw, prevCooked, currRaw, currCooked]) => {

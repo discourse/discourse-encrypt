@@ -1,4 +1,4 @@
-import { deleteIndexedDb } from "discourse/plugins/discourse-encrypt/lib/keys_db";
+import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 
 export default {
   name: "hook-logout",
@@ -6,7 +6,7 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     if (!currentUser) {
-      deleteIndexedDb();
+      deleteDb();
     }
   }
 };

@@ -1,19 +1,18 @@
-import { observes, on } from "ember-addons/ember-computed-decorators";
 import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import {
-  importKey,
-  decrypt
-} from "discourse/plugins/discourse-encrypt/lib/keys";
-import {
   ENCRYPT_ACTIVE,
-  decryptPost,
   getEncryptionStatus,
-  getRsaKey,
+  getIdentity,
   getTopicKey,
   getTopicTitle,
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  decrypt,
+  importKey
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { observes, on } from "ember-addons/ember-computed-decorators";
 
 export default {
   name: "hook-composer",
@@ -52,7 +51,7 @@ export default {
       },
 
       @observes("creatingPrivateMessage", "topic")
-      testasdd() {
+      updateComposerEncrypt() {
         this.updateEncryptProperties();
       },
 
@@ -122,17 +121,17 @@ export default {
         if (model.action === "edit" && model.originalText) {
           const topicId = model.get("topic.id");
           decTitle = getTopicTitle(topicId);
-          decReply = getTopicKey(topicId).then(key =>
-            decryptPost(key, model.reply)
-          );
+          decReply = getTopicKey(topicId)
+            .then(key => decrypt(key, model.reply))
+            .then(decrypted => decrypted.raw);
         } else {
           const pos = model.reply ? model.reply.indexOf("\n") : -1;
           if (pos !== -1) {
             const topicKey = model.reply.substr(0, pos);
             model.reply = model.reply.substr(pos + 1);
 
-            const decKey = getRsaKey().then(keyPair =>
-              importKey(topicKey, keyPair[1])
+            const decKey = getIdentity().then(identity =>
+              importKey(topicKey, identity.encryptPrivate)
             );
 
             decTitle = model.title
@@ -140,7 +139,9 @@ export default {
               : "";
 
             decReply = model.reply
-              ? decKey.then(key => decryptPost(key, model.reply))
+              ? decKey
+                  .then(key => decrypt(key, model.reply))
+                  .then(decrypted => decrypted.raw)
               : "";
           }
         }

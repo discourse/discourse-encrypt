@@ -10,17 +10,15 @@ enabled_site_setting :encrypt_enabled
 
 # Register custom stylesheet.
 register_asset 'stylesheets/common/encrypt.scss'
-%w[clipboard exchange-alt file-export lock times trash-alt unlock].each { |i| register_svg_icon(i) }
+%w[exchange-alt far-clipboard file-export lock times trash-alt unlock].each { |i| register_svg_icon(i) }
 
 # Register custom user fields to store user's key pair (public and private key)
 # and passphrase salt.
-DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_public_key'
-DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private_key'
-DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_salt'
+DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_public'
+DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private'
 
 after_initialize do
-  Rails.configuration.filter_parameters << :private_key
-  Rails.configuration.filter_parameters << :salt
+  Rails.configuration.filter_parameters << :encrypt_private
 
   module ::DiscourseEncrypt
     PLUGIN_NAME = 'discourse-encrypt'
@@ -40,16 +38,17 @@ after_initialize do
       before_action :ensure_staff, only: :reset_user
       skip_before_action :check_xhr
 
-      # Saves a user's key pair using custom fields.
+      # Saves a user's identity in their custom fields.
       #
       # Params:
-      # +public_key+::  Serialized public key. This parameter is optional when
-      #                 the private key is updated (changed passphrase).
-      # +private_key+:: Serialized private key.
+      # +public+::    Serialized public identity
+      # +private+::   Serialized private identity
+      #
+      # Returns status code 200 on success or 409 if user already has an
+      # identity and public identities mismatch.
       def update_keys
-        public_key  = params.require(:public_key)
-        private_key = params.require(:private_key)
-        salt        = params.require(:salt)
+        public_identity  = params.require(:public)
+        private_identity = params.require(:private)
 
         # Check if encrypt settings are visible to user.
         groups = current_user.groups.pluck(:name)
@@ -57,37 +56,39 @@ after_initialize do
         raise Discourse::InvalidAccess if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
 
         # Check if encryption is already enabled (but not changing passphrase).
-        old_public_key = current_user.custom_fields['encrypt_public_key']
-        if old_public_key && old_public_key != public_key
+        old_identity = current_user.custom_fields['encrypt_public']
+        if old_identity && old_identity != public_identity
           return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
         end
 
-        current_user.custom_fields['encrypt_public_key']  = public_key
-        current_user.custom_fields['encrypt_private_key'] = private_key
-        current_user.custom_fields['encrypt_salt']        = salt
+        current_user.custom_fields['encrypt_public'] = public_identity
+        current_user.custom_fields['encrypt_private'] = private_identity
         current_user.save_custom_fields
 
         render json: success_json
       end
 
-      # Gets public keys of a set of users.
+      # Gets public identities of a set of users.
       #
       # Params:
-      # +usernames+::   Array of usernames.
+      # +usernames+::   Array of usernames
       #
-      # Returns a hash of usernames and public keys.
+      # Returns status code 200 and a hash of usernames and their public
+      # identities.
       def show_user
         usernames = params.require(:usernames)
 
-        keys = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields['encrypt_public_key']] }]
+        identities = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields['encrypt_public']] }]
 
-        render json: keys
+        render json: identities
       end
 
       # Resets encryption keys for a user.
       #
       # Params:
-      # +user_id+::   ID of user to be reset.
+      # +user_id+::   ID of user to be reset
+      #
+      # Returns status code 200 after user is reset.
       def reset_user
         user_id = params.require(:user_id)
 
@@ -108,9 +109,8 @@ after_initialize do
         end
 
         # Delete encryption keys.
-        user.custom_fields.delete('encrypt_public_key')
-        user.custom_fields.delete('encrypt_private_key')
-        user.custom_fields.delete('encrypt_salt')
+        user.custom_fields.delete('encrypt_public')
+        user.custom_fields.delete('encrypt_private')
         user.save_custom_fields
 
         render json: success_json
@@ -143,7 +143,7 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
-    if encrypted_title = manager.args[:encrypted_title]
+    if (encrypted_title = manager.args[:encrypted_title])
       manager.args[:topic_opts] ||= {}
       manager.args[:topic_opts][:custom_fields] ||= {}
       manager.args[:topic_opts][:custom_fields][:encrypted_title] = encrypted_title

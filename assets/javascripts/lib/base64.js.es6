@@ -1,15 +1,15 @@
 /**
- * Alphabet of Base64 encoding.
+ * @var {String} BASE64 Alphabet of Base64 encoding.
  */
 const BASE64 =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 /**
- * Converts a Base64 string to an `ArrayBuffer`.
+ * Converts a Base64 string to an bytes array.
  *
- * @param str
+ * @param {String} str
  *
- * @return
+ * @return {Uint8Array}
  */
 export function base64ToBuffer(str) {
   let length = str.length;
@@ -37,11 +37,11 @@ export function base64ToBuffer(str) {
 }
 
 /**
- * Converts an `ArrayBuffer` to a Base64 string.
+ * Converts a bytes array to a Base64 string.
  *
- * @param buffer
+ * @param {ArrayBuffer} buffer
  *
- * @return
+ * @return {String}
  */
 export function bufferToBase64(buffer) {
   let ret = "";

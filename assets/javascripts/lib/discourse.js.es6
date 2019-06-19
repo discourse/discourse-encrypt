@@ -1,61 +1,94 @@
-import {
-  importKey,
-  decrypt,
-  encrypt
-} from "discourse/plugins/discourse-encrypt/lib/keys";
+import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
-  loadKeyPairFromIndexedDb
-} from "discourse/plugins/discourse-encrypt/lib/keys_db";
+  loadDbIdentity
+} from "discourse/plugins/discourse-encrypt/lib/database";
+import {
+  decrypt,
+  importIdentity,
+  importKey
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
+
+/*
+ * Possible states of the encryption system.
+ */
 
 /**
- * Possible states of the encryption system.
- *
- * @var ENCRYPT_DISABLED User does not have any generated keys
- * @var ENCRYPT_ENABLED User has keys, but only on server
- * @var ENCRYPT_ACTIVE  User has imported server keys into browser
+ * @var {Number} ENCRYPT_DISABLED User does not have any generated keys
  */
 export const ENCRYPT_DISABLED = 0;
+
+/**
+ * @var {Number} ENCRYPT_ENABLED User has keys, but only on server
+ */
 export const ENCRYPT_ENABLED = 1;
+
+/**
+ * @var {Number} ENCRYPT_ACTIVE User has imported server keys into browser
+ */
 export const ENCRYPT_ACTIVE = 2;
 
 /**
- * Useful variables for key import and export format.
+ * @var {Object} userIdentity Current user's identity.
  */
-export const PACKED_KEY_COLUMNS = 71;
-export const PACKED_KEY_HEADER =
-  "============== BEGIN EXPORTED DISCOURSE ENCRYPT KEY PAIR ==============";
-export const PACKED_KEY_SEPARATOR =
-  "-----------------------------------------------------------------------";
-export const PACKED_KEY_FOOTER =
-  "=============== END EXPORTED DISCOURSE ENCRYPT KEY PAIR ===============";
+let userIdentity;
 
 /**
- * @var Array of public and private key.
+ * @var {Object} userIdentities Cached user identities.
  */
-let rsaKey;
+const userIdentities = {};
 
 /**
- * @var Dictionary of all topic keys (topic_id => key).
+ * @var {Object} topicKeys Dictionary of all topic keys (topic_id => key).
  */
 const topicKeys = {};
 
 /**
- * @var Dictionary of all encrypted topic titles.
+ * @var {Object} topicTitles Dictionary of all encrypted topic titles.
  */
 const topicTitles = {};
 
 /**
- * Gets a user's key pair from the database and caches it for future usage.
+ * Gets current user's identity from the database and caches it for future
+ * usage.
  *
- * @return Tuple of public and private `CryptoKey`.
+ * @return {Promise}
  */
-export function getRsaKey() {
-  if (!rsaKey) {
-    rsaKey = loadKeyPairFromIndexedDb();
+export function getIdentity() {
+  if (!userIdentity) {
+    userIdentity = loadDbIdentity();
   }
 
-  return rsaKey;
+  return userIdentity;
+}
+
+export function getUserIdentities(usernames) {
+  return ajax("/encrypt/user", {
+    type: "GET",
+    data: { usernames }
+  })
+    .then(identities => {
+      const promises = [];
+      for (let i = 0; i < usernames.length; ++i) {
+        const username = usernames[i];
+        if (!identities[username]) {
+          promises.push(Ember.RSVP.Promise.reject(username));
+          continue;
+        }
+        if (!userIdentities[username]) {
+          userIdentities[username] = importIdentity(identities[username]);
+        }
+        promises.push(userIdentities[username]);
+      }
+      return Ember.RSVP.Promise.all(promises);
+    })
+    .then(identities => {
+      const imported = {};
+      for (let i = 0; i < usernames.length; ++i) {
+        imported[usernames[i]] = identities[i];
+      }
+      return imported;
+    });
 }
 
 /**
@@ -63,8 +96,8 @@ export function getRsaKey() {
  *
  * If there is a key in the store already, it will not be overwritten.
  *
- * @param topicId
- * @param key
+ * @param {Number|String} topicId
+ * @param {String} key
  */
 export function putTopicKey(topicId, key) {
   if (topicId && key && !topicKeys[topicId]) {
@@ -75,9 +108,9 @@ export function putTopicKey(topicId, key) {
 /**
  * Gets a topic key from storage.
  *
- * @param topicId
+ * @param {Number|String} topicId
  *
- * @return Promise
+ * @return {Promise<CryptoKey>}
  */
 export function getTopicKey(topicId) {
   let key = topicKeys[topicId];
@@ -87,8 +120,8 @@ export function getTopicKey(topicId) {
   } else if (key instanceof CryptoKey) {
     return Ember.RSVP.Promise.resolve(key);
   } else if (!(key instanceof Promise || key instanceof Ember.RSVP.Promise)) {
-    topicKeys[topicId] = getRsaKey().then(keyPair =>
-      importKey(key, keyPair[1])
+    topicKeys[topicId] = getIdentity().then(identity =>
+      importKey(key, identity.encryptPrivate)
     );
   }
 
@@ -98,9 +131,9 @@ export function getTopicKey(topicId) {
 /**
  * Checks if there is a topic key for a topic.
  *
- * @param topicId
+ * @param {Number|String} topicId
  *
- * @return Boolean
+ * @return {Boolean}
  */
 export function hasTopicKey(topicId) {
   return !!topicKeys[topicId];
@@ -109,8 +142,8 @@ export function hasTopicKey(topicId) {
 /**
  * Puts a topic title into storage.
  *
- * @param topicId
- * @param key
+ * @param {Number|String} topicId
+ * @param {String} title
  */
 export function putTopicTitle(topicId, title) {
   if (topicId && title) {
@@ -121,9 +154,9 @@ export function putTopicTitle(topicId, title) {
 /**
  * Gets a topic title from storage.
  *
- * @param topicId
+ * @param {Number|String} topicId
  *
- * @return Promise
+ * @return {Promise<String>}
  */
 export function getTopicTitle(topicId) {
   let title = topicTitles[topicId];
@@ -144,54 +177,31 @@ export function getTopicTitle(topicId) {
 /**
  * Checks if there is an encrypted topic title for a topic.
  *
- * @param topicId
+ * @param {Number|String} topicId
  *
- * @return Boolean
+ * @return {Boolean}
  */
 export function hasTopicTitle(topicId) {
   return !!topicTitles[topicId];
 }
 
-/**
- * Encrypts and wraps a post's raw text with extra information.
- *
- * The extra information will not be encrypted.
- *
- * For example, post uploads need to be visible in the text so the server
- * does not attempt to remove them.
+/*
+ * Plugin management
  */
-export function encryptPost(key, plaintext, fn) {
-  let extra = "";
-
-  const uploads = plaintext.match(/upload:\/\/[A-Za-z0-9]{27,27}/g);
-  if (uploads) {
-    extra += "\n" + uploads.map(upload => `[](${upload})`).join();
-  }
-
-  return encrypt(key, plaintext).then(encrypted => encrypted + extra);
-}
-
-/**
- * Unwraps and decrypts an encrypted post.
- */
-export function decryptPost(key, ciphertext) {
-  return decrypt(key, ciphertext.split("\n")[0]);
-}
 
 /**
  * Gets current encryption status.
  *
- * @param user
+ * @param {User} user
  *
- * @return
+ * @return {Number} See `ENCRYPT_DISABLED`, `ENCRYPT_ENABLED` and
+ *                  `ENCRYPT_ACTIVE`.
  */
 export function getEncryptionStatus(user) {
   if (
     !Discourse.SiteSettings.encrypt_enabled ||
     !user ||
-    !user.get("custom_fields.encrypt_public_key") ||
-    !user.get("custom_fields.encrypt_private_key") ||
-    !user.get("custom_fields.encrypt_salt")
+    !user.get("custom_fields.encrypt_public")
   ) {
     return ENCRYPT_DISABLED;
   }
@@ -211,9 +221,9 @@ export function getEncryptionStatus(user) {
  *    - encryption plug-in is enabled AND
  *    - there is no group restriction or user is in one of the allowed groups.
  *
- * @param user
+ * @param {User} user
  *
- * @return
+ * @return {Boolean}
  */
 export function canEnableEncrypt(user) {
   if (getEncryptionStatus(user) !== ENCRYPT_DISABLED) {
@@ -233,14 +243,4 @@ export function canEnableEncrypt(user) {
   }
 
   return false;
-}
-
-/**
- * Reloads current page.
- *
- * This function is usually called when status change so all initializers
- * checks can run again.
- */
-export function reload() {
-  window.location.reload();
 }

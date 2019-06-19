@@ -1,11 +1,11 @@
+import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { escapeExpression } from "discourse/lib/utilities";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import {
-  hasTopicTitle,
-  getTopicTitle,
+  ENCRYPT_ACTIVE,
   getEncryptionStatus,
-  ENCRYPT_ACTIVE
+  getTopicTitle,
+  hasTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**

@@ -1,12 +1,12 @@
-import PreloadStore from "preload-store";
-import Topic from "discourse/models/topic";
 import NotificationAdapter from "discourse/adapters/notification";
+import Topic from "discourse/models/topic";
 import {
-  putTopicKey,
-  putTopicTitle,
+  ENCRYPT_DISABLED,
   getEncryptionStatus,
-  ENCRYPT_DISABLED
+  putTopicKey,
+  putTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import PreloadStore from "preload-store";
 
 export default {
   name: "hook-gather-keys",

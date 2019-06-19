@@ -1,3 +1,11 @@
+/**
+ * Creates a new object containing a subset of the boject keys.
+ *
+ * @param {Object} obj
+ * @param {Array<String>} keys
+ *
+ * @return {Object}
+ */
 export function filterObjectKeys(obj, keys) {
   const newObj = {};
 

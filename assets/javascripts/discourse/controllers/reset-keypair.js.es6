@@ -1,7 +1,6 @@
-import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { reload } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import ModalFunctionality from "discourse/mixins/modal-functionality";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
@@ -21,7 +20,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
           everything: this.everything
         }
       })
-        .then(reload)
+        .then(() => window.location.reload())
         .catch(popupAjaxError);
     }
   }

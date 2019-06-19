@@ -11,6 +11,12 @@ textarea.imported-keypair {
   max-height: 300px;
 }
 
+pre.exported-keypair {
+  max-width: 80ch;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 #reply-control {
   .reply-to {
     .d-icon {
@@ -23,5 +29,17 @@ textarea.imported-keypair {
     .error {
       color: $danger;
     }
+  }
+}
+
+.post-info {
+  &.integrity-pass {
+    color: $success;
+    margin: 0 0 0 0.5em;
+  }
+
+  &.integrity-fail {
+    color: $danger;
+    margin: 0 0 0 0.5em;
   }
 }

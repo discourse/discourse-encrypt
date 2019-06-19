@@ -1,17 +1,16 @@
 import Composer from "discourse/models/composer";
 import Draft from "discourse/models/draft";
 import {
+  ENCRYPT_ACTIVE,
+  getEncryptionStatus,
+  getIdentity,
+  hasTopicKey
+} from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
   encrypt,
   exportKey,
   generateKey
-} from "discourse/plugins/discourse-encrypt/lib/keys";
-import {
-  ENCRYPT_ACTIVE,
-  encryptPost,
-  getEncryptionStatus,
-  getRsaKey,
-  hasTopicKey
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
 
 const ALLOWED_DRAFT_FIELDS = [
@@ -59,8 +58,8 @@ export default {
 
           const topicKey = generateKey();
 
-          const encKey = Ember.RSVP.Promise.all([topicKey, getRsaKey()]).then(
-            ([key, keyPair]) => exportKey(key, keyPair[0])
+          const encKey = Ember.RSVP.Promise.all([topicKey, getIdentity()]).then(
+            ([key, identity]) => exportKey(key, identity.encryptPublic)
           );
 
           const encTitle = data.title
@@ -68,7 +67,9 @@ export default {
             : "";
 
           const encReply = data.reply
-            ? topicKey.then(key => encryptPost(key, data.reply))
+            ? topicKey.then(key =>
+                encrypt(key, { raw: data.reply }, { includeUploads: true })
+              )
             : "";
 
           return Ember.RSVP.Promise.all([encTitle, encReply, encKey]).then(
