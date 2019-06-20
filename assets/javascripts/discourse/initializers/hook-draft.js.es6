@@ -7,6 +7,21 @@ import {
   ENCRYPT_ACTIVE
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { rsaEncrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
+import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
+
+const ALLOWED_DRAFT_FIELDS = [
+  "action",
+  "archetypeId",
+  "categoryId",
+  "composerTime",
+  "noBump",
+  "postId",
+  "reply", // will be encrypted
+  "tags",
+  "title", // will be encrypted
+  "usernames",
+  "whisper"
+];
 
 export default {
   name: "hook-draft",
@@ -32,6 +47,8 @@ export default {
         }
 
         if (encrypted) {
+          data = filterObjectKeys(data, ALLOWED_DRAFT_FIELDS);
+
           const pk = getPublicKey();
           encTitle = data.title && pk.then(key => rsaEncrypt(key, data.title));
           encReply = data.reply && pk.then(key => rsaEncrypt(key, data.reply));
@@ -40,7 +57,7 @@ export default {
             ([title, reply]) => {
               data.title = title;
               data.reply = reply;
-              return _super.call(this, ...arguments);
+              return _super.call(this, draftKey, sequence, data);
             }
           );
         }
