@@ -56,59 +56,62 @@ export default {
         return false;
       });
 
-      api.decorateCooked($el => {
-        $el.on("click.discourse-encrypt", "a.attachment", function() {
-          const $a = $(this);
-          const topicId = $a.closest("[data-topic-id]").data("topic-id");
-          if (!hasTopicKey(topicId)) {
-            return true;
-          }
+      api.decorateCooked(
+        $el => {
+          $el.on("click.discourse-encrypt", "a.attachment", function() {
+            const $a = $(this);
+            const topicId = $a.closest("[data-topic-id]").data("topic-id");
+            if (!hasTopicKey(topicId)) {
+              return true;
+            }
 
-          new Ember.RSVP.Promise((resolve, reject) => {
-            var req = new XMLHttpRequest();
-            req.open("GET", $a.attr("href"), true);
-            req.responseType = "arraybuffer";
-            req.onload = function() {
-              let filename = req.getResponseHeader("Content-Disposition");
-              if (filename) {
-                // Requires Access-Control-Expose-Headers: Content-Disposition.
-                filename = filename.match(/filename="(.*?)\.encrypted"/)[1];
-              } else {
-                filename = $a.text().replace(/\.encrypted$/, "");
-              }
-              resolve([req.response, filename]);
-            };
-            req.onerror = reject;
-            req.send(null);
-          }).then(([result, filename]) => {
-            const iv = result.slice(0, 12);
-            const content = result.slice(12);
-            getTopicKey(topicId)
-              .then(key =>
-                window.crypto.subtle.decrypt(
-                  { name: "AES-GCM", iv: iv, tagLength: 128 },
-                  key,
-                  content
+            new Ember.RSVP.Promise((resolve, reject) => {
+              var req = new XMLHttpRequest();
+              req.open("GET", $a.attr("href"), true);
+              req.responseType = "arraybuffer";
+              req.onload = function() {
+                let filename = req.getResponseHeader("Content-Disposition");
+                if (filename) {
+                  // Requires Access-Control-Expose-Headers: Content-Disposition.
+                  filename = filename.match(/filename="(.*?)\.encrypted"/)[1];
+                } else {
+                  filename = $a.text().replace(/\.encrypted$/, "");
+                }
+                resolve([req.response, filename]);
+              };
+              req.onerror = reject;
+              req.send(null);
+            }).then(([result, filename]) => {
+              const iv = result.slice(0, 12);
+              const content = result.slice(12);
+              getTopicKey(topicId)
+                .then(key =>
+                  window.crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv, tagLength: 128 },
+                    key,
+                    content
+                  )
                 )
-              )
-              .then(decrypted => {
-                var a = document.createElement("a");
-                a.download = filename;
-                a.style.display = "none";
+                .then(decrypted => {
+                  var a = document.createElement("a");
+                  a.download = filename;
+                  a.style.display = "none";
 
-                let blob = new Blob([decrypted], { type: "octet/stream" });
-                let url = window.URL.createObjectURL(blob);
-                a.href = url;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-              });
+                  let blob = new Blob([decrypted], { type: "octet/stream" });
+                  let url = window.URL.createObjectURL(blob);
+                  a.href = url;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                });
+            });
+
+            return false;
           });
-
-          return false;
-        });
-      }, { id: "discourse-encrypt" });
+        },
+        { id: "discourse-encrypt" }
+      );
     });
   }
 };
