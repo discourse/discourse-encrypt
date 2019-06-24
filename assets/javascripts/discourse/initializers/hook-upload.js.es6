@@ -108,7 +108,7 @@ export default {
 
           return false;
         });
-      });
+      }, { id: "discourse-encrypt" });
     });
   }
 };
