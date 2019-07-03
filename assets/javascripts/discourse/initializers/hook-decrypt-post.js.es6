@@ -9,7 +9,7 @@ import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
-  getPrivateKey,
+  getRsaKey,
   getTopicKey,
   hasTopicKey,
   hasTopicTitle
@@ -41,7 +41,7 @@ export default {
             state.encrypted = ciphertext;
             state.decrypting = true;
 
-            getPrivateKey()
+            getRsaKey()
               .then(() =>
                 getTopicKey(topicId)
                   .then(key => decrypt(key, ciphertext))

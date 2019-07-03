@@ -2,13 +2,13 @@ import { observes, on } from "ember-addons/ember-computed-decorators";
 import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import {
-  decrypt,
-  rsaDecrypt
+  importKey,
+  decrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
-  getPrivateKey,
+  getRsaKey,
   getTopicKey,
   getTopicTitle,
   hasTopicKey
@@ -125,11 +125,23 @@ export default {
             decrypt(key, model.reply)
           );
         } else {
-          const pk = getPrivateKey();
-          decTitle =
-            model.title && pk.then(key => rsaDecrypt(key, model.title));
-          decReply =
-            model.reply && pk.then(key => rsaDecrypt(key, model.reply));
+          const pos = model.reply ? model.reply.indexOf("\n") : -1;
+          if (pos !== -1) {
+            const topicKey = model.reply.substr(0, pos);
+            model.reply = model.reply.substr(pos + 1);
+
+            const decKey = getRsaKey().then(keyPair =>
+              importKey(topicKey, keyPair[1])
+            );
+
+            decTitle = model.title
+              ? decKey.then(key => decrypt(key, model.title))
+              : "";
+
+            decReply = model.reply
+              ? decKey.then(key => decrypt(key, model.reply))
+              : "";
+          }
         }
       }
 

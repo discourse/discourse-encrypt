@@ -30,14 +30,9 @@ export const PACKED_KEY_FOOTER =
   "=============== END EXPORTED DISCOURSE ENCRYPT KEY PAIR ===============";
 
 /**
- * @var User's public key used to encrypt topic keys and drafts for private message.
+ * @var Array of public and private key.
  */
-let publicKey;
-
-/**
- * @var User's private key used to decrypt topic keys.
- */
-let privateKey;
+let rsaKey;
 
 /**
  * @var Dictionary of all topic keys (topic_id => key).
@@ -52,39 +47,14 @@ const topicTitles = {};
 /**
  * Gets a user's key pair from the database and caches it for future usage.
  *
- * @return Tuple of two public and private CryptoKey.
+ * @return Tuple of public and private `CryptoKey`.
  */
-export function getKeyPair() {
-  return loadKeyPairFromIndexedDb().then(keyPair => {
-    if (!keyPair || !keyPair[0] || !keyPair[1]) {
-      return Ember.RSVP.Promise.reject();
-    }
+export function getRsaKey() {
+  if (!rsaKey) {
+    rsaKey = loadKeyPairFromIndexedDb();
+  }
 
-    [publicKey, privateKey] = keyPair;
-    return keyPair;
-  });
-}
-
-/**
- * Gets user's public key.
- *
- * @return CryptoKey
- */
-export function getPublicKey() {
-  return publicKey
-    ? Ember.RSVP.Promise.resolve(publicKey)
-    : getKeyPair().then(keyPair => keyPair[0]);
-}
-
-/**
- * Gets user's private key.
- *
- * @return CryptoKey
- */
-export function getPrivateKey() {
-  return privateKey
-    ? Ember.RSVP.Promise.resolve(privateKey)
-    : getKeyPair().then(keyPair => keyPair[1]);
+  return rsaKey;
 }
 
 /**
@@ -116,8 +86,8 @@ export function getTopicKey(topicId) {
   } else if (key instanceof CryptoKey) {
     return Ember.RSVP.Promise.resolve(key);
   } else if (!(key instanceof Promise || key instanceof Ember.RSVP.Promise)) {
-    topicKeys[topicId] = getPrivateKey().then(privKey =>
-      importKey(key, privKey)
+    topicKeys[topicId] = getRsaKey().then(keyPair =>
+      importKey(key, keyPair[1])
     );
   }
 
