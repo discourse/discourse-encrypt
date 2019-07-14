@@ -6,10 +6,11 @@ import {
   generateKey
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
-  hasTopicKey,
-  getRsaKey,
+  ENCRYPT_ACTIVE,
+  encryptPost,
   getEncryptionStatus,
-  ENCRYPT_ACTIVE
+  getRsaKey,
+  hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
 
@@ -67,7 +68,7 @@ export default {
             : "";
 
           const encReply = data.reply
-            ? topicKey.then(key => encrypt(key, data.reply))
+            ? topicKey.then(key => encryptPost(key, data.reply))
             : "";
 
           return Ember.RSVP.Promise.all([encTitle, encReply, encKey]).then(

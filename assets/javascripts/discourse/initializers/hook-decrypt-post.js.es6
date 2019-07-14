@@ -5,9 +5,9 @@ import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { iconHTML } from "discourse-common/lib/icon-library";
-import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_DISABLED,
+  decryptPost,
   getEncryptionStatus,
   getRsaKey,
   getTopicKey,
@@ -44,7 +44,7 @@ export default {
             getRsaKey()
               .then(() =>
                 getTopicKey(topicId)
-                  .then(key => decrypt(key, ciphertext))
+                  .then(key => decryptPost(key, ciphertext))
                   .then(plaintext => cookAsync(plaintext))
                   .then(cooked => {
                     state.decrypting = false;

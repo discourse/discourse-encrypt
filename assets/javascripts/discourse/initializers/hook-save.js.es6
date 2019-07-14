@@ -9,6 +9,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_ACTIVE,
+  encryptPost,
   getEncryptionStatus,
   hasTopicKey,
   putTopicKey
@@ -65,10 +66,10 @@ export default {
 
         let replyPromise = args.raw
           ? topicKey
-              .then(key => encrypt(key, args.raw))
+              .then(key => encryptPost(key, args.raw))
               .then(encryptedRaw => {
-                args.raw = I18n.t("encrypt.encrypted_topic_raw");
                 args.encrypted_raw = encryptedRaw;
+                args.raw = I18n.t("encrypt.encrypted_topic_raw");
               })
           : Ember.RSVP.Promise.resolve();
 
@@ -138,7 +139,7 @@ export default {
         }
 
         return getTopicKey(attrs.topic_id)
-          .then(key => encrypt(key, attrs.raw))
+          .then(key => encryptPost(key, attrs.raw))
           .then(encryptedRaw => {
             attrs.cooked = undefined;
             attrs.raw = encryptedRaw;

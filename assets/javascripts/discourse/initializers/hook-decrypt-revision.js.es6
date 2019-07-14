@@ -1,8 +1,8 @@
 import Post from "discourse/models/post";
 import { cookAsync } from "discourse/lib/text";
-import { decrypt } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_ACTIVE,
+  decryptPost,
   getEncryptionStatus,
   getTopicKey,
   hasTopicKey
@@ -26,8 +26,8 @@ export default {
 
           const topicKey = getTopicKey(result.topic_id);
           return Promise.all([
-            topicKey.then(k => decrypt(k, result.raws.previous)),
-            topicKey.then(k => decrypt(k, result.raws.current))
+            topicKey.then(k => decryptPost(k, result.raws.previous)),
+            topicKey.then(k => decryptPost(k, result.raws.current))
           ])
             .then(([previous, current]) =>
               Promise.all([

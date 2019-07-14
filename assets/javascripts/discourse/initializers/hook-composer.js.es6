@@ -7,6 +7,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   ENCRYPT_ACTIVE,
+  decryptPost,
   getEncryptionStatus,
   getRsaKey,
   getTopicKey,
@@ -122,7 +123,7 @@ export default {
           const topicId = model.get("topic.id");
           decTitle = getTopicTitle(topicId);
           decReply = getTopicKey(topicId).then(key =>
-            decrypt(key, model.reply)
+            decryptPost(key, model.reply)
           );
         } else {
           const pos = model.reply ? model.reply.indexOf("\n") : -1;
@@ -139,7 +140,7 @@ export default {
               : "";
 
             decReply = model.reply
-              ? decKey.then(key => decrypt(key, model.reply))
+              ? decKey.then(key => decryptPost(key, model.reply))
               : "";
           }
         }

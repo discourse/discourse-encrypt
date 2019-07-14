@@ -1,6 +1,7 @@
 import {
   importKey,
-  decrypt
+  decrypt,
+  encrypt
 } from "discourse/plugins/discourse-encrypt/lib/keys";
 import {
   DB_NAME,
@@ -149,6 +150,32 @@ export function getTopicTitle(topicId) {
  */
 export function hasTopicTitle(topicId) {
   return !!topicTitles[topicId];
+}
+
+/**
+ * Encrypts and wraps a post's raw text with extra information.
+ *
+ * The extra information will not be encrypted.
+ *
+ * For example, post uploads need to be visible in the text so the server
+ * does not attempt to remove them.
+ */
+export function encryptPost(key, plaintext, fn) {
+  let extra = "";
+
+  const uploads = plaintext.match(/upload:\/\/[A-Za-z0-9]{27,27}/g);
+  if (uploads) {
+    extra += "\n" + uploads.map(upload => `[](${upload})`).join();
+  }
+
+  return encrypt(key, plaintext).then(encrypted => encrypted + extra);
+}
+
+/**
+ * Unwraps and decrypts an encrypted post.
+ */
+export function decryptPost(key, ciphertext) {
+  return decrypt(key, ciphertext.split("\n")[0]);
 }
 
 /**

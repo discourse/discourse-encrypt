@@ -122,17 +122,15 @@ after_initialize do
   CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
 
   # Hide cooked content.
-  Plugin::Filter.register(:after_post_cook) do |post, cooked|
-    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+\Z/)
-      next "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
+  on(:post_process_cooked) do |doc, post|
+    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+(\n.*)?\Z/)
+      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
-
-    cooked
   end
 
   # Hide cooked content in email.
   on(:reduce_cooked) do |fragment, post|
-    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+\Z/)
+    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+(\n.*)?\Z/)
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
     end
   end
