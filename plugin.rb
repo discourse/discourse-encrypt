@@ -10,7 +10,7 @@ enabled_site_setting :encrypt_enabled
 
 # Register custom stylesheet.
 register_asset 'stylesheets/common/encrypt.scss'
-%w[clipboard exchange file-export lock times trash unlock].each { |i| register_svg_icon(i) }
+%w[clipboard exchange-alt file-export lock times trash-alt unlock].each { |i| register_svg_icon(i) }
 
 # Register custom user fields to store user's key pair (public and private key)
 # and passphrase salt.

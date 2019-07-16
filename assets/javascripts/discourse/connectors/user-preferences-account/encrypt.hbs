@@ -24,11 +24,11 @@
                   <p class="text-danger">{{i18n passphraseStatus}}</p>
                 {{/if}}
 
-                {{d-button class="btn-primary" icon="exchange" action=(action "changeEncrypt") disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
+                {{d-button class="btn-primary" icon="exchange-alt" action=(action "changeEncrypt") disabled=(or passphraseStatus inProgress) label="encrypt.preferences.change"}}
                 {{d-button action=(action "hidePassphraseInput") disabled=inProgress label="cancel"}}
               </form>
             {{else}}
-              {{d-button icon="exchange" action=(action "showPassphraseInput") label="encrypt.preferences.change" id="change"}}
+              {{d-button icon="exchange-alt" action=(action "showPassphraseInput") label="encrypt.preferences.change" id="change"}}
               {{d-button icon="times" action=(action "deactivateEncrypt") label="encrypt.preferences.deactivate" id="deactivate"}}
               {{d-button icon="file-export" action=(action "export") label="encrypt.export.title"}}
             {{/if}}
