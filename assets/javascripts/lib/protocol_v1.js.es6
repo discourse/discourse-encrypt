@@ -137,11 +137,7 @@ export function exportIdentity(identity, passphrase) {
       textEncoder.encode(JSON.stringify({ encryptPublic, signPublic }))
     ),
     private:
-      bufferToBase64(salt) +
-      "$" +
-      bufferToBase64(iv) +
-      "$" +
-      bufferToBase64(encrypted)
+      bufferToBase64(salt) + bufferToBase64(iv) + bufferToBase64(encrypted)
   }));
 }
 
@@ -149,12 +145,9 @@ export function importIdentity(identity, passphrase, extractable) {
   let decrypted;
 
   if (passphrase) {
-    const sep1 = identity.indexOf("$");
-    const sep2 = identity.indexOf("$", sep1 + 1);
-
-    const salt = base64ToBuffer(identity.substring(0, sep1));
-    const iv = base64ToBuffer(identity.substring(sep1 + 1, sep2));
-    const encrypted = base64ToBuffer(identity.substring(sep2 + 1));
+    const salt = base64ToBuffer(identity.substring(0, 24));
+    const iv = base64ToBuffer(identity.substring(24, 40));
+    const encrypted = base64ToBuffer(identity.substring(40));
 
     decrypted = getPassphraseKey(passphrase, salt).then(key =>
       window.crypto.subtle.decrypt(

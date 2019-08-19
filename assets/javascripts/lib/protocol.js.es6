@@ -64,7 +64,13 @@ export function generateIdentity() {
 export function exportIdentity(identity, passphrase) {
   let promise;
   if (identity.version === 0) {
-    promise = exportIdentityV0(identity, passphrase);
+    promise = exportIdentityV0(
+      {
+        publicKey: identity.encryptPublic,
+        privateKey: identity.encryptPrivate
+      },
+      passphrase
+    );
   } else if (identity.version === 1) {
     promise = exportIdentityV1(identity, passphrase);
   }
@@ -146,7 +152,7 @@ export function encrypt(key, data, opts) {
 
   let promise;
   if (version === 0) {
-    promise = encryptV0(key, data.raw);
+    promise = encryptV0(key, typeof data === "object" ? data.raw : data);
   } else if (version === 1) {
     promise = encryptV1(key, opts && opts.signKey, data);
   }
@@ -220,10 +226,10 @@ export function generateKey() {
 }
 
 /**
- * Exports a symmetric key, but wraps (encrypts) it first.
+ * Exports and wraps a symmetric key.
  *
  * @param {CryptoKey} key
- * @param {CryptoKey} publicKey   Key used to wrap the symmetric key.
+ * @param {CryptoKey} publicKey
  *
  * @return {Promise<String>}
  */
@@ -240,10 +246,10 @@ export function exportKey(key, publicKey) {
 }
 
 /**
- * Imports a symmetric key, but unwraps (decrypts) it first.
+ * Unwraps and imports a symmetric key.
  *
  * @param {CryptoKey} key
- * @param {CryptoKey} privateKey  Key used to unwrap the symmetric key.
+ * @param {CryptoKey} privateKey
  *
  * @return {Promise<CryptoKey>}
  */

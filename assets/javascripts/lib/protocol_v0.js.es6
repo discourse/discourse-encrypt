@@ -185,7 +185,7 @@ export function generateIdentity() {
 
 export function exportIdentity(identity, passphrase) {
   if (!passphrase) {
-    return Ember.RSVP.Promise([
+    return Ember.RSVP.Promise.all([
       _exportPublicKey(identity.publicKey),
       _exportPublicKey(identity.privateKey)
     ]).then(

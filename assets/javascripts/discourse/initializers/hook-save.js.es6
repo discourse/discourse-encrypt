@@ -172,25 +172,26 @@ export default {
           encryptedKeysPromise
         ])
           .then(() => _super.call(this, ...arguments))
-          .then(result => {
-            return Ember.RSVP.Promise.all([
-              topicKey.then(key => putTopicKey(result.payload.topic_id, key)),
-              Ember.RSVP.Promise.all([topicKey, identityPromise])
-                .then(([key, identity]) =>
-                  encrypt(
-                    key,
-                    addMetadata({
-                      raw,
-                      topic_id: result.payload.topic_id,
-                      post_id: result.payload.id
-                    }),
-                    {
-                      signKey: identity.signPrivate,
-                      includeUploads: true
-                    }
-                  )
-                )
-                .then(encryptedRaw =>
+          .then(result =>
+            Ember.RSVP.Promise.all([topicKey, identityPromise])
+              .then(([key, identity]) => {
+                putTopicKey(result.payload.topic_id, key);
+                if (!identity.signPrivate) {
+                  return;
+                }
+
+                return encrypt(
+                  key,
+                  addMetadata({
+                    raw,
+                    topic_id: result.payload.topic_id,
+                    post_id: result.payload.id
+                  }),
+                  {
+                    signKey: identity.signPrivate,
+                    includeUploads: true
+                  }
+                ).then(encryptedRaw =>
                   ajax(
                     this.pathFor(store, type, result.payload.id),
                     this.getPayload("PUT", {
@@ -201,9 +202,10 @@ export default {
                       }
                     })
                   )
-                )
-            ]).then(() => result);
-          });
+                );
+              })
+              .then(() => result)
+          );
       },
 
       update(store, type, id, attrs) {

@@ -127,16 +127,23 @@ export default {
           const ciphertext = attrs.encrypted_raw;
           if (
             hasTopicKey(topicId) &&
+            ciphertext &&
             (!state.encrypted || state.encrypted !== ciphertext)
           ) {
             state.encrypted = ciphertext;
             state.decrypting = true;
 
-            getIdentity()
-              .then(() => {
-                getTopicKey(topicId)
-                  .then(key => decrypt(key, ciphertext))
-                  .then(plaintext => {
+            getIdentity().then(identity => {
+              if (!identity) {
+                // Absence of private key means user did not activate encryption.
+                showModal("activate-encrypt", { model: this });
+                return;
+              }
+
+              getTopicKey(topicId)
+                .then(key => decrypt(key, ciphertext))
+                .then(plaintext => {
+                  if (plaintext.signature) {
                     getUserIdentities([plaintext.signed_by_name])
                       .then(identities =>
                         verify(
@@ -153,23 +160,22 @@ export default {
                       .catch(() => {
                         verified[attrs.id] = false;
                       });
+                  }
 
-                    return cookAsync(plaintext.raw);
-                  })
-                  .then(cooked => {
-                    state.decrypting = false;
-                    state.decrypted = cooked.string;
-                    this.scheduleRerender();
-                  })
-                  // Absence of topic key underlies a bigger error.
-                  .catch(() => {
-                    state.decrypting = false;
-                    state.decrypted = true;
-                    this.scheduleRerender();
-                  });
-              })
-              // Absence of private key means user did not activate encryption.
-              .catch(() => showModal("activate-encrypt", { model: this }));
+                  return cookAsync(plaintext.raw);
+                })
+                .then(cooked => {
+                  state.decrypting = false;
+                  state.decrypted = cooked.string;
+                  this.scheduleRerender();
+                })
+                // Absence of topic key underlies a bigger error.
+                .catch(() => {
+                  state.decrypting = false;
+                  state.decrypted = true;
+                  this.scheduleRerender();
+                });
+            });
           }
 
           if (state.decrypted && state.decrypted !== true) {

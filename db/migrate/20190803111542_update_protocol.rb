@@ -1,11 +1,7 @@
+# frozen_string_literal: true
+
 class UpdateProtocol < ActiveRecord::Migration[5.2]
   def up
-    execute <<~SQL
-      UPDATE user_custom_fields
-      SET name = 'encrypt_public', value = '0$' || value
-      WHERE name = 'encrypt_public_key'
-    SQL
-
     execute <<~SQL
       INSERT INTO user_custom_fields(user_id, name, value, created_at, updated_at)
       WITH public_keys AS ( SELECT user_id, value FROM user_custom_fields WHERE name = 'encrypt_public_key' ),
@@ -20,6 +16,12 @@ class UpdateProtocol < ActiveRecord::Migration[5.2]
       JOIN public_keys ON users.id = public_keys.user_id
       JOIN private_keys ON users.id = private_keys.user_id
       JOIN salts ON users.id = salts.user_id
+    SQL
+
+    execute <<~SQL
+      UPDATE user_custom_fields
+      SET name = 'encrypt_public', value = '0$' || value
+      WHERE name = 'encrypt_public_key'
     SQL
 
     execute <<~SQL

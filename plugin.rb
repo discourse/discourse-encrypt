@@ -123,14 +123,14 @@ after_initialize do
 
   # Hide cooked content.
   on(:post_process_cooked) do |doc, post|
-    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+(\n.*)?\Z/)
+    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
 
   # Hide cooked content in email.
   on(:reduce_cooked) do |fragment, post|
-    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=]+(\n.*)?\Z/)
+    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
     end
   end
@@ -143,7 +143,7 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
-    if (encrypted_title = manager.args[:encrypted_title])
+    if encrypted_title = manager.args[:encrypted_title]
       manager.args[:topic_opts] ||= {}
       manager.args[:topic_opts][:custom_fields] ||= {}
       manager.args[:topic_opts][:custom_fields][:encrypted_title] = encrypted_title
@@ -173,15 +173,11 @@ after_initialize do
     end
   end
 
-  ::Topic.class_eval { prepend TopicExtensions }
-
   module PostExtensions
     def is_encrypted?
       !!(topic && topic.is_encrypted?)
     end
   end
-
-  ::Post.class_eval { prepend PostExtensions }
 
   module TopicsControllerExtensions
     def update
@@ -219,7 +215,11 @@ after_initialize do
     end
   end
 
-  ::TopicsController.class_eval { prepend TopicsControllerExtensions }
+  reloadable_patch do |plugin|
+    ::Topic.class_eval { prepend TopicExtensions }
+    ::Post.class_eval { prepend PostExtensions }
+    ::TopicsController.class_eval { prepend TopicsControllerExtensions }
+  end
 
   # Send plugin-specific topic data to client via serializers.
   #
@@ -254,22 +254,6 @@ after_initialize do
     scope&.user.present? && object.private_message?
   end
 
-  add_to_serializer(:listable_topic, :encrypted_title, false) do
-    object.custom_fields['encrypted_title']
-  end
-
-  add_to_serializer(:listable_topic, :include_encrypted_title?) do
-    scope&.user.present? && object.private_message?
-  end
-
-  add_to_serializer(:topic_list_item, :encrypted_title, false) do
-    object.custom_fields['encrypted_title']
-  end
-
-  add_to_serializer(:topic_list_item, :include_encrypted_title?) do
-    scope&.user.present? && object.private_message?
-  end
-
   add_to_serializer(:notification, :encrypted_title, false) do
     object.topic.custom_fields['encrypted_title']
   end
@@ -298,22 +282,6 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
-    scope&.user.present? && object.private_message?
-  end
-
-  add_to_serializer(:listable_topic, :topic_key, false) do
-    DiscourseEncrypt::Store.get("key_#{object.id}_#{scope.user.id}")
-  end
-
-  add_to_serializer(:listable_topic, :include_topic_key?) do
-    scope&.user.present? && object.private_message?
-  end
-
-  add_to_serializer(:topic_list_item, :topic_key, false) do
-    DiscourseEncrypt::Store.get("key_#{object.id}_#{scope.user.id}")
-  end
-
-  add_to_serializer(:topic_list_item, :include_topic_key?) do
     scope&.user.present? && object.private_message?
   end
 

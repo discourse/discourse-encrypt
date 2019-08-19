@@ -1,6 +1,6 @@
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { saveDbIdentity } from "discourse/plugins/discourse-encrypt/lib/database";
-import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
@@ -28,9 +28,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     activate() {
       this.set("inProgress", true);
 
-      const user = Discourse.User.current();
-
-      const exported = user.get("model.custom_fields.encrypt_private");
+      const exported = this.currentUser.custom_fields.encrypt_private;
       return importIdentity(exported, this.passphrase)
         .then(identity => saveDbIdentity(identity))
         .then(() => {
