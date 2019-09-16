@@ -1,5 +1,11 @@
-.user-preferences-account-outlet.encrypt .btn {
-  margin: 2px 0;
+.user-preferences-account-outlet.encrypt {
+  .select-kit {
+    vertical-align: bottom;
+  }
+
+  .btn {
+    margin: 2px 0;
+  }
 }
 
 pre.exported-keypair,
@@ -12,9 +18,41 @@ textarea.imported-keypair {
 }
 
 pre.exported-keypair {
+  margin: 0 auto;
   max-width: 80ch;
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+.modal .modal-body .paperkey {
+  font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
+    "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace,
+    serif;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+table.paperkeys {
+  width: 100%;
+
+  tr {
+    height: 3em;
+
+    &:hover {
+      background-color: darken($secondary, 2.5%);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .paperkey-label {
+    background-color: lighten($primary, 80%);
+    margin: 0 0.5em;
+    padding: 0.3em;
+    border-radius: 5px;
+  }
 }
 
 #reply-control {

@@ -10,7 +10,7 @@ enabled_site_setting :encrypt_enabled
 
 # Register custom stylesheet.
 register_asset 'stylesheets/common/encrypt.scss'
-%w[exchange-alt far-clipboard file-export lock times trash-alt unlock].each { |i| register_svg_icon(i) }
+%w[exchange-alt far-clipboard file-export lock plus times ticket-alt trash-alt unlock].each { |i| register_svg_icon(i) }
 
 # Register custom user fields to store user's key pair (public and private key)
 # and passphrase salt.
@@ -35,7 +35,7 @@ after_initialize do
       requires_plugin PLUGIN_NAME
 
       before_action :ensure_logged_in
-      before_action :ensure_staff, only: :reset_user
+      before_action :ensure_encrypt_enabled
       skip_before_action :check_xhr
 
       # Saves a user's identity in their custom fields.
@@ -43,17 +43,14 @@ after_initialize do
       # Params:
       # +public+::    Serialized public identity
       # +private+::   Serialized private identity
+      # +label+::     Private identity label
       #
       # Returns status code 200 on success or 409 if user already has an
       # identity and public identities mismatch.
       def update_keys
         public_identity  = params.require(:public)
-        private_identity = params.require(:private)
-
-        # Check if encrypt settings are visible to user.
-        groups = current_user.groups.pluck(:name)
-        encrypt_groups = SiteSetting.encrypt_groups.split('|')
-        raise Discourse::InvalidAccess if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
+        private_identity = params[:private]
+        private_id_label = params[:label]
 
         # Check if encryption is already enabled (but not changing passphrase).
         old_identity = current_user.custom_fields['encrypt_public']
@@ -62,8 +59,36 @@ after_initialize do
         end
 
         current_user.custom_fields['encrypt_public'] = public_identity
-        current_user.custom_fields['encrypt_private'] = private_identity
+
+        if private_identity.present?
+          if private_id_label.present?
+            data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
+            data[private_id_label.downcase] = private_identity
+            current_user.custom_fields['encrypt_private'] = JSON.dump(data)
+          else
+            current_user.custom_fields['encrypt_private'] = private_identity
+          end
+        end
+
         current_user.save_custom_fields
+
+        render json: success_json
+      end
+
+      # Delete a user's identity from the private identity.
+      #
+      # Params:
+      # +label+::     Private identity label
+      #
+      # Returns status code 200 after label is deleted.
+      def delete_key
+        private_id_label = params.require(:label)
+
+        data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
+        if data.delete(private_id_label)
+          current_user.custom_fields['encrypt_private'] = JSON.dump(data)
+          current_user.save_custom_fields
+        end
 
         render json: success_json
       end
@@ -95,6 +120,8 @@ after_initialize do
         user = User.find_by(id: user_id)
         raise Discourse::NotFound if user.blank?
 
+        guardian.ensure_can_edit!(user)
+
         if params[:everything] == 'true'
           TopicAllowedUser
             .joins(topic: :_custom_fields)
@@ -114,6 +141,17 @@ after_initialize do
         user.save_custom_fields
 
         render json: success_json
+      end
+
+      private
+
+      def ensure_encrypt_enabled
+        groups = current_user.groups.pluck(:name)
+        encrypt_groups = SiteSetting.encrypt_groups.split('|')
+
+        if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
+          raise Discourse::InvalidAccess
+        end
       end
     end
   end
@@ -317,9 +355,10 @@ after_initialize do
   end
 
   DiscourseEncrypt::Engine.routes.draw do
-    put  '/encrypt/keys'  => 'encrypt#update_keys'
-    get  '/encrypt/user'  => 'encrypt#show_user'
-    post '/encrypt/reset' => 'encrypt#reset_user'
+    put    '/encrypt/keys'  => 'encrypt#update_keys'
+    delete '/encrypt/keys'  => 'encrypt#delete_key'
+    get    '/encrypt/user'  => 'encrypt#show_user'
+    post   '/encrypt/reset' => 'encrypt#reset_user'
   end
 
   Discourse::Application.routes.append do

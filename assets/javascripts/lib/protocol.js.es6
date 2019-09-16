@@ -75,14 +75,10 @@ export function exportIdentity(identity, passphrase) {
     promise = exportIdentityV1(identity, passphrase);
   }
 
-  return promise.then(exported =>
-    !passphrase
-      ? identity.version + "$" + exported
-      : {
-          public: identity.version + "$" + exported.public,
-          private: identity.version + "$" + exported.private
-        }
-  );
+  return promise.then(exported => ({
+    public: identity.version + "$" + exported.public,
+    private: identity.version + "$" + exported.private
+  }));
 }
 
 /**
@@ -95,7 +91,9 @@ export function exportIdentity(identity, passphrase) {
  * @return {Promise}
  */
 export function importIdentity(identity, passphrase, extractable) {
-  extractable = !!extractable || isSafari;
+  // HACK: Since paper keys can be generated at any time, keys must be
+  // extractable at all times (the same behaviour required in Safari).
+  extractable = !!extractable || isSafari || true;
 
   const sep = identity.indexOf("$");
   const version = parseInt(identity.substr(0, sep));

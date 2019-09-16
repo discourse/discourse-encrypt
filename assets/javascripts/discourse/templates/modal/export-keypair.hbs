@@ -1,23 +1,11 @@
 {{#d-modal-body title="encrypt.export.title"}}
-  {{#if error}}
-    <div class="alert alert-error">{{error}}</div>
-  {{/if}}
   <div>
     <p>{{i18n 'encrypt.export.instructions'}}</p>
-    {{#if exported}}
-      <pre class="exported-keypair">{{exported}}</pre>
-    {{else}}
-      <label for="">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-      {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
-    {{/if}}
+    <pre class="exported-keypair">{{exported}}</pre>
   </div>
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{#if exported}}
-    {{d-button class="btn btn-primary" icon="far-clipboard" label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard") action=(action "copy")}}
-  {{else}}
-    {{d-button class="btn btn-primary" icon="file-export" label="encrypt.export.title" action=(action "export") disabled=inProgress}}
-  {{/if}}
+  {{d-button class="btn btn-primary" icon="far-clipboard" action=(action "copy") disabled=inProgress label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard")}}
   {{d-modal-cancel close=(action "closeModal")}}
 </div>

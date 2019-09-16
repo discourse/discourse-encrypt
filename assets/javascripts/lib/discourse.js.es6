@@ -1,7 +1,8 @@
 import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
-  loadDbIdentity
+  loadDbIdentity,
+  saveDbIdentity
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   decrypt,
@@ -243,4 +244,43 @@ export function canEnableEncrypt(user) {
   }
 
   return false;
+}
+
+/**
+ * Attempts at activating encryption on current device.
+ *
+ * @param {User} currentUser
+ * @param {String} passphrase
+ *
+ * @return {Promise}
+ */
+export function activateEncrypt(currentUser, passphrase) {
+  const privateKeys = JSON.parse(currentUser.custom_fields.encrypt_private);
+  let promise = Ember.RSVP.Promise.reject();
+
+  // Importing from a paper key.
+  const spacePos = passphrase.indexOf(" ");
+  const firstWord = spacePos && passphrase.substr(0, spacePos);
+  const label = "paper_" + firstWord;
+  if (privateKeys[label]) {
+    promise = promise.catch(() =>
+      importIdentity(privateKeys[label], passphrase)
+    );
+  }
+
+  // Importing from a device key.
+  if (privateKeys["device"]) {
+    promise = promise.catch(() =>
+      importIdentity(privateKeys["device"], passphrase)
+    );
+  }
+
+  // Importing from a passphrase key.
+  if (privateKeys["passphrase"]) {
+    promise = promise.catch(() =>
+      importIdentity(privateKeys["passphrase"], passphrase)
+    );
+  }
+
+  return promise.then(identity => saveDbIdentity(identity));
 }

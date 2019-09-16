@@ -1,46 +1,34 @@
 import copyText from "discourse/lib/copy-text";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import {
-  exportIdentity,
-  importIdentity
-} from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { packIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
+import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
-    this.setProperties({
-      passphrase: "",
-      exported: "",
-      inProgress: false,
-      error: ""
-    });
+    this.setProperties({ inProgress: true, exported: "" });
+
+    getIdentity()
+      .then(identity => exportIdentity(identity))
+      .then(exported => {
+        this.setProperties({
+          exported: packIdentity(exported.private),
+          inProgress: false
+        });
+      })
+      .catch(() => {
+        this.setProperties({
+          inProgress: false,
+          error: I18n.t("encrypt.preferences.passphrase_invalid")
+        });
+      });
   },
 
   onClose() {
-    this.onShow();
+    this.setProperties({ inProgress: false, exported: "" });
   },
 
   actions: {
-    export() {
-      this.set("inProgress", true);
-
-      const userIdentity = this.model.custom_fields.encrypt_private;
-      return importIdentity(userIdentity, this.passphrase, true)
-        .then(identity => exportIdentity(identity))
-        .then(exported => {
-          this.setProperties({
-            exported,
-            inProgress: false,
-            error: ""
-          });
-        })
-        .catch(() => {
-          this.setProperties({
-            inProgress: false,
-            error: I18n.t("encrypt.preferences.passphrase_invalid")
-          });
-        });
-    },
-
     copy() {
       const $copyRange = $("pre.exported-keypair");
       if (copyText("", $copyRange[0])) {

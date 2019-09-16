@@ -1,0 +1,32 @@
+{{#d-modal-body title="encrypt.manage_paperkeys.title"}}
+  <div>
+    {{#if labels}}
+      <p>{{i18n 'encrypt.manage_paperkeys.instructions'}}</p>
+      <table class="paperkeys">
+        {{#each labels as |label|}}
+          <tr>
+            <td>
+              {{d-icon "key"}}
+              <span class="paperkey-label">{{label}}</span>
+              ...
+            </td>
+            <td>
+              {{d-button
+                icon="far-trash-alt"
+                action=(action "delete")
+                actionParam=label
+                class="btn-danger pull-right"
+                title="encrypt.manage_paperkeys.delete"}}
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+    {{else}}
+      <p>{{i18n 'encrypt.manage_paperkeys.no_key'}}</p>
+    {{/if}}
+  </div>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paperkey.title"}}
+</div>

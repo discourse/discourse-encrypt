@@ -1,6 +1,5 @@
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import { saveDbIdentity } from "discourse/plugins/discourse-encrypt/lib/database";
-import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { activateEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
@@ -28,9 +27,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     activate() {
       this.set("inProgress", true);
 
-      const exported = this.currentUser.custom_fields.encrypt_private;
-      return importIdentity(exported, this.passphrase)
-        .then(identity => saveDbIdentity(identity))
+      return activateEncrypt(this.currentUser, this.passphrase)
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
           this.models.forEach(model => {

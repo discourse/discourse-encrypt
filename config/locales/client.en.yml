@@ -35,36 +35,37 @@ en:
         status_disabled: "You have not enabled encryption on this account."
         status_disabled_other: "This user did not enable encryption and cannot receive encrypted messages."
 
-        old_passphrase_label: "Old passphrase:"
         passphrase_label: "Passphrase:"
-        passphrase2_label: "Retype passphrase:"
-        passphrase_enter: "Please choose a secure passphrase to encrypt your key."
-        passphrase_insecure: "Please choose a stronger passphrase (at least 15 characters)."
-        passphrase_mismatch: "The two passphrases you entered do not match."
-        passphrase_invalid: "The passphrase you entered is incorrect."
 
         import_key: "I already have an encryption key."
 
-        notice_enable: |
-          <p>In order to enable encryption, you must choose a passphrase.</p>
-          <p>Forgetting this passphrase will lead to the loss of all encrypted messages.</p>
-          <p>After you enabled encryption, you must activate encryption on all other devices entering the same passphrase.</p>
         notice_active: |
-          <p>Please enter the encryption passphrase you used on other devices.<p>
+          <p>Please use another device or a paper key to activate this device. Use capital letters and spaces between words.<p>
         notice_import: |
-          <p>Please paste the encryption key you previously you previously exported.</p>
+          <p>Please paste the encryption key you previously exported.</p>
 
         activate: "Activate Encrypted Messages"
         deactivate: "Deactivate Encryption on this Device"
         enable: "Enable Encrypted Messages"
-        change: "Change Passphrase"
         reset: "Reset Encryption Key"
+
+      generate_paperkey:
+        title: "Generate Paper Key"
+        title_device: "Add Device"
+        instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
+        instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
+
+      manage_paperkeys:
+        title: "Manage Paper Keys"
+        instructions: "Below you can delete any of the previously generated paper keys. Once deleted, the paper key cannot be recovered, so please make sure you have at least one paper key or other active devices."
+        delete: "Delete"
+        no_key: "You have no paperkeys. Make sure you have at least one paper key or other active devices."
 
       export:
         title: "Export Encryption Keypair"
-        instructions: "You may export your keypair for safe keeping in case you forget your passphrase. Please note that the exported keypair is unprotected."
+        instructions: "Exporting your keypair is another backup mechanism. Please note that the exported keypair is unprotected and it can decrypt all your private conversations."
 
       reset:
         title: "Reset Encryption Keypair"
-        instructions: "Are you sure you want to reset your encryption key? This operation deletes the encryption key forever unless it was previously exported."
-        everything: "Uninvite user from any private conversations and delete topic keys."
+        instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever unless it was previously exported."
+        everything: "Uninvite from all encrypted private conversations (if any)"

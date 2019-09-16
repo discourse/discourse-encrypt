@@ -1,17 +1,18 @@
 import { registerHelper } from "discourse-common/lib/helpers";
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
   saveDbIdentity
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
+  activateEncrypt,
   canEnableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import {
   exportIdentity,
   generateIdentity,
@@ -34,11 +35,7 @@ export default {
          *       It should stay in memory for as little time as possible.
          *       Clear it often.
          */
-        oldPassphrase: "",
         passphrase: "",
-        passphrase2: "",
-        /** @var Whether the passphrase input is shown. */
-        passphraseInput: false,
         /** @var Whether any operation (AJAX request, key generation, etc.) is
          *       in progress. */
         inProgress: false,
@@ -51,9 +48,9 @@ export default {
         /** @var Whether the encryption is active on this device. */
         isEncryptActive: status === ENCRYPT_ACTIVE,
         /** @var Whether it is an import operation. */
-        importKey: false,
+        importIdentity: false,
         /** @var Key to be imported .*/
-        key: "",
+        identity: "",
         /** Listens for encryptino status updates. */
         listener() {
           const newStatus = getEncryptionStatus(args.model);
@@ -71,21 +68,6 @@ export default {
           this.appEvents.off("encrypt:status-changed", this.listener);
         }
       });
-      Ember.defineProperty(
-        component,
-        "passphraseStatus",
-        Ember.computed("passphrase", "passphrase2", function() {
-          const passphrase = component.passphrase;
-          const passphrase2 = component.passphrase2;
-          if (!passphrase) {
-            return "encrypt.preferences.passphrase_enter";
-          } else if (passphrase.length < 15) {
-            return "encrypt.preferences.passphrase_insecure";
-          } else if (passphrase !== passphrase2) {
-            return "encrypt.preferences.passphrase_mismatch";
-          }
-        })
-      );
     } else {
       component.setProperties({
         model: args.model,
@@ -97,76 +79,53 @@ export default {
   },
 
   actions: {
-    showPassphraseInput() {
-      this.setProperties({
-        passphrase: "",
-        passphrase2: "",
-        oldPassphrase: "",
-        passphraseInput: true
-      });
-    },
-
-    hidePassphraseInput() {
-      this.setProperties({
-        passphrase: "",
-        passphrase2: "",
-        oldPassphrase: "",
-        passphraseInput: false
-      });
-    },
-
     enableEncrypt() {
       this.set("inProgress", true);
 
-      const identityPromise = this.importKey
-        ? importIdentity(this.key)
+      const identityPromise = this.importIdentity
+        ? importIdentity(unpackIdentity(this.identity))
         : generateIdentity();
 
       const saveIdentityPromise = identityPromise
-        .then(identity => exportIdentity(identity, this.passphrase))
+        .then(identity => exportIdentity(identity))
         .then(exported => {
           this.set("model.custom_fields.encrypt_public", exported.public);
-          this.set("model.custom_fields.encrypt_private", exported.private);
           return ajax("/encrypt/keys", {
             type: "PUT",
             data: {
-              public: exported.public,
-              private: exported.private
+              public: exported.public
             }
           });
         });
 
-      return Ember.RSVP.Promise.all([
-        identityPromise
-          .then(identity => exportIdentity(identity))
-          .then(exported => importIdentity(exported)),
-        saveIdentityPromise
-      ])
-        .then(results => saveDbIdentity(results[0]))
+      const saveDbIdentityPromise = identityPromise
+        .then(identity => saveDbIdentity(identity))
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
           window.location.reload();
         })
-        .catch(popupAjaxError)
         .finally(() => {
-          this.send("hidePassphraseInput");
           this.setProperties({
+            passphrase: "",
             inProgress: false,
-            importKey: false,
-            key: ""
+            importIdentity: false,
+            identity: ""
           });
         });
+
+      return Ember.RSVP.Promise.all([
+        saveIdentityPromise,
+        saveDbIdentityPromise
+      ]);
     },
 
     activateEncrypt() {
       this.set("inProgress", true);
 
-      const exported = this.model.custom_fields.encrypt_private;
-      return importIdentity(exported, this.passphrase)
-        .then(identity => saveDbIdentity(identity))
+      return activateEncrypt(this.model, this.passphrase)
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.send("hidePassphraseInput");
+          this.set("passphrase", "");
           window.location.reload();
         })
         .catch(() =>
@@ -192,7 +151,7 @@ export default {
             }
           });
         })
-        .then(() => this.send("hidePassphraseInput"))
+        .then(() => this.set("passphrase", ""))
         .catch(() =>
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
         )
@@ -216,6 +175,17 @@ export default {
 
     reset() {
       showModal("reset-keypair").set("model", this.model);
+    },
+
+    generatePaperKey(device) {
+      showModal("generate-paperkey").setProperties({
+        model: this.model,
+        device
+      });
+    },
+
+    managePaperKeys() {
+      showModal("manage-paperkeys").set("model", this.model);
     }
   }
 };

@@ -68,6 +68,7 @@ function openDb(create) {
  * @return {Promise}
  */
 export function saveDbIdentity(identity) {
+  /*
   if (
     !isSafari &&
     Object.values(identity).any(
@@ -77,6 +78,7 @@ export function saveDbIdentity(identity) {
     // eslint-disable-next-line no-console
     console.warn("Saving an extractable key into the database.", identity);
   }
+  */
 
   if (isSafari) {
     return exportIdentity(identity).then(exported =>
@@ -136,6 +138,7 @@ export function loadDbIdentity() {
   }).then(identities => {
     if (identities && identities.length > 0) {
       let identity = identities[identities.length - 1];
+      /*
       if (
         !isSafari &&
         Object.values(identity).any(
@@ -145,6 +148,7 @@ export function loadDbIdentity() {
         // eslint-disable-next-line no-console
         console.warn("Loaded an extractable key from the database.", identity);
       }
+      */
       return identity;
     }
 

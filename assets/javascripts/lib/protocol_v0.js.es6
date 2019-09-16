@@ -3,18 +3,6 @@ import {
   bufferToBase64
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 
-/*
- * Useful variables for key import and export format.
- */
-
-export const PACKED_KEY_COLUMNS = 71;
-export const PACKED_KEY_HEADER =
-  "============== BEGIN EXPORTED DISCOURSE ENCRYPT KEY PAIR ==============";
-export const PACKED_KEY_SEPARATOR =
-  "-----------------------------------------------------------------------";
-export const PACKED_KEY_FOOTER =
-  "=============== END EXPORTED DISCOURSE ENCRYPT KEY PAIR ===============";
-
 /**
  * Converts a string to a bytes array.
  *
@@ -184,52 +172,39 @@ export function generateIdentity() {
 }
 
 export function exportIdentity(identity, passphrase) {
-  if (!passphrase) {
+  if (passphrase) {
+    const salt = _getSalt();
+    return Ember.RSVP.Promise.all([
+      _exportPublicKey(identity.publicKey),
+      _getPassphraseKey(passphrase, salt).then(key =>
+        _exportPrivateKey(identity.privateKey, key)
+      )
+    ]).then(([publicKey, privateKey]) => ({
+      public: publicKey,
+      private: publicKey + "$" + privateKey + "$" + salt
+    }));
+  } else {
     return Ember.RSVP.Promise.all([
       _exportPublicKey(identity.publicKey),
       _exportPublicKey(identity.privateKey)
-    ]).then(
-      ([publicKey, privateKey]) =>
-        PACKED_KEY_HEADER +
-        "\n" +
-        publicKey +
-        "\n" +
-        PACKED_KEY_SEPARATOR +
-        "\n" +
-        privateKey +
-        "\n" +
-        PACKED_KEY_FOOTER
-    );
+    ]).then(([publicKey, privateKey]) => ({
+      public: publicKey,
+      private: publicKey + "$" + privateKey
+    }));
   }
-
-  const salt = _getSalt();
-  return Ember.RSVP.Promise.all([
-    _exportPublicKey(identity.publicKey),
-    _getPassphraseKey(passphrase, salt).then(key =>
-      _exportPrivateKey(identity.privateKey, key)
-    )
-  ]).then(([publicKey, privateKey]) => ({
-    public: publicKey,
-    private: publicKey + "$" + privateKey + "$" + salt
-  }));
 }
 
 export function importIdentity(identity, passphrase, extractable) {
-  if (!passphrase) {
-    let publicStr, privateStr;
-
-    if (identity.indexOf(PACKED_KEY_SEPARATOR) !== -1) {
-      [publicStr, privateStr] = identity
-        .replace(PACKED_KEY_HEADER, "")
-        .replace(PACKED_KEY_FOOTER, "")
-        .split(/\s+/)
-        .map(x => x.trim())
-        .join("")
-        .split(PACKED_KEY_SEPARATOR);
-    } else {
-      publicStr = identity;
-    }
-
+  if (passphrase) {
+    const [publicStr, privateStr, salt] = identity.split("$");
+    return Ember.RSVP.Promise.all([
+      _importPublicKey(publicStr, null, extractable),
+      _getPassphraseKey(passphrase, salt).then(key =>
+        _importPrivateKey(privateStr, key, extractable)
+      )
+    ]).then(([publicKey, privateKey]) => ({ publicKey, privateKey }));
+  } else {
+    const [publicStr, privateStr] = identity.split("$");
     return Ember.RSVP.Promise.all([
       _importPublicKey(publicStr, null, extractable),
       privateStr
@@ -237,14 +212,6 @@ export function importIdentity(identity, passphrase, extractable) {
         : undefined
     ]).then(([publicKey, privateKey]) => ({ publicKey, privateKey }));
   }
-
-  const [encryptedPublicKey, encryptedPrivateKey, salt] = identity.split("$");
-  return Ember.RSVP.Promise.all([
-    _importPublicKey(encryptedPublicKey, null, extractable),
-    _getPassphraseKey(passphrase, salt).then(key =>
-      _importPrivateKey(encryptedPrivateKey, key, extractable)
-    )
-  ]).then(([publicKey, privateKey]) => ({ publicKey, privateKey }));
 }
 
 /*
