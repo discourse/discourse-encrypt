@@ -31,9 +31,8 @@ describe ::DiscourseEncrypt::EncryptController do
   context '#update_keys' do
     it 'does not work when not logged in' do
       put '/encrypt/keys', params: {
-        public_key: '-- the public key --',
-        private_key: '-- the private key --',
-        salt: '-- the salt --'
+        public: '-- the public key --',
+        private: '-- the private key --'
       }
 
       expect(response.status).to eq(403)
@@ -47,18 +46,16 @@ describe ::DiscourseEncrypt::EncryptController do
       sign_in(user)
 
       put '/encrypt/keys', params: {
-        public_key: '-- the public key --',
-        private_key: '-- the private key --',
-        salt: '-- the salt --'
+        public: '-- the public key --',
+        private: '-- the private key --'
       }
       expect(response.status).to eq(403)
 
       Fabricate(:group_user, group: group, user: user)
 
       put '/encrypt/keys', params: {
-        public_key: '-- the public key --',
-        private_key: '-- the private key --',
-        salt: '-- the salt --'
+        public: '-- the public key --',
+        private: '-- the private key --'
       }
       expect(response.status).to eq(200)
     end
@@ -67,51 +64,44 @@ describe ::DiscourseEncrypt::EncryptController do
       sign_in(user3)
 
       put '/encrypt/keys', params: {
-        public_key: '-- the public key --',
-        private_key: '-- the private key --',
-        salt: '-- the salt --'
+        public: '-- the public key --',
+        private: '-- the private key --'
       }
 
       expect(response.status).to eq(200)
-      expect(user3.custom_fields['encrypt_public_key']).to eq('-- the public key --')
-      expect(user3.custom_fields['encrypt_private_key']).to eq('-- the private key --')
-      expect(user3.custom_fields['encrypt_salt']).to eq('-- the salt --')
+      expect(user3.custom_fields['encrypt_public']).to eq('-- the public key --')
+      expect(user3.custom_fields['encrypt_private']).to eq('-- the private key --')
     end
 
     it 'updates user keys' do
       sign_in(user)
 
       put '/encrypt/keys', params: {
-        public_key: '-- the public key --',
-        private_key: '-- the new private key --',
-        salt: '-- the new salt --'
+        public: '-- the public key --',
+        private: '-- the new private key --'
       }
 
       user.reload
 
       expect(response.status).to eq(200)
-      expect(user.custom_fields['encrypt_public_key']).to eq('-- the public key --')
-      expect(user.custom_fields['encrypt_private_key']).to eq('-- the new private key --')
-      expect(user.custom_fields['encrypt_salt']).to eq('-- the new salt --')
+      expect(user.custom_fields['encrypt_public']).to eq('-- the public key --')
+      expect(user.custom_fields['encrypt_private']).to eq('-- the new private key --')
     end
 
     it 'does not allow updating if wrong public key' do
-      user.custom_fields['encrypt_public_key'] = '-- the public key --'
-      user.custom_fields['encrypt_private_key'] = '-- the private key --'
-      user.custom_fields['encrypt_salt'] = '-- the salt --'
+      user.custom_fields['encrypt_public'] = '-- the public key --'
+      user.custom_fields['encrypt_private'] = '-- the private key --'
       user.save!
       sign_in(user)
 
       put '/encrypt/keys', params: {
-        public_key: '-- a wrong public key --',
-        private_key: '-- the new private key --',
-        salt: '-- the new salt --'
+        public: '-- a wrong public key --',
+        private: '-- the new private key --'
       }
 
       expect(response.status).to eq(409)
-      expect(user.custom_fields['encrypt_public_key']).to eq('-- the public key --')
-      expect(user.custom_fields['encrypt_private_key']).to eq('-- the private key --')
-      expect(user.custom_fields['encrypt_salt']).to eq('-- the salt --')
+      expect(user.custom_fields['encrypt_public']).to eq('-- the public key --')
+      expect(user.custom_fields['encrypt_private']).to eq('-- the private key --')
     end
   end
 
@@ -122,9 +112,9 @@ describe ::DiscourseEncrypt::EncryptController do
     end
 
     it 'gets the right user keys' do
-      user.custom_fields['encrypt_public_key'] = '-- the public key --'
+      user.custom_fields['encrypt_public'] = '-- the public key --'
       user.save!
-      user2.custom_fields['encrypt_public_key'] = '-- another public key --'
+      user2.custom_fields['encrypt_public'] = '-- another public key --'
       user2.save
       sign_in(user)
 
@@ -141,9 +131,8 @@ describe ::DiscourseEncrypt::EncryptController do
 
   context '#reset_user' do
     before do
-      user.custom_fields['encrypt_public_key']  = '-- the public key --'
-      user.custom_fields['encrypt_private_key'] = '-- the private key --'
-      user.custom_fields['encrypt_salt']        = '-- the salt --'
+      user.custom_fields['encrypt_public']  = '-- the public key --'
+      user.custom_fields['encrypt_private'] = '-- the private key --'
       user.save_custom_fields
 
       store.set("key_#{topic.id}_#{user.id}", '-- user key --')
@@ -152,23 +141,21 @@ describe ::DiscourseEncrypt::EncryptController do
     end
 
     it 'resets everything' do
-      user.grant_admin!
-
       expect { post '/encrypt/reset', params: { user_id: user.id, everything: true } }
         .to change { TopicAllowedUser.count }.by(-1)
         .and change { PluginStoreRow.count }.by(-1)
-        .and change { UserCustomField.count }.by(-3)
+        .and change { UserCustomField.count }.by(-2)
 
       expect(response.status).to eq(200)
     end
 
-    it 'allows only staff members' do
+    it 'resets only keys' do
       expect { post '/encrypt/reset', params: { user_id: user.id } }
         .to change { TopicAllowedUser.count }.by(0)
         .and change { PluginStoreRow.count }.by(0)
-        .and change { UserCustomField.count }.by(0)
+        .and change { UserCustomField.count }.by(-2)
 
-      expect(response.status).to eq(403)
+      expect(response.status).to eq(200)
     end
   end
 end

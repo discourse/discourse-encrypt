@@ -5,7 +5,7 @@ require 'rails_helper'
 describe ::DiscourseEncrypt do
 
   it 'registers current user fields' do
-    expect(DiscoursePluginRegistry.serialized_current_user_fields).to include('encrypt_public_key', 'encrypt_private_key', 'encrypt_salt')
+    expect(DiscoursePluginRegistry.serialized_current_user_fields).to include('encrypt_public', 'encrypt_private')
   end
 
   it 'registers preloaded custom fields' do

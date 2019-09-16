@@ -82,7 +82,7 @@ export function saveDbIdentity(identity) {
 
   if (isSafari) {
     return exportIdentity(identity).then(exported =>
-      window.localStorage.setItem(DB_NAME, exported)
+      window.localStorage.setItem(DB_NAME, exported.private)
     );
   }
 
