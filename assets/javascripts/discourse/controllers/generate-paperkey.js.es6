@@ -7,9 +7,8 @@ import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
     this.set("inProgress", true);
-
     const paperKey = generatePaperKey();
-    const label = this.device
+    const label = this.model.device
       ? "device"
       : "paper_" + paperKey.substr(0, paperKey.indexOf(" ")).toLowerCase();
 
@@ -28,12 +27,12 @@ export default Ember.Controller.extend(ModalFunctionality, {
         });
       })
       .then(() => {
-        const privateKeys = this.model.custom_fields.encrypt_private
-          ? JSON.parse(this.model.custom_fields.encrypt_private)
+        const privateKeys = this.model.user.custom_fields.encrypt_private
+          ? JSON.parse(this.model.user.custom_fields.encrypt_private)
           : {};
         privateKeys[label] = true;
         this.set(
-          "model.custom_fields.encrypt_private",
+          "model.user.custom_fields.encrypt_private",
           JSON.stringify(privateKeys)
         );
       })

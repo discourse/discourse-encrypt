@@ -170,22 +170,24 @@ export default {
     },
 
     export() {
-      showModal("export-keypair").set("model", this.model);
+      showModal("export-keypair", { model: this.model });
     },
 
     reset() {
-      showModal("reset-keypair").set("model", this.model);
+      showModal("reset-keypair", { model: this.model });
     },
 
     generatePaperKey(device) {
-      showModal("generate-paperkey").setProperties({
-        model: this.model,
-        device
+      showModal("generate-paperkey", {
+        model: {
+          user: this.model,
+          device
+        }
       });
     },
 
     managePaperKeys() {
-      showModal("manage-paperkeys").set("model", this.model);
+      showModal("manage-paperkeys", { model: this.model });
     }
   }
 };

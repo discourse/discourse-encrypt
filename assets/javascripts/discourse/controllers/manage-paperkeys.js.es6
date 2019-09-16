@@ -20,9 +20,11 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   actions: {
     generatePaperKey() {
-      showModal("generate-paperkey").setProperties({
-        model: this.model,
-        device: false
+      showModal("generate-paperkey", {
+        model: {
+          user: this.model,
+          device: false
+        }
       });
     },
 
