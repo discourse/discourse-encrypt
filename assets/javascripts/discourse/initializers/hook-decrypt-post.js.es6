@@ -18,6 +18,18 @@ import {
   verify
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
+import {
+  linkSeenMentions,
+  fetchUnseenMentions
+} from "discourse/lib/link-mentions";
+import {
+  linkSeenCategoryHashtags,
+  fetchUnseenCategoryHashtags
+} from "discourse/lib/link-category-hashtags";
+import {
+  linkSeenTagHashtags,
+  fetchUnseenTagHashtags
+} from "discourse/lib/link-tag-hashtag";
 
 function warnMetadataMismatch(attrs, diff) {
   // eslint-disable-next-line no-console
@@ -35,6 +47,7 @@ function warnMetadataMismatch(attrs, diff) {
   // eslint-disable-next-line no-console
   console.warn(warning);
 }
+
 function checkMetadata(attrs, expected) {
   const actual = {
     user_id: attrs.user_id,
@@ -73,6 +86,37 @@ function checkMetadata(attrs, expected) {
 
   warnMetadataMismatch(attrs, diff);
   return diff;
+}
+
+function postProcessPost(siteSettings, topicId, $post) {
+  // Paint mentions.
+  const unseenMentions = linkSeenMentions($post, siteSettings);
+  if (unseenMentions.length) {
+    fetchUnseenMentions(unseenMentions, topicId).then(() =>
+      linkSeenMentions($post, siteSettings)
+    );
+  }
+
+  // Paint category hashtags.
+  const unseenCategoryHashtags = linkSeenCategoryHashtags($post);
+  if (unseenCategoryHashtags.length) {
+    fetchUnseenCategoryHashtags(unseenCategoryHashtags).then(() => {
+      linkSeenCategoryHashtags($post);
+    });
+  }
+
+  // Paint tag hashtags.
+  if (siteSettings.tagging_enabled) {
+    const unseenTagHashtags = linkSeenTagHashtags($post);
+    if (unseenTagHashtags.length) {
+      fetchUnseenTagHashtags(unseenTagHashtags).then(() => {
+        linkSeenTagHashtags($post);
+      });
+    }
+  }
+
+  // Paint short URLs.
+  resolveAllShortUrls(ajax);
 }
 
 export default {
@@ -180,7 +224,10 @@ export default {
 
           if (state.decrypted && state.decrypted !== true) {
             attrs.cooked = state.decrypted;
-            Ember.run.next(() => resolveAllShortUrls(ajax));
+            Ember.run.next(() => {
+              const $post = $(`article[data-post-id='${attrs.id}']`);
+              postProcessPost(this.siteSettings, topicId, $post);
+            });
           } else if (state.decrypting) {
             attrs.cooked =
               "<div class='alert alert-info'>" +
