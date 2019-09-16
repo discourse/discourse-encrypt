@@ -167,9 +167,9 @@ export function getTopicTitle(topicId) {
   } else if (
     !(title instanceof Promise || title instanceof Ember.RSVP.Promise)
   ) {
-    topicTitles[topicId] = getTopicKey(topicId).then(key =>
-      decrypt(key, title)
-    );
+    topicTitles[topicId] = getTopicKey(topicId)
+      .then(key => decrypt(key, title))
+      .then(decrypted => decrypted.raw);
   }
 
   return topicTitles[topicId];

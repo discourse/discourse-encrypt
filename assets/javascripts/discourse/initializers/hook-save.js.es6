@@ -78,7 +78,7 @@ export default {
         }
 
         return getTopicKey(topic.id)
-          .then(key => encrypt(key, props.title))
+          .then(key => encrypt(key, { raw: props.title }))
           .then(encryptedTitle => {
             props.title = I18n.t("encrypt.encrypted_topic_title");
             props.encrypted_title = encryptedTitle;
@@ -105,7 +105,7 @@ export default {
 
         let titlePromise = title
           ? topicKey
-              .then(key => encrypt(key, title))
+              .then(key => encrypt(key, { raw: title }))
               .then(encryptedTitle => {
                 args.encrypted_title = encryptedTitle;
                 args.title = I18n.t("encrypt.encrypted_topic_title");

@@ -28,6 +28,21 @@ class UpdateProtocol < ActiveRecord::Migration[5.2]
       DELETE FROM user_custom_fields
       WHERE name IN ('encrypt_public_key', 'encrypt_private_key', 'encrypt_salt')
     SQL
+
+    execute <<~SQL
+      UPDATE topic_custom_fields
+      SET value = '0$' || value
+      WHERE name = 'encrypted_title'
+    SQL
+
+    execute <<~SQL
+      UPDATE posts
+      SET raw = '0$' || raw
+      FROM topic_custom_fields tcf
+      WHERE posts.topic_id = tcf.topic_id AND
+          tcf.name = 'encrypted_title' AND
+          posts.raw ~ '^[A-Za-z0-9+\\\/=$]+(\n.*)?$';
+    SQL
   end
 
   def down
