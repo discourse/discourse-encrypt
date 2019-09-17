@@ -36,6 +36,7 @@ en:
         status_disabled_other: "This user did not enable encryption and cannot receive encrypted messages."
 
         passphrase_label: "Passphrase:"
+        passphrase_invalid: "The passphrase you entered is incorrect."
 
         import_key: "I already have an encryption key."
 
