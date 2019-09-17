@@ -33,8 +33,8 @@ export const ENCRYPT_PROTOCOL_VERSION = 1;
  *
  * @return {Promise}
  */
-export function generateIdentity() {
-  const version = ENCRYPT_PROTOCOL_VERSION;
+export function generateIdentity(version) {
+  version = version || ENCRYPT_PROTOCOL_VERSION;
 
   let promise;
   if (version === 0) {

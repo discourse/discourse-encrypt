@@ -6,6 +6,8 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   decrypt,
+  exportIdentity,
+  generateIdentity,
   importIdentity,
   importKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
@@ -261,7 +263,7 @@ export function activateEncrypt(currentUser, passphrase) {
   // Importing from a paper key.
   const spacePos = passphrase.indexOf(" ");
   const firstWord = spacePos && passphrase.substr(0, spacePos);
-  const label = "paper_" + firstWord;
+  const label = "paper_" + firstWord.toLowerCase();
   if (privateKeys[label]) {
     promise = promise.catch(() =>
       importIdentity(privateKeys[label], passphrase)
@@ -282,5 +284,56 @@ export function activateEncrypt(currentUser, passphrase) {
     );
   }
 
-  return promise.then(identity => saveDbIdentity(identity));
+  return promise
+    .then(identity => upgradeIdentity(currentUser, passphrase, identity))
+    .then(identity => saveDbIdentity(identity));
+}
+
+/**
+ * Upgrade a user's identity to new version.
+ *
+ * @param {User} currentUser
+ * @param {string} passphrase
+ * @param {Object} oldIdentity
+ *
+ * @return {Object}
+ */
+function upgradeIdentity(currentUser, passphrase, oldIdentity) {
+  // Upgrade identity to version 1 by creating a v1 identity, but replacing
+  // encryption keys with old ones.
+  if (oldIdentity.version === 0) {
+    return generateIdentity(1)
+      .then(identity => {
+        identity.encryptPublic = oldIdentity.encryptPublic;
+        identity.encryptPrivate = oldIdentity.encryptPrivate;
+        return identity;
+      })
+      .then(identity => {
+        const savePromise = exportIdentity(identity, passphrase).then(
+          exported => {
+            const exportedPrivate = JSON.stringify({
+              passphrase: exported.private
+            });
+
+            currentUser.set("custom_fields.encrypt_public", exported.public);
+            currentUser.set("custom_fields.encrypt_private", exportedPrivate);
+
+            return ajax("/encrypt/keys", {
+              type: "PUT",
+              data: {
+                public: exported.public,
+                private: exportedPrivate,
+                overwrite: true
+              }
+            });
+          }
+        );
+
+        return Ember.RSVP.Promise.all([identity, savePromise]).then(
+          result => result[0]
+        );
+      });
+  }
+
+  return oldIdentity;
 }
