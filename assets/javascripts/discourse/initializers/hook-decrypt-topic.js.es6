@@ -103,6 +103,21 @@ export default {
           Ember.run.debounce(self, decryptTitles, 500);
         }
       });
+
+      api.onAppEvent("page:changed", data => {
+        if (data.currentRouteName.startsWith("topic.")) {
+          const topicId = container.lookup("controller:topic").get("model.id");
+          getTopicTitle(topicId).then(topicTitle =>
+            Discourse.set(
+              "_docTitle",
+              data.title.replace(
+                I18n.t("encrypt.encrypted_topic_title"),
+                topicTitle
+              )
+            )
+          );
+        }
+      });
     });
   }
 };
