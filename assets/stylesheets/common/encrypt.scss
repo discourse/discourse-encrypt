@@ -32,7 +32,7 @@ pre.exported-keypair {
   font-size: 1.5em;
 }
 
-table.paperkeys {
+.modal .modal-body table.paperkeys {
   width: 100%;
 
   tr {
@@ -47,11 +47,16 @@ table.paperkeys {
     }
   }
 
-  .paperkey-label {
+  span.paperkey {
     background-color: lighten($primary, 80%);
+    border-radius: 5px;
+    font-size: 1em;
     margin: 0 0.5em;
     padding: 0.3em;
-    border-radius: 5px;
+  }
+
+  span.passphrase {
+    margin: 0 0.5em;
   }
 }
 

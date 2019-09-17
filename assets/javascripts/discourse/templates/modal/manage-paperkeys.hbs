@@ -1,20 +1,27 @@
 {{#d-modal-body title="encrypt.manage_paperkeys.title"}}
   <div>
-    {{#if labels}}
+    {{#if keys}}
       <p>{{i18n 'encrypt.manage_paperkeys.instructions'}}</p>
       <table class="paperkeys">
-        {{#each labels as |label|}}
+        {{#each keys as |key|}}
           <tr>
             <td>
               {{d-icon "key"}}
-              <span class="paperkey-label">{{label}}</span>
-              ...
+              {{#if key.isPaper}}
+                <span class="paperkey">{{key.name}}</span>
+                ...
+              {{else if key.isPassphrase}}
+                <span class="passphrase">
+                  {{i18n 'encrypt.manage_paperkeys.passphrase'}}
+                  <i>{{i18n 'encrypt.manage_paperkeys.not_recommended'}}</i>
+                </span>
+              {{/if}}
             </td>
             <td>
               {{d-button
                 icon="far-trash-alt"
                 action=(action "delete")
-                actionParam=label
+                actionParam=key.label
                 class="btn-danger pull-right"
                 title="encrypt.manage_paperkeys.delete"}}
             </td>

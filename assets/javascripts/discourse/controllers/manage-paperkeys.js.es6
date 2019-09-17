@@ -5,17 +5,26 @@ import computed from "ember-addons/ember-computed-decorators";
 
 export default Ember.Controller.extend(ModalFunctionality, {
   @computed("model.custom_fields.encrypt_private")
-  labels() {
-    const labels = [];
+  keys() {
+    const keys = [];
     if (this.model.custom_fields.encrypt_private) {
       const privateKeys = JSON.parse(this.model.custom_fields.encrypt_private);
-      Object.keys(privateKeys).forEach(key => {
-        if (key.startsWith("paper_")) {
-          labels.push(key.substr("paper_".length));
+      Object.keys(privateKeys).forEach(label => {
+        if (label.startsWith("paper_")) {
+          keys.push({
+            isPaper: true,
+            label,
+            name: label.substr("paper_".length)
+          });
+        } else if (label === "passphrase") {
+          keys.unshift({
+            isPassphrase: true,
+            label: "passphrase"
+          });
         }
       });
     }
-    return labels;
+    return keys;
   },
 
   actions: {
@@ -28,9 +37,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
       });
     },
 
-    delete(firstWord) {
-      const label = "paper_" + firstWord.toLowerCase();
-      ajax("/encrypt/keys", {
+    delete(label) {
+      return ajax("/encrypt/keys", {
         type: "DELETE",
         data: { label }
       }).then(() => {

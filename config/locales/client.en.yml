@@ -60,6 +60,8 @@ en:
         instructions: "Below you can delete any of the previously generated paper keys. Once deleted, the paper key cannot be recovered, so please make sure you have at least one paper key or other active devices."
         delete: "Delete"
         no_key: "You have no paperkeys. Make sure you have at least one paper key or other active devices."
+        passphrase: "passphrase-based"
+        not_recommended: "(not recommended)"
 
       export:
         title: "Export Encryption Keypair"
