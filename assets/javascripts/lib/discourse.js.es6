@@ -262,12 +262,13 @@ export function activateEncrypt(currentUser, passphrase) {
 
   // Importing from a paper key.
   const spacePos = passphrase.indexOf(" ");
-  const firstWord = spacePos && passphrase.substr(0, spacePos);
-  const label = "paper_" + firstWord.toLowerCase();
-  if (privateKeys[label]) {
-    promise = promise.catch(() =>
-      importIdentity(privateKeys[label], passphrase)
-    );
+  if (spacePos) {
+    const label = "paper_" + passphrase.substr(0, spacePos).toLowerCase();
+    if (privateKeys[label]) {
+      promise = promise.catch(() =>
+        importIdentity(privateKeys[label], passphrase)
+      );
+    }
   }
 
   // Importing from a device key.
