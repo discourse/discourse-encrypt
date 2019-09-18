@@ -1,3 +1,4 @@
+import { reload } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { activateEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
@@ -37,7 +38,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
           });
           this.set("models", null);
           this.send("closeModal");
-          window.location.reload();
+          reload();
         })
         .catch(() =>
           this.set("error", I18n.t("encrypt.preferences.passphrase_invalid"))

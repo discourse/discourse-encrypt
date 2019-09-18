@@ -1,25 +1,20 @@
-import selectKit from "helpers/select-kit-helper";
-import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
-import {
-  exportPrivateKey,
-  exportPublicKey,
-  generateIdentity,
-  generatePassphraseKey,
-  generateSalt
-} from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   deleteDb,
   loadDbIdentity,
   saveDbIdentity
 } from "discourse/plugins/discourse-encrypt/lib/database";
-import {
+import EncryptLibDiscourse, {
+  ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  ENCRYPT_ENABLED,
-  ENCRYPT_ACTIVE
+  ENCRYPT_ENABLED
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import * as DiscourseEncryptLib from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  exportIdentity,
+  generateIdentity
+} from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { default as userFixtures } from "fixtures/user_fixtures";
-import { parsePostData } from "helpers/create-pretender";
+import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
+import selectKit from "helpers/select-kit-helper";
 
 /*
  * Checks if a string is not contained in a string.
@@ -58,22 +53,6 @@ const keys = {};
 let globalAssert;
 
 /**
- * Generates a key pair.
- *
- * @param passphrase
- *
- * @return Tuple consisting of public and private key, as CryptoKey and string.
- */
-async function getKeyPair(passsphrase) {
-  const salt = generateSalt();
-  const passphraseKey = await generatePassphraseKey(passsphrase, salt);
-  const [publicKey, privateKey] = await generateIdentity();
-  const publicStr = await exportPublicKey(publicKey);
-  const privateStr = await exportPrivateKey(privateKey, passphraseKey);
-  return [publicKey, privateKey, publicStr, privateStr, salt];
-}
-
-/**
  * Sets up encryption.
  */
 async function setEncryptionStatus(status) {
@@ -85,16 +64,18 @@ async function setEncryptionStatus(status) {
   } catch (e) {}
 
   // Generating a new key pair if enabling or creating a dummy one if disabling.
-  const keyPair =
-    status !== ENCRYPT_DISABLED
-      ? await getKeyPair(PASSPHRASE)
-      : [null, null, null, null, null];
+  let identity = {};
+  let exported = {};
+  let exportedPrivate;
+  if (status !== ENCRYPT_DISABLED) {
+    identity = await generateIdentity();
+    exported = await exportIdentity(identity, PASSPHRASE);
+    exportedPrivate = JSON.stringify({ passphrase: exported.private });
+  }
 
   // Overwriting server-side fields.
-  const [publicKey, privateKey, publicStr, privateStr, salt] = keyPair;
-  user.set("custom_fields.encrypt_public_key", publicStr);
-  user.set("custom_fields.encrypt_private_key", privateStr);
-  user.set("custom_fields.encrypt_salt", salt);
+  user.set("custom_fields.encrypt_public", exported.public);
+  user.set("custom_fields.encrypt_private", exportedPrivate);
 
   // Setting the appropriate custom fields is not always enough (i.e. if user
   // navigates to preferences).
@@ -103,20 +84,19 @@ async function setEncryptionStatus(status) {
     const json = userFixtures["/u/eviltrout.json"];
     json.user.can_edit = true;
     json.user.custom_fields = {
-      encrypt_public_key: keyPair[2],
-      encrypt_private_key: keyPair[3],
-      encrypt_salt: keyPair[4]
+      encrypt_public: exported.public,
+      encrypt_private: exportedPrivate
     };
     return [200, { "Content-Type": "application/json" }, json];
   });
 
   // Activating encryption on client-side.
   if (status === ENCRYPT_ACTIVE) {
-    await saveDbIdentity(publicKey, privateKey);
+    await saveDbIdentity(identity);
   }
 
   // Store key for future use.
-  return (keys[user.username] = keyPair);
+  return (keys[user.username] = identity);
 }
 
 // TODO: Figure out why `await` is not enough.
@@ -129,7 +109,7 @@ acceptance("Encrypt", {
   settings: { encrypt_enabled: true, encrypt_groups: "" },
 
   beforeEach() {
-    sandbox.stub(DiscourseEncryptLib, "reload");
+    sandbox.stub(EncryptLibDiscourse, "reload");
 
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
@@ -189,18 +169,17 @@ test("enabling works", async assert => {
   });
 
   await visit("/u/eviltrout/preferences");
-  await click(".encrypt button");
-  await fillIn(".encrypt #passphrase", PASSPHRASE);
-  await fillIn(".encrypt #passphrase2", PASSPHRASE);
   await click(".encrypt button.btn-primary");
   await sleep(1500);
   await sleep(1500);
 
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
-  const [publicKey, privateKey] = await loadDbIdentity();
-  assert.ok(publicKey instanceof CryptoKey);
-  assert.ok(privateKey instanceof CryptoKey);
+  const identity = await loadDbIdentity();
+  assert.ok(identity.encryptPublic instanceof CryptoKey);
+  assert.ok(identity.encryptPrivate instanceof CryptoKey);
+  assert.ok(identity.signPublic instanceof CryptoKey);
+  assert.ok(identity.signPrivate instanceof CryptoKey);
   await sleep(1500);
 });
 
@@ -212,46 +191,11 @@ test("activation works", async assert => {
   await click(".encrypt button.btn-primary");
   await sleep(1500);
 
-  const [publicKey, privateKey] = await loadDbIdentity();
-  assert.ok(publicKey instanceof CryptoKey);
-  assert.ok(privateKey instanceof CryptoKey);
-  await sleep(1500);
-});
-
-test("changing passphrase works", async assert => {
-  await setEncryptionStatus(ENCRYPT_ACTIVE);
-
-  let ajaxRequested = false;
-  /* global server */
-  server.put("/encrypt/keys", request => {
-    const params = parsePostData(request.requestBody);
-    assert.equal(
-      params["public_key"],
-      keys["eviltrout"][2],
-      "old and new public keys match"
-    );
-    assert.notEqual(
-      params["private_key"],
-      keys["eviltrout"][3],
-      "old and new private keys do not match"
-    );
-    ajaxRequested = true;
-    return [200, { "Content-Type": "application/json" }, { success: "OK" }];
-  });
-
-  await visit("/u/eviltrout/preferences");
-  await click(".encrypt button#change");
-  await fillIn(".encrypt #oldPassphrase", PASSPHRASE);
-  await fillIn(".encrypt #passphrase", "new" + PASSPHRASE + "passphrase");
-  await fillIn(".encrypt #passphrase2", "new" + PASSPHRASE + "passphrase");
-  await click(".encrypt button.btn-primary");
-  await sleep(1500);
-
-  assert.ok(ajaxRequested, "AJAX request to save keys was made");
-
-  const [publicKey, privateKey] = await loadDbIdentity();
-  assert.ok(publicKey instanceof CryptoKey);
-  assert.ok(privateKey instanceof CryptoKey);
+  const identity = await loadDbIdentity();
+  assert.ok(identity.encryptPublic instanceof CryptoKey);
+  assert.ok(identity.encryptPrivate instanceof CryptoKey);
+  assert.ok(identity.signPublic instanceof CryptoKey);
+  assert.ok(identity.signPrivate instanceof CryptoKey);
   await sleep(1500);
 });
 
@@ -262,9 +206,8 @@ test("deactivation works", async assert => {
   await click(".encrypt button#deactivate");
   await sleep(1500);
 
-  const [publicKey, privateKey] = await loadDbIdentity();
-  assert.equal(publicKey, null);
-  assert.equal(privateKey, null);
+  const identity = await loadDbIdentity();
+  assert.equal(identity, null);
   await sleep(1500);
 });
 

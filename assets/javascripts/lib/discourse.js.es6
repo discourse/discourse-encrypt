@@ -338,3 +338,7 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
 
   return oldIdentity;
 }
+
+export function reload() {
+  return window.location.reload();
+}
