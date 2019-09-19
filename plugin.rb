@@ -170,7 +170,7 @@ after_initialize do
   # Hide cooked content in notifications.
   on(:reduce_excerpt) do |doc, options|
     post = options[:post]
-    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
+    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
