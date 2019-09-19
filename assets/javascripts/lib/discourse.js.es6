@@ -67,32 +67,30 @@ export function getIdentity() {
 }
 
 export function getUserIdentities(usernames) {
-  return ajax("/encrypt/user", {
-    type: "GET",
-    data: { usernames }
-  })
-    .then(identities => {
-      const promises = [];
-      for (let i = 0; i < usernames.length; ++i) {
-        const username = usernames[i];
-        if (!identities[username]) {
-          promises.push(Ember.RSVP.Promise.reject(username));
-          continue;
-        }
-        if (!userIdentities[username]) {
-          userIdentities[username] = importIdentity(identities[username]);
-        }
-        promises.push(userIdentities[username]);
-      }
-      return Ember.RSVP.Promise.all(promises);
-    })
-    .then(identities => {
-      const imported = {};
-      for (let i = 0; i < usernames.length; ++i) {
-        imported[usernames[i]] = identities[i];
-      }
-      return imported;
+  if (usernames.some(username => !userIdentities[username])) {
+    const promise = ajax("/encrypt/user", {
+      type: "GET",
+      data: { usernames }
     });
+
+    usernames.forEach(username => {
+      userIdentities[username] = promise.then(identities =>
+        identities[username]
+          ? importIdentity(identities[username])
+          : Ember.RSVP.Promise.reject()
+      );
+    });
+  }
+
+  return Ember.RSVP.Promise.all(
+    usernames.map(username => userIdentities[username])
+  ).then(identities => {
+    const imported = {};
+    for (let i = 0; i < usernames.length; ++i) {
+      imported[usernames[i]] = identities[i];
+    }
+    return imported;
+  });
 }
 
 /**
