@@ -71,7 +71,7 @@ export function decryptTitles() {
   decryptElements("a.topic-link[data-topic-id]", "span", { addIcon: true });
   decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
   decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
-  decryptElements(".notifications span[data-topic-id]");
+  decryptElements(".quick-access-panel span[data-topic-id]");
 }
 
 export default {
