@@ -214,7 +214,7 @@ export function encrypt(key, signKey, plaintext) {
   let plaintextPromise = signKey
     ? window.crypto.subtle
         .sign(
-          { name: "RSA-PSS", saltLength: 128 },
+          { name: "RSA-PSS", saltLength: 32 },
           signKey,
           plaintextToBuffer(plaintext)
         )
@@ -258,7 +258,7 @@ export function verify(key, plaintext) {
   return new Ember.RSVP.Promise(resolve => {
     window.crypto.subtle
       .verify(
-        { name: "RSA-PSS", saltLength: 128 },
+        { name: "RSA-PSS", saltLength: 32 },
         key,
         base64ToBuffer(signature),
         plaintextToBuffer(plaintext)
