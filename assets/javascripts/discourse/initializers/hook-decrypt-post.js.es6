@@ -164,7 +164,7 @@ export default {
       api.reopenWidget("post-contents", {
         html(attrs, state) {
           const topicId = attrs.topicId;
-          if (!hasTopicTitle(topicId)) {
+          if (attrs.id === -1 || !hasTopicTitle(topicId)) {
             return this._super(...arguments);
           }
 
