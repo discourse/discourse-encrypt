@@ -8,7 +8,8 @@ import {
   getTopicKey,
   getUserIdentities,
   hasTopicKey,
-  putTopicKey
+  putTopicKey,
+  putTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
@@ -17,7 +18,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 /**
- * Adds metadata extracter from the composer.
+ * Adds metadata extracted from the composer.
  *
  * @param {Object} metadata
  *
@@ -99,12 +100,12 @@ export default {
 
         let identityPromise = getIdentity();
 
-        let topicKey = args.topic_id
+        let topicKeyPromise = args.topic_id
           ? getTopicKey(args.topic_id)
           : generateKey();
 
         let titlePromise = title
-          ? topicKey
+          ? topicKeyPromise
               .then(key => encrypt(key, { raw: title }))
               .then(encryptedTitle => {
                 args.encrypted_title = encryptedTitle;
@@ -113,13 +114,8 @@ export default {
           : Ember.RSVP.Promise.resolve();
 
         let replyPromise = raw
-          ? Ember.RSVP.Promise.all([topicKey, identityPromise])
-              .then(([key, identity]) =>
-                encrypt(key, addMetadata({ raw }), {
-                  signKey: identity.signPrivate,
-                  includeUploads: true
-                })
-              )
+          ? topicKeyPromise
+              .then(key => encrypt(key, { raw }, { includeUploads: true }))
               .then(encryptedRaw => {
                 args.encrypted_raw = encryptedRaw;
                 args.raw = I18n.t("encrypt.encrypted_post");
@@ -133,7 +129,7 @@ export default {
           const identitiesPromise = getUserIdentities(usernames);
 
           encryptedKeysPromise = Ember.RSVP.Promise.all([
-            topicKey,
+            topicKeyPromise,
             identitiesPromise
           ])
             .then(([key, identities]) => {
@@ -173,20 +169,32 @@ export default {
         ])
           .then(() => _super.call(this, ...arguments))
           .then(result =>
-            Ember.RSVP.Promise.all([topicKey, identityPromise])
-              .then(([key, identity]) => {
+            Ember.RSVP.Promise.all([
+              topicKeyPromise,
+              titlePromise,
+              identityPromise
+            ])
+              .then(([key, encTitle, identity]) => {
                 putTopicKey(result.payload.topic_id, key);
+                putTopicTitle(result.payload.topic_id, encTitle);
                 if (!identity.signPrivate) {
                   return;
                 }
 
                 return encrypt(
                   key,
-                  addMetadata({
+                  {
                     raw,
+                    signed_by_id: currentUser.id,
+                    signed_by_name: currentUser.username,
+                    user_id: result.payload.user_id,
+                    user_name: result.payload.username,
                     topic_id: result.payload.topic_id,
-                    post_id: result.payload.id
-                  }),
+                    post_id: result.payload.id,
+                    post_number: result.payload.post_number,
+                    created_at: result.payload.created_at,
+                    updated_at: result.payload.updated_at
+                  },
                   {
                     signKey: identity.signPrivate,
                     includeUploads: true
