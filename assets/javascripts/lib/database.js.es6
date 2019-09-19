@@ -7,6 +7,7 @@ import {
  * @var {String} DB_NAME Name of IndexedDb used for storing keypairs.
  */
 export const DB_NAME = "discourse-encrypt";
+export const DB_VERSION = "discourse-encrypt-version";
 
 /**
  * Checks if this is running in Safari or DiscourseHub app for iOS.
@@ -81,9 +82,10 @@ export function saveDbIdentity(identity) {
   */
 
   if (isSafari) {
-    return exportIdentity(identity).then(exported =>
-      window.localStorage.setItem(DB_NAME, exported.private)
-    );
+    return exportIdentity(identity).then(exported => {
+      window.localStorage.setItem(DB_NAME, exported.private);
+      window.localStorage.setItem(DB_VERSION, identity.version);
+    });
   }
 
   return new Ember.RSVP.Promise((resolve, reject) => {
@@ -99,6 +101,7 @@ export function saveDbIdentity(identity) {
       let dataReq = st.add(identity);
       dataReq.onsuccess = dataEvt => {
         window.localStorage.setItem(DB_NAME, true);
+        window.localStorage.setItem(DB_VERSION, identity.version);
         resolve(dataEvt);
         db.close();
       };
@@ -163,6 +166,7 @@ export function loadDbIdentity() {
  */
 export function deleteDb() {
   window.localStorage.removeItem(DB_NAME);
+  window.localStorage.removeItem(DB_VERSION);
 
   if (isSafari) {
     return Ember.RSVP.resolve();

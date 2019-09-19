@@ -1,6 +1,7 @@
 import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
+  DB_VERSION,
   loadDbIdentity,
   saveDbIdentity
 } from "discourse/plugins/discourse-encrypt/lib/database";
@@ -209,7 +210,10 @@ export function getEncryptionStatus(user) {
     return ENCRYPT_DISABLED;
   }
 
-  if (!window.localStorage.getItem(DB_NAME)) {
+  if (
+    !window.localStorage.getItem(DB_NAME) ||
+    !window.localStorage.getItem(DB_VERSION)
+  ) {
     return ENCRYPT_ENABLED;
   }
 
