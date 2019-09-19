@@ -64,6 +64,9 @@ pre.exported-keypair {
   .reply-to {
     .d-icon {
       margin: 0 5px;
+      &.enabled {
+        color: $success;
+      }
       &.disabled {
         color: $primary-low-mid;
       }

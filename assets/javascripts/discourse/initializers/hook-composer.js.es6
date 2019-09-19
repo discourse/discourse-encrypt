@@ -88,17 +88,10 @@ export default {
             }
           }
 
-          // Automatically enable encryption so people do not forget, but
-          // remember user preferences. If user enters a recipient, unchecks
-          // encryption and then adds another recipient, this will not revert
-          // his uncheck.
-          if (this.disableEncryptIndicator) {
-            this.setProperties({
-              isEncrypted: true,
-              disableEncryptIndicator: false,
-              encryptError: ""
-            });
-          }
+          this.setProperties({
+            disableEncryptIndicator: false,
+            encryptError: ""
+          });
         });
       }
     });
