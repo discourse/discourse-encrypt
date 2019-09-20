@@ -29,33 +29,22 @@ function addMetadata(metadata) {
   const model = controller.model;
 
   const currentUser = controller.currentUser;
-  const user = model.user;
-  const topic = model.topic;
-  const post = model.post;
-
   const now = new Date().toISOString();
 
   metadata.signed_by_id = currentUser.id;
   metadata.signed_by_name = currentUser.username;
-  metadata.user_id = user.id;
-  metadata.user_name = user.username;
-  metadata.created_at = post ? post.created_at : now;
+  metadata.user_id = model.user.id;
+  metadata.user_name = model.user.username;
+  metadata.created_at = model.post ? model.post.created_at : now;
   metadata.updated_at = now;
 
-  if (topic) {
-    metadata.topic_id = topic.id;
+  if (model.topic) {
+    metadata.topic_id = model.topic.id;
   }
 
-  if (post) {
-    metadata.post_id = post.id;
-  }
-
-  if (post) {
-    metadata.post_number = post.post_number;
-  } else if (topic) {
-    metadata.post_number = topic.highest_post_number;
-  } else {
-    metadata.post_number = 1;
+  if (model.post) {
+    metadata.post_id = model.post.id;
+    metadata.post_number = model.post.post_number;
   }
 
   return metadata;
