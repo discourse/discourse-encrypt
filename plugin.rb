@@ -144,6 +144,30 @@ after_initialize do
         render json: success_json
       end
 
+      # Updates an encrypted post, used immediately after creating one to
+      # update signature.
+      #
+      # Params:
+      # +post_id+::       ID of post to be updated
+      # +encrypted_raw+:: Encrypted raw with signature included
+      #
+      # Returns status code 200 after post is updated.
+      def update_post
+        post_id = params.require(:post_id)
+        encrypted_raw = params.require(:encrypted_raw)
+
+        post = Post.find_by(id: post_id)
+        guardian.ensure_can_edit!(post)
+
+        if post.updated_at < 5.seconds.ago
+          return render_json_error(I18n.t('too_late_to_edit'), status: 409)
+        end
+
+        post.update!(raw: encrypted_raw)
+
+        render json: success_json
+      end
+
       private
 
       def ensure_encrypt_enabled
@@ -368,6 +392,7 @@ after_initialize do
     delete '/encrypt/keys'  => 'encrypt#delete_key'
     get    '/encrypt/user'  => 'encrypt#show_user'
     post   '/encrypt/reset' => 'encrypt#reset_user'
+    put    '/encrypt/post'  => 'encrypt#update_post'
   end
 
   Discourse::Application.routes.append do

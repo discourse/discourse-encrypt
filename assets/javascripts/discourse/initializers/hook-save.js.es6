@@ -188,18 +188,16 @@ export default {
                     signKey: identity.signPrivate,
                     includeUploads: true
                   }
-                ).then(encryptedRaw =>
-                  ajax(
-                    this.pathFor(store, type, result.payload.id),
-                    this.getPayload("PUT", {
-                      post: {
-                        topic_id: result.payload.topic_id,
-                        raw: encryptedRaw,
-                        edit_reason: I18n.t("encrypt.integrity_updated")
-                      }
-                    })
-                  )
-                );
+                ).then(encryptedRaw => {
+                  result.payload.encrypted_raw = encryptedRaw;
+                  return ajax("/encrypt/post", {
+                    type: "PUT",
+                    data: {
+                      post_id: result.payload.id,
+                      encrypted_raw: encryptedRaw
+                    }
+                  });
+                });
               })
               .then(() => result)
           );
