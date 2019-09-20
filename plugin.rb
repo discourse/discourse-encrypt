@@ -186,22 +186,21 @@ after_initialize do
 
   # Hide cooked content.
   on(:post_process_cooked) do |doc, post|
-    if post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
+    if post&.is_encrypted?
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
 
   # Hide cooked content in notifications.
   on(:reduce_excerpt) do |doc, options|
-    post = options[:post]
-    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
+    if options[:post]&.is_encrypted?
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
 
   # Hide cooked content in email.
   on(:reduce_cooked) do |fragment, post|
-    if post && post.is_encrypted? && post.raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/)
+    if post&.is_encrypted?
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
     end
   end
@@ -246,7 +245,8 @@ after_initialize do
 
   module PostExtensions
     def is_encrypted?
-      !!(topic && topic.is_encrypted?)
+      !!(topic&.is_encrypted? &&
+         raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/))
     end
   end
 
@@ -302,7 +302,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_encrypted_raw?) do
-    object.is_encrypted?
+    object.topic&.is_encrypted?
   end
 
   # +encrypted_title+
@@ -376,7 +376,7 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_topic_id?) do
-    post.is_encrypted?
+    post.topic&.is_encrypted?
   end
 
   add_to_serializer(:post_revision, :raws) do
@@ -384,7 +384,7 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_raws?) do
-    post.is_encrypted?
+    post.topic&.is_encrypted?
   end
 
   DiscourseEncrypt::Engine.routes.draw do
