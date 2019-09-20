@@ -120,8 +120,8 @@ export default {
         } else {
           const pos = model.reply ? model.reply.indexOf("\n") : -1;
           if (pos !== -1) {
-            const topicKey = model.reply.substr(0, pos);
-            model.reply = model.reply.substr(pos + 1);
+            const topicKey = model.reply.substr(0, pos).trim();
+            const reply = model.reply.substr(pos + 1).trim();
 
             const decKey = getIdentity().then(identity =>
               importKey(topicKey, identity.encryptPrivate)
@@ -131,9 +131,9 @@ export default {
               ? decKey.then(key => decrypt(key, model.title))
               : "";
 
-            decReply = model.reply
+            decReply = reply
               ? decKey
-                  .then(key => decrypt(key, model.reply))
+                  .then(key => decrypt(key, reply))
                   .then(decrypted => decrypted.raw)
               : "";
           }
