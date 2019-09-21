@@ -19,10 +19,7 @@ describe Post do
     SiteSetting.editing_grace_period_max_diff = 1
 
     revisor = PostRevisor.new(post)
-    revisor.revise!(user, raw: 'this post is encrypted and has been edited')
-
-    revisor = PostRevisor.new(post2)
-    revisor.revise!(user, raw: 'this post is unencrypted and has been edited')
+    revisor.revise!(user, raw: 'base64')
   end
 
   context '#is_encrypted?' do
