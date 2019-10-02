@@ -18,6 +18,7 @@ en:
       encrypted_uploads: "Uploads cannot be encrypted at this time."
 
       cannot_encrypt: "You cannot encrypt messages in this conversation."
+      cannot_invite_group: "You cannot invite groups to encrypted messages."
 
       checkbox:
         checked: "This message will be end-to-end encrypted."

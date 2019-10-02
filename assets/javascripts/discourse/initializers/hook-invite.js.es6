@@ -45,6 +45,17 @@ export default {
             );
             return Ember.RSVP.Promise.reject(username);
           });
+      },
+
+      createGroupInvite() {
+        // TODO: https://github.com/emberjs/ember.js/issues/15291
+        let { _super } = this;
+        if (!hasTopicKey(this.id)) {
+          return _super.call(this, ...arguments);
+        }
+
+        bootbox.alert(I18n.t("encrypt.cannot_invite_group"));
+        return Ember.RSVP.Promise.reject();
       }
     });
   }
