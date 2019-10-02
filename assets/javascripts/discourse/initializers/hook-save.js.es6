@@ -33,8 +33,8 @@ function addMetadata(metadata) {
 
   metadata.signed_by_id = currentUser.id;
   metadata.signed_by_name = currentUser.username;
-  metadata.user_id = model.user.id;
-  metadata.user_name = model.user.username;
+  metadata.user_id = model.post ? model.post.user_id : model.user.id;
+  metadata.user_name = model.post ? model.post.username : model.user.username;
   metadata.created_at = model.post ? model.post.created_at : now;
   metadata.updated_at = now;
 

@@ -31,23 +31,6 @@ import {
   fetchUnseenTagHashtags
 } from "discourse/lib/link-tag-hashtag";
 
-function warnMetadataMismatch(attrs, diff) {
-  // eslint-disable-next-line no-console
-  if (!console || !console.warn || !diff || diff.length === 0) {
-    return;
-  }
-
-  let warning = "";
-  warning += `Integrity check for post #${attrs.post_number} (post ID ${attrs.id}) failed.\n`;
-  diff.forEach(
-    d =>
-      (warning += `  - ${d.attr} - expected "${d.expected}" vs actual "${d.actual}"\n`)
-  );
-
-  // eslint-disable-next-line no-console
-  console.warn(warning);
-}
-
 function checkMetadata(attrs, expected) {
   const actual = {
     user_id: attrs.user_id,
@@ -64,7 +47,10 @@ function checkMetadata(attrs, expected) {
     if (
       attr === "raw" ||
       attr === "signed_by_id" ||
-      attr === "signed_by_name"
+      attr === "signed_by_name" ||
+      // Check user_id only if username matches, so it does not report
+      // username and user_id.
+      (attr === "user_id" && attrs.user_name !== expected.user_name)
     ) {
       return;
     }
@@ -84,7 +70,27 @@ function checkMetadata(attrs, expected) {
     }
   });
 
-  warnMetadataMismatch(attrs, diff);
+  if (expected.signed_by_name !== attrs.username) {
+    diff.push({
+      attr: "signed_by_name",
+      actual: expected.signed_by_name,
+      expected: attrs.username
+    });
+  }
+
+  // eslint-disable-next-line no-console
+  if (console && console.warn && diff.length > 0) {
+    let warning = "";
+    warning += `Integrity check for post #${attrs.post_number} (post ID ${attrs.id}) failed.\n`;
+    diff.forEach(
+      d =>
+        (warning += `  - ${d.attr} - expected "${d.expected}" vs actual "${d.actual}"\n`)
+    );
+
+    // eslint-disable-next-line no-console
+    console.warn(warning);
+  }
+
   return diff;
 }
 
@@ -134,30 +140,44 @@ export default {
       api.includePostAttributes("encrypted_raw");
 
       api.decorateWidget("post-meta-data:after", helper => {
-        if (verified[helper.attrs.id] === undefined) {
+        const result = verified[helper.attrs.id];
+        if (result === undefined) {
           return;
-        } else if (verified[helper.attrs.id] === false) {
-          return helper.h(
-            "div.post-info.integrity-fail",
-            { title: I18n.t("encrypt.integrity_check_failed") },
-            iconNode("exclamation-triangle")
-          );
-        } else if (verified[helper.attrs.id].length === 0) {
+        } else if (result.length === 0) {
           return helper.h(
             "div.post-info.integrity-pass",
-            { title: I18n.t("encrypt.integrity_check_passed") },
+            { title: I18n.t("encrypt.integrity_check_pass") },
             iconNode("check")
           );
         }
 
-        return helper.h(
-          "div.post-info.integrity-fail",
-          {
-            title: I18n.t("encrypt.integrity_check_mismatch", {
-              fields: verified[helper.attrs.id].map(d => d.attr).join(", ")
+        const fields = result
+          .map(x => x.attr)
+          .filter(x => x !== "updated_at" && x !== "signed_by_name");
+
+        const warns = [];
+        if (fields.length > 0) {
+          warns.push(
+            I18n.t("encrypt.integrity_check_fail", {
+              fields: fields.join(", ")
             })
-          },
-          iconNode("exclamation-triangle")
+          );
+        } else {
+          result.forEach(x => {
+            if (x.attr === "updated_at") {
+              warns.push(I18n.t("encrypt.integrity_check_warn_updated_at"));
+            } else if (x.attr === "signed_by_name") {
+              warns.push(I18n.t("encrypt.integrity_check_warn_signed_by", x));
+            }
+          });
+        }
+
+        return helper.h(
+          fields.length === 0
+            ? "div.post-info.integrity-warn"
+            : "div.post-info.integrity-fail",
+          { title: warns.join(" ") },
+          iconNode(fields.length === 0 ? "exclamation-triangle" : "times")
         );
       });
 
@@ -197,13 +217,25 @@ export default {
                         )
                       )
                       .then(result => {
-                        verified[attrs.id] =
-                          result && checkMetadata(attrs, plaintext);
-                        this.scheduleRerender();
+                        verified[attrs.id] = checkMetadata(attrs, plaintext);
+                        if (!result) {
+                          verified[attrs.id].push({
+                            attr: "signature",
+                            actual: false,
+                            expected: true
+                          });
+                        }
                       })
                       .catch(() => {
-                        verified[attrs.id] = false;
-                      });
+                        verified[attrs.id] = [
+                          {
+                            attr: "signature",
+                            actual: false,
+                            expected: true
+                          }
+                        ];
+                      })
+                      .finally(() => this.scheduleRerender());
                   }
 
                   return cookAsync(plaintext.raw);

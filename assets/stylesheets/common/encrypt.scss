@@ -84,6 +84,11 @@ pre.exported-keypair {
     margin: 0 0 0 0.5em;
   }
 
+  &.integrity-warn {
+    color: mix($danger, #ffff00);
+    margin: 0 0 0 0.5em;
+  }
+
   &.integrity-fail {
     color: $danger;
     margin: 0 0 0 0.5em;
