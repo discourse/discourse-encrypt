@@ -18,6 +18,8 @@ DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_public'
 DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private'
 
 after_initialize do
+  load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
+
   Rails.configuration.filter_parameters << :encrypt_private
 
   module ::DiscourseEncrypt
@@ -202,6 +204,13 @@ after_initialize do
   on(:reduce_cooked) do |fragment, post|
     if post&.is_encrypted?
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
+    end
+  end
+
+  # Delete TopicAllowedUser records for users who do not have the key.
+  on(:post_created) do |post, opts, user|
+    if !DiscourseEncrypt::Store.get("key_#{post.topic_id}_#{user.id}").present?
+      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
     end
   end
 

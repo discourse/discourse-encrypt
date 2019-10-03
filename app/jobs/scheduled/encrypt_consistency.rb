@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class VotingEnsureConsistency < Jobs::Scheduled
+  class EncryptConsistency < ::Jobs::Scheduled
     every 1.day
 
     def execute(args)
@@ -32,7 +32,7 @@ module Jobs
         SQL
       ).each do |row|
         Discourse.warn('User has topic key, but was not invited to topic.', user_id: row.user_id, topic_id: row.topic_id)
-        DiscourseEncrypt::Store.remove("key_#{row.topic_id}_#{row.user_id}")
+        # DiscourseEncrypt::Store.remove("key_#{row.topic_id}_#{row.user_id}")
       end
     end
   end
