@@ -96,8 +96,8 @@ export default {
         let titlePromise = title
           ? topicKeyPromise
               .then(key => encrypt(key, { raw: title }))
-              .then(encryptedTitle => {
-                args.encrypted_title = encryptedTitle;
+              .then(encryptedTitle => (args.encrypted_title = encryptedTitle))
+              .finally(() => {
                 args.title = I18n.t("encrypt.encrypted_topic_title");
               })
           : Ember.RSVP.Promise.resolve();
@@ -105,8 +105,8 @@ export default {
         let replyPromise = raw
           ? topicKeyPromise
               .then(key => encrypt(key, { raw }, { includeUploads: true }))
-              .then(encryptedRaw => {
-                args.encrypted_raw = encryptedRaw;
+              .then(encryptedRaw => (args.encrypted_raw = encryptedRaw))
+              .finally(() => {
                 args.raw = I18n.t("encrypt.encrypted_post");
               })
           : Ember.RSVP.Promise.resolve();
