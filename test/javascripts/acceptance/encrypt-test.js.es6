@@ -134,7 +134,28 @@ acceptance("Encrypt", {
       request.queryParams["usernames"].forEach(u => (response[u] = keys[u][2]));
       return helper.response(response);
     });
+
+    server.put("/encrypt/post", () => {
+      return helper.response({});
+    });
   }
+});
+
+test("meta: leak checker works", async assert => {
+  globalAssert = {
+    checked: false,
+    notContains: () => (globalAssert.checked = true)
+  };
+
+  await visit("/");
+  await click("#create-topic");
+  await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
+  await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+  await click("button.create");
+
+  assert.ok(globalAssert.checked);
+
+  globalAssert = null;
 });
 
 test("posting does not leak plaintext", async assert => {
@@ -170,8 +191,7 @@ test("enabling works", async assert => {
 
   await visit("/u/eviltrout/preferences");
   await click(".encrypt button.btn-primary");
-  await sleep(1500);
-  await sleep(1500);
+  await sleep(3000);
 
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
@@ -180,7 +200,6 @@ test("enabling works", async assert => {
   assert.ok(identity.encryptPrivate instanceof CryptoKey);
   assert.ok(identity.signPublic instanceof CryptoKey);
   assert.ok(identity.signPrivate instanceof CryptoKey);
-  await sleep(1500);
 });
 
 test("activation works", async assert => {
@@ -189,14 +208,13 @@ test("activation works", async assert => {
   await visit("/u/eviltrout/preferences");
   await fillIn(".encrypt #passphrase", PASSPHRASE);
   await click(".encrypt button.btn-primary");
-  await sleep(1500);
+  await sleep(3000);
 
   const identity = await loadDbIdentity();
   assert.ok(identity.encryptPublic instanceof CryptoKey);
   assert.ok(identity.encryptPrivate instanceof CryptoKey);
   assert.ok(identity.signPublic instanceof CryptoKey);
   assert.ok(identity.signPrivate instanceof CryptoKey);
-  await sleep(1500);
 });
 
 test("deactivation works", async assert => {
@@ -208,7 +226,6 @@ test("deactivation works", async assert => {
 
   const identity = await loadDbIdentity();
   assert.equal(identity, null);
-  await sleep(1500);
 });
 
 test("encrypt settings visible only to allowed groups", async assert => {

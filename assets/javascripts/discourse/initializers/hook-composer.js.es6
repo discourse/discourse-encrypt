@@ -99,58 +99,56 @@ export default {
     // Decode composer on reply reload. This usually occurs when a post is
     // edited or a draft is loaded.
     const appEvents = container.lookup("app-events:main");
-    appEvents.on("composer:reply-reloaded", model => {
-      const draftKey = model.draftKey;
+    appEvents.on("composer:reply-reloaded", this, "composerReplyReloaded");
+  },
 
-      let encrypted, decTitle, decReply;
-      if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-        encrypted = true;
-      } else if (draftKey.indexOf("topic_") === 0) {
-        const topicId = draftKey.substr("topic_".length);
-        encrypted = !!hasTopicKey(topicId);
-      }
+  composerReplyReloaded(model) {
+    const draftKey = model.draftKey;
 
-      if (encrypted) {
-        if (model.action === "edit" && model.originalText) {
-          const topicId = model.get("topic.id");
-          decTitle = getTopicTitle(topicId);
-          decReply = getTopicKey(topicId)
-            .then(key => decrypt(key, model.reply))
-            .then(decrypted => decrypted.raw);
-        } else {
-          const pos = model.reply ? model.reply.indexOf("\n") : -1;
-          if (pos !== -1) {
-            const topicKey = model.reply.substr(0, pos).trim();
-            const reply = model.reply.substr(pos + 1).trim();
+    let encrypted, decTitle, decReply;
+    if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
+      encrypted = true;
+    } else if (draftKey.indexOf("topic_") === 0) {
+      const topicId = draftKey.substr("topic_".length);
+      encrypted = !!hasTopicKey(topicId);
+    }
 
-            const decKey = getIdentity().then(identity =>
-              importKey(topicKey, identity.encryptPrivate)
-            );
+    if (encrypted) {
+      if (model.action === "edit" && model.originalText) {
+        const topicId = model.get("topic.id");
+        decTitle = getTopicTitle(topicId);
+        decReply = getTopicKey(topicId)
+          .then(key => decrypt(key, model.reply))
+          .then(decrypted => decrypted.raw);
+      } else {
+        const pos = model.reply ? model.reply.indexOf("\n") : -1;
+        if (pos !== -1) {
+          const topicKey = model.reply.substr(0, pos).trim();
+          const reply = model.reply.substr(pos + 1).trim();
 
-            decTitle = model.title
-              ? decKey.then(key => decrypt(key, model.title))
-              : "";
+          const decKey = getIdentity().then(identity =>
+            importKey(topicKey, identity.encryptPrivate)
+          );
 
-            decReply = reply
-              ? decKey
-                  .then(key => decrypt(key, reply))
-                  .then(decrypted => decrypted.raw)
-              : "";
-          }
+          decTitle = model.title
+            ? decKey.then(key => decrypt(key, model.title))
+            : "";
+
+          decReply = reply
+            ? decKey
+                .then(key => decrypt(key, reply))
+                .then(decrypted => decrypted.raw)
+            : "";
         }
       }
+    }
 
-      if (decTitle) {
-        decTitle.then(title =>
-          model.setProperties({ title, isEncrypted: true })
-        );
-      }
+    if (decTitle) {
+      decTitle.then(title => model.setProperties({ title, isEncrypted: true }));
+    }
 
-      if (decReply) {
-        decReply.then(reply =>
-          model.setProperties({ reply, isEncrypted: true })
-        );
-      }
-    });
+    if (decReply) {
+      decReply.then(reply => model.setProperties({ reply, isEncrypted: true }));
+    }
   }
 };

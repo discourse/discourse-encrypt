@@ -1,9 +1,15 @@
 import { getOwner } from "discourse-common/lib/get-owner";
+import { registerHelper } from "discourse-common/lib/helpers";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+
+// TODO: I believe this should get into core.
+// Handlebars offers `if` but no other helpers for conditions, which eventually
+// lead to a lot of JavaScript bloat.
+registerHelper("or", ([a, b]) => a || b);
 
 export default {
   setupComponent(args, component) {
@@ -26,12 +32,12 @@ export default {
 
       didInsertElement() {
         this._super(...arguments);
-        this.appEvents.on("encrypt:status-changed", this.listener);
+        this.appEvents.on("encrypt:status-changed", this, this.listener);
       },
 
       willDestroyElement() {
         this._super(...arguments);
-        this.appEvents.off("encrypt:status-changed", this.listener);
+        this.appEvents.off("encrypt:status-changed", this, this.listener);
       },
 
       clicked() {

@@ -1,4 +1,3 @@
-import { registerHelper } from "discourse-common/lib/helpers";
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import {
@@ -19,11 +18,6 @@ import {
   generateIdentity,
   importIdentity
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-
-// TODO: I believe this should get into core.
-// Handlebars offers `if` but no other helpers for conditions, which eventually
-// lead to a lot of JavaScript bloat.
-registerHelper("or", ([a, b]) => a || b);
 
 export default {
   setupComponent(args, component) {
@@ -62,11 +56,11 @@ export default {
         },
         didInsertElement() {
           this._super(...arguments);
-          this.appEvents.on("encrypt:status-changed", this.listener);
+          this.appEvents.on("encrypt:status-changed", this, this.listener);
         },
         willDestroyElement() {
           this._super(...arguments);
-          this.appEvents.off("encrypt:status-changed", this.listener);
+          this.appEvents.off("encrypt:status-changed", this, this.listener);
         }
       });
     } else {

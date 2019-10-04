@@ -57,23 +57,6 @@ function decryptElements(containerSelector, elementSelector, opts) {
   });
 }
 
-/**
- * Decrypts all title elements.
- */
-export function decryptTitles() {
-  decryptElements("h1[data-topic-id]", ".fancy-title", { replaceIcon: true });
-  decryptElements("h1 .topic-link", "span", { replaceIcon: true });
-  decryptElements(
-    ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
-    ".title",
-    { addIcon: true }
-  );
-  decryptElements("a.topic-link[data-topic-id]", "span", { addIcon: true });
-  decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
-  decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
-  decryptElements(".quick-access-panel span[data-topic-id]");
-}
-
 export default {
   name: "hook-decrypt-topic",
 
@@ -84,40 +67,59 @@ export default {
     }
 
     const appEvents = container.lookup("app-events:main");
-    appEvents.on("encrypt:status-changed", decryptTitles);
+    appEvents.on("encrypt:status-changed", this, "decryptTitles");
+    appEvents.on("page:changed", this, "decryptDocTitle");
 
+    // Try to decrypt new titles that may appear after rendering a component.
     var self = this;
     Ember.Component.reopen({
       didRender() {
         Ember.run.scheduleOnce("afterRender", self, () => {
-          Ember.run.debounce(self, decryptTitles, 500);
+          Ember.run.debounce(self, self.decryptTitles, 500);
         });
         return this._super(...arguments);
       }
     });
 
+    // Decrypt notifications when opening the user menu.
     withPluginApi("0.8.31", api => {
       api.decorateWidget("header:after", helper => {
         if (helper.widget.state.userVisible) {
-          decryptTitles();
-          Ember.run.debounce(self, decryptTitles, 500);
-        }
-      });
-
-      api.onAppEvent("page:changed", data => {
-        if (data.currentRouteName.startsWith("topic.")) {
-          const topicId = container.lookup("controller:topic").get("model.id");
-          getTopicTitle(topicId).then(topicTitle =>
-            Discourse.set(
-              "_docTitle",
-              data.title.replace(
-                I18n.t("encrypt.encrypted_topic_title"),
-                topicTitle
-              )
-            )
-          );
+          self.decryptTitles();
+          Ember.run.debounce(self, self.decryptTitles, 500);
         }
       });
     });
+  },
+
+  decryptTitles() {
+    decryptElements("h1[data-topic-id]", ".fancy-title", { replaceIcon: true });
+    decryptElements("h1 .topic-link", "span", { replaceIcon: true });
+    decryptElements(
+      ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
+      ".title",
+      { addIcon: true }
+    );
+    decryptElements("a.topic-link[data-topic-id]", "span", { addIcon: true });
+    decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
+    decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
+    decryptElements(".quick-access-panel span[data-topic-id]");
+  },
+
+  decryptDocTitle(data) {
+    if (data.currentRouteName.startsWith("topic.")) {
+      const topicId = Discourse.__container__
+        .lookup("controller:topic")
+        .get("model.id");
+      getTopicTitle(topicId).then(topicTitle =>
+        Discourse.set(
+          "_docTitle",
+          data.title.replace(
+            I18n.t("encrypt.encrypted_topic_title"),
+            topicTitle
+          )
+        )
+      );
+    }
   }
 };

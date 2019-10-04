@@ -31,7 +31,7 @@
             {{{i18n 'encrypt.preferences.notice_import'}}}
             {{textarea class="imported-keypair" value=identity}}
           {{/if}}
-          {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=(or passphraseStatus inProgress) label="encrypt.preferences.enable"}}
+          {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
           {{#if importIdentity}}
             <span><a {{action (mut importIdentity) false}}>{{i18n 'cancel'}}</a></span>
           {{else}}
