@@ -3,105 +3,59 @@
 require 'rails_helper'
 
 describe ::DiscourseEncrypt::EncryptController do
-
-  let(:store) { PluginStore.new('discourse-encrypt') }
-
-  let(:user)  { Fabricate(:user) }
-  let(:user2) { Fabricate(:user) }
+  let(:user)  { Fabricate(:encrypt_user) }
+  let(:user2) { Fabricate(:encrypt_user) }
   let(:user3) { Fabricate(:user) }
-
-  let(:topic) {
-    topic = Fabricate(:private_message_topic)
-    topic.custom_fields['encrypted_title'] = '-- the encrypted title --'
-    topic.save_custom_fields
-
-    Fabricate(:topic_allowed_user, topic: topic, user: user)
-    Fabricate(:topic_allowed_user, topic: topic, user: user2)
-
-    topic
-  }
-
-  let(:other_topic) { Fabricate(:topic) }
-
-  before do
-    store.set("key_#{topic.id}_#{user.id}", '-- the key of user --')
-    store.set("key_#{topic.id}_#{user2.id}", '-- the key of user2 --')
-  end
 
   context '#update_keys' do
     it 'does not work when not logged in' do
-      put '/encrypt/keys', params: {
-        public: '-- the public key --',
-        private: '-- the private key --'
-      }
-
+      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(403)
     end
 
     it 'does not work when user is not allowed' do
       group = Fabricate(:group)
       SiteSetting.encrypt_groups = group.name
+      sign_in(user3)
 
-      user = Fabricate(:user)
-      sign_in(user)
-
-      put '/encrypt/keys', params: {
-        public: '-- the public key --',
-        private: '-- the private key --'
-      }
+      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(403)
 
-      Fabricate(:group_user, group: group, user: user)
+      group.add(user3)
 
-      put '/encrypt/keys', params: {
-        public: '-- the public key --',
-        private: '-- the private key --'
-      }
+      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(200)
     end
 
     it 'saves user keys' do
       sign_in(user3)
 
-      put '/encrypt/keys', params: {
-        public: '-- the public key --',
-        private: '-- the private key --'
-      }
-
+      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(200)
-      expect(user3.custom_fields['encrypt_public']).to eq('-- the public key --')
-      expect(user3.custom_fields['encrypt_private']).to eq('-- the private key --')
+      expect(user3.custom_fields['encrypt_public']).to eq('0$publicKey')
+      expect(user3.custom_fields['encrypt_private']).to eq('0$privateKey')
     end
 
     it 'updates user keys' do
+      old_public_key = user.custom_fields['encrypt_public']
       sign_in(user)
 
-      put '/encrypt/keys', params: {
-        public: '-- the public key --',
-        private: '-- the new private key --'
-      }
-
-      user.reload
-
+      put '/encrypt/keys', params: { public: old_public_key, private: '0$newPrivateKey' }
       expect(response.status).to eq(200)
-      expect(user.custom_fields['encrypt_public']).to eq('-- the public key --')
-      expect(user.custom_fields['encrypt_private']).to eq('-- the new private key --')
+      user.reload
+      expect(user.custom_fields['encrypt_public']).to eq(old_public_key)
+      expect(user.custom_fields['encrypt_private']).to eq('0$newPrivateKey')
     end
 
     it 'does not allow updating if wrong public key' do
-      user.custom_fields['encrypt_public'] = '-- the public key --'
-      user.custom_fields['encrypt_private'] = '-- the private key --'
-      user.save!
+      old_public_key = user.custom_fields['encrypt_public']
+      old_private_key = user.custom_fields['encrypt_private']
       sign_in(user)
 
-      put '/encrypt/keys', params: {
-        public: '-- a wrong public key --',
-        private: '-- the new private key --'
-      }
-
+      put '/encrypt/keys', params: { public: '0$wrongPublicKey', private: '0$newPrivateKey' }
       expect(response.status).to eq(409)
-      expect(user.custom_fields['encrypt_public']).to eq('-- the public key --')
-      expect(user.custom_fields['encrypt_private']).to eq('-- the private key --')
+      expect(user.custom_fields['encrypt_public']).to eq(old_public_key)
+      expect(user.custom_fields['encrypt_private']).to eq(old_private_key)
     end
   end
 
@@ -112,31 +66,27 @@ describe ::DiscourseEncrypt::EncryptController do
     end
 
     it 'gets the right user keys' do
-      user.custom_fields['encrypt_public'] = '-- the public key --'
-      user.save!
-      user2.custom_fields['encrypt_public'] = '-- another public key --'
-      user2.save
       sign_in(user)
 
       get '/encrypt/user', params: { usernames: [ user.username, user2.username, user3.username ] }
-
       expect(response.status).to eq(200)
       json = ::JSON.parse(response.body)
       expect(json.size).to eq(3)
-      expect(json[user.username]).to eq('-- the public key --')
-      expect(json[user2.username]).to eq('-- another public key --')
+      expect(json[user.username]).to eq(user.custom_fields['encrypt_public'])
+      expect(json[user2.username]).to eq(user2.custom_fields['encrypt_public'])
       expect(json[user3.username]).to eq(nil)
     end
   end
 
   context '#reset_user' do
+    let!(:topic) do
+      Fabricate(:encrypt_topic, topic_allowed_users: [
+        Fabricate.build(:topic_allowed_user, user: user),
+        Fabricate.build(:topic_allowed_user, user: user2)
+      ])
+    end
+
     before do
-      user.custom_fields['encrypt_public']  = '-- the public key --'
-      user.custom_fields['encrypt_private'] = '-- the private key --'
-      user.save_custom_fields
-
-      store.set("key_#{topic.id}_#{user.id}", '-- user key --')
-
       sign_in(user)
     end
 
