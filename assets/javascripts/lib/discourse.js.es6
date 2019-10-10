@@ -77,7 +77,7 @@ export function getUserIdentities(usernames) {
       userIdentities[username] = promise.then(identities =>
         identities[username]
           ? importIdentity(identities[username])
-          : Ember.RSVP.Promise.reject()
+          : Ember.RSVP.Promise.reject(username)
       );
     });
   }

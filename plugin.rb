@@ -250,6 +250,12 @@ after_initialize do
          custom_fields &&
          custom_fields['encrypted_title'])
     end
+
+    def remove_allowed_user(removed_by, user)
+      ret = super
+      DiscourseEncrypt::Store.remove("key_#{id}_#{user.id}") if ret
+      ret
+    end
   end
 
   module PostExtensions
@@ -261,10 +267,10 @@ after_initialize do
 
   module TopicsControllerExtensions
     def update
-      if encrypted_title = params[:encrypted_title]
-        @topic ||= Topic.find_by(id: params[:topic_id])
-        guardian.ensure_can_edit!(@topic)
+      @topic ||= Topic.find_by(id: params[:topic_id])
 
+      if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
+        guardian.ensure_can_edit!(@topic)
         @topic.custom_fields['encrypted_title'] = params.delete(:encrypted_title)
         @topic.save_custom_fields
       end
@@ -273,26 +279,31 @@ after_initialize do
     end
 
     def invite
-      if params[:key] && params[:user]
-        @topic = Topic.find_by(id: params[:topic_id])
-        @user = User.find_by_username_or_email(params[:user])
-        guardian.ensure_can_invite_to!(@topic)
+      @topic ||= Topic.find_by(id: params[:topic_id])
 
-        DiscourseEncrypt::Store.set("key_#{@topic.id}_#{@user.id}", params[:key])
+      if @topic.is_encrypted?
+        if params[:key].present?
+          @user ||= User.find_by_username_or_email(params[:user])
+          guardian.ensure_can_invite_to!(@topic)
+          DiscourseEncrypt::Store.set("key_#{@topic.id}_#{@user.id}", params[:key])
+        else
+          return render_json_error(I18n.t("js.encrypt.cannot_invite"))
+        end
       end
 
       super
     end
 
-    def remove_allowed_user
+    def invite_group
       @topic ||= Topic.find_by(id: params[:topic_id])
-      @user ||= User.find_by(username: params[:username])
-      guardian.ensure_can_remove_allowed_users!(@topic, @user)
 
-      DiscourseEncrypt::Store.remove("key_#{@topic.id}_#{@user.id}")
+      if @topic.is_encrypted?
+        return render_json_error(I18n.t("js.encrypt.cannot_invite_group"))
+      end
 
       super
     end
+
   end
 
   reloadable_patch do |plugin|
