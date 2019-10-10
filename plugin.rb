@@ -187,6 +187,11 @@ after_initialize do
   CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
 
   # Hide cooked content.
+  Plugin::Filter.register(:after_post_cook) do |post, cooked|
+    post.is_encrypted? ? "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>" : cooked
+  end
+
+  # Hide cooked content.
   on(:post_process_cooked) do |doc, post|
     if post&.is_encrypted?
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
