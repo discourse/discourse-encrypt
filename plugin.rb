@@ -214,7 +214,7 @@ after_initialize do
 
   # Delete TopicAllowedUser records for users who do not have the key.
   on(:post_created) do |post, opts, user|
-    if post.topic&.is_encrypted? && !DiscourseEncrypt::Store.get("key_#{post.topic_id}_#{user.id}").present?
+    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::Store.get("key_#{post.topic_id}_#{user.id}").present?
       TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
     end
   end
