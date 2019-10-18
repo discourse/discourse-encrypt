@@ -66,7 +66,7 @@ export default {
       return;
     }
 
-    const appEvents = container.lookup("app-events:main");
+    const appEvents = container.lookup("service:app-events");
     appEvents.on("encrypt:status-changed", this, "decryptTitles");
     appEvents.on("page:changed", this, "decryptDocTitle");
 

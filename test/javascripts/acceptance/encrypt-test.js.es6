@@ -6,7 +6,8 @@ import {
 import EncryptLibDiscourse, {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  ENCRYPT_ENABLED
+  ENCRYPT_ENABLED,
+  getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   exportIdentity,
@@ -33,27 +34,34 @@ QUnit.assert.notContains = function notContains(haystack, needle, message) {
 };
 
 /**
- * @var Secret passphrase used for testing purposes.
+ * @var PASSPHRASE Secret passphrase used for testing purposes.
  */
 const PASSPHRASE = "curren7U$er.pa$$Phr4se";
 
 /**
- * @var Constant string that is used to check for plaintext leakage.
+ * @var PLAINTEXT Constant string that is used to check for plaintext leakage.
  */
 const PLAINTEXT = "!PL41N73X7!";
 
 /**
- * @var User keys.
+ * @var keys User keys.
  */
 const keys = {};
 
 /**
- * @var Global assert instance used to report plaintext leakage.
+ * @var globalAssert Global assert instance used to report plaintext leakage.
  */
 let globalAssert;
 
 /**
+ * @var requestsCount Number of requests intercepted by the leak checker.
+ */
+let requestsCount = 0;
+
+/**
  * Sets up encryption.
+ *
+ * @param status
  */
 async function setEncryptionStatus(status) {
   const user = Discourse.User.current();
@@ -99,9 +107,22 @@ async function setEncryptionStatus(status) {
   return (keys[user.username] = identity);
 }
 
-// TODO: Figure out why `await` is not enough.
-function sleep(time) {
-  return new Ember.RSVP.Promise(resolve => setTimeout(resolve, time));
+/**
+ * Executes the given function and waits until current encryption status
+ * changes or given waiter becomes true.
+ *
+ * @param statusOrWaiter
+ * @param func
+ */
+async function wait(statusOrWaiter, func) {
+  const waiter =
+    typeof statusOrWaiter === "function"
+      ? statusOrWaiter
+      : () => getEncryptionStatus(Discourse.User.current()) === statusOrWaiter;
+
+  Ember.Test.registerWaiter(waiter);
+  await func();
+  Ember.Test.unregisterWaiter(waiter);
 }
 
 acceptance("Encrypt", {
@@ -115,6 +136,7 @@ acceptance("Encrypt", {
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(body) {
       if (body && globalAssert) {
+        requestsCount += 1;
         globalAssert.notContains(body, PLAINTEXT, "does not leak plaintext");
         globalAssert.notContains(body, PASSPHRASE, "does not leak passphrase");
       }
@@ -142,18 +164,16 @@ acceptance("Encrypt", {
 });
 
 test("meta: leak checker works", async assert => {
-  globalAssert = {
-    checked: false,
-    notContains: () => (globalAssert.checked = true)
-  };
+  globalAssert = { notContains: () => {} };
 
   await visit("/");
   await click("#create-topic");
   await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
-  await click("button.create");
 
-  assert.ok(globalAssert.checked);
+  requestsCount = 0;
+  await click("button.create");
+  assert.ok(requestsCount > 0);
 
   globalAssert = null;
 });
@@ -173,8 +193,8 @@ test("posting does not leak plaintext", async assert => {
   await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
 
-  await click("button.create");
-  await sleep(1500);
+  requestsCount = 0;
+  await wait(() => requestsCount > 0, () => click("button.create"));
 
   globalAssert = null;
 });
@@ -190,9 +210,7 @@ test("enabling works", async assert => {
   });
 
   await visit("/u/eviltrout/preferences");
-  await click(".encrypt button.btn-primary");
-  await sleep(3000);
-
+  await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
   assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
   const identity = await loadDbIdentity();
@@ -207,8 +225,7 @@ test("activation works", async assert => {
 
   await visit("/u/eviltrout/preferences");
   await fillIn(".encrypt #passphrase", PASSPHRASE);
-  await click(".encrypt button.btn-primary");
-  await sleep(3000);
+  await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
 
   const identity = await loadDbIdentity();
   assert.ok(identity.encryptPublic instanceof CryptoKey);
@@ -221,8 +238,7 @@ test("deactivation works", async assert => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   await visit("/u/eviltrout/preferences");
-  await click(".encrypt button#deactivate");
-  await sleep(1500);
+  await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
 
   const identity = await loadDbIdentity();
   assert.equal(identity, null);
