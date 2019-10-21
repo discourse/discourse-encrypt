@@ -37,6 +37,10 @@ export default {
 
     Draft.reopenClass({
       save(draftKey, sequence, data) {
+        if (!container || container.isDestroyed || container.isDestroying) {
+          return this._super.call(this, ...arguments);
+        }
+
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
 
