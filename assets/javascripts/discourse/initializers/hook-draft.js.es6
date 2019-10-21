@@ -1,4 +1,3 @@
-import Composer from "discourse/models/composer";
 import Draft from "discourse/models/draft";
 import {
   ENCRYPT_ACTIVE,
@@ -40,12 +39,10 @@ export default {
       save(draftKey, sequence, data) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
-        let encrypted;
 
-        if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-          const controller = container.lookup("controller:composer");
-          encrypted = !!controller.get("model.isEncrypted");
-        } else if (draftKey.indexOf("topic_") === 0) {
+        const controller = container.lookup("controller:composer");
+        let encrypted = !!controller.get("model.isEncrypted");
+        if (draftKey.indexOf("topic_") === 0) {
           const topicId = draftKey.substr("topic_".length);
           encrypted = !!hasTopicKey(topicId);
         }
