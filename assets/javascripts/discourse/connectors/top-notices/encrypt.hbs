@@ -1,0 +1,10 @@
+{{#if showNoBackupWarning}}
+  <div class="row">
+    <div class="alert alert-warn">
+      <div class="close" {{action (mut noticeStatus) 'dismissed'}}>
+        {{d-icon "times"}}
+      </div>
+      {{{i18n "encrypt.no_backup_warn"}}}
+    </div>
+  </div>
+{{/if}}
