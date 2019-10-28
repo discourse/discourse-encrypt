@@ -5,7 +5,7 @@ en:
       decrypting: "Decrypting..."
       decryption_failed: "This message could not be decrypted."
 
-      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='/my/preferences/account'>user preferences page</a>, press the <kbd>Generate Paper Key</kbd> button and follow the instructions."
+      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{base_url}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate Paper Key</kbd> button and follow the instructions."
 
       integrity_check_pass: "The integrity check for this post has passed."
       integrity_check_fail: "The integrity check for this post has failed ({{fields}} mismatch)."
