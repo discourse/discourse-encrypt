@@ -4,7 +4,7 @@
       <div class="close" {{action (mut noticeStatus) 'dismissed'}}>
         {{d-icon "times"}}
       </div>
-      {{{i18n "encrypt.no_backup_warn"}}}
+      {{{i18n "encrypt.no_backup_warn" basePath=basePath}}}
     </div>
   </div>
 {{/if}}
