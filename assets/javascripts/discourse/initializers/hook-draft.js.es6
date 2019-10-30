@@ -38,7 +38,9 @@ export default {
     Draft.reopenClass({
       save(draftKey, sequence, data) {
         if (!container || container.isDestroyed || container.isDestroying) {
-          return this._super.call(this, ...arguments);
+          // Since at this point we cannot be sure if it is an encrypted
+          // topic or not, the draft is simply discarded.
+          return Ember.RSVP.Promise.reject();
         }
 
         // TODO: https://github.com/emberjs/ember.js/issues/15291
