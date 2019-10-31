@@ -36,7 +36,7 @@ export default {
     }
 
     Draft.reopenClass({
-      save(draftKey, sequence, data) {
+      save(draftKey, sequence, data, clientId) {
         if (!container || container.isDestroyed || container.isDestroying) {
           // Since at this point we cannot be sure if it is an encrypted
           // topic or not, the draft is simply discarded.
@@ -56,7 +56,7 @@ export default {
         if (encrypted) {
           data = filterObjectKeys(data, ALLOWED_DRAFT_FIELDS);
           if (!data.title && !data.reply) {
-            return _super.call(this, draftKey, sequence, data);
+            return _super.call(this, ...arguments);
           }
 
           const topicKey = generateKey();
@@ -79,7 +79,7 @@ export default {
             ([title, reply, key]) => {
               data.title = title;
               data.reply = key + "\n" + reply;
-              return _super.call(this, draftKey, sequence, data);
+              return _super.call(this, draftKey, sequence, data, clientId);
             }
           );
         }

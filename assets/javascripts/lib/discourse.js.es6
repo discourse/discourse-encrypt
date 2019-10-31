@@ -102,7 +102,7 @@ export function getUserIdentities(usernames) {
  * @param {String} key
  */
 export function putTopicKey(topicId, key) {
-  if (topicId && key && !topicKeys[topicId]) {
+  if (topicId && key) {
     topicKeys[topicId] = key;
   }
 }

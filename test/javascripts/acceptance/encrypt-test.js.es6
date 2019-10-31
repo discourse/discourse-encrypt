@@ -199,9 +199,20 @@ test("posting does not leak plaintext", async assert => {
   await click(".reply-details a");
 
   requests = [];
-  await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
-  await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
-  await wait(() => requests.includes("/posts"), () => click("button.create"));
+  let waiting = setTimeout(() => (waiting = null), 3000);
+  await wait(
+    () => requests.includes("/draft.json") || !waiting,
+    async () => {
+      await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
+      await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+    }
+  );
+
+  requests = [];
+  await wait(
+    () => requests.includes("/posts") && requests.includes("/encrypt/post"),
+    () => click("button.create")
+  );
 
   globalAssert = null;
 });
