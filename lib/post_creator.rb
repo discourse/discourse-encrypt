@@ -48,7 +48,7 @@ class PostCreator
 
   def self.export_key(user, topic_key)
     identity = user.custom_fields['encrypt_public']
-    jwk = JSON.parse(Base64.decode64(identity[2..]))['encryptPublic']
+    jwk = JSON.parse(Base64.decode64(identity.[2..-1]))['encryptPublic']
 
     n = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['n']), 2)
     e = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['e']), 2)

@@ -19,7 +19,7 @@ DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private'
 
 after_initialize do
   load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
-  load File.expand_path("../lib/open_ssl.rb", __FILE__)
+  load File.expand_path("../lib/openssl.rb", __FILE__)
   load File.expand_path("../lib/post_creator.rb", __FILE__)
 
   Rails.configuration.filter_parameters << :encrypt_private
