@@ -19,7 +19,7 @@ describe Topic do
       expect { encrypt_topic.remove_allowed_user(Discourse.system_user, encrypt_topic.user) }
         .to change { TopicAllowedUser.count }.by(-1)
         .and change { PluginStoreRow.count }.by(-1)
-      expect(DiscourseEncrypt::Store.get("key_#{encrypt_topic.id}_#{encrypt_topic.user_id}")).to eq(nil)
+      expect(DiscourseEncrypt::get_key(encrypt_topic.id, encrypt_topic.user_id)).to eq(nil)
     end
   end
 end

@@ -8,180 +8,58 @@
 
 enabled_site_setting :encrypt_enabled
 
-# Register custom stylesheet.
 register_asset 'stylesheets/common/encrypt.scss'
 %w[exchange-alt far-clipboard file-export lock plus times ticket-alt trash-alt unlock].each { |i| register_svg_icon(i) }
 
+Rails.configuration.filter_parameters << :encrypt_private
+
 after_initialize do
-  load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
-  load File.expand_path("../lib/encrypted_post_creator.rb", __FILE__)
-  load File.expand_path("../lib/openssl.rb", __FILE__)
-
-  Rails.configuration.filter_parameters << :encrypt_private
-
   module ::DiscourseEncrypt
-    PLUGIN_NAME = 'discourse-encrypt'
+    PLUGIN_NAME          = 'discourse-encrypt'
 
-    PUBLIC_CUSTOM_FIELD = 'encrypt_public'
+    PUBLIC_CUSTOM_FIELD  = 'encrypt_public'
     PRIVATE_CUSTOM_FIELD = 'encrypt_private'
-    TITLE_CUSTOM_FIELD = 'encrypted_title'
+    TITLE_CUSTOM_FIELD   = 'encrypted_title'
 
     Store = PluginStore.new(PLUGIN_NAME)
 
-    class Engine < ::Rails::Engine
-      engine_name PLUGIN_NAME
-      isolate_namespace DiscourseEncrypt
+    def self.set_key(topic_id, user_id, key)
+      DiscourseEncrypt::Store.set("key_#{topic_id}_#{user_id}", key)
     end
 
-    # Manages user and topic keys.
-    class EncryptController < ::ApplicationController
-      requires_plugin PLUGIN_NAME
-
-      before_action :ensure_logged_in
-      before_action :ensure_encrypt_enabled
-      skip_before_action :check_xhr
-
-      # Saves a user's identity in their custom fields.
-      #
-      # Params:
-      # +public+::    Serialized public identity
-      # +private+::   Serialized private identity
-      # +label+::     Private identity label
-      # +overwrite+:: Force overwrite of public and private identities
-      #
-      # Returns status code 200 on success or 409 if user already has an
-      # identity and public identities mismatch.
-      def update_keys
-        public_identity  = params.require(:public)
-        private_identity = params[:private]
-        private_id_label = params[:label]
-
-        # Check if encryption is already enabled (but not changing passphrase).
-        old_identity = current_user.custom_fields['encrypt_public']
-        if params[:overwrite].blank? && old_identity && old_identity != public_identity
-          return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
-        end
-
-        current_user.custom_fields['encrypt_public'] = public_identity
-
-        if private_identity.present?
-          if private_id_label.present?
-            data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
-            data[private_id_label.downcase] = private_identity
-            current_user.custom_fields['encrypt_private'] = JSON.dump(data)
-          else
-            current_user.custom_fields['encrypt_private'] = private_identity
-          end
-        end
-
-        current_user.save_custom_fields
-
-        render json: success_json
-      end
-
-      # Delete a user's identity from the private identity.
-      #
-      # Params:
-      # +label+::     Private identity label
-      #
-      # Returns status code 200 after label is deleted.
-      def delete_key
-        private_id_label = params.require(:label)
-
-        data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
-        if data.delete(private_id_label)
-          current_user.custom_fields['encrypt_private'] = JSON.dump(data)
-          current_user.save_custom_fields
-        end
-
-        render json: success_json
-      end
-
-      # Gets public identities of a set of users.
-      #
-      # Params:
-      # +usernames+::   Array of usernames
-      #
-      # Returns status code 200 and a hash of usernames and their public
-      # identities.
-      def show_user
-        usernames = params.require(:usernames)
-
-        identities = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields['encrypt_public']] }]
-
-        render json: identities
-      end
-
-      # Resets encryption keys for a user.
-      #
-      # Params:
-      # +user_id+::   ID of user to be reset
-      #
-      # Returns status code 200 after user is reset.
-      def reset_user
-        user_id = params.require(:user_id)
-
-        user = User.find_by(id: user_id)
-        raise Discourse::NotFound if user.blank?
-
-        guardian.ensure_can_edit!(user)
-
-        if params[:everything] == 'true'
-          TopicAllowedUser
-            .joins(topic: :_custom_fields)
-            .where(topic_custom_fields: { name: DiscourseEncrypt::TITLE_CUSTOM_FIELD })
-            .where(topic_allowed_users: { user_id: user.id })
-            .delete_all
-
-          PluginStoreRow
-            .where(plugin_name: 'discourse-encrypt')
-            .where("key LIKE 'key_%_' || ?", user.id)
-            .delete_all
-        end
-
-        # Delete encryption keys.
-        user.custom_fields.delete('encrypt_public')
-        user.custom_fields.delete('encrypt_private')
-        user.save_custom_fields
-
-        render json: success_json
-      end
-
-      # Updates an encrypted post, used immediately after creating one to
-      # update signature.
-      #
-      # Params:
-      # +post_id+::       ID of post to be updated
-      # +encrypted_raw+:: Encrypted raw with signature included
-      #
-      # Returns status code 200 after post is updated.
-      def update_post
-        post_id = params.require(:post_id)
-        encrypted_raw = params.require(:encrypted_raw)
-
-        post = Post.find_by(id: post_id)
-        guardian.ensure_can_edit!(post)
-
-        if post.updated_at < 5.seconds.ago
-          return render_json_error(I18n.t('too_late_to_edit'), status: 409)
-        end
-
-        post.update!(raw: encrypted_raw)
-
-        render json: success_json
-      end
-
-      private
-
-      def ensure_encrypt_enabled
-        groups = current_user.groups.pluck(:name)
-        encrypt_groups = SiteSetting.encrypt_groups.split('|')
-
-        if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
-          raise Discourse::InvalidAccess
-        end
-      end
+    def self.get_key(topic_id, user_id)
+      DiscourseEncrypt::Store.get("key_#{topic_id}_#{user_id}")
     end
+
+    def self.del_key(topic_id, user_id)
+      DiscourseEncrypt::Store.remove("key_#{topic_id}_#{user_id}")
+    end
+  end
+
+  load File.expand_path("../app/controllers/encrypt_controller.rb", __FILE__)
+  load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
+  load File.expand_path("../lib/encrypted_post_creator.rb", __FILE__)
+  load File.expand_path("../lib/openssl.rb", __FILE__)
+  load File.expand_path("../lib/post_extensions.rb", __FILE__)
+  load File.expand_path("../lib/topic_extensions.rb", __FILE__)
+  load File.expand_path("../lib/topics_controller_extensions.rb", __FILE__)
+  load File.expand_path("../lib/user_extensions.rb", __FILE__)
+
+  class DiscourseEncrypt::Engine < Rails::Engine
+    engine_name DiscourseEncrypt::PLUGIN_NAME
+    isolate_namespace DiscourseEncrypt
+  end
+
+  DiscourseEncrypt::Engine.routes.draw do
+    put    '/encrypt/keys'  => 'encrypt#update_keys'
+    delete '/encrypt/keys'  => 'encrypt#delete_key'
+    get    '/encrypt/user'  => 'encrypt#show_user'
+    post   '/encrypt/reset' => 'encrypt#reset_user'
+    put    '/encrypt/post'  => 'encrypt#update_post'
+  end
+
+  Discourse::Application.routes.append do
+    mount DiscourseEncrypt::Engine, at: '/'
   end
 
   DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PUBLIC_CUSTOM_FIELD
@@ -191,155 +69,11 @@ after_initialize do
   CategoryList.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
   Search.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
 
-  # Hide cooked content.
-  Plugin::Filter.register(:after_post_cook) do |post, cooked|
-    post.is_encrypted? ? "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>" : cooked
-  end
-
-  # Hide cooked content.
-  on(:post_process_cooked) do |doc, post|
-    if post&.is_encrypted?
-      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
-    end
-  end
-
-  # Hide cooked content in notifications.
-  on(:reduce_excerpt) do |doc, options|
-    if options[:post]&.is_encrypted?
-      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
-    end
-  end
-
-  # Hide cooked content in email.
-  on(:reduce_cooked) do |fragment, post|
-    if post&.is_encrypted?
-      fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
-    end
-  end
-
-  # Delete TopicAllowedUser records for users who do not have the key.
-  on(:post_created) do |post, opts, user|
-    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::Store.get("key_#{post.topic_id}_#{user.id}").present?
-      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
-    end
-  end
-
-  # Handle new post creation.
-  add_permitted_post_create_param(:encrypted_title)
-  add_permitted_post_create_param(:encrypted_raw)
-  add_permitted_post_create_param(:encrypted_keys)
-
-  NewPostManager.add_handler do |manager|
-    next if !manager.args[:encrypted_raw]
-
-    if encrypted_title = manager.args[:encrypted_title]
-      manager.args[:topic_opts] ||= {}
-      manager.args[:topic_opts][:custom_fields] ||= {}
-      manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
-    end
-
-    if encrypted_raw = manager.args[:encrypted_raw]
-      manager.args[:raw] = encrypted_raw
-    end
-
-    result = manager.perform_create_post
-    if result.success? && encrypted_keys = manager.args[:encrypted_keys]
-      keys = JSON.parse(encrypted_keys)
-      topic_id = result.post.topic_id
-      users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
-
-      keys.each { |u, k| DiscourseEncrypt::Store.set("key_#{topic_id}_#{users[u].id}", k) }
-    end
-
-    result
-  end
-
-  module UserExtensions
-    def encrypt_key
-      @encrypt_key ||= begin
-        identity = self.custom_fields['encrypt_public']
-        return nil if !identity
-
-        # Check identity version
-        version, identity = identity.split('$', 2)
-        return nil if version.to_i != 1
-
-        jwk = JSON.parse(Base64.decode64(identity))['encryptPublic']
-        n = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['n']), 2)
-        e = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['e']), 2)
-
-        OpenSSL::PKey::RSA.new.tap { |k| k.set_key(n, e, nil) }
-      end
-    end
-  end
-
-  module TopicExtensions
-    def is_encrypted?
-      !!(private_message? &&
-         custom_fields &&
-         custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD])
-    end
-
-    def remove_allowed_user(removed_by, user)
-      ret = super
-      DiscourseEncrypt::Store.remove("key_#{id}_#{user.id}") if ret
-      ret
-    end
-  end
-
-  module PostExtensions
-    def is_encrypted?
-      !!(topic&.is_encrypted? &&
-         raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/))
-    end
-  end
-
-  module TopicsControllerExtensions
-    def update
-      @topic ||= Topic.find_by(id: params[:topic_id])
-
-      if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
-        guardian.ensure_can_edit!(@topic)
-        @topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD] = params.delete(:encrypted_title)
-        @topic.save_custom_fields
-      end
-
-      super
-    end
-
-    def invite
-      @topic ||= Topic.find_by(id: params[:topic_id])
-
-      if @topic.is_encrypted?
-        if params[:key].present?
-          @user ||= User.find_by_username_or_email(params[:user])
-          guardian.ensure_can_invite_to!(@topic)
-          DiscourseEncrypt::Store.set("key_#{@topic.id}_#{@user.id}", params[:key])
-        else
-          return render_json_error(I18n.t("js.encrypt.cannot_invite"))
-        end
-      end
-
-      super
-    end
-
-    def invite_group
-      @topic ||= Topic.find_by(id: params[:topic_id])
-
-      if @topic.is_encrypted?
-        return render_json_error(I18n.t("js.encrypt.cannot_invite_group"))
-      end
-
-      super
-    end
-
-  end
-
   reloadable_patch do |plugin|
-    ::User.class_eval { prepend UserExtensions }
-    ::Topic.class_eval { prepend TopicExtensions }
-    ::Post.class_eval { prepend PostExtensions }
+    ::Post.class_eval             { prepend PostExtensions }
+    ::Topic.class_eval            { prepend TopicExtensions }
     ::TopicsController.class_eval { prepend TopicsControllerExtensions }
+    ::User.class_eval             { prepend UserExtensions }
   end
 
   # Send plugin-specific topic data to client via serializers.
@@ -391,7 +125,7 @@ after_initialize do
   # paired private key.
 
   add_to_serializer(:topic_view, :topic_key, false) do
-    DiscourseEncrypt::Store.get("key_#{object.topic.id}_#{scope.user.id}")
+    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
@@ -399,7 +133,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
-    DiscourseEncrypt::Store.get("key_#{object.id}_#{scope.user.id}")
+    DiscourseEncrypt::get_key(object.id, scope.user.id)
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
@@ -407,7 +141,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :topic_key, false) do
-    DiscourseEncrypt::Store.get("key_#{object.topic.id}_#{scope.user.id}")
+    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
@@ -437,15 +171,66 @@ after_initialize do
     post.topic&.is_encrypted?
   end
 
-  DiscourseEncrypt::Engine.routes.draw do
-    put    '/encrypt/keys'  => 'encrypt#update_keys'
-    delete '/encrypt/keys'  => 'encrypt#delete_key'
-    get    '/encrypt/user'  => 'encrypt#show_user'
-    post   '/encrypt/reset' => 'encrypt#reset_user'
-    put    '/encrypt/post'  => 'encrypt#update_post'
+  # Hide cooked content.
+  Plugin::Filter.register(:after_post_cook) do |post, cooked|
+    post.is_encrypted? ? "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>" : cooked
   end
 
-  Discourse::Application.routes.append do
-    mount ::DiscourseEncrypt::Engine, at: '/'
+  # Hide cooked content.
+  on(:post_process_cooked) do |doc, post|
+    if post&.is_encrypted?
+      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
+    end
+  end
+
+  # Hide cooked content in notifications.
+  on(:reduce_excerpt) do |doc, options|
+    if options[:post]&.is_encrypted?
+      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
+    end
+  end
+
+  # Hide cooked content in email.
+  on(:reduce_cooked) do |fragment, post|
+    if post&.is_encrypted?
+      fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
+    end
+  end
+
+  # Delete TopicAllowedUser records for users who do not have the key.
+  on(:post_created) do |post, opts, user|
+    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::get_key(post.topic_id, user.id)
+      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
+    end
+  end
+
+  # Handle new post creation.
+  add_permitted_post_create_param(:encrypted_title)
+  add_permitted_post_create_param(:encrypted_raw)
+  add_permitted_post_create_param(:encrypted_keys)
+
+  NewPostManager.add_handler do |manager|
+    next if !manager.args[:encrypted_raw]
+
+    if encrypted_title = manager.args[:encrypted_title]
+      manager.args[:topic_opts] ||= {}
+      manager.args[:topic_opts][:custom_fields] ||= {}
+      manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
+    end
+
+    if encrypted_raw = manager.args[:encrypted_raw]
+      manager.args[:raw] = encrypted_raw
+    end
+
+    result = manager.perform_create_post
+    if result.success? && encrypted_keys = manager.args[:encrypted_keys]
+      keys = JSON.parse(encrypted_keys)
+      topic_id = result.post.topic_id
+      users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
+
+      keys.each { |u, k| DiscourseEncrypt::set_key(topic_id, users[u].id, k) }
+    end
+
+    result
   end
 end

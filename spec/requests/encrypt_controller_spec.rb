@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe ::DiscourseEncrypt::EncryptController do
+describe DiscourseEncrypt::EncryptController do
   let(:user)  { Fabricate(:encrypt_user) }
   let(:user2) { Fabricate(:encrypt_user) }
   let(:user3) { Fabricate(:user) }

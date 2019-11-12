@@ -26,7 +26,7 @@ class EncryptedPostCreator < PostCreator
       if !@opts[:topic_key]
         users.each do |user|
           key = EncryptedPostCreator.export_key(user, topic_key)
-          DiscourseEncrypt::Store.set("key_#{@post.topic_id}_#{user.id}", key)
+          DiscourseEncrypt::set_key(@post.topic_id, user.id, key)
         end
       end
     end
