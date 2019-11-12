@@ -87,26 +87,36 @@ export function generateIdentity() {
 }
 
 export function exportIdentity(identity, passphrase) {
-  const publicPromise = Ember.RSVP.Promise.all([
+  const identityPromise = Ember.RSVP.Promise.all([
     window.crypto.subtle.exportKey("jwk", identity.encryptPublic),
-    window.crypto.subtle.exportKey("jwk", identity.signPublic)
-  ])
-    .then(([encryptPublic, signPublic]) => ({ encryptPublic, signPublic }))
-    .then(exported =>
-      bufferToBase64(textEncoder.encode(JSON.stringify(exported)))
-    );
-
-  let privatePromise = Ember.RSVP.Promise.all([
     window.crypto.subtle.exportKey("jwk", identity.encryptPrivate),
+    window.crypto.subtle.exportKey("jwk", identity.signPublic),
     window.crypto.subtle.exportKey("jwk", identity.signPrivate)
-  ]).then(([encryptPrivate, signPrivate]) => ({ encryptPrivate, signPrivate }));
+  ]).then(([encryptPublic, encryptPrivate, signPublic, signPrivate]) => ({
+    encryptPublic,
+    encryptPrivate,
+    signPublic,
+    signPrivate
+  }));
 
+  const publicPromise = identityPromise.then(exported =>
+    bufferToBase64(
+      textEncoder.encode(
+        JSON.stringify({
+          encryptPublic: exported.encryptPublic,
+          signPublic: exported.signPublic
+        })
+      )
+    )
+  );
+
+  let privatePromise;
   if (passphrase) {
     const salt = window.crypto.getRandomValues(new Uint8Array(16));
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
     privatePromise = Ember.RSVP.Promise.all([
       getPassphraseKey(passphrase, salt),
-      privatePromise
+      identityPromise
     ])
       .then(([key, exported]) =>
         window.crypto.subtle.encrypt(
@@ -120,7 +130,7 @@ export function exportIdentity(identity, passphrase) {
           bufferToBase64(salt) + bufferToBase64(iv) + bufferToBase64(exported)
       );
   } else {
-    privatePromise = privatePromise.then(exported =>
+    privatePromise = identityPromise.then(exported =>
       bufferToBase64(textEncoder.encode(JSON.stringify(exported)))
     );
   }
@@ -157,7 +167,7 @@ export function importIdentity(identity, passphrase, extractable) {
     return Ember.RSVP.Promise.all([
       window.crypto.subtle.importKey(
         "jwk",
-        identity.encryptPrivate || identity.encryptPublic,
+        identity.encryptPublic,
         { name: "RSA-OAEP", hash: { name: "SHA-256" } },
         !!extractable,
         ["encrypt", "wrapKey"]
@@ -173,7 +183,7 @@ export function importIdentity(identity, passphrase, extractable) {
         : undefined,
       window.crypto.subtle.importKey(
         "jwk",
-        identity.signPrivate || identity.signPublic,
+        identity.signPublic,
         { name: "RSA-PSS", hash: { name: "SHA-256" } },
         !!extractable,
         ["verify"]
