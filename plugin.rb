@@ -12,20 +12,19 @@ enabled_site_setting :encrypt_enabled
 register_asset 'stylesheets/common/encrypt.scss'
 %w[exchange-alt far-clipboard file-export lock plus times ticket-alt trash-alt unlock].each { |i| register_svg_icon(i) }
 
-# Register custom user fields to store user's key pair (public and private key)
-# and passphrase salt.
-DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_public'
-DiscoursePluginRegistry.serialized_current_user_fields << 'encrypt_private'
-
 after_initialize do
   load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
+  load File.expand_path("../lib/encrypted_post_creator.rb", __FILE__)
   load File.expand_path("../lib/openssl.rb", __FILE__)
-  load File.expand_path("../lib/post_creator.rb", __FILE__)
 
   Rails.configuration.filter_parameters << :encrypt_private
 
   module ::DiscourseEncrypt
     PLUGIN_NAME = 'discourse-encrypt'
+
+    PUBLIC_CUSTOM_FIELD = 'encrypt_public'
+    PRIVATE_CUSTOM_FIELD = 'encrypt_private'
+    TITLE_CUSTOM_FIELD = 'encrypted_title'
 
     Store = PluginStore.new(PLUGIN_NAME)
 
@@ -130,7 +129,7 @@ after_initialize do
         if params[:everything] == 'true'
           TopicAllowedUser
             .joins(topic: :_custom_fields)
-            .where(topic_custom_fields: { name: 'encrypted_title' })
+            .where(topic_custom_fields: { name: DiscourseEncrypt::TITLE_CUSTOM_FIELD })
             .where(topic_allowed_users: { user_id: user.id })
             .delete_all
 
@@ -185,9 +184,12 @@ after_initialize do
     end
   end
 
-  add_preloaded_topic_list_custom_field('encrypted_title')
-  CategoryList.preloaded_topic_custom_fields << 'encrypted_title'
-  Search.preloaded_topic_custom_fields << 'encrypted_title'
+  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PUBLIC_CUSTOM_FIELD
+  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PRIVATE_CUSTOM_FIELD
+
+  add_preloaded_topic_list_custom_field(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
+  CategoryList.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
+  Search.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
 
   # Hide cooked content.
   Plugin::Filter.register(:after_post_cook) do |post, cooked|
@@ -233,7 +235,7 @@ after_initialize do
     if encrypted_title = manager.args[:encrypted_title]
       manager.args[:topic_opts] ||= {}
       manager.args[:topic_opts][:custom_fields] ||= {}
-      manager.args[:topic_opts][:custom_fields][:encrypted_title] = encrypted_title
+      manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
     end
 
     if encrypted_raw = manager.args[:encrypted_raw]
@@ -252,11 +254,30 @@ after_initialize do
     result
   end
 
+  module UserExtensions
+    def encrypt_key
+      @encrypt_key ||= begin
+        identity = self.custom_fields['encrypt_public']
+        return nil if !identity
+
+        # Check identity version
+        version, identity = identity.split('$', 2)
+        return nil if version.to_i != 1
+
+        jwk = JSON.parse(Base64.decode64(identity))['encryptPublic']
+        n = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['n']), 2)
+        e = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk['e']), 2)
+
+        OpenSSL::PKey::RSA.new.tap { |k| k.set_key(n, e, nil) }
+      end
+    end
+  end
+
   module TopicExtensions
     def is_encrypted?
       !!(private_message? &&
          custom_fields &&
-         custom_fields['encrypted_title'])
+         custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD])
     end
 
     def remove_allowed_user(removed_by, user)
@@ -279,7 +300,7 @@ after_initialize do
 
       if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
         guardian.ensure_can_edit!(@topic)
-        @topic.custom_fields['encrypted_title'] = params.delete(:encrypted_title)
+        @topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD] = params.delete(:encrypted_title)
         @topic.save_custom_fields
       end
 
@@ -315,6 +336,7 @@ after_initialize do
   end
 
   reloadable_patch do |plugin|
+    ::User.class_eval { prepend UserExtensions }
     ::Topic.class_eval { prepend TopicExtensions }
     ::Post.class_eval { prepend PostExtensions }
     ::TopicsController.class_eval { prepend TopicsControllerExtensions }
@@ -338,7 +360,7 @@ after_initialize do
   # Topic title encrypted with topic key.
 
   add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.custom_fields['encrypted_title']
+    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
@@ -346,7 +368,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
-    object.custom_fields['encrypted_title']
+    object.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
@@ -354,7 +376,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.custom_fields['encrypted_title']
+    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
   end
 
   add_to_serializer(:notification, :include_encrypted_title?) do

@@ -2,6 +2,7 @@ en:
   encrypt:
     encrypted_excerpt: "This message is encrypted, please read it in the browser."
     enabled_already: "You have already enabled encrypted messages."
+    only_pms: "Only private messages can be encrypted."
   site_settings:
     encrypt_enabled: "Enable encrypted private messages."
     encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."
