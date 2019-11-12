@@ -3,7 +3,7 @@
 module UserExtensions
   def encrypt_key
     @encrypt_key ||= begin
-      identity = self.custom_fields['encrypt_public']
+      identity = self.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
       return nil if !identity
 
       # Check identity version

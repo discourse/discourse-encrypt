@@ -10,7 +10,7 @@ Fabricator(:encrypt_user, from: :user) do
 end
 
 Fabricator(:encrypt_topic, from: :private_message_topic) do
-  title "A secret message"
+  title 'A secret message'
   topic_allowed_users do |attrs|
     [
       Fabricate.build(:topic_allowed_user, user: attrs[:user]),
@@ -25,9 +25,9 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
 
   after_create do |topic|
     topic.topic_allowed_users.each do |allowed_user|
-      PluginStore.set(
-        "discourse-encrypt",
-        "key_#{topic.id}_#{allowed_user.user_id}",
+      DiscourseEncrypt::set_key(
+        topic.id,
+        allowed_user.user_id,
         Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
       )
     end

@@ -23,20 +23,20 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     private_id_label = params[:label]
 
     # Check if encryption is already enabled (but not changing passphrase).
-    old_identity = current_user.custom_fields['encrypt_public']
+    old_identity = current_user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
     if params[:overwrite].blank? && old_identity && old_identity != public_identity
       return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
     end
 
-    current_user.custom_fields['encrypt_public'] = public_identity
+    current_user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD] = public_identity
 
     if private_identity.present?
       if private_id_label.present?
-        data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
+        data = JSON.parse(current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]) rescue {}
         data[private_id_label.downcase] = private_identity
-        current_user.custom_fields['encrypt_private'] = JSON.dump(data)
+        current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = JSON.dump(data)
       else
-        current_user.custom_fields['encrypt_private'] = private_identity
+        current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = private_identity
       end
     end
 
@@ -54,9 +54,9 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def delete_key
     private_id_label = params.require(:label)
 
-    data = JSON.parse(current_user.custom_fields['encrypt_private']) rescue {}
+    data = JSON.parse(current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]) rescue {}
     if data.delete(private_id_label)
-      current_user.custom_fields['encrypt_private'] = JSON.dump(data)
+      current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = JSON.dump(data)
       current_user.save_custom_fields
     end
 
@@ -73,7 +73,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def show_user
     usernames = params.require(:usernames)
 
-    identities = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields['encrypt_public']] }]
+    identities = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]] }]
 
     render json: identities
   end
@@ -81,7 +81,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   # Resets encryption keys for a user.
   #
   # Params:
-  # +user_id+::   ID of user to be reset
+  # +user_id+::     ID of user to be reset
+  # +everything+::  Whether user should be univited all keys removed
   #
   # Returns status code 200 after user is reset.
   def reset_user
@@ -106,8 +107,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     end
 
     # Delete encryption keys.
-    user.custom_fields.delete('encrypt_public')
-    user.custom_fields.delete('encrypt_private')
+    user.custom_fields.delete(DiscourseEncrypt::PUBLIC_CUSTOM_FIELD)
+    user.custom_fields.delete(DiscourseEncrypt::PRIVATE_CUSTOM_FIELD)
     user.save_custom_fields
 
     render json: success_json

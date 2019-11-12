@@ -12,7 +12,7 @@ class EncryptedPostCreator < PostCreator
       # Encrypt title and post contents
       @opts[:raw] = EncryptedPostCreator.encrypt(@opts[:raw], topic_key)
       if title = @opts[:title]
-        @opts[:title] = I18n.t("js.encrypt.encrypted_topic_title")
+        @opts[:title] = I18n.t('js.encrypt.encrypted_topic_title')
         @opts[:topic_opts] ||= {}
         @opts[:topic_opts][:custom_fields] ||= {}
         @opts[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = EncryptedPostCreator.encrypt(title, topic_key)
@@ -68,7 +68,7 @@ class EncryptedPostCreator < PostCreator
     cipher = OpenSSL::Cipher::AES.new(256, :GCM).encrypt
     cipher.key = key
     cipher.iv = iv
-    cipher.auth_data = ""
+    cipher.auth_data = ''
 
     plaintext = JSON.dump(raw: raw)
     ciphertext = cipher.update(plaintext)

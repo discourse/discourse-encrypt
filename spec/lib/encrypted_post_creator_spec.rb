@@ -40,12 +40,12 @@ describe EncryptedPostCreator do
       post = creator.create
 
       expect(creator.errors.count).to eq(0)
-      expect(creator.opts[:title]).to eq(I18n.t("js.encrypt.encrypted_topic_title"))
+      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_topic_title'))
       expect(creator.opts[:raw]).not_to eq('Hello world!')
       expect(creator.opts[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD]).not_to eq(nil)
 
       expect(post.topic.is_encrypted?).to eq(true)
-      expect(post.topic.title).to eq(I18n.t("js.encrypt.encrypted_topic_title"))
+      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_topic_title'))
       expect(post.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]).not_to eq(nil)
       expect(post.is_encrypted?).to eq(true)
       expect(post.raw).not_to eq('Hello world!')

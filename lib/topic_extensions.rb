@@ -3,8 +3,8 @@
 module TopicExtensions
   def is_encrypted?
     !!(private_message? &&
-        custom_fields &&
-        custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD])
+       custom_fields &&
+       custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD])
   end
 
   def remove_allowed_user(removed_by, user)

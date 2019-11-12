@@ -24,26 +24,26 @@ after_initialize do
     Store = PluginStore.new(PLUGIN_NAME)
 
     def self.set_key(topic_id, user_id, key)
-      DiscourseEncrypt::Store.set("key_#{topic_id}_#{user_id}", key)
+      Store.set("key_#{topic_id}_#{user_id}", key)
     end
 
     def self.get_key(topic_id, user_id)
-      DiscourseEncrypt::Store.get("key_#{topic_id}_#{user_id}")
+      Store.get("key_#{topic_id}_#{user_id}")
     end
 
     def self.del_key(topic_id, user_id)
-      DiscourseEncrypt::Store.remove("key_#{topic_id}_#{user_id}")
+      Store.remove("key_#{topic_id}_#{user_id}")
     end
   end
 
-  load File.expand_path("../app/controllers/encrypt_controller.rb", __FILE__)
-  load File.expand_path("../app/jobs/scheduled/encrypt_consistency.rb", __FILE__)
-  load File.expand_path("../lib/encrypted_post_creator.rb", __FILE__)
-  load File.expand_path("../lib/openssl.rb", __FILE__)
-  load File.expand_path("../lib/post_extensions.rb", __FILE__)
-  load File.expand_path("../lib/topic_extensions.rb", __FILE__)
-  load File.expand_path("../lib/topics_controller_extensions.rb", __FILE__)
-  load File.expand_path("../lib/user_extensions.rb", __FILE__)
+  load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
+  load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
+  load File.expand_path('../lib/openssl.rb', __FILE__)
+  load File.expand_path('../lib/post_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topic_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
+  load File.expand_path('../lib/user_extensions.rb', __FILE__)
 
   class DiscourseEncrypt::Engine < Rails::Engine
     engine_name DiscourseEncrypt::PLUGIN_NAME
@@ -70,10 +70,10 @@ after_initialize do
   Search.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
 
   reloadable_patch do |plugin|
-    ::Post.class_eval             { prepend PostExtensions }
-    ::Topic.class_eval            { prepend TopicExtensions }
-    ::TopicsController.class_eval { prepend TopicsControllerExtensions }
-    ::User.class_eval             { prepend UserExtensions }
+    Post.class_eval             { prepend PostExtensions }
+    Topic.class_eval            { prepend TopicExtensions }
+    TopicsController.class_eval { prepend TopicsControllerExtensions }
+    User.class_eval             { prepend UserExtensions }
   end
 
   # Send plugin-specific topic data to client via serializers.
@@ -164,47 +164,45 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :raws) do
-    { previous: previous["raw"], current: current["raw"] }
+    { previous: previous['raw'], current: current['raw'] }
   end
 
   add_to_serializer(:post_revision, :include_raws?) do
     post.topic&.is_encrypted?
   end
 
+  #
   # Hide cooked content.
+  #
+
   Plugin::Filter.register(:after_post_cook) do |post, cooked|
     post.is_encrypted? ? "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>" : cooked
   end
 
-  # Hide cooked content.
   on(:post_process_cooked) do |doc, post|
     if post&.is_encrypted?
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
 
-  # Hide cooked content in notifications.
+  # Notifications
   on(:reduce_excerpt) do |doc, options|
     if options[:post]&.is_encrypted?
       doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
     end
   end
 
-  # Hide cooked content in email.
+  # Email
   on(:reduce_cooked) do |fragment, post|
     if post&.is_encrypted?
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
     end
   end
 
-  # Delete TopicAllowedUser records for users who do not have the key.
-  on(:post_created) do |post, opts, user|
-    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::get_key(post.topic_id, user.id)
-      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
-    end
-  end
-
+  #
   # Handle new post creation.
+  #
+
   add_permitted_post_create_param(:encrypted_title)
   add_permitted_post_create_param(:encrypted_raw)
   add_permitted_post_create_param(:encrypted_keys)
@@ -232,5 +230,12 @@ after_initialize do
     end
 
     result
+  end
+
+  # Delete TopicAllowedUser records for users who do not have the key
+  on(:post_created) do |post, opts, user|
+    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::get_key(post.topic_id, user.id)
+      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
+    end
   end
 end
