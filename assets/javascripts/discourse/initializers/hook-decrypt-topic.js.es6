@@ -1,5 +1,6 @@
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
 import {
   ENCRYPT_ACTIVE,
@@ -31,16 +32,16 @@ function decryptElements(containerSelector, elementSelector, opts) {
     $(this).data("decrypted", true);
     getTopicTitle(topicId)
       .then(title => {
+        title = emojiUnescape(escapeExpression(title));
         const icon = iconHTML("user-secret", {
           title: "encrypt.encrypted_icon_title"
         });
 
-        // Replace glyph if exists or else add to title.
         if (opts.replaceIcon) {
           const $glyph = $(`h1 .private-message-glyph`);
           if ($glyph.length) {
             $glyph.html(icon);
-            $el.html(escapeExpression(title));
+            $el.html(title);
           }
         } else if (opts.addIcon) {
           $el.html(icon + " " + title);
