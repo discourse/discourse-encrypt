@@ -33,6 +33,8 @@ en:
         user_has_no_key: "Unfortunately {{username}} did not enable encrypted messages."
 
       preferences:
+        insecure_context: "Encryption cannot be enabled in an insecure context."
+
         status_enabled: "You have enabled encryption and activated it on this device."
         status_enabled_other: "This user has enabled encryption and can receive encrypted messages."
         status_enabled_but_inactive: "You have enabled encryption, but did not activate it on this device."

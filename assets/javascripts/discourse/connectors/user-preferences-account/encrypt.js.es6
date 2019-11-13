@@ -26,25 +26,27 @@ export default {
       const status = getEncryptionStatus(args.model);
       component.setProperties({
         model: args.model,
-        /** @var Value of passphrase input (old, current and retyped).
-         *       It should stay in memory for as little time as possible.
-         *       Clear it often.
+        /** Value of passphrase input (old, current and retyped).
+         *  It should stay in memory for as little time as possible.
+         *  Clear it often.
          */
         passphrase: "",
-        /** @var Whether any operation (AJAX request, key generation, etc.) is
+        /** Whether any operation (AJAX request, key generation, etc.) is
          *       in progress. */
         inProgress: false,
-        /** @var Whether current user is the same as model user. */
+        /** Whether current user is the same as model user. */
         isCurrentUser: true,
-        /** @var Whether plugin is enabled for current user. */
+        /** crypto.subtle is only available in secure contexts. */
+        isSecureContext: window.isSecureContext,
+        /** Whether plugin is enabled for current user. */
         canEnableEncrypt: canEnableEncrypt(args.model),
-        /** @var Whether the encryption is enabled or not. */
+        /** Whether the encryption is enabled or not. */
         isEncryptEnabled: status !== ENCRYPT_DISABLED,
-        /** @var Whether the encryption is active on this device. */
+        /** Whether the encryption is active on this device. */
         isEncryptActive: status === ENCRYPT_ACTIVE,
-        /** @var Whether it is an import operation. */
+        /** Whether it is an import operation. */
         importIdentity: false,
-        /** @var Key to be imported .*/
+        /** Key to be imported .*/
         identity: "",
         /** Listens for encryptino status updates. */
         listener() {

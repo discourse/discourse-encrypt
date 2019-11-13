@@ -1,51 +1,57 @@
 {{#if canEnableEncrypt}}
   <div class="control-group pref-title">
     <label class="control-label">{{i18n 'encrypt.title'}}</label>
-    <div class="controls">
-      {{#if isCurrentUser}}
-        {{#if isEncryptEnabled}}
-          {{#if isEncryptActive}}
-            <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
-            {{d-button icon="times" action=(action "deactivateEncrypt") label="encrypt.preferences.deactivate" id="deactivate"}}
-            {{d-button icon="plus" action=(action "generatePaperKey" true) label="encrypt.generate_paperkey.title_device"}}
-            {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paperkey.title"}}
-            {{encrypt-preferences-dropdown export=(action "export")
-                                           managePaperKeys=(action "managePaperKeys")}}
+    {{#if isSecureContext}}
+      <div class="controls">
+        {{#if isCurrentUser}}
+          {{#if isEncryptEnabled}}
+            {{#if isEncryptActive}}
+              <p>{{i18n 'encrypt.preferences.status_enabled'}}</p>
+              {{d-button icon="times" action=(action "deactivateEncrypt") label="encrypt.preferences.deactivate" id="deactivate"}}
+              {{d-button icon="plus" action=(action "generatePaperKey" true) label="encrypt.generate_paperkey.title_device"}}
+              {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paperkey.title"}}
+              {{encrypt-preferences-dropdown export=(action "export")
+                                            managePaperKeys=(action "managePaperKeys")}}
+            {{else}}
+              <form>
+                <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
+                {{{i18n 'encrypt.preferences.notice_active'}}}
+                <p>
+                  <label for="password">{{i18n "encrypt.preferences.passphrase_label"}}</label>
+                  {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
+                </p>
+                <p>
+                  {{d-button class="btn-primary" icon="unlock" action=(action "activateEncrypt") disabled=inProgress label="encrypt.preferences.activate"}}
+                  <span><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></span>
+                </p>
+              </form>
+            {{/if}}
           {{else}}
-            <form>
-              <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
-              {{{i18n 'encrypt.preferences.notice_active'}}}
-              <p>
-                <label for="password">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-                {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
-              </p>
-              <p>
-                {{d-button class="btn-primary" icon="unlock" action=(action "activateEncrypt") disabled=inProgress label="encrypt.preferences.activate"}}
-                <span><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></span>
-              </p>
-            </form>
+            <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>
+            {{#if importIdentity}}
+              {{{i18n 'encrypt.preferences.notice_import'}}}
+              {{textarea class="imported-keypair" value=identity}}
+            {{/if}}
+            {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
+            {{#if importIdentity}}
+              <span><a {{action (mut importIdentity) false}}>{{i18n 'cancel'}}</a></span>
+            {{else}}
+              <span><a {{action (mut importIdentity) true}}>{{i18n 'encrypt.preferences.import_key'}}</a></span>
+            {{/if}}
           {{/if}}
         {{else}}
-          <p>{{i18n 'encrypt.preferences.status_disabled'}}</p>
-          {{#if importIdentity}}
-            {{{i18n 'encrypt.preferences.notice_import'}}}
-            {{textarea class="imported-keypair" value=identity}}
-          {{/if}}
-          {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
-          {{#if importIdentity}}
-            <span><a {{action (mut importIdentity) false}}>{{i18n 'cancel'}}</a></span>
+          {{#if isEncryptEnabled}}
+            <p>{{i18n 'encrypt.preferences.status_enabled_other'}}</p>
+            <p><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></p>
           {{else}}
-            <span><a {{action (mut importIdentity) true}}>{{i18n 'encrypt.preferences.import_key'}}</a></span>
+            <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
           {{/if}}
         {{/if}}
-      {{else}}
-        {{#if isEncryptEnabled}}
-          <p>{{i18n 'encrypt.preferences.status_enabled_other'}}</p>
-          <p><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></p>
-        {{else}}
-          <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
-        {{/if}}
-      {{/if}}
-    </div>
+      </div>
+    {{else}}
+      <div class="alert alert-error">
+        <p>{{i18n 'encrypt.preferences.insecure_context'}}</p>
+      </div>
+    {{/if}}
   </div>
 {{/if}}
