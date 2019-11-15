@@ -178,7 +178,10 @@ test("meta: leak checker works", async assert => {
   requests = [];
   await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
-  await wait(() => requests.includes("/posts"), () => click("button.create"));
+  await wait(
+    () => requests.includes("/posts"),
+    () => click("button.create")
+  );
 
   globalAssert = null;
 });

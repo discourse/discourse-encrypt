@@ -61,9 +61,10 @@ export default {
 
           const topicKey = generateKey();
 
-          const encKey = Ember.RSVP.Promise.all([topicKey, getIdentity()]).then(
-            ([key, identity]) => exportKey(key, identity.encryptPublic)
-          );
+          const encKey = Ember.RSVP.Promise.all([
+            topicKey,
+            getIdentity()
+          ]).then(([key, identity]) => exportKey(key, identity.encryptPublic));
 
           const encTitle = data.title
             ? topicKey.then(key => encrypt(key, data.title))
