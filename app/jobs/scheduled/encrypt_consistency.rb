@@ -32,6 +32,7 @@ module Jobs
         SQL
       ).each do |row|
         Discourse.warn('User has topic key, but was not invited to topic.', user_id: row.user_id, topic_id: row.topic_id)
+        TopicAllowedUser.create(user_id: row.user_id, topic_id: row.topic_id)
       end
     end
   end
