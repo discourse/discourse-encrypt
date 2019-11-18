@@ -19,6 +19,9 @@ export default Ember.Controller.extend(ModalFunctionality, {
     models.forEach(model => {
       model.state.decrypting = false;
       model.state.decrypted = true;
+      model.state.error = I18n.t(
+        "encrypt.preferences.status_enabled_but_inactive"
+      );
       model.scheduleRerender();
     });
     this.set("models", null);
