@@ -96,7 +96,7 @@ export function importIdentity(identity, passphrase, extractable) {
   extractable = !!extractable || isSafari || true;
 
   const sep = identity.indexOf("$");
-  const version = parseInt(identity.substr(0, sep));
+  const version = parseInt(identity.substr(0, sep), 10);
   identity = identity.substr(sep + 1);
 
   let promise;
@@ -170,7 +170,7 @@ export function decrypt(key, ciphertext) {
   ciphertext = ciphertext.split("\n")[0];
 
   const sep = ciphertext.indexOf("$");
-  const version = parseInt(ciphertext.substr(0, sep));
+  const version = parseInt(ciphertext.substr(0, sep), 10);
   ciphertext = ciphertext.substr(sep + 1);
 
   if (version === 0) {
@@ -193,7 +193,7 @@ export function verify(key, plaintext, ciphertext) {
   ciphertext = ciphertext.split("\n")[0];
 
   const sep = ciphertext.indexOf("$");
-  const version = parseInt(ciphertext.substr(0, sep));
+  const version = parseInt(ciphertext.substr(0, sep), 10);
   ciphertext = ciphertext.substr(sep + 1);
 
   if (version === 0) {
