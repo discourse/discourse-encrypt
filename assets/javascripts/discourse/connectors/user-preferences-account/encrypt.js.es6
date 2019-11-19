@@ -22,33 +22,40 @@ import {
 export default {
   setupComponent(args, component) {
     const currentUser = Discourse.User.current();
-    if (args.model.id === currentUser.id) {
+    const isCurrentUser = args.model.id === currentUser.id;
+
+    component.setProperties({
+      model: args.model,
+      /** crypto.subtle is only available in secure contexts. */
+      isSecureContext: window.isSecureContext,
+      /** Whether current user is the same as model user. */
+      isCurrentUser,
+      /** Whether plugin is enabled for current user. */
+      canEnableEncrypt: canEnableEncrypt(args.model),
+      /** Whether the encryption is enabled or not. */
+      isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public_key")
+    });
+
+    if (isCurrentUser) {
       const status = getEncryptionStatus(args.model);
       component.setProperties({
-        model: args.model,
-        /** Value of passphrase input (old, current and retyped).
+        /** Value of passphrase input.
          *  It should stay in memory for as little time as possible.
          *  Clear it often.
          */
         passphrase: "",
-        /** Whether any operation (AJAX request, key generation, etc.) is
-         *       in progress. */
-        inProgress: false,
-        /** Whether current user is the same as model user. */
-        isCurrentUser: true,
-        /** crypto.subtle is only available in secure contexts. */
-        isSecureContext: window.isSecureContext,
-        /** Whether plugin is enabled for current user. */
-        canEnableEncrypt: canEnableEncrypt(args.model),
-        /** Whether the encryption is enabled or not. */
-        isEncryptEnabled: status !== ENCRYPT_DISABLED,
-        /** Whether the encryption is active on this device. */
-        isEncryptActive: status === ENCRYPT_ACTIVE,
         /** Whether it is an import operation. */
         importIdentity: false,
         /** Key to be imported .*/
         identity: "",
-        /** Listens for encryptino status updates. */
+        /** Whether any operation (AJAX request, key generation, etc.) is
+         *  in progress. */
+        inProgress: false,
+        /** Whether the encryption is enabled or not. */
+        isEncryptEnabled: status !== ENCRYPT_DISABLED,
+        /** Whether the encryption is active on this device. */
+        isEncryptActive: status === ENCRYPT_ACTIVE,
+        /** Listens for encryption status updates. */
         listener() {
           const newStatus = getEncryptionStatus(args.model);
           component.setProperties({
@@ -64,13 +71,6 @@ export default {
           this._super(...arguments);
           this.appEvents.off("encrypt:status-changed", this, this.listener);
         }
-      });
-    } else {
-      component.setProperties({
-        model: args.model,
-        isCurrentUser: false,
-        canEnableEncrypt: canEnableEncrypt(args.model),
-        isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public_key")
       });
     }
   },
