@@ -1,4 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
+import { Promise } from "rsvp";
 import {
   DB_NAME,
   DB_VERSION,
