@@ -25,7 +25,6 @@ export default {
     const isCurrentUser = args.model.id === currentUser.id;
 
     component.setProperties({
-      model: args.model,
       /** crypto.subtle is only available in secure contexts. */
       isSecureContext: window.isSecureContext,
       /** Whether current user is the same as model user. */

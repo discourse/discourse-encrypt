@@ -14,7 +14,6 @@ export default {
 
     component.setProperties({
       basePath: Discourse.BaseUri,
-      model: args.model,
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
       showNoBackupWarning: 15,

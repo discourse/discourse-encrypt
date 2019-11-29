@@ -17,7 +17,6 @@ export default {
     const status = getEncryptionStatus(currentUser);
 
     component.setProperties({
-      model: args.model,
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
 
