@@ -1,10 +1,10 @@
+import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import computed from "ember-addons/ember-computed-decorators";
 
 export default Ember.Controller.extend(ModalFunctionality, {
-  @computed("model.custom_fields.encrypt_private")
+  @discourseComputed("model.custom_fields.encrypt_private")
   keys() {
     const keys = [];
     if (this.model.custom_fields.encrypt_private) {

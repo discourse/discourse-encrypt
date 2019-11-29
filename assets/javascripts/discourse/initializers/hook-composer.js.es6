@@ -1,3 +1,4 @@
+import { observes, on } from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import {
@@ -12,7 +13,6 @@ import {
   decrypt,
   importKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { observes, on } from "ember-addons/ember-computed-decorators";
 
 export default {
   name: "hook-composer",
