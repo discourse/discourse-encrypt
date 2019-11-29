@@ -1,6 +1,18 @@
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
+import {
+  fetchUnseenCategoryHashtags,
+  linkSeenCategoryHashtags
+} from "discourse/lib/link-category-hashtags";
+import {
+  fetchUnseenMentions,
+  linkSeenMentions
+} from "discourse/lib/link-mentions";
+import {
+  fetchUnseenTagHashtags,
+  linkSeenTagHashtags
+} from "discourse/lib/link-tag-hashtag";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
@@ -17,19 +29,13 @@ import {
   decrypt,
   verify
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { resolveAllShortUrls } from "pretty-text/upload-short-url";
+import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
-  linkSeenMentions,
-  fetchUnseenMentions
-} from "discourse/lib/link-mentions";
-import {
-  linkSeenCategoryHashtags,
-  fetchUnseenCategoryHashtags
-} from "discourse/lib/link-category-hashtags";
-import {
-  linkSeenTagHashtags,
-  fetchUnseenTagHashtags
-} from "discourse/lib/link-tag-hashtag";
+  lookupCachedUploadUrl,
+  lookupUncachedUploadUrls,
+  MISSING
+} from "pretty-text/upload-short-url";
+import { Promise } from "rsvp";
 
 function checkMetadata(attrs, expected) {
   const actual = {
@@ -94,6 +100,105 @@ function checkMetadata(attrs, expected) {
   return diff;
 }
 
+function downloadEncryptedFile(url, keyPromise) {
+  const downloadPromise = new Promise((resolve, reject) => {
+    var req = new XMLHttpRequest();
+    req.open("GET", url, true);
+    req.responseType = "arraybuffer";
+    req.onload = function() {
+      let filename = req.getResponseHeader("Content-Disposition");
+      if (filename) {
+        // Requires Access-Control-Expose-Headers: Content-Disposition.
+        filename = filename.match(/filename="(.*?)"/)[1];
+      }
+      resolve({ buffer: req.response, filename });
+    };
+    req.onerror = reject;
+    req.send(null);
+  });
+
+  return Promise.all([keyPromise, downloadPromise]).then(([key, download]) => {
+    const iv = download.buffer.slice(0, 12);
+    const content = download.buffer.slice(12);
+
+    return new Promise((resolve, reject) => {
+      window.crypto.subtle
+        .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, content)
+        .then(resolve, reject);
+    }).then(buffer => ({
+      blob: new Blob([buffer], { type: "octet/stream" }),
+      name: download.filename
+    }));
+  });
+}
+
+function resolveShortUrlElement($el) {
+  if ($el.prop("tagName") === "A") {
+    const data = lookupCachedUploadUrl($el.data("orig-href"));
+    const url = data.short_path;
+    if (!url) {
+      return Promise.resolve();
+    }
+
+    $el.removeAttr("data-orig-href");
+
+    if (url !== MISSING) {
+      $el.attr("href", url);
+      const content = $el.text().split("|");
+
+      const topicId = $el.closest("[data-topic-id]").data("topic-id");
+      const keyPromise = getTopicKey(topicId);
+
+      if (content[1] === ATTACHMENT_CSS_CLASS) {
+        $el.addClass(ATTACHMENT_CSS_CLASS);
+        $el.text(content[0].replace(/\.encrypted$/, ""));
+        if (content[0].match(/\.encrypted$/)) {
+          $el.on("click", () => {
+            downloadEncryptedFile(url, keyPromise).then(file => {
+              const a = document.createElement("a");
+              a.href = window.URL.createObjectURL(file.blob);
+              a.download = file.name || content[0];
+              a.download = a.download.replace(/\.encrypted$/, "");
+              a.style.display = "none";
+
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+
+              window.URL.revokeObjectURL(a.href);
+            });
+            return false;
+          });
+        }
+      }
+    }
+  } else if ($el.prop("tagName") === "IMG") {
+    const data = lookupCachedUploadUrl($el.data("orig-src"));
+    const url = data.url;
+    if (!url) {
+      return Promise.resolve();
+    }
+
+    $el.removeAttr("data-orig-src");
+
+    if (url !== MISSING) {
+      const topicId = $el.closest("[data-topic-id]").data("topic-id");
+      const keyPromise = getTopicKey(topicId);
+
+      if ($el.attr("alt").match(/\.encrypted$/)) {
+        return downloadEncryptedFile(url, keyPromise).then(file => {
+          $el.attr("alt", $el.attr("alt").replace(/\.encrypted$/, ""));
+          $el.attr("src", window.URL.createObjectURL(file.blob));
+        });
+      } else {
+        $el.attr("src", url);
+      }
+    }
+  }
+
+  return Promise.resolve();
+}
+
 function postProcessPost(siteSettings, topicId, $post) {
   // Paint mentions.
   const unseenMentions = linkSeenMentions($post, siteSettings);
@@ -121,8 +226,25 @@ function postProcessPost(siteSettings, topicId, $post) {
     }
   }
 
-  // Paint short URLs.
-  resolveAllShortUrls(ajax);
+  // Resolve short URLs (first using cache and then using fresh data)
+  const urls = [];
+  const resolvePromises = [];
+  $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
+    const $el = $(el);
+    const url = $el.data("orig-src") || $el.data("orig-href");
+    if (lookupCachedUploadUrl(url).url) {
+      resolvePromises.push(resolveShortUrlElement($el));
+    } else {
+      urls.push(url);
+    }
+  });
+
+  lookupUncachedUploadUrls(urls, ajax).then(() => {
+    $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
+      resolvePromises.push(resolveShortUrlElement($(el)));
+    });
+    return Promise.all(resolvePromises);
+  });
 }
 
 export default {
