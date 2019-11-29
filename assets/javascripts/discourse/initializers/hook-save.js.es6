@@ -1,6 +1,7 @@
 import PostAdapter from "discourse/adapters/post";
 import { ajax } from "discourse/lib/ajax";
 import Topic from "discourse/models/topic";
+import User from "discourse/models/user";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -114,7 +115,7 @@ export default {
         let encryptedKeysPromise = Ember.RSVP.Promise.resolve();
         if (args.target_usernames) {
           const usernames = args.target_usernames.split(",");
-          usernames.push(Discourse.User.current().username);
+          usernames.push(User.current().username);
           const identitiesPromise = getUserIdentities(usernames);
 
           encryptedKeysPromise = Ember.RSVP.Promise.all([

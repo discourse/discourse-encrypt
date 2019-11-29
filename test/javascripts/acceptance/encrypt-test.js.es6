@@ -1,3 +1,4 @@
+import User from "discourse/models/user";
 import {
   deleteDb,
   loadDbIdentity,
@@ -64,7 +65,7 @@ let requests = [];
  * @param status
  */
 async function setEncryptionStatus(status) {
-  const user = Discourse.User.current();
+  const user = User.current();
 
   // Resetting IndexedDB.
   try {
@@ -118,7 +119,7 @@ async function wait(statusOrWaiter, func) {
   const waiter =
     typeof statusOrWaiter === "function"
       ? statusOrWaiter
-      : () => getEncryptionStatus(Discourse.User.current()) === statusOrWaiter;
+      : () => getEncryptionStatus(User.current()) === statusOrWaiter;
 
   try {
     Ember.Test.registerWaiter(waiter);

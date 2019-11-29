@@ -1,5 +1,6 @@
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
+import User from "discourse/models/user";
 import {
   deleteDb,
   saveDbIdentity
@@ -21,7 +22,7 @@ import {
 
 export default {
   setupComponent(args, component) {
-    const currentUser = Discourse.User.current();
+    const currentUser = User.current();
     const isCurrentUser = args.model.id === currentUser.id;
 
     component.setProperties({
