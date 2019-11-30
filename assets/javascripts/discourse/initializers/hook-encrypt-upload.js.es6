@@ -5,6 +5,7 @@ import {
   getTopicKey,
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { getUploadMarkdown, isAnImage } from "discourse/lib/uploads";
 
 export default {
   name: "hook-encrypt-upload",
@@ -16,6 +17,8 @@ export default {
     }
 
     withPluginApi("0.8.31", api => {
+      const localData = {};
+
       api.addComposerUploadHandler([".*"], (file, editor) => {
         const controller = container.lookup("controller:composer");
         const topicId = controller.get("model.topic.id");
@@ -27,6 +30,29 @@ export default {
             return false;
           }
           return true;
+        }
+
+        if (isAnImage(file.name)) {
+          const img = new Image();
+          img.onload = function() {
+            const ratio = Math.min(
+              Discourse.SiteSettings.max_image_width / img.width,
+              Discourse.SiteSettings.max_image_height / img.height
+            );
+
+            localData[file.name] = {
+              original_filename: file.name,
+              width: img.width,
+              height: img.height,
+              thumbnail_width: Math.floor(img.width * ratio),
+              thumbnail_height: Math.floor(img.height * ratio)
+            };
+
+            // TODO: Save object URL to be used in composer
+          };
+          img.src = window.URL.createObjectURL(file);
+        } else {
+          localData[file.name] = { original_filename: file.name };
         }
 
         let reader = new FileReader();
@@ -54,6 +80,21 @@ export default {
         };
         reader.readAsArrayBuffer(file);
         return false;
+      });
+
+      api.addComposerUploadMarkdownResolver(upload => {
+        const realUpload = {};
+        Object.assign(realUpload, upload);
+
+        const filename = upload.original_filename.replace(/\.encrypted$/, "");
+        if (!localData[filename]) {
+          return;
+        }
+
+        Object.assign(realUpload, localData[filename]);
+        delete localData[filename];
+
+        return getUploadMarkdown(realUpload).replace("|", ".encrypted|");
       });
     });
   }

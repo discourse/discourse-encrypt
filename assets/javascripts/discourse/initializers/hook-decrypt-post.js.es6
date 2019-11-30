@@ -147,14 +147,13 @@ function resolveShortUrlElement($el) {
       $el.attr("href", url);
       const content = $el.text().split("|");
 
-      const topicId = $el.closest("[data-topic-id]").data("topic-id");
-      const keyPromise = getTopicKey(topicId);
-
       if (content[1] === ATTACHMENT_CSS_CLASS) {
         $el.addClass(ATTACHMENT_CSS_CLASS);
         $el.text(content[0].replace(/\.encrypted$/, ""));
         if (content[0].match(/\.encrypted$/)) {
           $el.on("click", () => {
+            const topicId = $el.closest("[data-topic-id]").data("topic-id");
+            const keyPromise = getTopicKey(topicId);
             downloadEncryptedFile(url, keyPromise).then(file => {
               const a = document.createElement("a");
               a.href = window.URL.createObjectURL(file.blob);
@@ -183,10 +182,9 @@ function resolveShortUrlElement($el) {
     $el.removeAttr("data-orig-src");
 
     if (url !== MISSING) {
-      const topicId = $el.closest("[data-topic-id]").data("topic-id");
-      const keyPromise = getTopicKey(topicId);
-
       if ($el.attr("alt").match(/\.encrypted$/)) {
+        const topicId = $el.closest("[data-topic-id]").data("topic-id");
+        const keyPromise = getTopicKey(topicId);
         return downloadEncryptedFile(url, keyPromise).then(file => {
           $el.attr("alt", $el.attr("alt").replace(/\.encrypted$/, ""));
           $el.attr("src", window.URL.createObjectURL(file.blob));
