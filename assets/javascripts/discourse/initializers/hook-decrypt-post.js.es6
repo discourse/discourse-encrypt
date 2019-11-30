@@ -17,6 +17,8 @@ import {
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
+import { imageNameFromFileName } from "discourse/lib/uploads";
+import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
   ENCRYPT_DISABLED,
   getDebouncedUserIdentities,
@@ -134,6 +136,21 @@ function downloadEncryptedFile(url, keyPromise) {
 }
 
 function resolveShortUrlElement($el) {
+  const topicId = $el.closest("[data-topic-id]").data("topic-id");
+  const keyPromise = $el.data("key")
+    ? new Promise((resolve, reject) => {
+        window.crypto.subtle
+          .importKey(
+            "raw",
+            base64ToBuffer($el.data("key")),
+            { name: "AES-GCM", length: 256 },
+            true,
+            ["encrypt", "decrypt"]
+          )
+          .then(resolve, reject);
+      })
+    : getTopicKey(topicId);
+
   if ($el.prop("tagName") === "A") {
     const data = lookupCachedUploadUrl($el.data("orig-href"));
     const url = data.short_path;
@@ -145,31 +162,28 @@ function resolveShortUrlElement($el) {
 
     if (url !== MISSING) {
       $el.attr("href", url);
-      const content = $el.text().split("|");
 
-      if (content[1] === ATTACHMENT_CSS_CLASS) {
-        $el.addClass(ATTACHMENT_CSS_CLASS);
-        $el.text(content[0].replace(/\.encrypted$/, ""));
-        if (content[0].match(/\.encrypted$/)) {
-          $el.on("click", () => {
-            const topicId = $el.closest("[data-topic-id]").data("topic-id");
-            const keyPromise = getTopicKey(topicId);
-            downloadEncryptedFile(url, keyPromise).then(file => {
-              const a = document.createElement("a");
-              a.href = window.URL.createObjectURL(file.blob);
-              a.download = file.name || content[0];
-              a.download = a.download.replace(/\.encrypted$/, "");
-              a.style.display = "none";
+      const isEncrypted = $el.text().match(/\.encrypted$/) || $el.data("key");
 
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
+      if (isEncrypted && $el.hasClass(ATTACHMENT_CSS_CLASS)) {
+        $el.text($el.text().replace(/\.encrypted$/, ""));
 
-              window.URL.revokeObjectURL(a.href);
-            });
-            return false;
+        $el.on("click", () => {
+          downloadEncryptedFile(url, keyPromise).then(file => {
+            const a = document.createElement("a");
+            a.href = window.URL.createObjectURL(file.blob);
+            a.download = file.name || $el.text();
+            a.download = a.download.replace(/\.encrypted$/, "");
+            a.style.display = "none";
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            window.URL.revokeObjectURL(a.href);
           });
-        }
+          return false;
+        });
       }
     }
   } else if ($el.prop("tagName") === "IMG") {
@@ -182,11 +196,15 @@ function resolveShortUrlElement($el) {
     $el.removeAttr("data-orig-src");
 
     if (url !== MISSING) {
-      if ($el.attr("alt").match(/\.encrypted$/)) {
-        const topicId = $el.closest("[data-topic-id]").data("topic-id");
-        const keyPromise = getTopicKey(topicId);
+      const isEncrypted =
+        $el.attr("alt").match(/\.encrypted$/) || $el.data("key");
+
+      if (isEncrypted) {
         return downloadEncryptedFile(url, keyPromise).then(file => {
-          $el.attr("alt", $el.attr("alt").replace(/\.encrypted$/, ""));
+          const imageName = file.name
+            ? imageNameFromFileName(file.name)
+            : $el.attr("alt").replace(/\.encrypted$/, "");
+          $el.attr("alt", imageName);
           $el.attr("src", window.URL.createObjectURL(file.blob));
         });
       } else {
