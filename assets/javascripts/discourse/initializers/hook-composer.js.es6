@@ -69,6 +69,17 @@ export default {
         const usernames = this.targetUsernames.split(",");
         usernames.push(this.user.username);
 
+        const groupNames = new Set(this.site.groups.map(g => g.name));
+        if (usernames.some(username => groupNames.has(username))) {
+          this.setProperties({
+            isEncrypted: false,
+            disableEncryptIndicator: true,
+            encryptError: I18n.t("encrypt.composer.group_not_allowed"),
+            showEncryptError: this.showEncryptError || this.isEncrypted
+          });
+          return;
+        }
+
         ajax("/encrypt/user", {
           type: "GET",
           data: { usernames }
