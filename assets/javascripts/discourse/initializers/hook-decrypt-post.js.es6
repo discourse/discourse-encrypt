@@ -175,7 +175,7 @@ function resolveShortUrlElement($el) {
     }
   } else if ($el.prop("tagName") === "IMG") {
     const data = lookupCachedUploadUrl($el.data("orig-src"));
-    const url = data.url;
+    const url = data.short_path;
     if (!url) {
       return Promise.resolve();
     }
