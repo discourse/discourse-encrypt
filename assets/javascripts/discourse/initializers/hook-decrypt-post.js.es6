@@ -1,3 +1,4 @@
+import { debounce } from "@ember/runloop";
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
@@ -199,6 +200,12 @@ function resolveShortUrlElement($el) {
   return Promise.resolve();
 }
 
+function lookupAndResolveShortUrlElement(urls, $elements) {
+  return lookupUncachedUploadUrls(urls, ajax).then(() => {
+    $elements.each((_, el) => resolveShortUrlElement($(el)));
+  });
+}
+
 function postProcessPost(siteSettings, topicId, $post) {
   // Paint mentions.
   const unseenMentions = linkSeenMentions($post, siteSettings);
@@ -228,23 +235,20 @@ function postProcessPost(siteSettings, topicId, $post) {
 
   // Resolve short URLs (first using cache and then using fresh data)
   const urls = [];
-  const resolvePromises = [];
-  $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
+  $("img[data-orig-src], a[data-orig-href]").each((_, el) => {
     const $el = $(el);
     const url = $el.data("orig-src") || $el.data("orig-href");
     if (lookupCachedUploadUrl(url).url) {
-      resolvePromises.push(resolveShortUrlElement($el));
+      resolveShortUrlElement($el);
     } else {
       urls.push(url);
     }
   });
 
-  lookupUncachedUploadUrls(urls, ajax).then(() => {
-    $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
-      resolvePromises.push(resolveShortUrlElement($(el)));
-    });
-    return Promise.all(resolvePromises);
-  });
+  const $elements = $("img[data-orig-src], a[data-orig-href]");
+  if ($elements.length > 0) {
+    debounce(this, lookupAndResolveShortUrlElement, urls, $elements, 450, true);
+  }
 }
 
 export default {
