@@ -19,10 +19,10 @@ import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
 import {
   ENCRYPT_DISABLED,
+  getDebouncedUserIdentities,
   getEncryptionStatus,
   getIdentity,
   getTopicKey,
-  getUserIdentities,
   hasTopicKey,
   hasTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
@@ -339,14 +339,14 @@ export default {
                   .then(key => decrypt(key, ciphertext))
                   .then(plaintext => {
                     if (plaintext.signature) {
-                      getUserIdentities([plaintext.signed_by_name])
-                        .then(identities =>
-                          verify(
+                      getDebouncedUserIdentities([plaintext.signed_by_name])
+                        .then(identities => {
+                          return verify(
                             identities[plaintext.signed_by_name].signPublic,
                             plaintext,
                             ciphertext
-                          )
-                        )
+                          );
+                        })
                         .then(result => {
                           verified[attrs.id] = checkMetadata(attrs, plaintext);
                           if (!result) {

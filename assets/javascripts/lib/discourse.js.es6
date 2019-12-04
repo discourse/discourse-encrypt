@@ -1,3 +1,4 @@
+import { debounce } from "@ember/runloop";
 import { ajax } from "discourse/lib/ajax";
 import { Promise } from "rsvp";
 import {
@@ -91,6 +92,31 @@ export function getUserIdentities(usernames) {
       imported[usernames[i]] = identities[i];
     }
     return imported;
+  });
+}
+
+const debouncedUsernames = new Set();
+
+function _getDebouncedUserIdentities(resolve, reject) {
+  getUserIdentities(Array.from(debouncedUsernames))
+    .then(identities => {
+      Object.keys(identities).forEach(u => debouncedUsernames.delete(u));
+      return identities;
+    })
+    .then(resolve, reject);
+}
+
+export function getDebouncedUserIdentities(usernames) {
+  usernames.forEach(u => debouncedUsernames.add(u));
+
+  return new Ember.RSVP.Promise((resolve, reject) => {
+    debounce(
+      debouncedUsernames,
+      _getDebouncedUserIdentities,
+      resolve,
+      reject,
+      500
+    );
   });
 }
 

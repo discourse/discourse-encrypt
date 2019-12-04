@@ -1,3 +1,4 @@
+import { debounce, scheduleOnce } from "@ember/runloop";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
@@ -75,8 +76,8 @@ export default {
     var self = this;
     Ember.Component.reopen({
       didRender() {
-        Ember.run.scheduleOnce("afterRender", self, () => {
-          Ember.run.debounce(self, self.decryptTitles, 500);
+        scheduleOnce("afterRender", self, () => {
+          debounce(self, self.decryptTitles, 500);
         });
         return this._super(...arguments);
       }
@@ -87,7 +88,7 @@ export default {
       api.decorateWidget("header:after", helper => {
         if (helper.widget.state.userVisible) {
           self.decryptTitles();
-          Ember.run.debounce(self, self.decryptTitles, 500);
+          debounce(self, self.decryptTitles, 500);
         }
       });
     });
