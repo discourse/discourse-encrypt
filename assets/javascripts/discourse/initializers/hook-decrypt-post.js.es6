@@ -136,6 +136,13 @@ function downloadEncryptedFile(url, keyPromise) {
 }
 
 function resolveShortUrlElement($el) {
+  const shortUrl = $el.data("orig-src") || $el.data("orig-href");
+  const data = lookupCachedUploadUrl(shortUrl);
+  const url = data.short_path;
+  if (!url) {
+    return;
+  }
+
   const topicId = $el.closest("[data-topic-id]").data("topic-id");
   const keyPromise = $el.data("key")
     ? new Promise((resolve, reject) => {
@@ -152,71 +159,60 @@ function resolveShortUrlElement($el) {
     : getTopicKey(topicId);
 
   if ($el.prop("tagName") === "A") {
-    const data = lookupCachedUploadUrl($el.data("orig-href"));
-    const url = data.short_path;
-    if (!url) {
-      return Promise.resolve();
-    }
-
     $el.removeAttr("data-orig-href");
-
-    if (url !== MISSING) {
-      $el.attr("href", url);
-
-      const isEncrypted = $el.text().match(/\.encrypted$/) || $el.data("key");
-
-      if (isEncrypted && $el.hasClass(ATTACHMENT_CSS_CLASS)) {
-        $el.text($el.text().replace(/\.encrypted$/, ""));
-
-        $el.on("click", () => {
-          downloadEncryptedFile(url, keyPromise).then(file => {
-            const a = document.createElement("a");
-            a.href = window.URL.createObjectURL(file.blob);
-            a.download = file.name || $el.text();
-            a.download = a.download.replace(/\.encrypted$/, "");
-            a.style.display = "none";
-
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            window.URL.revokeObjectURL(a.href);
-          });
-          return false;
-        });
-      }
+    if (url === MISSING) {
+      return;
     }
+
+    $el.attr("href", url);
+
+    const isEncrypted = $el.data("key") || $el.text().endsWith(".encrypted");
+    if (!isEncrypted || !$el.hasClass(ATTACHMENT_CSS_CLASS)) {
+      return;
+    }
+
+    $el.text($el.text().replace(/\.encrypted$/, ""));
+    $el.on("click", () => {
+      downloadEncryptedFile(url, keyPromise).then(file => {
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(file.blob);
+        a.download = file.name || $el.text();
+        a.download = a.download.replace(/\.encrypted$/, "");
+        a.style.display = "none";
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(a.href);
+      });
+      return false;
+    });
   } else if ($el.prop("tagName") === "IMG") {
-    const data = lookupCachedUploadUrl($el.data("orig-src"));
-    const url = data.short_path;
-    if (!url) {
-      return Promise.resolve();
-    }
-
     $el.removeAttr("data-orig-src");
-
-    if (url !== MISSING) {
-      const isEncrypted =
-        $el.attr("alt").match(/\.encrypted$/) || $el.data("key");
-
-      if (isEncrypted) {
-        return downloadEncryptedFile(url, keyPromise).then(file => {
-          const imageName = file.name
-            ? imageNameFromFileName(file.name)
-            : $el.attr("alt").replace(/\.encrypted$/, "");
-          $el.attr("alt", imageName);
-          $el.attr("src", window.URL.createObjectURL(file.blob));
-        });
-      } else {
-        $el.attr("src", url);
-      }
+    if (url === MISSING) {
+      return;
     }
-  }
 
-  return Promise.resolve();
+    const isEncrypted =
+      $el.data("key") || $el.attr("alt").endsWith(".encrypted");
+    if (!isEncrypted) {
+      $el.attr("src", url);
+      return;
+    }
+
+    return downloadEncryptedFile(url, keyPromise).then(file => {
+      const imageName = file.name
+        ? imageNameFromFileName(file.name)
+        : $el.attr("alt").replace(/\.encrypted$/, "");
+      $el.attr("alt", imageName);
+      $el.attr("src", window.URL.createObjectURL(file.blob));
+    });
+  }
 }
 
 function lookupAndResolveShortUrlElement(urls, $elements) {
+  urls = Array.from(new Set(urls));
   return lookupUncachedUploadUrls(urls, ajax).then(() => {
     $elements.each((_, el) => resolveShortUrlElement($(el)));
   });
