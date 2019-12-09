@@ -140,7 +140,7 @@ export function encrypt(key, data, opts) {
   let extra = "";
 
   if (opts && opts.includeUploads) {
-    const uploads = data.raw.match(/upload:\/\/[A-Za-z0-9]{27,27}/g);
+    const uploads = data.raw.match(/upload:\/\/[A-Za-z0-9\.]+/g);
     if (uploads) {
       extra += "\n" + uploads.map(upload => `[](${upload})`).join();
     }

@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 module PostExtensions
+  def ciphertext
+    raw.split("\n")[0] || ""
+  end
+
   def is_encrypted?
     !!(topic&.is_encrypted? &&
-       raw.match(/\A[A-Za-z0-9+\\\/=$]+(\n.*)?\Z/))
+       ciphertext.match(/\A[A-Za-z0-9+\/=$]+\Z/))
   end
 end

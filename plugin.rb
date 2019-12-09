@@ -176,19 +176,23 @@ after_initialize do
   #
 
   Plugin::Filter.register(:after_post_cook) do |post, cooked|
-    post.is_encrypted? ? "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>" : cooked
+    if post.is_encrypted?
+      cooked.gsub!(post.ciphertext, I18n.t('js.encrypt.encrypted_post'))
+    else
+      cooked
+    end
   end
 
   on(:post_process_cooked) do |doc, post|
     if post&.is_encrypted?
-      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
+      doc.inner_html.gsub!(post.ciphertext, I18n.t('js.encrypt.encrypted_post'))
     end
   end
 
   # Notifications
   on(:reduce_excerpt) do |doc, options|
     if options[:post]&.is_encrypted?
-      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post')}</p>"
+      doc.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
     end
   end
 

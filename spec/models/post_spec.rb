@@ -7,6 +7,12 @@ describe Post do
   let(:encrypt_user) { Fabricate(:encrypt_user) }
   let(:encrypt_post) { Fabricate(:encrypt_post, user: encrypt_user) }
 
+  context '#ciphertext' do
+    it 'works' do
+      expect(encrypt_post.raw).to eq(encrypt_post.raw)
+    end
+  end
+
   context '#is_encrypted?' do
     it 'works' do
       expect(post.is_encrypted?).to eq(false)
