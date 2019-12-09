@@ -103,7 +103,9 @@ function checkMetadata(attrs, expected) {
   return diff;
 }
 
-function downloadEncryptedFile(url, keyPromise) {
+function downloadEncryptedFile(url, keyPromise, opts) {
+  opts = opts || {};
+
   const downloadPromise = new Promise((resolve, reject) => {
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
@@ -129,7 +131,7 @@ function downloadEncryptedFile(url, keyPromise) {
         .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, content)
         .then(resolve, reject);
     }).then(buffer => ({
-      blob: new Blob([buffer], { type: "octet/stream" }),
+      blob: new Blob([buffer], { type: opts.type || "application/x-binary" }),
       name: download.filename
     }));
   });
@@ -173,19 +175,21 @@ function resolveShortUrlElement($el) {
 
     $el.text($el.text().replace(/\.encrypted$/, ""));
     $el.on("click", () => {
-      downloadEncryptedFile(url, keyPromise).then(file => {
-        const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(file.blob);
-        a.download = file.name || $el.text();
-        a.download = a.download.replace(/\.encrypted$/, "");
-        a.style.display = "none";
+      downloadEncryptedFile(url, keyPromise, { type: $el.data("type") }).then(
+        file => {
+          const a = document.createElement("a");
+          a.href = window.URL.createObjectURL(file.blob);
+          a.download = file.name || $el.text();
+          a.download = a.download.replace(/\.encrypted$/, "");
+          a.style.display = "none";
 
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
 
-        window.URL.revokeObjectURL(a.href);
-      });
+          window.URL.revokeObjectURL(a.href);
+        }
+      );
       return false;
     });
   } else if ($el.prop("tagName") === "IMG") {
@@ -201,7 +205,9 @@ function resolveShortUrlElement($el) {
       return;
     }
 
-    return downloadEncryptedFile(url, keyPromise).then(file => {
+    return downloadEncryptedFile(url, keyPromise, {
+      type: $el.data("type")
+    }).then(file => {
       const imageName = file.name
         ? imageNameFromFileName(file.name)
         : $el.attr("alt").replace(/\.encrypted$/, "");

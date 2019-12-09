@@ -20,9 +20,12 @@ export default {
 
     withPluginApi("0.8.31", api => {
       DEFAULT_LIST.push("a[data-key]");
+      DEFAULT_LIST.push("a[data-type]");
       DEFAULT_LIST.push("img[data-key]");
+      DEFAULT_LIST.push("img[data-type]");
 
       const uploadsKeys = {};
+      const uploadsType = {};
       const uploadsData = {};
 
       api.addComposerUploadHandler([".*"], (file, editor) => {
@@ -92,6 +95,7 @@ export default {
         Promise.all([encryptedPromise, exportedKeyPromise, dataPromise]).then(
           ([encrypted, exportedKey, data]) => {
             uploadsKeys[file.name] = exportedKey;
+            uploadsType[file.name] = file.type;
             uploadsData[file.name] = data;
 
             const blob = new Blob([iv, encrypted], {
@@ -118,11 +122,16 @@ export default {
         Object.assign(realUpload, upload);
         Object.assign(realUpload, uploadsData[filename]);
         const key = uploadsKeys[filename];
+        const type = uploadsType[filename];
 
         delete uploadsData[filename];
         delete uploadsKeys[filename];
+        delete uploadsType[filename];
 
-        return getUploadMarkdown(realUpload).replace("](", `|key=${key}](`);
+        return getUploadMarkdown(realUpload).replace(
+          "](",
+          `|type=${type}|key=${key}](`
+        );
       });
     });
   }
