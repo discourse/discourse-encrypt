@@ -9,7 +9,10 @@ describe Post do
 
   context '#ciphertext' do
     it 'works' do
-      expect(encrypt_post.raw).to eq(encrypt_post.raw)
+      ciphertext = "0$ciphertextbase64encoded=="
+      encrypt_post.update!(raw: "#{ciphertext}\nmetadata maybe?")
+
+      expect(encrypt_post.ciphertext).to eq(ciphertext)
     end
   end
 
