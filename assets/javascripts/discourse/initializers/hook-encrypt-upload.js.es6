@@ -27,6 +27,7 @@ export default {
       const uploadsKeys = {};
       const uploadsType = {};
       const uploadsData = {};
+      const uploadsUrl = {};
 
       api.addComposerUploadHandler([".*"], (file, editor) => {
         const controller = container.lookup("controller:composer");
@@ -41,6 +42,7 @@ export default {
               img.onload = () => resolve(img);
               img.onerror = err => reject(err);
               img.src = window.URL.createObjectURL(file);
+              uploadsUrl[file.name] = img.src;
             }).then(img => {
               const ratio = Math.min(
                 Discourse.SiteSettings.max_image_width / img.width,
@@ -114,7 +116,7 @@ export default {
 
       api.addComposerUploadMarkdownResolver(upload => {
         const filename = upload.original_filename.replace(/\.encrypted$/, "");
-        if (!uploadsKeys[filename] && !uploadsData[filename]) {
+        if (!uploadsKeys[filename]) {
           return;
         }
 
@@ -123,10 +125,12 @@ export default {
         Object.assign(realUpload, uploadsData[filename]);
         const key = uploadsKeys[filename];
         const type = uploadsType[filename];
+        upload.url = uploadsUrl[filename];
 
         delete uploadsData[filename];
         delete uploadsKeys[filename];
         delete uploadsType[filename];
+        delete uploadsUrl[filename];
 
         return getUploadMarkdown(realUpload).replace(
           "](",

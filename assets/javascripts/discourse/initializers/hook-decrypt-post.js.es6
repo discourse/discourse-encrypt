@@ -212,7 +212,8 @@ function resolveShortUrlElement($el) {
         ? imageNameFromFileName(file.name)
         : $el.attr("alt").replace(/\.encrypted$/, "");
       $el.attr("alt", imageName);
-      $el.attr("src", window.URL.createObjectURL(file.blob));
+      data.url = window.URL.createObjectURL(file.blob);
+      $el.attr("src", data.url);
     });
   }
 }
