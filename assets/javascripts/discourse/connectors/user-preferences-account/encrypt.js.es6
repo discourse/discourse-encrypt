@@ -27,7 +27,9 @@ export default {
 
     component.setProperties({
       /** crypto.subtle is only available in secure contexts. */
-      isSecureContext: window.isSecureContext,
+      isInsecureContext: !window.isSecureContext,
+      /** Not all algorithms are available in IE11. */
+      isIE11: this.capabilities.isIE11,
       /** Whether current user is the same as model user. */
       isCurrentUser,
       /** Whether plugin is enabled for current user. */

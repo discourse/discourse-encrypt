@@ -3,16 +3,6 @@ import {
   bufferToBase64
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 
-/**
- * @var {TextEncoder} textEncoder
- */
-const textEncoder = new TextEncoder();
-
-/**
- * @var {TextDecoder} textDecoder
- */
-const textDecoder = new TextDecoder();
-
 /*
  * Key generation
  */
@@ -22,7 +12,7 @@ function getPassphraseKey(passphrase, salt) {
     window.crypto.subtle
       .importKey(
         "raw",
-        textEncoder.encode(passphrase),
+        new TextEncoder().encode(passphrase),
         { name: "PBKDF2" },
         false,
         ["deriveBits", "deriveKey"]
@@ -46,7 +36,7 @@ function getPassphraseKey(passphrase, salt) {
 }
 
 function plaintextToBuffer(plaintext) {
-  return textEncoder.encode(
+  return new TextEncoder().encode(
     typeof plaintext === "object"
       ? JSON.stringify(plaintext, Object.keys(plaintext).sort())
       : JSON.stringify(plaintext)
@@ -101,7 +91,7 @@ export function exportIdentity(identity, passphrase) {
 
   const publicPromise = identityPromise.then(exported =>
     bufferToBase64(
-      textEncoder.encode(
+      new TextEncoder().encode(
         JSON.stringify({
           encryptPublic: exported.encryptPublic,
           signPublic: exported.signPublic
@@ -122,7 +112,7 @@ export function exportIdentity(identity, passphrase) {
         window.crypto.subtle.encrypt(
           { name: "AES-GCM", iv, tagLength: 128 },
           key,
-          textEncoder.encode(JSON.stringify(exported))
+          new TextEncoder().encode(JSON.stringify(exported))
         )
       )
       .then(
@@ -131,7 +121,7 @@ export function exportIdentity(identity, passphrase) {
       );
   } else {
     privatePromise = identityPromise.then(exported =>
-      bufferToBase64(textEncoder.encode(JSON.stringify(exported)))
+      bufferToBase64(new TextEncoder().encode(JSON.stringify(exported)))
     );
   }
 
@@ -163,7 +153,7 @@ export function importIdentity(identity, passphrase, extractable) {
   }
 
   return decrypted.then(exported => {
-    identity = JSON.parse(textDecoder.decode(exported));
+    identity = JSON.parse(new TextDecoder().decode(exported));
     return Ember.RSVP.Promise.all([
       window.crypto.subtle.importKey(
         "jwk",
@@ -246,7 +236,7 @@ export function decrypt(key, ciphertext) {
   return new Ember.RSVP.Promise((resolve, reject) => {
     window.crypto.subtle
       .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, encrypted)
-      .then(buffer => JSON.parse(textDecoder.decode(buffer)))
+      .then(buffer => JSON.parse(new TextDecoder().decode(buffer)))
       .then(resolve, reject);
   });
 }

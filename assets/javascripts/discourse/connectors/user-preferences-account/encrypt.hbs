@@ -1,7 +1,15 @@
 {{#if canEnableEncrypt}}
   <div class="control-group pref-title">
     <label class="control-label">{{i18n 'encrypt.title'}}</label>
-    {{#if isSecureContext}}
+    {{#if isIE11}}
+      <div class="alert alert-error">
+        <p>{{i18n 'encrypt.preferences.ie11'}}</p>
+      </div>
+    {{else if isInsecureContext}}
+      <div class="alert alert-error">
+        <p>{{i18n 'encrypt.preferences.insecure_context'}}</p>
+      </div>
+    {{else}}
       <div class="controls">
         {{#if isCurrentUser}}
           {{#if isEncryptEnabled}}
@@ -47,10 +55,6 @@
             <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
           {{/if}}
         {{/if}}
-      </div>
-    {{else}}
-      <div class="alert alert-error">
-        <p>{{i18n 'encrypt.preferences.insecure_context'}}</p>
       </div>
     {{/if}}
   </div>

@@ -34,6 +34,7 @@ en:
         user_has_no_key: "Unfortunately {{username}} did not enable encrypted messages."
 
       preferences:
+        ie11: "The required cipher suite is unavailable in Internet Explorer 11."
         insecure_context: "Encryption cannot be used in an insecure context (not HTTPS)."
 
         status_enabled: "You have enabled encryption and activated it on this device."
