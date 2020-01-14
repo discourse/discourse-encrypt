@@ -214,14 +214,18 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
+    if !manager.args[:encrypted_keys]
+      result = NewPostResult.new(:created_post, false)
+      result.errors.add(:base, I18n.t('encrypt.no_encrypt_keys'))
+      next result
+    end
+
+    manager.args[:raw] = manager.args[:encrypted_raw]
+
     if encrypted_title = manager.args[:encrypted_title]
       manager.args[:topic_opts] ||= {}
       manager.args[:topic_opts][:custom_fields] ||= {}
       manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
-    end
-
-    if encrypted_raw = manager.args[:encrypted_raw]
-      manager.args[:raw] = encrypted_raw
     end
 
     result = manager.perform_create_post

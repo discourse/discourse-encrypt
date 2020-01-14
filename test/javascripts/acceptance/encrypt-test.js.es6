@@ -15,6 +15,7 @@ import {
   generateIdentity
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { default as userFixtures } from "fixtures/user_fixtures";
+import { parsePostData } from "helpers/create-pretender";
 import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import selectKit from "helpers/select-kit-helper";
 
@@ -104,8 +105,8 @@ async function setEncryptionStatus(status) {
     await saveDbIdentity(identity);
   }
 
-  // Store key for future use.
-  return (keys[user.username] = identity);
+  keys[user.username] = exported.public;
+  return identity;
 }
 
 /**
@@ -160,7 +161,7 @@ acceptance("Encrypt", {
   pretend(server, helper) {
     server.get("/encrypt/user", request => {
       const response = {};
-      request.queryParams["usernames"].forEach(u => (response[u] = keys[u][2]));
+      request.queryParams["usernames"].forEach(u => (response[u] = keys[u]));
       return helper.response(response);
     });
 
@@ -188,11 +189,43 @@ test("meta: leak checker works", async assert => {
 });
 
 test("posting does not leak plaintext", async assert => {
-  // TODO: Skip this test because OperationError is randomly raised
-  return assert.ok(true);
-
   await setEncryptionStatus(ENCRYPT_ACTIVE);
   globalAssert = assert;
+
+  /* global server */
+  server.get("/u/search/users", () => {
+    return [
+      200,
+      { "Content-Type": "application/json" },
+      {
+        users: [
+          {
+            username: "eviltrout",
+            name: "eviltrout",
+            avatar_template: "/images/avatar.png"
+          }
+        ]
+      }
+    ];
+  });
+
+  server.post("/posts", request => {
+    const body = parsePostData(request.requestBody);
+    assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
+    assert.equal(body.title, I18n.t("encrypt.encrypted_topic_title"));
+    assert.equal(body.archetype, "private_message");
+    assert.equal(body.target_usernames, "eviltrout");
+    assert.equal(body.draft_key, "new_topic");
+    assert.equal(body.is_encrypted, "true");
+    assert.ok(body.encrypted_title.startsWith("1$"));
+    assert.ok(body.encrypted_raw.startsWith("1$"));
+    assert.ok(JSON.parse(body.encrypted_keys).eviltrout);
+    return [
+      200,
+      { "Content-Type": "application/json" },
+      { action: "create_post", post: { topic_id: 34 } }
+    ];
+  });
 
   const composerActions = selectKit(".composer-actions");
 
@@ -201,6 +234,9 @@ test("posting does not leak plaintext", async assert => {
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
   await click(".reply-details a");
+  await fillIn("#private-message-users", "admin");
+  await keyEvent("#private-message-users", "keydown", 8);
+  await keyEvent("#private-message-users", "keydown", 13);
 
   requests = [];
   let waiting = setTimeout(() => (waiting = null), 3000);
