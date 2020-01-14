@@ -113,8 +113,16 @@ export default {
           : Ember.RSVP.Promise.resolve();
 
         let encryptedKeysPromise = Ember.RSVP.Promise.resolve();
+
+        let usernames = [];
+        if (args.target_recipients) {
+          usernames = args.target_recipients.split(",");
+        }
         if (args.target_usernames) {
-          const usernames = args.target_usernames.split(",");
+          usernames = args.target_usernames.split(",");
+        }
+
+        if (usernames.length > 0) {
           usernames.push(User.current().username);
           const identitiesPromise = getUserIdentities(usernames);
 
