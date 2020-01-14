@@ -214,7 +214,7 @@ test("posting does not leak plaintext", async assert => {
     assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
     assert.equal(body.title, I18n.t("encrypt.encrypted_topic_title"));
     assert.equal(body.archetype, "private_message");
-    assert.equal(body.target_usernames, "eviltrout");
+    assert.equal(body.target_recipients || body.target_usernames, "eviltrout");
     assert.equal(body.draft_key, "new_topic");
     assert.equal(body.is_encrypted, "true");
     assert.ok(body.encrypted_title.startsWith("1$"));
