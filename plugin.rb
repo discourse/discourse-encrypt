@@ -214,7 +214,7 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
-    if !manager.args[:encrypted_keys]
+    if manager.args[:encrypted_title] && !manager.args[:encrypted_keys]
       result = NewPostResult.new(:created_post, false)
       result.errors.add(:base, I18n.t('encrypt.no_encrypt_keys'))
       next result
