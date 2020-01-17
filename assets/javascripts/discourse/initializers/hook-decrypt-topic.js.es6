@@ -35,11 +35,12 @@ function decryptElements(containerSelector, elementSelector, opts) {
       .then(title => {
         title = emojiUnescape(escapeExpression(title));
         const icon = iconHTML("user-secret", {
-          title: "encrypt.encrypted_icon_title"
+          title: "encrypt.encrypted_icon_title",
+          class: "private-message-glyph"
         });
 
         if (opts.replaceIcon) {
-          const $glyph = $(`h1 .private-message-glyph`);
+          const $glyph = $(`h1 .private-message-glyph-wrapper`);
           if ($glyph.length) {
             $glyph.html(icon);
             $el.html(title);
