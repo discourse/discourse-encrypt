@@ -29,7 +29,13 @@
                   {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
                 </p>
                 <p>
-                  {{d-button class="btn-primary" icon="unlock" action=(action "activateEncrypt") disabled=inProgress label="encrypt.preferences.activate"}}
+                  {{d-button
+                    class="btn-primary"
+                    icon="unlock"
+                    action=(action "activateEncrypt")
+                    type="submit"
+                    disabled=inProgress
+                    label="encrypt.preferences.activate"}}
                   <span><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></span>
                 </p>
               </form>
