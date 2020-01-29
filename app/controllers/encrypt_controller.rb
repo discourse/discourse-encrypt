@@ -141,8 +141,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   private
 
   def ensure_encrypt_enabled
-    groups = current_user.groups.pluck(:name)
-    encrypt_groups = SiteSetting.encrypt_groups.split('|')
+    groups = current_user.groups.pluck(:name).map(&:downcase)
+    encrypt_groups = SiteSetting.encrypt_groups.split('|').map(&:downcase)
 
     if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
       raise Discourse::InvalidAccess

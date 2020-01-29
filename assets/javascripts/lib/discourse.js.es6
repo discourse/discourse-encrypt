@@ -267,8 +267,11 @@ export function canEnableEncrypt(user) {
       return true;
     }
 
-    const encryptGroups = Discourse.SiteSettings.encrypt_groups.split("|");
-    const groups = (user.groups || []).map(group => group.name);
+    const encryptGroups = Discourse.SiteSettings.encrypt_groups
+      .split("|")
+      .map(groupName => groupName.toLowerCase());
+    const groups = (user.groups || []).map(group => group.name.toLowerCase());
+
     if (groups.some(group => encryptGroups.includes(group))) {
       return true;
     }
