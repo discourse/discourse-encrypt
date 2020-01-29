@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 describe EncryptedPostCreator do
   let(:user) { Fabricate(:user) }
   let(:topic) { Fabricate(:topic) }
