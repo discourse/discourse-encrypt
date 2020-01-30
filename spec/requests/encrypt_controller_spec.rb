@@ -93,7 +93,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'resets everything' do
       expect { post '/encrypt/reset', params: { user_id: user.id, everything: true } }
         .to change { TopicAllowedUser.count }.by(-1)
-        .and change { PluginStoreRow.count }.by(-1)
+        .and change { EncryptedTopicsUser.count }.by(-1)
         .and change { UserCustomField.count }.by(-2)
 
       expect(response.status).to eq(200)
@@ -102,7 +102,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'resets only keys' do
       expect { post '/encrypt/reset', params: { user_id: user.id } }
         .to change { TopicAllowedUser.count }.by(0)
-        .and change { PluginStoreRow.count }.by(0)
+        .and change { EncryptedTopicsUser.count }.by(0)
         .and change { UserCustomField.count }.by(-2)
 
       expect(response.status).to eq(200)

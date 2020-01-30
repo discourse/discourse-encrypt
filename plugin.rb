@@ -21,22 +21,22 @@ after_initialize do
     PRIVATE_CUSTOM_FIELD = 'encrypt_private'
     TITLE_CUSTOM_FIELD   = 'encrypted_title'
 
-    Store = PluginStore.new(PLUGIN_NAME)
 
     def self.set_key(topic_id, user_id, key)
-      Store.set("key_#{topic_id}_#{user_id}", key)
+      EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_id, key: key)
     end
 
     def self.get_key(topic_id, user_id)
-      Store.get("key_#{topic_id}_#{user_id}")
+      EncryptedTopicsUser.find_by(topic_id: topic_id, user_id: user_id)&.key
     end
 
     def self.del_key(topic_id, user_id)
-      Store.remove("key_#{topic_id}_#{user_id}")
+      EncryptedTopicsUser.delete_by(topic_id: topic_id, user_id: user_id)
     end
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)

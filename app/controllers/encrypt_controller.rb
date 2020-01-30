@@ -102,9 +102,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
         .where(topic_allowed_users: { user_id: user.id })
         .delete_all
 
-      PluginStoreRow
-        .where(plugin_name: 'discourse-encrypt')
-        .where("key LIKE 'key_%_' || ?", user.id)
+      EncryptedTopicsUser
+        .where(user_id: user.id)
         .delete_all
     end
 
