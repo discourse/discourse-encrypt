@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 Fabricator(:encrypt_user, from: :user) do
-  custom_fields do |attrs|
-    {
+  after_create do |user|
+    UserEncryptionKey.create!(
+      user_id: user.id,
       encrypt_public: Fabricate.sequence(:encrypt) { |i| "0$publicKey#{i}" },
       encrypt_private: Fabricate.sequence(:encrypt) { |i| "0$privateKey#{i}" }
-    }
+    )
   end
 end
 

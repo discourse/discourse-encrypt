@@ -36,7 +36,7 @@ export default {
       /** Whether plugin is enabled for current user. */
       canEnableEncrypt: canEnableEncrypt(args.model),
       /** Whether the encryption is enabled or not. */
-      isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public")
+      isEncryptEnabled: !!args.model.get("encrypt_private")
     });
 
     if (isCurrentUser) {
@@ -89,7 +89,7 @@ export default {
       const saveIdentityPromise = identityPromise
         .then(identity => exportIdentity(identity))
         .then(exported => {
-          this.set("model.custom_fields.encrypt_public", exported.public);
+          this.set("model.encrypt_public", exported.public);
           return ajax("/encrypt/keys", {
             type: "PUT",
             data: {
@@ -141,6 +141,31 @@ export default {
             identity: ""
           })
         );
+    },
+
+    changeEncrypt() {
+      this.set("inProgress", true);
+
+      const oldIdentity = this.model.encrypt_private;
+      return importIdentity(oldIdentity, this.oldPassphrase)
+        .then(identity => exportIdentity(identity, this.passphrase))
+        .then(exported => {
+          this.set("model.encrypt_public", exported.public);
+          this.set("model.encrypt_private", exported.private);
+          return ajax("/encrypt/keys", {
+            type: "PUT",
+            data: {
+              public: exported.public,
+              private: exported.private
+            }
+          });
+        })
+        .then(() => this.set("passphrase", ""))
+        .catch(() =>
+          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
+        )
+        .finally(() => this.set("inProgress", false));
+>>>>>>> FIX: move keys from UserCustomField to UserEncryptionKey
     },
 
     deactivateEncrypt() {

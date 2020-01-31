@@ -57,7 +57,6 @@ class EncryptedPostCreator < PostCreator
     @users ||= begin
       usernames = @opts[:target_usernames].split(',')
       users = User.where(username: usernames)
-      User.preload_custom_fields(users, [DiscourseEncrypt::PUBLIC_CUSTOM_FIELD])
       users
     end
   end

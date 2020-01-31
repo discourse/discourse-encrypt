@@ -23,24 +23,24 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     private_id_label = params[:label]
 
     # Check if encryption is already enabled (but not changing passphrase).
-    old_identity = current_user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
+    old_identity = current_user.user_encryption_key&.encrypt_public
     if params[:overwrite].blank? && old_identity && old_identity != public_identity
       return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
     end
 
-    current_user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD] = public_identity
+    user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: current_user.id)
+    user_encryption_key.update!(encrypt_public: public_identity)
 
     if private_identity.present?
       if private_id_label.present?
-        data = JSON.parse(current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]) rescue {}
+        data = JSON.parse(user_encryption_key.encrypt_private) rescue {}
         data[private_id_label.downcase] = private_identity
-        current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = JSON.dump(data)
+        user_encryption_key.update!(encrypt_private: JSON.dump(data))
       else
-        current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = private_identity
+        user_encryption_key.update!(encrypt_private: private_identity)
       end
     end
 
-    current_user.save_custom_fields
     current_user.publish_identity
 
     render json: success_json
@@ -55,10 +55,10 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def delete_key
     private_id_label = params.require(:label)
 
-    data = JSON.parse(current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]) rescue {}
+    data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
     if data.delete(private_id_label)
-      current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = JSON.dump(data)
-      current_user.save_custom_fields
+      user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: current_user.id)
+      user_encryption_key.update!(encrypt_private: JSON.dump(data))
       current_user.publish_identity
     end
 
@@ -75,7 +75,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def show_user
     usernames = params.require(:usernames)
 
-    identities = Hash[User.where(username: usernames).map { |u| [u.username, u.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]] }]
+    identities = Hash[User.where(username: usernames).map { |u| [u.username, u.user_encryption_key&.encrypt_public] }]
 
     render json: identities
   end
@@ -107,10 +107,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
         .delete_all
     end
 
-    # Delete encryption keys.
-    user.custom_fields.delete(DiscourseEncrypt::PUBLIC_CUSTOM_FIELD)
-    user.custom_fields.delete(DiscourseEncrypt::PRIVATE_CUSTOM_FIELD)
-    user.save_custom_fields
+    user.user_encryption_key.delete
 
     render json: success_json
   end

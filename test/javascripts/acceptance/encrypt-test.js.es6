@@ -90,8 +90,8 @@ async function setEncryptionStatus(status) {
   }
 
   // Overwriting server-side fields.
-  user.set("custom_fields.encrypt_public", exported.public);
-  user.set("custom_fields.encrypt_private", exportedPrivate);
+  user.set("encrypt_public", exported.public);
+  user.set("encrypt_private", exportedPrivate);
 
   // Setting the appropriate custom fields is not always enough (i.e. if user
   // navigates to preferences).
@@ -99,10 +99,8 @@ async function setEncryptionStatus(status) {
   server.get("/u/eviltrout.json", () => {
     const json = userFixtures["/u/eviltrout.json"];
     json.user.can_edit = true;
-    json.user.custom_fields = {
-      encrypt_public: exported.public,
-      encrypt_private: exportedPrivate
-    };
+    json.user.encrypt_public = exported.public;
+    json.user.encrypt_private = exportedPrivate;
     return [200, { "Content-Type": "application/json" }, json];
   });
 

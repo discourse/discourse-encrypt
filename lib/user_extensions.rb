@@ -3,7 +3,7 @@
 module UserExtensions
   def encrypt_key
     @encrypt_key ||= begin
-      identity = self.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
+      identity = self.user_encryption_key&.encrypt_public
       return nil if !identity
 
       # Check identity version
@@ -22,8 +22,8 @@ module UserExtensions
     MessageBus.publish(
       '/plugin/encrypt/keys',
       {
-        public: self.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD],
-        private: self.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD],
+        public: self.user_encryption_key&.encrypt_public,
+        private: self.user_encryption_key&.encrypt_private
       },
       user_ids: [self.id]
     )

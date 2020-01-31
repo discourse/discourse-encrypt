@@ -228,7 +228,7 @@ export function getEncryptionStatus(user) {
   if (
     !Discourse.SiteSettings.encrypt_enabled ||
     !user ||
-    !user.get("custom_fields.encrypt_public")
+    !user.get("encrypt_public")
   ) {
     return ENCRYPT_DISABLED;
   }
@@ -287,7 +287,7 @@ export function canEnableEncrypt(user) {
  * @return {Promise}
  */
 export function activateEncrypt(currentUser, passphrase) {
-  const privateKeys = JSON.parse(currentUser.custom_fields.encrypt_private);
+  const privateKeys = JSON.parse(currentUser.encrypt_private);
   let promise = Promise.reject();
 
   // Importing from a paper key.
@@ -352,6 +352,9 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
             const exportedPrivate = JSON.stringify({
               passphrase: exported.private
             });
+
+            currentUser.set("encrypt_public", exported.public);
+            currentUser.set("encrypt_private", exportedPrivate);
 
             return ajax("/encrypt/keys", {
               type: "PUT",

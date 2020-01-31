@@ -17,8 +17,6 @@ after_initialize do
   module ::DiscourseEncrypt
     PLUGIN_NAME          = 'discourse-encrypt'
 
-    PUBLIC_CUSTOM_FIELD  = 'encrypt_public'
-    PRIVATE_CUSTOM_FIELD = 'encrypt_private'
     TITLE_CUSTOM_FIELD   = 'encrypted_title'
 
 
@@ -37,6 +35,8 @@ after_initialize do
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
+  load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
+  load File.expand_path('../app/models/user.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
@@ -61,9 +61,6 @@ after_initialize do
   Discourse::Application.routes.append do
     mount DiscourseEncrypt::Engine, at: '/'
   end
-
-  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PUBLIC_CUSTOM_FIELD
-  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PRIVATE_CUSTOM_FIELD
 
   add_preloaded_topic_list_custom_field(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
   CategoryList.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
@@ -169,6 +166,14 @@ after_initialize do
 
   add_to_serializer(:post_revision, :include_raws?) do
     post.topic&.is_encrypted?
+  end
+
+  add_to_serializer(:current_user, :encrypt_public) do
+    UserEncryptionKey.find_by(user_id: object.id)&.encrypt_public
+  end
+
+  add_to_serializer(:current_user, :encrypt_private) do
+    UserEncryptionKey.find_by(user_id: object.id)&.encrypt_private
   end
 
   #
