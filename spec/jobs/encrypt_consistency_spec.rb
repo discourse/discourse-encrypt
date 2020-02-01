@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 describe Jobs::EncryptConsistency do
   let(:topic) { Fabricate(:encrypt_topic) }
 

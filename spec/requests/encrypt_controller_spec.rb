@@ -14,8 +14,8 @@ describe DiscourseEncrypt::EncryptController do
     end
 
     it 'does not work when user is not allowed' do
-      group = Fabricate(:group)
-      SiteSetting.encrypt_groups = group.name
+      group = Fabricate(:group, name: 'GrOuP')
+      SiteSetting.encrypt_groups = 'gRoUp'
       sign_in(user3)
 
       put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
