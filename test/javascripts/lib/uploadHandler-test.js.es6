@@ -13,7 +13,7 @@ test("fetchDataPromise - image file", async assert => {
   });
 
   // suppress the image onerror, it is not important
-  fetchDataPromise(file, uploadsUrl).catch(e => console.log(e));
+  fetchDataPromise(file, uploadsUrl).catch(() => null);
   assert.ok(
     uploadsUrl[file.name],
     "it loads the image and adds it to uploadsUrl"
