@@ -1,6 +1,11 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { getUploadMarkdown, isAnImage } from "discourse/lib/uploads";
+import { getUploadMarkdown } from "discourse/lib/uploads";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
+import {
+  fetchDataPromise,
+  fetchDecryptedPromise,
+  fetchKeyPromise
+} from "discourse/plugins/discourse-encrypt/lib/uploadHandler";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -36,45 +41,9 @@ export default {
           return true;
         }
 
-        const dataPromise = isAnImage(file.name)
-          ? new Promise((resolve, reject) => {
-              const img = new Image();
-              img.onload = () => resolve(img);
-              img.onerror = err => reject(err);
-              img.src = window.URL.createObjectURL(file);
-              uploadsUrl[file.name] = img.src;
-            }).then(img => {
-              const ratio = Math.min(
-                Discourse.SiteSettings.max_image_width / img.width,
-                Discourse.SiteSettings.max_image_height / img.height
-              );
-
-              return {
-                original_filename: file.name,
-                width: img.width,
-                height: img.height,
-                thumbnail_width: Math.floor(img.width * ratio),
-                thumbnail_height: Math.floor(img.height * ratio)
-              };
-            })
-          : Promise.resolve({ original_filename: file.name });
-
-        const decryptedPromise = new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = err => reject(err);
-          reader.readAsArrayBuffer(file);
-        });
-
-        const keyPromise = new Promise((resolve, reject) => {
-          window.crypto.subtle
-            .generateKey({ name: "AES-GCM", length: 256 }, true, [
-              "encrypt",
-              "decrypt"
-            ])
-            .then(resolve, reject);
-        });
-
+        const dataPromise = fetchDataPromise(file, uploadsUrl);
+        const decryptedPromise = fetchDecryptedPromise(file);
+        const keyPromise = fetchKeyPromise();
         const exportedKeyPromise = keyPromise.then(key => {
           return window.crypto.subtle
             .exportKey("raw", key)
