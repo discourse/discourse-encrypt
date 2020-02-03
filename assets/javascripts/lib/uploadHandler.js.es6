@@ -1,4 +1,5 @@
 import { isImage } from "discourse/lib/uploads";
+import { Promise } from "rsvp";
 
 export function fetchDataPromise(file, uploadsUrl) {
   if (!isImage(file.name)) {
