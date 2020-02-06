@@ -4,7 +4,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 /**
- * @var {String} DB_NAME Name of IndexedDb used for storing keypairs.
+ * @var {String} DB_NAME Name of IndexedDb used for storing key pairs.
  */
 export const DB_NAME = "discourse-encrypt";
 export const DB_VERSION = "discourse-encrypt-version";

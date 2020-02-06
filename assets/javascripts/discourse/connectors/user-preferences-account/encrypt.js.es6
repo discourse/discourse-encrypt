@@ -180,16 +180,8 @@ export default {
         .finally(() => this.set("inProgress", false));
     },
 
-    export() {
-      showModal("export-keypair", { model: this.model });
-    },
-
-    reset() {
-      showModal("reset-keypair", { model: this.model });
-    },
-
     generatePaperKey(device) {
-      showModal("generate-paperkey", {
+      showModal("generate-paper-key", {
         model: {
           user: this.model,
           device
@@ -204,6 +196,17 @@ export default {
           break;
         case "managePaperKeys":
           showModal("manage-paper-keys", { model: this.model });
+          break;
+      }
+    },
+
+    selectEncryptEnableDropdownAction(actionId) {
+      switch (actionId) {
+        case "import":
+          this.toggleProperty("importIdentity");
+          break;
+        case "reset":
+          showModal("reset-key-pair", { model: this.model });
           break;
       }
     }

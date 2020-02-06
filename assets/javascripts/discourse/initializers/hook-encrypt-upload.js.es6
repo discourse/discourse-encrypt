@@ -2,10 +2,10 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
-  fetchDataPromise,
-  fetchDecryptedPromise,
-  fetchKeyPromise
-} from "discourse/plugins/discourse-encrypt/lib/uploadHandler";
+  getMetadata,
+  readFile,
+  generateUploadKey
+} from "discourse/plugins/discourse-encrypt/lib/uploads";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -41,9 +41,9 @@ export default {
           return true;
         }
 
-        const dataPromise = fetchDataPromise(file, uploadsUrl);
-        const decryptedPromise = fetchDecryptedPromise(file);
-        const keyPromise = fetchKeyPromise();
+        const metadataPromise = getMetadata(file, uploadsUrl);
+        const plaintextPromise = readFile(file);
+        const keyPromise = generateUploadKey();
         const exportedKeyPromise = keyPromise.then(key => {
           return window.crypto.subtle
             .exportKey("raw", key)
@@ -52,34 +52,36 @@ export default {
 
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
 
-        const encryptedPromise = Promise.all([
-          decryptedPromise,
+        const ciphertextPromise = Promise.all([
+          plaintextPromise,
           keyPromise
-        ]).then(([decrypted, key]) => {
+        ]).then(([plaintext, key]) => {
           return window.crypto.subtle.encrypt(
             { name: "AES-GCM", iv, tagLength: 128 },
             key,
-            decrypted
+            plaintext
           );
         });
 
-        Promise.all([encryptedPromise, exportedKeyPromise, dataPromise]).then(
-          ([encrypted, exportedKey, data]) => {
-            uploadsKeys[file.name] = exportedKey;
-            uploadsType[file.name] = file.type;
-            uploadsData[file.name] = data;
+        Promise.all([
+          ciphertextPromise,
+          exportedKeyPromise,
+          metadataPromise
+        ]).then(([ciphertext, exportedKey, data]) => {
+          uploadsKeys[file.name] = exportedKey;
+          uploadsType[file.name] = file.type;
+          uploadsData[file.name] = data;
 
-            const blob = new Blob([iv, encrypted], {
-              type: "application/x-binary"
-            });
-            const f = new File([blob], `${file.name}.encrypted`);
-            editor.$().fileupload("send", {
-              files: [f],
-              originalFiles: [f],
-              formData: { type: "composer" }
-            });
-          }
-        );
+          const blob = new Blob([iv, ciphertext], {
+            type: "application/x-binary"
+          });
+          const f = new File([blob], `${file.name}.encrypted`);
+          editor.$().fileupload("send", {
+            files: [f],
+            originalFiles: [f],
+            formData: { type: "composer" }
+          });
+        });
         return false;
       });
 

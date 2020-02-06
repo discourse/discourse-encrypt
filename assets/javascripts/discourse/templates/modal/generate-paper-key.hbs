@@ -1,0 +1,6 @@
+{{#d-modal-body title=(if device "encrypt.generate_paper_key.title_device" "encrypt.generate_paper_key.title")}}
+  <div>
+    <p>{{i18n (if device 'encrypt.generate_paper_key.instructions_device' 'encrypt.generate_paper_key.instructions')}}</p>
+    <p class="paper-key">{{paperKey}}</p>
+  </div>
+{{/d-modal-body}}

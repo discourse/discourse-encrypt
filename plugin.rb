@@ -9,7 +9,7 @@
 enabled_site_setting :encrypt_enabled
 
 register_asset 'stylesheets/common/encrypt.scss'
-%w[exchange-alt far-clipboard file-export lock plus times ticket-alt trash-alt unlock].each { |i| register_svg_icon(i) }
+%w[bars exchange-alt far-clipboard file-export file-import lock plus ticket-alt times trash-alt unlock wrench].each { |i| register_svg_icon(i) }
 
 Rails.configuration.filter_parameters << :encrypt_private
 

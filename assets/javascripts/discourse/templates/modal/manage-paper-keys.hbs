@@ -1,19 +1,19 @@
-{{#d-modal-body title="encrypt.manage_paperkeys.title"}}
+{{#d-modal-body title="encrypt.manage_paper_keys.title"}}
   <div>
     {{#if keys}}
-      <p>{{i18n 'encrypt.manage_paperkeys.instructions'}}</p>
-      <table class="paperkeys">
+      <p>{{i18n 'encrypt.manage_paper_keys.instructions'}}</p>
+      <table class="paper-keys">
         {{#each keys as |key|}}
           <tr>
             <td>
               {{d-icon "key"}}
               {{#if key.isPaper}}
-                <span class="paperkey">{{key.name}}</span>
+                <span class="paper-key">{{key.name}}</span>
                 ...
               {{else if key.isPassphrase}}
                 <span class="passphrase">
-                  {{i18n 'encrypt.manage_paperkeys.passphrase'}}
-                  <i>{{i18n 'encrypt.manage_paperkeys.not_recommended'}}</i>
+                  {{i18n 'encrypt.manage_paper_keys.passphrase'}}
+                  <i>{{i18n 'encrypt.manage_paper_keys.not_recommended'}}</i>
                 </span>
               {{/if}}
             </td>
@@ -23,17 +23,17 @@
                 action=(action "delete")
                 actionParam=key.label
                 class="btn-danger pull-right"
-                title="encrypt.manage_paperkeys.delete"}}
+                title="encrypt.manage_paper_keys.delete"}}
             </td>
           </tr>
         {{/each}}
       </table>
     {{else}}
-      <p>{{i18n 'encrypt.manage_paperkeys.no_key'}}</p>
+      <p>{{i18n 'encrypt.manage_paper_keys.no_key'}}</p>
     {{/if}}
   </div>
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paperkey.title"}}
+  {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paper_key.title"}}
 </div>

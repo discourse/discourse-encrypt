@@ -30,7 +30,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   actions: {
     copy() {
-      const $copyRange = $("pre.exported-keypair");
+      const $copyRange = $("pre.exported-key-pair");
       if (copyText("", $copyRange[0])) {
         this.set("copied", true);
         Ember.run.later(() => this.set("copied", false), 2000);

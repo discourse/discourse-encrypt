@@ -1,11 +1,11 @@
-import { fetchDataPromise } from "discourse/plugins/discourse-encrypt/lib/uploadHandler";
+import { getMetadata } from "discourse/plugins/discourse-encrypt/lib/uploads";
 
 QUnit.module("discourse-encrypt:lib:uploadHander");
 
 let testImageBase64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 
-test("fetchDataPromise - image file", async assert => {
+test("getMetadata - image file", async assert => {
   let uploadsUrl = {};
   let file = new File([window.atob(testImageBase64)], "test.png", {
     type: "image/png",
@@ -13,18 +13,18 @@ test("fetchDataPromise - image file", async assert => {
   });
 
   // suppress the image onerror, it is not important
-  fetchDataPromise(file, uploadsUrl).catch(() => null);
+  getMetadata(file, uploadsUrl).catch(() => null);
   assert.ok(
     uploadsUrl[file.name],
     "it loads the image and adds it to uploadsUrl"
   );
 });
 
-test("fetchDataPromise - other file", async assert => {
+test("getMetadata - other file", async assert => {
   let uploadsUrl = {};
   let file = new File(["test"], "test.txt", { type: "text/plain" });
 
-  fetchDataPromise(file, uploadsUrl).then(result => {
+  getMetadata(file, uploadsUrl).then(result => {
     assert.equal(result.original_filename, "test.txt");
   });
 });

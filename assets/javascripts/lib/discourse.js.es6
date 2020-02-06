@@ -298,7 +298,14 @@ export function activateEncrypt(currentUser, passphrase) {
     const label = "paper_" + passphrase.substr(0, spacePos).toLowerCase();
     if (privateKeys[label]) {
       promise = promise.catch(() =>
-        importIdentity(privateKeys[label], passphrase)
+        importIdentity(
+          privateKeys[label],
+          passphrase
+            .split(" ")
+            .filter(Boolean)
+            .join(" ")
+            .toUpperCase()
+        )
       );
     }
   }

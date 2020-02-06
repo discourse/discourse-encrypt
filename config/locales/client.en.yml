@@ -49,34 +49,35 @@ en:
         import_key: "I already have an encryption key."
 
         notice_active: |
-          <p>Please use another device or a paper key to activate this device. Use capital letters and spaces between words.<p>
+          <p>Please use another device or a paper key to activate this device. Do not forget about the spaces between words.<p>
         notice_import: |
           <p>Please paste the encryption key you previously exported.</p>
 
         activate: "Activate Encrypted Messages"
         deactivate: "Deactivate Encryption on this Device"
         enable: "Enable Encrypted Messages"
-        reset: "Reset Encryption Key"
+        import: "Import Encryption Key Pair"
+        reset: "Reset Encryption Key Pair"
 
-      generate_paperkey:
+      generate_paper_key:
         title: "Generate Paper Key"
         title_device: "Add Device"
         instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
         instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
 
-      manage_paperkeys:
+      manage_paper_keys:
         title: "Manage Paper Keys"
         instructions: "Below you can delete any of the previously generated paper keys. Once deleted, the paper key cannot be recovered, so please make sure you have at least one paper key or other active devices."
         delete: "Delete"
-        no_key: "You have no paperkeys. Make sure you have at least one paper key or other active devices."
+        no_key: "You have no paper keys. Make sure you have at least one paper key or other active devices."
         passphrase: "passphrase-based"
         not_recommended: "(not recommended)"
 
       export:
-        title: "Export Encryption Keypair"
-        instructions: "Exporting your keypair is another backup mechanism. Please note that the exported keypair is unprotected and it can decrypt all your private conversations."
+        title: "Export Encryption Key Pair"
+        instructions: "Exporting your key pair is another backup mechanism. Please note that the exported key pair is unprotected and it can decrypt all your private conversations."
 
       reset:
-        title: "Reset Encryption Keypair"
+        title: "Reset Encryption Key Pair"
         instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever unless it was previously exported."
         everything: "Uninvite from all encrypted private conversations (if any)"

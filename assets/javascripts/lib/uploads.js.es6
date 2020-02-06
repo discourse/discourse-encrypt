@@ -1,7 +1,7 @@
 import { isImage } from "discourse/lib/uploads";
 import { Promise } from "rsvp";
 
-export function fetchDataPromise(file, uploadsUrl) {
+export function getMetadata(file, uploadsUrl) {
   if (!isImage(file.name)) {
     return Promise.resolve({ original_filename: file.name });
   }
@@ -28,7 +28,7 @@ export function fetchDataPromise(file, uploadsUrl) {
   });
 }
 
-export function fetchDecryptedPromise(file) {
+export function readFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result);
@@ -37,7 +37,7 @@ export function fetchDecryptedPromise(file) {
   });
 }
 
-export function fetchKeyPromise() {
+export function generateUploadKey() {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .generateKey({ name: "AES-GCM", length: 256 }, true, [
