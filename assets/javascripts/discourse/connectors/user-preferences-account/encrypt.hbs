@@ -18,8 +18,7 @@
               {{d-button icon="times" action=(action "deactivateEncrypt") label="encrypt.preferences.deactivate" id="deactivate"}}
               {{d-button icon="plus" action=(action "generatePaperKey" true) label="encrypt.generate_paperkey.title_device"}}
               {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paperkey.title"}}
-              {{encrypt-preferences-dropdown export=(action "export")
-                                            managePaperKeys=(action "managePaperKeys")}}
+              {{encrypt-preferences-dropdown onChange=(action "selectEncryptPreferencesDropdownAction")}}
             {{else}}
               <form>
                 <p>{{i18n 'encrypt.preferences.status_enabled_but_inactive'}}</p>
@@ -56,7 +55,7 @@
         {{else}}
           {{#if isEncryptEnabled}}
             <p>{{i18n 'encrypt.preferences.status_enabled_other'}}</p>
-            <p><a {{action "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></p>
+            <p><a {{action "selectEncryptEnableDropdownAction" "reset"}} class="text-danger">{{i18n 'encrypt.preferences.reset'}}</a></p>
           {{else}}
             <p>{{i18n 'encrypt.preferences.status_disabled_other'}}</p>
           {{/if}}

@@ -185,8 +185,15 @@ export default {
       });
     },
 
-    managePaperKeys() {
-      showModal("manage-paperkeys", { model: this.model });
+    selectEncryptPreferencesDropdownAction(actionId) {
+      switch (actionId) {
+        case "export":
+          showModal("export-key-pair", { model: this.model });
+          break;
+        case "managePaperKeys":
+          showModal("manage-paper-keys", { model: this.model });
+          break;
+      }
     }
   }
 };
