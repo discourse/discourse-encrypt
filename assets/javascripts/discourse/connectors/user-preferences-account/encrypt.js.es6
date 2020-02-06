@@ -121,16 +121,28 @@ export default {
     activateEncrypt() {
       this.set("inProgress", true);
 
-      return activateEncrypt(this.model, this.passphrase)
+      const identityPromise = this.importIdentity
+        ? importIdentity(unpackIdentity(this.identity)).then(identity =>
+            saveDbIdentity(identity)
+          )
+        : activateEncrypt(this.model, this.passphrase);
+
+      return identityPromise
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.set("passphrase", "");
           reload();
         })
         .catch(() =>
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
         )
-        .finally(() => this.set("inProgress", false));
+        .finally(() =>
+          this.setProperties({
+            passphrase: "",
+            inProgress: false,
+            importIdentity: false,
+            identity: ""
+          })
+        );
     },
 
     changeEncrypt() {
