@@ -17,7 +17,7 @@ import {
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
-import { imageNameFromFileName } from "discourse/lib/uploads";
+import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
   ENCRYPT_DISABLED,
@@ -209,7 +209,7 @@ function resolveShortUrlElement($el) {
       type: $el.data("type")
     }).then(file => {
       const imageName = file.name
-        ? imageNameFromFileName(file.name)
+        ? markdownNameFromFileName(file.name)
         : $el.attr("alt").replace(/\.encrypted$/, "");
       $el.attr("alt", imageName);
       data.url = window.URL.createObjectURL(file.blob);
