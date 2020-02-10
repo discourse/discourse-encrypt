@@ -340,3 +340,23 @@ test("encrypt settings visible only to allowed groups", async assert => {
   await visit("/u/eviltrout/preferences");
   assert.ok(find(".encrypt").text().length > 0, "encrypt settings are visible");
 });
+
+test("user preferences connector works for other users", async assert => {
+  /* global server */
+  server.get("/u/eviltrout2.json", () => {
+    const json = JSON.parse(JSON.stringify(userFixtures["/u/eviltrout.json"]));
+    json.user.id += 1;
+    json.user.can_edit = true;
+    json.user.custom_fields = { encrypt_public: "encrypted public identity" };
+    return [200, { "Content-Type": "application/json" }, json];
+  });
+
+  await visit("/u/eviltrout2/preferences");
+
+  assert.ok(
+    find(".user-preferences-account-outlet.encrypt")
+      .text()
+      .trim()
+      .indexOf(I18n.t("encrypt.preferences.status_enabled_other")) !== -1
+  );
+});
