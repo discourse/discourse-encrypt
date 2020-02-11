@@ -233,7 +233,6 @@ test("posting does not leak plaintext", async assert => {
   await click("#create-topic");
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
-  await click(".reply-details a");
   await fillIn("#private-message-users", "admin");
   await keyEvent("#private-message-users", "keydown", 8);
   await keyEvent("#private-message-users", "keydown", 13);
@@ -252,6 +251,35 @@ test("posting does not leak plaintext", async assert => {
   await wait(
     () => requests.includes("/posts") && requests.includes("/encrypt/post"),
     () => click("button.create")
+  );
+
+  globalAssert = null;
+});
+
+test("new draft for public topic is not encrypted", async assert => {
+  globalAssert = { notContains: () => assert.ok(true) };
+  await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+  server.post("/draft.json", request => {
+    const body = parsePostData(request.requestBody);
+
+    assert.equal(
+      JSON.parse(body.data).title,
+      `Some public message ${PLAINTEXT}`
+    );
+    return [200, { "Content-Type": "application/json" }, {}];
+  });
+
+  await visit("/");
+  await click("#create-topic");
+  await fillIn("#reply-title", `Some public message ${PLAINTEXT}`);
+  await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+
+  requests = [];
+  let waiting = setTimeout(() => (waiting = null), 3000);
+  await wait(
+    () => requests.includes("/draft.json") || !waiting,
+    () => click(".toggler")
   );
 
   globalAssert = null;

@@ -33,7 +33,9 @@ export default {
         const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
-          isEncrypted: encryptedTopic && canEncryptTopic,
+          isEncrypted:
+            (encryptedTopic && canEncryptTopic) ||
+            (this.isNew && this.creatingPrivateMessage),
           /** @var Disable encrypt indicator to enforce encrypted message, if
                    message is encrypted, or enforce decrypted message if one
                    of the recipients does not have encryption enabled. */
@@ -55,9 +57,9 @@ export default {
         this.updateEncryptProperties();
       },
 
-      @observes("targetUsernames")
+      @observes("targetRecipients")
       checkKeys() {
-        if (!this.targetUsernames) {
+        if (!this.targetRecipients) {
           this.setProperties({
             isEncrypted: true,
             disableEncryptIndicator: false,
@@ -66,7 +68,7 @@ export default {
           return;
         }
 
-        const usernames = this.targetUsernames.split(",");
+        const usernames = this.targetRecipients.split(",");
         usernames.push(this.user.username);
 
         const groupNames = new Set(this.site.groups.map(g => g.name));
