@@ -28,7 +28,7 @@ export default {
 
     // Check recipients and show encryption status in composer.
     Composer.reopen({
-      updateEncryptProperties(newMessage) {
+      updateEncryptProperties({ newMessage }) {
         const encryptedTopic = this.topic && this.topic.encrypted_title;
         const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
         this.setProperties({
@@ -47,12 +47,12 @@ export default {
 
       @on("init")
       initEncrypt() {
-        this.updateEncryptProperties(true);
+        this.updateEncryptProperties({ newMessage: true });
       },
 
       @observes("creatingPrivateMessage", "topic")
       updateComposerEncrypt() {
-        this.updateEncryptProperties(false);
+        this.updateEncryptProperties({ newMessage: false });
       },
 
       @observes("targetRecipients")
