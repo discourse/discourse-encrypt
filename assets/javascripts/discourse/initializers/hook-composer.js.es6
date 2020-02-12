@@ -28,12 +28,12 @@ export default {
 
     // Check recipients and show encryption status in composer.
     Composer.reopen({
-      updateEncryptProperties({ newMessage }) {
+      updateEncryptProperties() {
         const encryptedTopic = this.topic && this.topic.encrypted_title;
         const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
-          isEncrypted: (encryptedTopic && canEncryptTopic) || newMessage,
+          isEncrypted: encryptedTopic && canEncryptTopic,
           /** @var Disable encrypt indicator to enforce encrypted message, if
                    message is encrypted, or enforce decrypted message if one
                    of the recipients does not have encryption enabled. */
@@ -47,17 +47,17 @@ export default {
 
       @on("init")
       initEncrypt() {
-        this.updateEncryptProperties({ newMessage: true });
+        this.updateEncryptProperties();
       },
 
       @observes("creatingPrivateMessage", "topic")
       updateComposerEncrypt() {
-        this.updateEncryptProperties({ newMessage: false });
+        this.updateEncryptProperties();
       },
 
-      @observes("targetRecipients")
+      @observes("targetUsernames")
       checkKeys() {
-        if (!this.targetRecipients) {
+        if (!this.targetUsernames) {
           this.setProperties({
             isEncrypted: true,
             disableEncryptIndicator: false,
@@ -66,7 +66,7 @@ export default {
           return;
         }
 
-        const usernames = this.targetRecipients.split(",");
+        const usernames = this.targetUsernames.split(",");
         usernames.push(this.user.username);
 
         const groupNames = new Set(this.site.groups.map(g => g.name));

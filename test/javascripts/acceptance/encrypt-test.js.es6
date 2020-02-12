@@ -233,6 +233,7 @@ test("posting does not leak plaintext", async assert => {
   await click("#create-topic");
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
+  await click(".reply-details a");
   await fillIn("#private-message-users", "admin");
   await keyEvent("#private-message-users", "keydown", 8);
   await keyEvent("#private-message-users", "keydown", 13);
