@@ -54,6 +54,16 @@ export default {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
         let { _super } = this;
 
+        if (
+          !globalContainer ||
+          globalContainer.isDestroyed ||
+          globalContainer.isDestroying
+        ) {
+          // Since at this point we cannot be sure if it is an encrypted
+          // topic or not, the draft is simply discarded.
+          return Ember.RSVP.Promise.reject();
+        }
+
         const controller = globalContainer.lookup("controller:composer");
         let encrypted = !!controller.get("model.isEncrypted");
         if (draftKey.indexOf("topic_") === 0) {
