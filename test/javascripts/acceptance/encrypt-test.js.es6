@@ -143,8 +143,8 @@ acceptance("Encrypt", {
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(body) {
+      requests.push(this.url);
       if (body && globalAssert) {
-        requests.push(this.url);
         globalAssert.notContains(body, PLAINTEXT, "does not leak plaintext");
         globalAssert.notContains(body, PASSPHRASE, "does not leak passphrase");
       }
@@ -238,9 +238,8 @@ test("posting does not leak plaintext", async assert => {
   await keyEvent("#private-message-users", "keydown", 13);
 
   requests = [];
-  let waiting = setTimeout(() => (waiting = null), 3000);
   await wait(
-    () => requests.includes("/draft.json") || !waiting,
+    () => requests.includes("/draft.json"),
     async () => {
       await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
       await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
@@ -257,16 +256,16 @@ test("posting does not leak plaintext", async assert => {
 });
 
 test("new draft for public topic is not encrypted", async assert => {
-  globalAssert = { notContains: () => assert.ok(true) };
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   server.post("/draft.json", request => {
-    const body = parsePostData(request.requestBody);
-
-    assert.equal(
-      JSON.parse(body.data).title,
-      `Some public message ${PLAINTEXT}`
-    );
+    const data = JSON.parse(parsePostData(request.requestBody).data);
+    if (data.title) {
+      assert.equal(data.title, `Some public message ${PLAINTEXT}`);
+    }
+    if (data.reply) {
+      assert.equal(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
+    }
     return [200, { "Content-Type": "application/json" }, {}];
   });
 
@@ -276,13 +275,10 @@ test("new draft for public topic is not encrypted", async assert => {
   await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
 
   requests = [];
-  let waiting = setTimeout(() => (waiting = null), 3000);
   await wait(
-    () => requests.includes("/draft.json") || !waiting,
+    () => requests.includes("/draft.json"),
     () => click(".toggler")
   );
-
-  globalAssert = null;
 });
 
 test("enabling works", async assert => {
