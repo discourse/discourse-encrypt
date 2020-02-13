@@ -143,8 +143,8 @@ acceptance("Encrypt", {
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(body) {
+      requests.push(this.url);
       if (body && globalAssert) {
-        requests.push(this.url);
         globalAssert.notContains(body, PLAINTEXT, "does not leak plaintext");
         globalAssert.notContains(body, PASSPHRASE, "does not leak passphrase");
       }
@@ -233,15 +233,13 @@ test("posting does not leak plaintext", async assert => {
   await click("#create-topic");
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
-  await click(".reply-details a");
   await fillIn("#private-message-users", "admin");
   await keyEvent("#private-message-users", "keydown", 8);
   await keyEvent("#private-message-users", "keydown", 13);
 
   requests = [];
-  let waiting = setTimeout(() => (waiting = null), 3000);
   await wait(
-    () => requests.includes("/draft.json") || !waiting,
+    () => requests.includes("/draft.json"),
     async () => {
       await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
       await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
@@ -255,6 +253,32 @@ test("posting does not leak plaintext", async assert => {
   );
 
   globalAssert = null;
+});
+
+test("new draft for public topic is not encrypted", async assert => {
+  await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+  server.post("/draft.json", request => {
+    const data = JSON.parse(parsePostData(request.requestBody).data);
+    if (data.title) {
+      assert.equal(data.title, `Some public message ${PLAINTEXT}`);
+    }
+    if (data.reply) {
+      assert.equal(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
+    }
+    return [200, { "Content-Type": "application/json" }, {}];
+  });
+
+  await visit("/");
+  await click("#create-topic");
+  await fillIn("#reply-title", `Some public message ${PLAINTEXT}`);
+  await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+
+  requests = [];
+  await wait(
+    () => requests.includes("/draft.json"),
+    () => click(".toggler")
+  );
 });
 
 test("enabling works", async assert => {
