@@ -17,4 +17,15 @@ module UserExtensions
       OpenSSL::PKey::RSA.new.tap { |k| k.set_key(n, e, nil) }
     end
   end
+
+  def publish_identity
+    MessageBus.publish(
+      '/plugin/encrypt/keys',
+      {
+        public: self.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD],
+        private: self.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD],
+      },
+      user_ids: [self.id]
+    )
+  end
 end

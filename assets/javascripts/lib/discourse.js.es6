@@ -355,9 +355,6 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
               passphrase: exported.private
             });
 
-            currentUser.set("custom_fields.encrypt_public", exported.public);
-            currentUser.set("custom_fields.encrypt_private", exportedPrivate);
-
             return ajax("/encrypt/keys", {
               type: "PUT",
               data: {

@@ -26,16 +26,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
           }
         });
       })
-      .then(() => {
-        const privateKeys = this.model.user.custom_fields.encrypt_private
-          ? JSON.parse(this.model.user.custom_fields.encrypt_private)
-          : {};
-        privateKeys[label] = true;
-        this.set(
-          "model.user.custom_fields.encrypt_private",
-          JSON.stringify(privateKeys)
-        );
-      })
       .finally(() => this.set("inProgress", false));
   },
 

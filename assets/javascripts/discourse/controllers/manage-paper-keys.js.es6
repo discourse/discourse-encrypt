@@ -41,15 +41,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
       return ajax("/encrypt/keys", {
         type: "DELETE",
         data: { label }
-      }).then(() => {
-        const privateKeys = this.model.custom_fields.encrypt_private
-          ? JSON.parse(this.model.custom_fields.encrypt_private)
-          : {};
-        delete privateKeys[label];
-        this.set(
-          "model.custom_fields.encrypt_private",
-          JSON.stringify(privateKeys)
-        );
       });
     }
   }

@@ -41,6 +41,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     end
 
     current_user.save_custom_fields
+    current_user.publish_identity
 
     render json: success_json
   end
@@ -58,6 +59,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     if data.delete(private_id_label)
       current_user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD] = JSON.dump(data)
       current_user.save_custom_fields
+      current_user.publish_identity
     end
 
     render json: success_json
