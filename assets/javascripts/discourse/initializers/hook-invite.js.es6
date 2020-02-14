@@ -8,6 +8,7 @@ import {
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 export default {
   name: "hook-invite",
@@ -26,10 +27,7 @@ export default {
           return _super.call(this, ...arguments);
         }
 
-        return Ember.RSVP.Promise.all([
-          getTopicKey(this.id),
-          getUserIdentities([user])
-        ])
+        return Promise.all([getTopicKey(this.id), getUserIdentities([user])])
           .then(([key, identities]) =>
             exportKey(key, identities[user].encryptPublic)
           )
@@ -43,7 +41,7 @@ export default {
             bootbox.alert(
               I18n.t("encrypt.composer.user_has_no_key", { username })
             );
-            return Ember.RSVP.Promise.reject(username);
+            return Promise.reject(username);
           });
       }
     });

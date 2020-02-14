@@ -1,6 +1,5 @@
 import { debounce } from "@ember/runloop";
 import { ajax } from "discourse/lib/ajax";
-import { Promise } from "rsvp";
 import {
   DB_NAME,
   DB_VERSION,
@@ -14,6 +13,7 @@ import {
   importIdentity,
   importKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 /*
  * Possible states of the encryption system.
@@ -79,20 +79,20 @@ export function getUserIdentities(usernames) {
       userIdentities[username] = promise.then(identities =>
         identities[username]
           ? importIdentity(identities[username])
-          : Ember.RSVP.Promise.reject(username)
+          : Promise.reject(username)
       );
     });
   }
 
-  return Ember.RSVP.Promise.all(
-    usernames.map(username => userIdentities[username])
-  ).then(identities => {
-    const imported = {};
-    for (let i = 0; i < usernames.length; ++i) {
-      imported[usernames[i]] = identities[i];
+  return Promise.all(usernames.map(username => userIdentities[username])).then(
+    identities => {
+      const imported = {};
+      for (let i = 0; i < usernames.length; ++i) {
+        imported[usernames[i]] = identities[i];
+      }
+      return imported;
     }
-    return imported;
-  });
+  );
 }
 
 const debouncedUsernames = new Set();
@@ -109,7 +109,7 @@ function _getDebouncedUserIdentities(resolve, reject) {
 export function getDebouncedUserIdentities(usernames) {
   usernames.forEach(u => debouncedUsernames.add(u));
 
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     debounce(
       debouncedUsernames,
       _getDebouncedUserIdentities,
@@ -145,10 +145,10 @@ export function getTopicKey(topicId) {
   let key = topicKeys[topicId];
 
   if (!key) {
-    return Ember.RSVP.Promise.reject();
+    return Promise.reject();
   } else if (key instanceof CryptoKey) {
-    return Ember.RSVP.Promise.resolve(key);
-  } else if (!(key instanceof Promise || key instanceof Ember.RSVP.Promise)) {
+    return Promise.resolve(key);
+  } else if (!(key instanceof Promise || key instanceof window.Promise)) {
     topicKeys[topicId] = getIdentity().then(identity =>
       importKey(key, identity.encryptPrivate)
     );
@@ -191,10 +191,8 @@ export function getTopicTitle(topicId) {
   let title = topicTitles[topicId];
 
   if (!title) {
-    return Ember.RSVP.Promise.reject();
-  } else if (
-    !(title instanceof Promise || title instanceof Ember.RSVP.Promise)
-  ) {
+    return Promise.reject();
+  } else if (!(title instanceof Promise || title instanceof window.Promise)) {
     topicTitles[topicId] = getTopicKey(topicId)
       .then(key => decrypt(key, title))
       .then(decrypted => decrypted.raw);
@@ -290,7 +288,7 @@ export function canEnableEncrypt(user) {
  */
 export function activateEncrypt(currentUser, passphrase) {
   const privateKeys = JSON.parse(currentUser.custom_fields.encrypt_private);
-  let promise = Ember.RSVP.Promise.reject();
+  let promise = Promise.reject();
 
   // Importing from a paper key.
   const spacePos = passphrase.indexOf(" ");
@@ -366,9 +364,7 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
           }
         );
 
-        return Ember.RSVP.Promise.all([identity, savePromise]).then(
-          result => result[0]
-        );
+        return Promise.all([identity, savePromise]).then(result => result[0]);
       });
   }
 

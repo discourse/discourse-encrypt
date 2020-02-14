@@ -19,6 +19,7 @@ import {
   generateIdentity,
   importIdentity
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 export default {
   setupComponent(args, component) {
@@ -112,10 +113,7 @@ export default {
           });
         });
 
-      return Ember.RSVP.Promise.all([
-        saveIdentityPromise,
-        saveDbIdentityPromise
-      ]);
+      return Promise.all([saveIdentityPromise, saveDbIdentityPromise]);
     },
 
     activateEncrypt() {

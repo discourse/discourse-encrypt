@@ -2,6 +2,7 @@ import {
   exportIdentity,
   importIdentity
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 /**
  * @var {String} DB_NAME Name of IndexedDb used for storing key pairs.
@@ -88,7 +89,7 @@ export function saveDbIdentity(identity) {
     });
   }
 
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let req = openDb(true);
 
     req.onerror = evt => reject(evt);
@@ -118,12 +119,10 @@ export function saveDbIdentity(identity) {
 export function loadDbIdentity() {
   if (isSafari) {
     const exported = window.localStorage.getItem(DB_NAME);
-    return exported
-      ? importIdentity(exported)
-      : Ember.RSVP.Promise.resolve(null);
+    return exported ? importIdentity(exported) : Promise.resolve(null);
   }
 
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let req = openDb(false);
     req.onerror = () => resolve();
     req.onsuccess = evt => {
@@ -169,10 +168,10 @@ export function deleteDb() {
   window.localStorage.removeItem(DB_VERSION);
 
   if (isSafari) {
-    return Ember.RSVP.resolve();
+    return Promise.resolve();
   }
 
-  return new Ember.RSVP.Promise(resolve => {
+  return new Promise(resolve => {
     let req = window.indexedDB.deleteDatabase(DB_NAME);
 
     req.onsuccess = evt => resolve(evt);

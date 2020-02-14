@@ -11,6 +11,7 @@ import {
   generateKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
+import { Promise } from "rsvp";
 
 const ALLOWED_DRAFT_FIELDS = [
   "action",
@@ -61,7 +62,7 @@ export default {
         ) {
           // Since at this point we cannot be sure if it is an encrypted
           // topic or not, the draft is simply discarded.
-          return Ember.RSVP.Promise.reject();
+          return Promise.reject();
         }
 
         const controller = globalContainer.lookup("controller:composer");
@@ -79,7 +80,7 @@ export default {
 
           const topicKey = generateKey();
 
-          const encKey = Ember.RSVP.Promise.all([
+          const encKey = Promise.all([
             topicKey,
             getIdentity()
           ]).then(([key, identity]) => exportKey(key, identity.encryptPublic));
@@ -94,7 +95,7 @@ export default {
               )
             : "";
 
-          return Ember.RSVP.Promise.all([encTitle, encReply, encKey]).then(
+          return Promise.all([encTitle, encReply, encKey]).then(
             ([title, reply, key]) => {
               data.title = title;
               data.reply = key + "\n" + reply;

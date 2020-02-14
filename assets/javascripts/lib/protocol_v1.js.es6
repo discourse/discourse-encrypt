@@ -2,13 +2,14 @@ import {
   base64ToBuffer,
   bufferToBase64
 } from "discourse/plugins/discourse-encrypt/lib/base64";
+import { Promise } from "rsvp";
 
 /*
  * Key generation
  */
 
 function getPassphraseKey(passphrase, salt) {
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     window.crypto.subtle
       .importKey(
         "raw",
@@ -66,7 +67,7 @@ export function generateIdentity() {
     ["sign", "verify"]
   );
 
-  return Ember.RSVP.Promise.all([encryptKeyPromise, signKeyPromise]).then(
+  return Promise.all([encryptKeyPromise, signKeyPromise]).then(
     ([encryptKey, signKey]) => ({
       encryptPublic: encryptKey.publicKey,
       encryptPrivate: encryptKey.privateKey,
@@ -77,7 +78,7 @@ export function generateIdentity() {
 }
 
 export function exportIdentity(identity, passphrase) {
-  const identityPromise = Ember.RSVP.Promise.all([
+  const identityPromise = Promise.all([
     window.crypto.subtle.exportKey("jwk", identity.encryptPublic),
     window.crypto.subtle.exportKey("jwk", identity.encryptPrivate),
     window.crypto.subtle.exportKey("jwk", identity.signPublic),
@@ -104,7 +105,7 @@ export function exportIdentity(identity, passphrase) {
   if (passphrase) {
     const salt = window.crypto.getRandomValues(new Uint8Array(16));
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
-    privatePromise = Ember.RSVP.Promise.all([
+    privatePromise = Promise.all([
       getPassphraseKey(passphrase, salt),
       identityPromise
     ])
@@ -125,7 +126,7 @@ export function exportIdentity(identity, passphrase) {
     );
   }
 
-  return Ember.RSVP.Promise.all([publicPromise, privatePromise]).then(
+  return Promise.all([publicPromise, privatePromise]).then(
     ([publicIdentity, privateIdentity]) => ({
       public: publicIdentity,
       private: privateIdentity
@@ -149,12 +150,12 @@ export function importIdentity(identity, passphrase, extractable) {
       )
     );
   } else {
-    decrypted = Ember.RSVP.Promise.resolve(base64ToBuffer(identity));
+    decrypted = Promise.resolve(base64ToBuffer(identity));
   }
 
   return decrypted.then(exported => {
     identity = JSON.parse(new TextDecoder().decode(exported));
-    return Ember.RSVP.Promise.all([
+    return Promise.all([
       window.crypto.subtle.importKey(
         "jwk",
         identity.encryptPublic,
@@ -212,10 +213,10 @@ export function encrypt(key, signKey, plaintext) {
           plaintext.signature = bufferToBase64(signature);
           return plaintext;
         })
-    : Ember.RSVP.Promise.resolve(plaintext);
+    : Promise.resolve(plaintext);
 
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     plaintextPromise
       .then(unencrypted =>
         window.crypto.subtle.encrypt(
@@ -233,7 +234,7 @@ export function decrypt(key, ciphertext) {
   const iv = base64ToBuffer(ciphertext.substring(0, 16));
   const encrypted = base64ToBuffer(ciphertext.substring(16));
 
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     window.crypto.subtle
       .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, encrypted)
       .then(buffer => JSON.parse(new TextDecoder().decode(buffer)))
@@ -245,7 +246,7 @@ export function verify(key, plaintext) {
   const { signature } = plaintext;
   delete plaintext.signature;
 
-  return new Ember.RSVP.Promise(resolve => {
+  return new Promise(resolve => {
     window.crypto.subtle
       .verify(
         { name: "RSA-PSS", saltLength: 32 },

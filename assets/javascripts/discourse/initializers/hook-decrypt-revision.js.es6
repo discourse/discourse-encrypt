@@ -7,6 +7,7 @@ import {
   hasTopicKey
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 export default {
   name: "hook-decrypt-revision",
@@ -25,12 +26,12 @@ export default {
           }
 
           const topicKey = getTopicKey(result.topic_id);
-          return Ember.RSVP.Promise.all([
+          return Promise.all([
             topicKey.then(k => decrypt(k, result.raws.previous)),
             topicKey.then(k => decrypt(k, result.raws.current))
           ])
             .then(([previous, current]) =>
-              Ember.RSVP.Promise.all([
+              Promise.all([
                 previous.raw,
                 cookAsync(previous.raw),
                 current.raw,

@@ -18,6 +18,7 @@ import {
   importIdentity as importIdentityV1,
   verify as verifyV1
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v1";
+import { Promise } from "rsvp";
 
 /**
  * @var {Number} ENCRYPT_PROTOCOL_VERSION Current protocol version.
@@ -197,7 +198,7 @@ export function verify(key, plaintext, ciphertext) {
   ciphertext = ciphertext.substr(sep + 1);
 
   if (version === 0) {
-    return Ember.RSVP.Promise.resolve(null);
+    return Promise.resolve(null);
   } else if (version === 1) {
     return verifyV1(key, plaintext, ciphertext);
   }
@@ -213,7 +214,7 @@ export function verify(key, plaintext, ciphertext) {
  * @return {Promise<CryptoKey>}
  */
 export function generateKey() {
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     window.crypto.subtle
       .generateKey({ name: "AES-GCM", length: 256 }, true, [
         "encrypt",
@@ -232,7 +233,7 @@ export function generateKey() {
  * @return {Promise<String>}
  */
 export function exportKey(key, publicKey) {
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     window.crypto.subtle
       .wrapKey("raw", key, publicKey, {
         name: "RSA-OAEP",
@@ -252,7 +253,7 @@ export function exportKey(key, publicKey) {
  * @return {Promise<CryptoKey>}
  */
 export function importKey(key, privateKey) {
-  return new Ember.RSVP.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     window.crypto.subtle
       .unwrapKey(
         "raw",

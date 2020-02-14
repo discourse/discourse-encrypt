@@ -17,6 +17,7 @@ import {
   exportKey,
   generateKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 /**
  * Adds metadata extracted from the composer.
@@ -101,7 +102,7 @@ export default {
               .finally(() => {
                 args.title = I18n.t("encrypt.encrypted_topic_title");
               })
-          : Ember.RSVP.Promise.resolve();
+          : Promise.resolve();
 
         let replyPromise = raw
           ? topicKeyPromise
@@ -110,9 +111,9 @@ export default {
               .finally(() => {
                 args.raw = I18n.t("encrypt.encrypted_post");
               })
-          : Ember.RSVP.Promise.resolve();
+          : Promise.resolve();
 
-        let encryptedKeysPromise = Ember.RSVP.Promise.resolve();
+        let encryptedKeysPromise = Promise.resolve();
 
         let usernames = [];
         if (args.target_recipients) {
@@ -126,7 +127,7 @@ export default {
           usernames.push(User.current().username);
           const identitiesPromise = getUserIdentities(usernames);
 
-          encryptedKeysPromise = Ember.RSVP.Promise.all([
+          encryptedKeysPromise = Promise.all([
             topicKeyPromise,
             identitiesPromise
           ])
@@ -138,7 +139,7 @@ export default {
                   exportKey(key, identities[username].encryptPublic)
                 );
               }
-              return Ember.RSVP.Promise.all(promises);
+              return Promise.all(promises);
             })
             .then(userKeys => {
               args.encrypted_keys = {};
@@ -151,7 +152,7 @@ export default {
               bootbox.alert(
                 I18n.t("encrypt.composer.user_has_no_key", { username })
               );
-              return Ember.RSVP.Promise.reject(username);
+              return Promise.reject(username);
             });
         }
 
@@ -160,18 +161,10 @@ export default {
         args.composer_open_duration_msecs = 10000;
         args.typing_duration_msecs = 10000;
 
-        return Ember.RSVP.Promise.all([
-          titlePromise,
-          replyPromise,
-          encryptedKeysPromise
-        ])
+        return Promise.all([titlePromise, replyPromise, encryptedKeysPromise])
           .then(() => _super.call(this, ...arguments))
           .then(result =>
-            Ember.RSVP.Promise.all([
-              topicKeyPromise,
-              titlePromise,
-              identityPromise
-            ])
+            Promise.all([topicKeyPromise, titlePromise, identityPromise])
               .then(([key, encTitle, identity]) => {
                 putTopicKey(result.payload.topic_id, key);
                 putTopicTitle(result.payload.topic_id, encTitle);
@@ -219,10 +212,7 @@ export default {
           return _super.call(this, ...arguments);
         }
 
-        return Ember.RSVP.Promise.all([
-          getTopicKey(attrs.topic_id),
-          getIdentity()
-        ])
+        return Promise.all([getTopicKey(attrs.topic_id), getIdentity()])
           .then(([key, identity]) =>
             encrypt(key, addMetadata({ raw: attrs.raw }), {
               signKey: identity.signPrivate,
