@@ -294,7 +294,7 @@ export function activateEncrypt(currentUser, passphrase) {
 
   // Importing from a paper key.
   const spacePos = passphrase.indexOf(" ");
-  if (spacePos) {
+  if (spacePos !== -1) {
     const label = "paper_" + passphrase.substr(0, spacePos).toLowerCase();
     if (privateKeys[label]) {
       promise = promise.catch(() =>
