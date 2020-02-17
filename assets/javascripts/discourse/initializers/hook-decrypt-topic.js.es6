@@ -13,24 +13,23 @@ import {
 /**
  * Decrypts all elements described by a selector.
  *
- * @param containerSelector Item list (container) selector
- * @param elementSelector   Encrypted element selector
+ * @param {String} containerSelector Item list (container) selector
+ * @param {String} elementSelector   Encrypted element selector
+ *                                   If not present, the container element is
+ *                                   used
+ * @param {{ addIcon: Boolean,
+ *           replaceIcon: Boolean }} opts
  */
 function decryptElements(containerSelector, elementSelector, opts) {
   opts = opts || {};
 
   $(containerSelector).each(function() {
-    if ($(this).data("decrypted")) {
-      return;
-    }
-
     const topicId = $(this).data("topic-id");
     const $el = elementSelector ? $(this).find(elementSelector) : $(this);
     if (!topicId || !hasTopicTitle(topicId) || !$el.length) {
       return;
     }
 
-    $(this).data("decrypted", true);
     getTopicTitle(topicId)
       .then(title => {
         title = emojiUnescape(escapeExpression(title));

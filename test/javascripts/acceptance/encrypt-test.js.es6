@@ -8,16 +8,22 @@ import EncryptLibDiscourse, {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
-  getEncryptionStatus
+  getEncryptionStatus,
+  getIdentity
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
+  encrypt,
   exportIdentity,
-  generateIdentity
+  exportKey,
+  generateIdentity,
+  generateKey
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { NOTIFICATION_TYPES } from "fixtures/concerns/notification-types";
 import { default as userFixtures } from "fixtures/user_fixtures";
 import { parsePostData } from "helpers/create-pretender";
 import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import selectKit from "helpers/select-kit-helper";
+import { Promise } from "rsvp";
 
 /*
  * Checks if a string is not contained in a string.
@@ -383,4 +389,67 @@ test("user preferences connector works for other users", async assert => {
       .trim()
       .indexOf(I18n.t("encrypt.preferences.status_enabled_other")) !== -1
   );
+});
+
+test("topic titles in notification panel are decrypted", async assert => {
+  await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+  const identity = await getIdentity();
+  const topicKey = await generateKey();
+  const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+  const title = "Top Secret :male_detective:";
+  const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+  /* global server */
+  server.get("/notifications", () => [
+    200,
+    { "Content-Type": "application/json" },
+    {
+      notifications: [
+        {
+          id: 42,
+          user_id: 1,
+          notification_type: NOTIFICATION_TYPES.private_message,
+          read: false,
+          created_at: "2020-01-01T12:12:12.000Z",
+          post_number: 1,
+          topic_id: 42,
+          fancy_title: "A Secret Message",
+          slug: "a-secret-message",
+          data: {
+            topic_title: "A Secret Message",
+            original_post_id: 42,
+            original_post_type: 1,
+            original_username: "foo",
+            revision_number: null,
+            display_username: "foo"
+          },
+          encrypted_title: encryptedTitle,
+          topic_key: exportedKey
+        }
+      ],
+      total_rows_notifications: 1,
+      seen_notification_id: 5,
+      load_more_notifications: "/notifications?offset=60&username=dan"
+    }
+  ]);
+
+  const stub = sandbox.stub(EncryptLibDiscourse, "getTopicTitle");
+  stub.returns(Promise.resolve("Top Secret :male_detective:"));
+
+  await visit("/");
+  await click(".header-dropdown-toggle.current-user");
+
+  // The plugin debounces the decryption operation to ensure that DOM elements
+  // containing encrypted information are displayed.
+  // In test environments, because `Ember.run.debounce` is aliased to `Ember.run`.
+  await window.Discourse.__container__
+    .lookup("service:app-events")
+    .trigger("encrypt:status-changed");
+
+  assert.equal(
+    find(".quick-access-panel span[data-topic-id]").text(),
+    "Top Secret "
+  );
+  assert.equal(find(".quick-access-panel span[data-topic-id] img").length, 1);
 });
