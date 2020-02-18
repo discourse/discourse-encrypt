@@ -102,7 +102,7 @@ export default {
       ".title",
       { addIcon: true }
     );
-    decryptElements("a.topic-link[data-topic-id]", "span", { addIcon: true });
+    decryptElements("a.topic-link[data-topic-id]", "span");
     decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
     decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
     decryptElements(".quick-access-panel span[data-topic-id]");
