@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateEncryptedTopicsUsers < ActiveRecord::Migration[6.0]
   def up
     create_table :encrypted_topics_users do |t|

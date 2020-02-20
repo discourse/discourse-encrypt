@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
   def up
     create_table :user_encryption_keys do |t|

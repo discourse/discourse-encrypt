@@ -19,7 +19,6 @@ after_initialize do
 
     TITLE_CUSTOM_FIELD   = 'encrypted_title'
 
-
     def self.set_key(topic_id, user_id, key)
       EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_id, key: key)
     end

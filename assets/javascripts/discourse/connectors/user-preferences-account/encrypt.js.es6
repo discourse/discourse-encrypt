@@ -165,7 +165,6 @@ export default {
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
         )
         .finally(() => this.set("inProgress", false));
->>>>>>> FIX: move keys from UserCustomField to UserEncryptionKey
     },
 
     deactivateEncrypt() {
