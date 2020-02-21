@@ -375,7 +375,7 @@ test("user preferences connector works for other users", async assert => {
     const json = JSON.parse(JSON.stringify(userFixtures["/u/eviltrout.json"]));
     json.user.id += 1;
     json.user.can_edit = true;
-    json.user.custom_fields = { encrypt_public: "encrypted public identity" };
+    json.user.encrypt_public = "encrypted public identity";
     return [200, { "Content-Type": "application/json" }, json];
   });
 
