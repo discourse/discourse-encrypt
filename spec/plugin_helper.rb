@@ -18,11 +18,7 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
       Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user))
     ]
   end
-  custom_fields do |attrs|
-    {
-      encrypted_title: Fabricate.sequence(:encrypt) { |i| "0$encryptedTitle#{i}" }
-    }
-  end
+  encrypted_topics_title
 
   after_create do |topic|
     topic.topic_allowed_users.each do |allowed_user|
@@ -33,6 +29,10 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
       )
     end
   end
+end
+
+Fabricator(:encrypted_topics_title) do
+  title Fabricate.sequence(:title) { |i| "0$topicKey#{i}" }
 end
 
 Fabricator(:encrypt_post, from: :private_message_post) do

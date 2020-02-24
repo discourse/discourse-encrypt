@@ -6,6 +6,7 @@ class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
       t.integer :user_id, index: true, unique: true
       t.text :encrypt_public
       t.text :encrypt_private
+      t.timestamps
     end
 
     if table_exists?(:user_custom_fields)
@@ -15,12 +16,16 @@ class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
       public_keys.find_each do |public_key|
         user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: public_key.user_id)
         user_encryption_key.encrypt_public = public_key.value
+        user_encryption_key.created_at = public_key.created_at
+        user_encryption_key.updated_at = public_key.updated_at
         user_encryption_key.save!
       end
 
       private_keys.find_each do |private_key|
         user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: private_key.user_id)
         user_encryption_key.encrypt_private = private_key.value
+        user_encryption_key.created_at = private_key.created_at
+        user_encryption_key.updated_at = private_key.updated_at
         user_encryption_key.save!
       end
 
@@ -31,8 +36,8 @@ class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
 
   def down
     UserEncryptionKey.find_each do |user_encryption_key|
-      UserCustomField.create!(name: "encrypt_public", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_public)
-      UserCustomField.create!(name: "encrypt_private", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_private)
+      UserCustomField.create!(name: "encrypt_public", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_public, created_at: user_encryption_key.created_at, updated_at: user_encryption_key.updated_at)
+      UserCustomField.create!(name: "encrypt_private", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_private, created_at: user_encryption_key.created_at, updated_at: user_encryption_key.updated_at)
     end
     drop_table :user_encryption_keys
   end

@@ -6,8 +6,7 @@ module TopicsControllerExtensions
 
     if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
       guardian.ensure_can_edit!(@topic)
-      @topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD] = params.delete(:encrypted_title)
-      @topic.save_custom_fields
+      @topic.encrypted_topics_title.update!(title: params.delete(:encrypted_title))
     end
 
     super

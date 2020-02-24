@@ -97,8 +97,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     if params[:everything] == 'true'
       TopicAllowedUser
-        .joins(topic: :_custom_fields)
-        .where(topic_custom_fields: { name: DiscourseEncrypt::TITLE_CUSTOM_FIELD })
+        .joins(topic: :encrypted_topics_title)
+        .where.not(encrypted_topics_titles: { id: nil })
         .where(topic_allowed_users: { user_id: user.id })
         .delete_all
 

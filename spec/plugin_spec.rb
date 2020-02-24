@@ -6,11 +6,6 @@ describe ::DiscourseEncrypt do
   let(:upload) { Fabricate(:upload) }
   let(:post) { Fabricate(:encrypt_post) }
 
-  it 'registers preloaded custom fields' do
-    expect(CategoryList.preloaded_topic_custom_fields).to include(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
-    expect(TopicList.preloaded_custom_fields).to include(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
-  end
-
   it 'links uploads in encrypted posts' do
     Jobs.run_immediately!
 

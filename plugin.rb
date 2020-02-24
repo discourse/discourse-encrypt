@@ -15,9 +15,7 @@ Rails.configuration.filter_parameters << :encrypt_private
 
 after_initialize do
   module ::DiscourseEncrypt
-    PLUGIN_NAME          = 'discourse-encrypt'
-
-    TITLE_CUSTOM_FIELD   = 'encrypted_title'
+    PLUGIN_NAME = 'discourse-encrypt'
 
     def self.set_key(topic_id, user_id, key)
       EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_id, key: key)
@@ -34,8 +32,10 @@ after_initialize do
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_title.rb', __FILE__)
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/models/user.rb', __FILE__)
+  load File.expand_path('../app/models/topic.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
@@ -60,10 +60,6 @@ after_initialize do
   Discourse::Application.routes.append do
     mount DiscourseEncrypt::Engine, at: '/'
   end
-
-  add_preloaded_topic_list_custom_field(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
-  CategoryList.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
-  Search.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
 
   reloadable_patch do |plugin|
     Post.class_eval             { prepend PostExtensions }
@@ -90,7 +86,7 @@ after_initialize do
   # Topic title encrypted with topic key.
 
   add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.topic.encrypted_topics_title&.title
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
@@ -98,7 +94,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
-    object.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.encrypted_topics_title&.title
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
@@ -106,7 +102,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.topic.encrypted_topics_title&.title
   end
 
   add_to_serializer(:notification, :include_encrypted_title?) do
@@ -226,12 +222,6 @@ after_initialize do
 
     manager.args[:raw] = manager.args[:encrypted_raw]
 
-    if encrypted_title = manager.args[:encrypted_title]
-      manager.args[:topic_opts] ||= {}
-      manager.args[:topic_opts][:custom_fields] ||= {}
-      manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
-    end
-
     result = manager.perform_create_post
     if result.success? && encrypted_keys = manager.args[:encrypted_keys]
       keys = JSON.parse(encrypted_keys)
@@ -239,6 +229,11 @@ after_initialize do
       users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
 
       keys.each { |u, k| DiscourseEncrypt::set_key(topic_id, users[u].id, k) }
+    end
+
+    if result.success? && encrypted_title = manager.args[:encrypted_title]
+      encrypt_topic_title = EncryptedTopicsTitle.find_or_initialize_by(topic_id: result.post.topic_id)
+      encrypt_topic_title.update!(title: encrypted_title)
     end
 
     result
