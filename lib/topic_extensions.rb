@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module TopicExtensions
+  def self.prepended(base)
+    base.has_one :encrypted_topics_title
+  end
+
   def is_encrypted?
     !!(private_message? && encrypted_topics_title&.title)
   end

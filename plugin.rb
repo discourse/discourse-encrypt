@@ -34,8 +34,6 @@ after_initialize do
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_title.rb', __FILE__)
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
-  load File.expand_path('../app/models/user.rb', __FILE__)
-  load File.expand_path('../app/models/topic.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)

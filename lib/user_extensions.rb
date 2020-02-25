@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module UserExtensions
+  def self.prepended(base)
+    base.has_one :user_encryption_key
+  end
+
   def encrypt_key
     @encrypt_key ||= begin
       identity = self.user_encryption_key&.encrypt_public
