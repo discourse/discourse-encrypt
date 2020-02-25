@@ -143,30 +143,6 @@ export default {
         );
     },
 
-    changeEncrypt() {
-      this.set("inProgress", true);
-
-      const oldIdentity = this.model.encrypt_private;
-      return importIdentity(oldIdentity, this.oldPassphrase)
-        .then(identity => exportIdentity(identity, this.passphrase))
-        .then(exported => {
-          this.set("model.encrypt_public", exported.public);
-          this.set("model.encrypt_private", exported.private);
-          return ajax("/encrypt/keys", {
-            type: "PUT",
-            data: {
-              public: exported.public,
-              private: exported.private
-            }
-          });
-        })
-        .then(() => this.set("passphrase", ""))
-        .catch(() =>
-          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
-        )
-        .finally(() => this.set("inProgress", false));
-    },
-
     deactivateEncrypt() {
       this.setProperties("inProgress", true);
 
