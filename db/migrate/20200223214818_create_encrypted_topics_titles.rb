@@ -2,7 +2,6 @@
 
 class CreateEncryptedTopicsTitles < ActiveRecord::Migration[6.0]
   def up
-
     create_table :encrypted_topics_titles do |t|
       t.integer :topic_id, index: true
       t.text :title
