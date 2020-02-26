@@ -8,7 +8,7 @@ module Jobs
       DB.query(<<~SQL
           SELECT taf.user_id, taf.topic_id
           FROM topic_allowed_users taf
-          JOIN encrypted_topics_titles ett ON taf.topic_id = ett.topic_id
+          JOIN encrypted_topics_data ett ON taf.topic_id = ett.topic_id
           WHERE taf.user_id NOT IN
             (SELECT user_id
             FROM encrypted_topics_users

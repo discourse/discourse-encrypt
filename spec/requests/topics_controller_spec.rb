@@ -16,7 +16,7 @@ describe TopicsController do
       put "/t/#{topic.slug}/#{topic.id}.json", params: { encrypted_title: 'new encrypted title' }
 
       expect(response.status).to eq(200)
-      expect(topic.reload.encrypted_topics_title.title).to eq('new encrypted title')
+      expect(topic.reload.encrypted_topics_data.title).to eq('new encrypted title')
     end
   end
 

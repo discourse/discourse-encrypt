@@ -10,14 +10,12 @@ class CreateEncryptedTopicsUsers < ActiveRecord::Migration[6.0]
 
     add_index :encrypted_topics_users, [:user_id, :topic_id], unique: true
 
-    if table_exists?(:plugin_store_rows)
-      store_rows = PluginStoreRow.where(plugin_name: 'discourse-encrypt')
-      store_rows.find_each do |row|
-        _key_word, topic_id, user_id = row.key.split("_") # key_31_1
-        EncryptedTopicsUser.create!(user_id: user_id, topic_id: topic_id, key: row.value)
-      end
-      store_rows.delete_all
+    store_rows = PluginStoreRow.where(plugin_name: 'discourse-encrypt')
+    store_rows.find_each do |row|
+      _key_word, topic_id, user_id = row.key.split("_") # key_31_1
+      EncryptedTopicsUser.create!(user_id: user_id, topic_id: topic_id, key: row.value)
     end
+    store_rows.delete_all
   end
 
   def down

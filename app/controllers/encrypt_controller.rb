@@ -28,16 +28,16 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
     end
 
-    user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: current_user.id)
-    user_encryption_key.update!(encrypt_public: public_identity)
+    current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
+    current_user.user_encryption_key.update!(encrypt_public: public_identity)
 
     if private_identity.present?
       if private_id_label.present?
         data = JSON.parse(user_encryption_key.encrypt_private) rescue {}
         data[private_id_label.downcase] = private_identity
-        user_encryption_key.update!(encrypt_private: JSON.dump(data))
+        current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
       else
-        user_encryption_key.update!(encrypt_private: private_identity)
+        current_user.user_encryption_key.update!(encrypt_private: private_identity)
       end
     end
 
@@ -57,8 +57,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
     if data.delete(private_id_label)
-      user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: current_user.id)
-      user_encryption_key.update!(encrypt_private: JSON.dump(data))
+      current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
+      current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
       current_user.publish_identity
     end
 
@@ -75,7 +75,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def show_user
     usernames = params.require(:usernames)
 
-    identities = Hash[User.where(username: usernames).map { |u| [u.username, u.user_encryption_key&.encrypt_public] }]
+    identities = Hash[User.includes(:user_encryption_key).where(username: usernames).map { |u| [u.username, u.user_encryption_key&.encrypt_public] }]
 
     render json: identities
   end
@@ -97,8 +97,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     if params[:everything] == 'true'
       TopicAllowedUser
-        .joins(topic: :encrypted_topics_title)
-        .where.not(encrypted_topics_titles: { id: nil })
+        .joins(topic: :encrypted_topics_data)
+        .where.not(encrypted_topics_data: { id: nil })
         .where(topic_allowed_users: { user_id: user.id })
         .delete_all
 

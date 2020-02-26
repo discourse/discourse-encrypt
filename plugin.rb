@@ -32,7 +32,7 @@ after_initialize do
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_topics_title.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
@@ -84,7 +84,7 @@ after_initialize do
   # Topic title encrypted with topic key.
 
   add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.encrypted_topics_title&.title
+    object.topic.encrypted_topics_data&.title
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
@@ -92,7 +92,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
-    object.encrypted_topics_title&.title
+    object.encrypted_topics_data&.title
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
@@ -100,7 +100,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.encrypted_topics_title&.title
+    object.topic.encrypted_topics_data&.title
   end
 
   add_to_serializer(:notification, :include_encrypted_title?) do
@@ -162,11 +162,11 @@ after_initialize do
   end
 
   add_to_serializer(:current_user, :encrypt_public) do
-    UserEncryptionKey.find_by(user_id: object.id)&.encrypt_public
+    object.user_encryption_key&.encrypt_public
   end
 
   add_to_serializer(:current_user, :encrypt_private) do
-    UserEncryptionKey.find_by(user_id: object.id)&.encrypt_private
+    object.user_encryption_key&.encrypt_private
   end
 
   #
@@ -230,7 +230,7 @@ after_initialize do
     end
 
     if result.success? && encrypted_title = manager.args[:encrypted_title]
-      encrypt_topic_title = EncryptedTopicsTitle.find_or_initialize_by(topic_id: result.post.topic_id)
+      encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: result.post.topic_id)
       encrypt_topic_title.update!(title: encrypted_title)
     end
 

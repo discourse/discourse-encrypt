@@ -27,7 +27,7 @@ class EncryptedPostCreator < PostCreator
         end
       end
 
-      encrypt_topic_title = EncryptedTopicsTitle.find_or_initialize_by(topic_id: @post.topic_id)
+      encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: @post.topic_id)
       encrypt_topic_title.update!(title: EncryptedPostCreator.encrypt(title, topic_key))
     end
 

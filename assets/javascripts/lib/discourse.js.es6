@@ -228,7 +228,7 @@ export function getEncryptionStatus(user) {
   if (
     !Discourse.SiteSettings.encrypt_enabled ||
     !user ||
-    !user.get("encrypt_public")
+    !user.encrypt_public
   ) {
     return ENCRYPT_DISABLED;
   }
@@ -352,9 +352,6 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
             const exportedPrivate = JSON.stringify({
               passphrase: exported.private
             });
-
-            currentUser.set("encrypt_public", exported.public);
-            currentUser.set("encrypt_private", exportedPrivate);
 
             return ajax("/encrypt/keys", {
               type: "PUT",

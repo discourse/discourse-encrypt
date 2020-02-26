@@ -18,7 +18,7 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
       Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user))
     ]
   end
-  encrypted_topics_title
+  encrypted_topics_data
 
   after_create do |topic|
     topic.topic_allowed_users.each do |allowed_user|
@@ -31,7 +31,7 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
   end
 end
 
-Fabricator(:encrypted_topics_title) do
+Fabricator(:encrypted_topics_data) do
   title Fabricate.sequence(:title) { |i| "0$topicKey#{i}" }
 end
 

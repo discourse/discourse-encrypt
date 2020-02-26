@@ -36,7 +36,7 @@ export default {
       /** Whether plugin is enabled for current user. */
       canEnableEncrypt: canEnableEncrypt(args.model),
       /** Whether the encryption is enabled or not. */
-      isEncryptEnabled: !!args.model.get("encrypt_public")
+      isEncryptEnabled: !!args.model.encrypt_public
     });
 
     if (isCurrentUser) {

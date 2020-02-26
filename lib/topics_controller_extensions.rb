@@ -6,7 +6,7 @@ module TopicsControllerExtensions
 
     if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
       guardian.ensure_can_edit!(@topic)
-      @topic.encrypted_topics_title.update!(title: params.delete(:encrypted_title))
+      @topic.encrypted_topics_data.update!(title: params.delete(:encrypted_title))
     end
 
     super
