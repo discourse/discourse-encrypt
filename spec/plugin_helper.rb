@@ -22,10 +22,10 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
 
   after_create do |topic|
     topic.topic_allowed_users.each do |allowed_user|
-      DiscourseEncrypt::set_key(
-        topic.id,
-        allowed_user.user_id,
-        Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
+      EncryptedTopicsUser.create!(
+        topic_id: topic.id,
+        user_id: allowed_user.user_id,
+        key: Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
       )
     end
   end

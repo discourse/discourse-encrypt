@@ -11,7 +11,7 @@ module TopicExtensions
 
   def remove_allowed_user(removed_by, user)
     ret = super
-    DiscourseEncrypt::del_key(id, user.id) if ret
+    EncryptedTopicsUser.delete_by(topic_id: id, user_id: user_id) if ret
     ret
   end
 end

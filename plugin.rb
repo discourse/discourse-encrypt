@@ -16,18 +16,6 @@ Rails.configuration.filter_parameters << :encrypt_private
 after_initialize do
   module ::DiscourseEncrypt
     PLUGIN_NAME = 'discourse-encrypt'
-
-    def self.set_key(topic_id, user_id, key)
-      EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_id, key: key)
-    end
-
-    def self.get_key(topic_id, user_id)
-      EncryptedTopicsUser.find_by(topic_id: topic_id, user_id: user_id)&.key
-    end
-
-    def self.del_key(topic_id, user_id)
-      EncryptedTopicsUser.delete_by(topic_id: topic_id, user_id: user_id)
-    end
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
@@ -115,7 +103,7 @@ after_initialize do
   # paired private key.
 
   add_to_serializer(:topic_view, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
@@ -123,7 +111,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
@@ -131,7 +119,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
@@ -226,7 +214,7 @@ after_initialize do
       topic_id = result.post.topic_id
       users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
 
-      keys.each { |u, k| DiscourseEncrypt::set_key(topic_id, users[u].id, k) }
+      keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: users[u].id, key: k) }
     end
 
     if result.success? && encrypted_title = manager.args[:encrypted_title]
@@ -239,7 +227,7 @@ after_initialize do
 
   # Delete TopicAllowedUser records for users who do not have the key
   on(:post_created) do |post, opts, user|
-    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::get_key(post.topic_id, user.id)
+    if post.post_number > 1 && post.topic&.is_encrypted? && !EncryptedTopicsUser.find_by(topic_id: post.topic_id, user_id: user.id)&.key
       TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
     end
   end

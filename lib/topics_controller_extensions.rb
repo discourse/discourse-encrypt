@@ -19,7 +19,7 @@ module TopicsControllerExtensions
       if params[:key].present?
         @user ||= User.find_by_username_or_email(params[:user])
         guardian.ensure_can_invite_to!(@topic)
-        DiscourseEncrypt::set_key(@topic.id, @user.id, params[:key])
+        EncryptedTopicsUser.create!(topic_id: @topic.id, user_id: @user.id, key: params[:key])
       else
         return render_json_error(I18n.t('js.encrypt.cannot_invite'))
       end
