@@ -33,7 +33,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     if private_identity.present?
       if private_id_label.present?
-        data = JSON.parse(user_encryption_key.encrypt_private) rescue {}
+        data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
         data[private_id_label.downcase] = private_identity
         current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
       else

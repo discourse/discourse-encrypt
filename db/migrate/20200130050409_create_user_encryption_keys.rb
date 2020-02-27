@@ -9,36 +9,39 @@ class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    if table_exists?(:user_custom_fields)
-      public_keys = UserCustomField.where(name: "encrypt_public")
-      private_keys = UserCustomField.where(name: "encrypt_private")
+    execute <<~SQL
+      INSERT INTO user_encryption_keys(user_id, encrypt_public, created_at, updated_at)
+      SELECT user_id, value AS encrypt_public, created_at, updated_at
+      FROM user_custom_fields
+      WHERE name = 'encrypt_public'
+    SQL
 
-      public_keys.find_each do |public_key|
-        user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: public_key.user_id)
-        user_encryption_key.encrypt_public = public_key.value
-        user_encryption_key.created_at = public_key.created_at
-        user_encryption_key.updated_at = public_key.updated_at
-        user_encryption_key.save!
-      end
+    execute <<~SQL
+      UPDATE user_encryption_keys
+      SET encrypt_private = user_custom_fields.value
+      FROM user_custom_fields
+      WHERE user_encryption_keys.user_id = user_custom_fields.user_id AND user_custom_fields.name = 'encrypt_private'
+    SQL
 
-      private_keys.find_each do |private_key|
-        user_encryption_key = UserEncryptionKey.find_or_initialize_by(user_id: private_key.user_id)
-        user_encryption_key.encrypt_private = private_key.value
-        user_encryption_key.created_at = private_key.created_at
-        user_encryption_key.updated_at = private_key.updated_at
-        user_encryption_key.save!
-      end
-
-      public_keys.delete_all
-      private_keys.delete_all
-    end
+    execute <<~SQL
+      DELETE
+      FROM user_custom_fields
+      WHERE name = 'encrypt_private' OR name = 'encrypt_public'
+    SQL
   end
 
   def down
-    UserEncryptionKey.find_each do |user_encryption_key|
-      UserCustomField.create!(name: "encrypt_public", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_public, created_at: user_encryption_key.created_at, updated_at: user_encryption_key.updated_at)
-      UserCustomField.create!(name: "encrypt_private", user_id: user_encryption_key.user_id, value: user_encryption_key.encrypt_private, created_at: user_encryption_key.created_at, updated_at: user_encryption_key.updated_at)
-    end
+    execute <<~SQL
+      INSERT INTO user_custom_fields(name, user_id, value, created_at, updated_at)
+      SELECT 'encrypt_public' AS name, user_id, encrypt_public AS value, created_at, updated_at
+      FROM user_encryption_keys
+    SQL
+
+    execute <<~SQL
+      INSERT INTO user_custom_fields(name, user_id, value, created_at, updated_at)
+      SELECT 'encrypt_private' AS name, user_id, encrypt_private AS value, created_at, updated_at
+      FROM user_encryption_keys
+    SQL
     drop_table :user_encryption_keys
   end
 end

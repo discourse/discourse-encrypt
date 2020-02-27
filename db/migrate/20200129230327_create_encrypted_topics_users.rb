@@ -10,19 +10,25 @@ class CreateEncryptedTopicsUsers < ActiveRecord::Migration[6.0]
 
     add_index :encrypted_topics_users, [:user_id, :topic_id], unique: true
 
-    store_rows = PluginStoreRow.where(plugin_name: 'discourse-encrypt')
-    store_rows.find_each do |row|
-      _key_word, topic_id, user_id = row.key.split("_") # key_31_1
-      EncryptedTopicsUser.create!(user_id: user_id, topic_id: topic_id, key: row.value)
-    end
-    store_rows.delete_all
+    execute <<~SQL
+      INSERT INTO encrypted_topics_users(user_id, topic_id, key)
+      SELECT split_part(key, '_', 3)::INTEGER AS user_id, split_part(key, '_', 2)::INTEGER AS topic_id, value
+      FROM plugin_store_rows
+      WHERE plugin_name = 'discourse-encrypt' AND key LIKE 'key_%'
+    SQL
+
+    execute <<~SQL
+      DELETE FROM plugin_store_rows
+      WHERE plugin_name = 'discourse-encrypt' AND key LIKE 'key_%'
+    SQL
   end
 
   def down
-    EncryptedTopicsUser.find_each do |encrypted_topics_user|
-      key = "key_#{encrypted_topics_user.topic_id}_#{encrypted_topics_user.user_id}" # key_31_1
-      PluginStoreRow.create!(plugin_name: "discourse-encrypt", key: key, type_name: "string", value: encrypted_topics_user.key)
-    end
+    execute <<~SQL
+      INSERT INTO plugin_store_rows(plugin_name, key, type_name, value)
+      SELECT 'discourse-encrypt' AS plugin_name, CONCAT('key_', topic_id, '_', user_id) AS key, 'string' AS type_name, key AS value
+      FROM encrypted_topics_users
+    SQL
     drop_table :encrypted_topics_users
   end
 end

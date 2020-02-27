@@ -8,19 +8,26 @@ class CreateEncryptedTopicsData < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    if table_exists?(:topic_custom_fields)
-      topic_rows = TopicCustomField.where(name: 'encrypted_title')
-      topic_rows.find_each do |row|
-        EncryptedTopicsData.create(topic_id: row.topic_id, title: row.value, created_at: row.created_at, updated_at: row.updated_at)
-      end
-      topic_rows.delete_all
-    end
+    execute <<~SQL
+      INSERT INTO encrypted_topics_data(topic_id, title, created_at, updated_at)
+      SELECT topic_id, value AS title, created_at, updated_at
+      FROM topic_custom_fields
+      WHERE name = 'encrypted_title'
+    SQL
+
+    execute <<~SQL
+      DELETE
+      FROM topic_custom_fields
+      WHERE name = 'encrypted_title'
+    SQL
   end
 
   def down
-    EncryptedTopicsData.find_each do |encrypted_topics_data|
-      TopicCustomField.create!(topic_id: encrypted_topics_data.topic_id, value: encrypted_topics_data.title, name: "encrypted_title", created_at: encrypted_topics_data.created_at, updated_at: encrypted_topics_data.updated_at)
-    end
+    execute <<~SQL
+      INSERT INTO topic_custom_fields(topic_id, value, name, created_at, updated_at)
+      SELECT topic_id, title AS value, 'encrypted_title' AS name, created_at, updated_at
+      FROM encrypted_topics_data
+    SQL
     drop_table :encrypted_topics_data
   end
 end
