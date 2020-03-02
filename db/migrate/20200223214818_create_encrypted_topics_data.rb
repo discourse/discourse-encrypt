@@ -14,12 +14,6 @@ class CreateEncryptedTopicsData < ActiveRecord::Migration[6.0]
       FROM topic_custom_fields
       WHERE name = 'encrypted_title'
     SQL
-
-    execute <<~SQL
-      DELETE
-      FROM topic_custom_fields
-      WHERE name = 'encrypted_title'
-    SQL
   end
 
   def down

@@ -16,11 +16,6 @@ class CreateEncryptedTopicsUsers < ActiveRecord::Migration[6.0]
       FROM plugin_store_rows
       WHERE plugin_name = 'discourse-encrypt' AND key LIKE 'key_%'
     SQL
-
-    execute <<~SQL
-      DELETE FROM plugin_store_rows
-      WHERE plugin_name = 'discourse-encrypt' AND key LIKE 'key_%'
-    SQL
   end
 
   def down

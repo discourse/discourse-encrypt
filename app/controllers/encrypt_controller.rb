@@ -29,18 +29,19 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     end
 
     current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
-    current_user.user_encryption_key.update!(encrypt_public: public_identity)
+    current_user.user_encryption_key.encrypt_public = public_identity
 
     if private_identity.present?
       if private_id_label.present?
         data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
         data[private_id_label.downcase] = private_identity
-        current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
+        current_user.user_encryption_key.encrypt_private = JSON.dump(data)
       else
-        current_user.user_encryption_key.update!(encrypt_private: private_identity)
+        current_user.user_encryption_key.encrypt_private = private_identity
       end
     end
 
+    current_user.user_encryption_key.save
     current_user.publish_identity
 
     render json: success_json
@@ -59,6 +60,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     if data.delete(private_id_label)
       current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
       current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
+
       current_user.publish_identity
     end
 

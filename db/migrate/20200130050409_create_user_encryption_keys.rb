@@ -22,12 +22,6 @@ class CreateUserEncryptionKeys < ActiveRecord::Migration[6.0]
       FROM user_custom_fields
       WHERE user_encryption_keys.user_id = user_custom_fields.user_id AND user_custom_fields.name = 'encrypt_private'
     SQL
-
-    execute <<~SQL
-      DELETE
-      FROM user_custom_fields
-      WHERE name = 'encrypt_private' OR name = 'encrypt_public'
-    SQL
   end
 
   def down
