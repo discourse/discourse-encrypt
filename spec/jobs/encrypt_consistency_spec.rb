@@ -9,7 +9,7 @@ describe Jobs::EncryptConsistency do
   let(:user_without_key) { Fabricate(:user) }
 
   before do
-    DiscourseEncrypt::set_key(topic.id, user_without_invite.id, 'topic key')
+    EncryptedTopicsUser.create!(topic_id: topic.id, user_id: user_without_invite.id, key: 'topic key')
     TopicAllowedUser.create(topic_id: topic.id, user_id: user_without_key.id)
   end
 

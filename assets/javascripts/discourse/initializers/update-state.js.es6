@@ -20,8 +20,8 @@ export default {
 
     if (messageBus && status !== ENCRYPT_DISABLED) {
       messageBus.subscribe("/plugin/encrypt/keys", function(data) {
-        currentUser.set("custom_fields.encrypt_public", data.public);
-        currentUser.set("custom_fields.encrypt_private", data.private);
+        currentUser.set("encrypt_public", data.public);
+        currentUser.set("encrypt_private", data.private);
       });
     }
   }

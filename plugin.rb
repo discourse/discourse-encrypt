@@ -15,28 +15,13 @@ Rails.configuration.filter_parameters << :encrypt_private
 
 after_initialize do
   module ::DiscourseEncrypt
-    PLUGIN_NAME          = 'discourse-encrypt'
-
-    PUBLIC_CUSTOM_FIELD  = 'encrypt_public'
-    PRIVATE_CUSTOM_FIELD = 'encrypt_private'
-    TITLE_CUSTOM_FIELD   = 'encrypted_title'
-
-    Store = PluginStore.new(PLUGIN_NAME)
-
-    def self.set_key(topic_id, user_id, key)
-      Store.set("key_#{topic_id}_#{user_id}", key)
-    end
-
-    def self.get_key(topic_id, user_id)
-      Store.get("key_#{topic_id}_#{user_id}")
-    end
-
-    def self.del_key(topic_id, user_id)
-      Store.remove("key_#{topic_id}_#{user_id}")
-    end
+    PLUGIN_NAME = 'discourse-encrypt'
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
+  load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
@@ -61,13 +46,6 @@ after_initialize do
   Discourse::Application.routes.append do
     mount DiscourseEncrypt::Engine, at: '/'
   end
-
-  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PUBLIC_CUSTOM_FIELD
-  DiscoursePluginRegistry.serialized_current_user_fields << DiscourseEncrypt::PRIVATE_CUSTOM_FIELD
-
-  add_preloaded_topic_list_custom_field(DiscourseEncrypt::TITLE_CUSTOM_FIELD)
-  CategoryList.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
-  Search.preloaded_topic_custom_fields << DiscourseEncrypt::TITLE_CUSTOM_FIELD
 
   reloadable_patch do |plugin|
     Post.class_eval             { prepend PostExtensions }
@@ -94,7 +72,7 @@ after_initialize do
   # Topic title encrypted with topic key.
 
   add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.topic.encrypted_topics_data&.title
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
@@ -102,7 +80,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
-    object.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.encrypted_topics_data&.title
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
@@ -110,7 +88,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]
+    object.topic.encrypted_topics_data&.title
   end
 
   add_to_serializer(:notification, :include_encrypted_title?) do
@@ -125,7 +103,7 @@ after_initialize do
   # paired private key.
 
   add_to_serializer(:topic_view, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
@@ -133,7 +111,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
@@ -141,7 +119,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :topic_key, false) do
-    DiscourseEncrypt::get_key(object.topic.id, scope.user.id)
+    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
@@ -169,6 +147,14 @@ after_initialize do
 
   add_to_serializer(:post_revision, :include_raws?) do
     post.topic&.is_encrypted?
+  end
+
+  add_to_serializer(:current_user, :encrypt_public) do
+    object.user_encryption_key&.encrypt_public
+  end
+
+  add_to_serializer(:current_user, :encrypt_private) do
+    object.user_encryption_key&.encrypt_private
   end
 
   #
@@ -222,19 +208,18 @@ after_initialize do
 
     manager.args[:raw] = manager.args[:encrypted_raw]
 
-    if encrypted_title = manager.args[:encrypted_title]
-      manager.args[:topic_opts] ||= {}
-      manager.args[:topic_opts][:custom_fields] ||= {}
-      manager.args[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = encrypted_title
-    end
-
     result = manager.perform_create_post
     if result.success? && encrypted_keys = manager.args[:encrypted_keys]
       keys = JSON.parse(encrypted_keys)
       topic_id = result.post.topic_id
       users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
 
-      keys.each { |u, k| DiscourseEncrypt::set_key(topic_id, users[u].id, k) }
+      keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: users[u].id, key: k) }
+    end
+
+    if result.success? && encrypted_title = manager.args[:encrypted_title]
+      encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: result.post.topic_id)
+      encrypt_topic_title.update!(title: encrypted_title)
     end
 
     result
@@ -242,7 +227,7 @@ after_initialize do
 
   # Delete TopicAllowedUser records for users who do not have the key
   on(:post_created) do |post, opts, user|
-    if post.post_number > 1 && post.topic&.is_encrypted? && !DiscourseEncrypt::get_key(post.topic_id, user.id)
+    if post.post_number > 1 && post.topic&.is_encrypted? && !EncryptedTopicsUser.find_by(topic_id: post.topic_id, user_id: user.id)&.key
       TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
     end
   end

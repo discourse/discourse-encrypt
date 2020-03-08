@@ -13,9 +13,6 @@ class EncryptedPostCreator < PostCreator
       @opts[:raw] = EncryptedPostCreator.encrypt(@opts[:raw], topic_key)
       if title = @opts[:title]
         @opts[:title] = I18n.t('js.encrypt.encrypted_topic_title')
-        @opts[:topic_opts] ||= {}
-        @opts[:topic_opts][:custom_fields] ||= {}
-        @opts[:topic_opts][:custom_fields][DiscourseEncrypt::TITLE_CUSTOM_FIELD] = EncryptedPostCreator.encrypt(title, topic_key)
       end
 
       ret = super
@@ -26,9 +23,12 @@ class EncryptedPostCreator < PostCreator
       if !@opts[:topic_key]
         users.each do |user|
           key = EncryptedPostCreator.export_key(user, topic_key)
-          DiscourseEncrypt::set_key(@post.topic_id, user.id, key)
+          EncryptedTopicsUser.create!(topic_id: @post.topic_id, user_id: user.id, key: key)
         end
       end
+
+      encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: @post.topic_id)
+      encrypt_topic_title.update!(title: EncryptedPostCreator.encrypt(title, topic_key))
     end
 
     ret
@@ -57,7 +57,6 @@ class EncryptedPostCreator < PostCreator
     @users ||= begin
       usernames = @opts[:target_usernames].split(',')
       users = User.where(username: usernames)
-      User.preload_custom_fields(users, [DiscourseEncrypt::PUBLIC_CUSTOM_FIELD])
       users
     end
   end

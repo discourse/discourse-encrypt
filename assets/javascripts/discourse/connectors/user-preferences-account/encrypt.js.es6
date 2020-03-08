@@ -36,7 +36,7 @@ export default {
       /** Whether plugin is enabled for current user. */
       canEnableEncrypt: canEnableEncrypt(args.model),
       /** Whether the encryption is enabled or not. */
-      isEncryptEnabled: !!args.model.get("custom_fields.encrypt_public")
+      isEncryptEnabled: !!args.model.encrypt_public
     });
 
     if (isCurrentUser) {
@@ -89,7 +89,7 @@ export default {
       const saveIdentityPromise = identityPromise
         .then(identity => exportIdentity(identity))
         .then(exported => {
-          this.set("model.custom_fields.encrypt_public", exported.public);
+          this.set("model.encrypt_public", exported.public);
           return ajax("/encrypt/keys", {
             type: "PUT",
             data: {

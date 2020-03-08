@@ -54,9 +54,9 @@ export default {
       Ember.computed(
         "isEncryptActive",
         "noticeStatus",
-        "currentUser.custom_fields.encrypt_private",
+        "currentUser.encrypt_private",
         () => {
-          const ids = this.get("currentUser.custom_fields.encrypt_private");
+          const ids = this.get("currentUser.encrypt_private");
           return (
             this.isEncryptActive &&
             !this.noticeStatus &&

@@ -16,7 +16,7 @@ describe TopicsController do
       put "/t/#{topic.slug}/#{topic.id}.json", params: { encrypted_title: 'new encrypted title' }
 
       expect(response.status).to eq(200)
-      expect(topic.reload.custom_fields[DiscourseEncrypt::TITLE_CUSTOM_FIELD]).to eq('new encrypted title')
+      expect(topic.reload.encrypted_topics_data.title).to eq('new encrypted title')
     end
   end
 
@@ -26,7 +26,7 @@ describe TopicsController do
 
       expect(response.status).to eq(200)
       expect(TopicAllowedUser.where(user_id: user.id, topic_id: topic.id).exists?).to eq(true)
-      expect(PluginStoreRow.find_by(key: "key_#{topic.id}_#{user.id}").value).to eq('key of user')
+      expect(EncryptedTopicsUser.find_by(topic_id: topic.id, user_id: user.id).key).to eq('key of user')
     end
 
     it 'returns an error with no key' do
@@ -34,7 +34,7 @@ describe TopicsController do
 
       expect(response.status).to eq(422)
       expect(TopicAllowedUser.where(user_id: user.id, topic_id: topic.id).exists?).to eq(false)
-      expect(PluginStoreRow.where(key: "key_#{topic.id}_#{user.id}").exists?).to eq(false)
+      expect(EncryptedTopicsUser.where(topic_id: topic.id, user_id: user.id).exists?).to eq(false)
     end
   end
 

@@ -18,8 +18,8 @@ describe Topic do
     it 'deletes topic key for user' do
       expect { encrypt_topic.remove_allowed_user(Discourse.system_user, encrypt_topic.user) }
         .to change { TopicAllowedUser.count }.by(-1)
-        .and change { PluginStoreRow.count }.by(-1)
-      expect(DiscourseEncrypt::get_key(encrypt_topic.id, encrypt_topic.user_id)).to eq(nil)
+        .and change { EncryptedTopicsUser.count }.by(-1)
+      expect(EncryptedTopicsUser.find_by(topic_id: encrypt_topic.id, user_id: encrypt_topic.user_id)&.key).to eq(nil)
     end
   end
 end

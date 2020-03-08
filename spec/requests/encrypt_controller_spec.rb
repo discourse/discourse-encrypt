@@ -32,30 +32,31 @@ describe DiscourseEncrypt::EncryptController do
 
       put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(200)
-      expect(user3.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]).to eq('0$publicKey')
-      expect(user3.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]).to eq('0$privateKey')
+      expect(user3.user_encryption_key.encrypt_public).to eq('0$publicKey')
+      expect(user3.user_encryption_key.encrypt_private).to eq('0$privateKey')
     end
 
     it 'updates user keys' do
-      old_public_key = user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
+      old_public_key = user.user_encryption_key.encrypt_public
+
       sign_in(user)
 
       put '/encrypt/keys', params: { public: old_public_key, private: '0$newPrivateKey' }
       expect(response.status).to eq(200)
       user.reload
-      expect(user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]).to eq(old_public_key)
-      expect(user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]).to eq('0$newPrivateKey')
+      expect(user.user_encryption_key.encrypt_public).to eq(old_public_key)
+      expect(user.user_encryption_key.encrypt_private).to eq('0$newPrivateKey')
     end
 
     it 'does not allow updating if wrong public key' do
-      old_public_key = user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]
-      old_private_key = user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]
+      old_public_key = user.user_encryption_key.encrypt_public
+      old_private_key = user.user_encryption_key.encrypt_private
       sign_in(user)
 
       put '/encrypt/keys', params: { public: '0$wrongPublicKey', private: '0$newPrivateKey' }
       expect(response.status).to eq(409)
-      expect(user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD]).to eq(old_public_key)
-      expect(user.custom_fields[DiscourseEncrypt::PRIVATE_CUSTOM_FIELD]).to eq(old_private_key)
+      expect(user.user_encryption_key.encrypt_public).to eq(old_public_key)
+      expect(user.user_encryption_key.encrypt_private).to eq(old_private_key)
     end
   end
 
@@ -72,8 +73,8 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(200)
       json = ::JSON.parse(response.body)
       expect(json.size).to eq(3)
-      expect(json[user.username]).to eq(user.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD])
-      expect(json[user2.username]).to eq(user2.custom_fields[DiscourseEncrypt::PUBLIC_CUSTOM_FIELD])
+      expect(json[user.username]).to eq(user.user_encryption_key.encrypt_public)
+      expect(json[user2.username]).to eq(user2.user_encryption_key.encrypt_public)
       expect(json[user3.username]).to eq(nil)
     end
   end
@@ -93,8 +94,8 @@ describe DiscourseEncrypt::EncryptController do
     it 'resets everything' do
       expect { post '/encrypt/reset', params: { user_id: user.id, everything: true } }
         .to change { TopicAllowedUser.count }.by(-1)
-        .and change { PluginStoreRow.count }.by(-1)
-        .and change { UserCustomField.count }.by(-2)
+        .and change { EncryptedTopicsUser.count }.by(-1)
+        .and change { UserEncryptionKey.count }.by(-1)
 
       expect(response.status).to eq(200)
     end
@@ -102,8 +103,8 @@ describe DiscourseEncrypt::EncryptController do
     it 'resets only keys' do
       expect { post '/encrypt/reset', params: { user_id: user.id } }
         .to change { TopicAllowedUser.count }.by(0)
-        .and change { PluginStoreRow.count }.by(0)
-        .and change { UserCustomField.count }.by(-2)
+        .and change { EncryptedTopicsUser.count }.by(0)
+        .and change { UserEncryptionKey.count }.by(-1)
 
       expect(response.status).to eq(200)
     end

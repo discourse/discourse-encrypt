@@ -4,11 +4,11 @@ import showModal from "discourse/lib/show-modal";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 
 export default Ember.Controller.extend(ModalFunctionality, {
-  @discourseComputed("model.custom_fields.encrypt_private")
+  @discourseComputed("model.encrypt_private")
   keys() {
     const keys = [];
-    if (this.model.custom_fields.encrypt_private) {
-      const privateKeys = JSON.parse(this.model.custom_fields.encrypt_private);
+    if (this.model.encrypt_private) {
+      const privateKeys = JSON.parse(this.model.encrypt_private);
       Object.keys(privateKeys).forEach(label => {
         if (label.startsWith("paper_")) {
           keys.push({

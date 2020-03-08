@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 Fabricator(:encrypt_user, from: :user) do
-  custom_fields do |attrs|
-    {
+  after_create do |user|
+    UserEncryptionKey.create!(
+      user_id: user.id,
       encrypt_public: Fabricate.sequence(:encrypt) { |i| "0$publicKey#{i}" },
       encrypt_private: Fabricate.sequence(:encrypt) { |i| "0$privateKey#{i}" }
-    }
+    )
   end
 end
 
@@ -17,21 +18,21 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
       Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user))
     ]
   end
-  custom_fields do |attrs|
-    {
-      encrypted_title: Fabricate.sequence(:encrypt) { |i| "0$encryptedTitle#{i}" }
-    }
-  end
+  encrypted_topics_data
 
   after_create do |topic|
     topic.topic_allowed_users.each do |allowed_user|
-      DiscourseEncrypt::set_key(
-        topic.id,
-        allowed_user.user_id,
-        Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
+      EncryptedTopicsUser.create!(
+        topic_id: topic.id,
+        user_id: allowed_user.user_id,
+        key: Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
       )
     end
   end
+end
+
+Fabricator(:encrypted_topics_data) do
+  title Fabricate.sequence(:title) { |i| "0$topicKey#{i}" }
 end
 
 Fabricator(:encrypt_post, from: :private_message_post) do
