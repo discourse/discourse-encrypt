@@ -43,6 +43,7 @@ export default {
         this.set("model.showEncryptError", true);
         if (!this.get("model.disableEncryptIndicator")) {
           this.set("model.isEncrypted", !this.get("model.isEncrypted"));
+          this.set("model.overwriteDefault", true);
         }
       }
     });
