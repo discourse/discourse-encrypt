@@ -31,11 +31,15 @@ export default {
       updateEncryptProperties() {
         const encryptedTopic = this.topic && this.topic.encrypted_title;
         const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
+        const newIsEncryped =
+          (encryptedTopic && canEncryptTopic) ||
+          (this.overwriteDefault
+            ? this.isEncrypted
+            : this.isNew && this.creatingPrivateMessage);
+
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
-          isEncrypted:
-            (encryptedTopic && canEncryptTopic) ||
-            (this.isNew && this.creatingPrivateMessage),
+          isEncrypted: newIsEncryped,
           /** @var Disable encrypt indicator to enforce encrypted message, if
                    message is encrypted, or enforce decrypted message if one
                    of the recipients does not have encryption enabled. */
@@ -91,6 +95,7 @@ export default {
             if (!userKeys[username]) {
               this.setProperties({
                 isEncrypted: false,
+                overwriteDefault: true,
                 disableEncryptIndicator: true,
                 encryptError: I18n.t("encrypt.composer.user_has_no_key", {
                   username
