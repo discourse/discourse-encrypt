@@ -87,7 +87,6 @@ export default {
     withPluginApi("0.8.31", api => {
       api.decorateWidget("header:after", helper => {
         if (helper.widget.state.userVisible) {
-          self.decryptTitles();
           debounce(self, self.decryptTitles, 500);
         }
       });
