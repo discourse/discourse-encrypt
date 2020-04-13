@@ -21,7 +21,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
           everything: this.everything
         }
       })
-        .then(() => reload())
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
+          reload();
+        })
         .catch(popupAjaxError);
     }
   }

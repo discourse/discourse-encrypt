@@ -100,10 +100,6 @@ export default {
 
       const saveDbIdentityPromise = identityPromise
         .then(identity => saveDbIdentity(identity))
-        .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
-          reload();
-        })
         .finally(() => {
           this.setProperties({
             passphrase: "",
@@ -113,7 +109,12 @@ export default {
           });
         });
 
-      return Promise.all([saveIdentityPromise, saveDbIdentityPromise]);
+      return Promise.all([saveIdentityPromise, saveDbIdentityPromise]).then(
+        () => {
+          this.appEvents.trigger("encrypt:status-changed");
+          reload();
+        }
+      );
     },
 
     activateEncrypt() {
