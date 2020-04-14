@@ -35,7 +35,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
           this.models.forEach(model => {
-            model.state.decrypting = false;
+            model.state.decrypting = true;
             model.state.decrypted = false;
             model.scheduleRerender();
           });
