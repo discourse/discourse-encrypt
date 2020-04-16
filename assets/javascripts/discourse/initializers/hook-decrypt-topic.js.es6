@@ -56,6 +56,12 @@ function decryptElements(containerSelector, elementSelector, opts) {
     $(this)
       .find(".edit-topic")
       .hide();
+
+    // Hide excerpt in search
+    $(this)
+      .parents(".search-link")
+      .find(".blurb")
+      .hide();
   });
 }
 
@@ -83,10 +89,13 @@ export default {
       }
     });
 
-    // Decrypt notifications when opening the user menu.
+    // Decrypt notifications when opening the user menu or searching.
     withPluginApi("0.8.31", api => {
       api.decorateWidget("header:after", helper => {
-        if (helper.widget.state.userVisible) {
+        if (
+          helper.widget.state.userVisible ||
+          helper.widget.state.searchVisible
+        ) {
           debounce(self, self.decryptTitles, 500);
         }
       });
@@ -105,6 +114,7 @@ export default {
     decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
     decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
     decryptElements(".quick-access-panel span[data-topic-id]");
+    decryptElements(".search-result-topic span[data-topic-id]");
   },
 
   decryptDocTitle(data) {
