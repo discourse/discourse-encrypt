@@ -109,7 +109,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
         .delete_all
     end
 
-    user.user_encryption_key.delete
+    user.user_encryption_key&.delete
 
     render json: success_json
   end
