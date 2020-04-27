@@ -2,7 +2,7 @@ import {
   base64ToBuffer,
   bufferToBase64
 } from "discourse/plugins/discourse-encrypt/lib/base64";
-import { isSafari } from "discourse/plugins/discourse-encrypt/lib/database";
+import { useLocalStorage } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   decrypt as decryptV0,
   encrypt as encryptV0,
@@ -94,7 +94,7 @@ export function exportIdentity(identity, passphrase) {
 export function importIdentity(identity, passphrase, extractable) {
   // HACK: Since paper keys can be generated at any time, keys must be
   // extractable at all times (the same behaviour required in Safari).
-  extractable = !!extractable || isSafari || true;
+  extractable = !!extractable || useLocalStorage || true;
 
   const sep = identity.indexOf("$");
   const version = parseInt(identity.substr(0, sep), 10);

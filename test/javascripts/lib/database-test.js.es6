@@ -1,7 +1,7 @@
 import { generateIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import {
   DB_NAME,
-  useLocalStorage,
+  setUseLocalStorage,
   deleteDb,
   loadDbIdentity,
   saveDbIdentity
@@ -10,7 +10,7 @@ import {
 QUnit.module("discourse-encrypt:lib:database");
 
 test("IndexedDB backend", async assert => {
-  useLocalStorage(false);
+  setUseLocalStorage(false);
   await deleteDb();
 
   let identity = await loadDbIdentity();
@@ -33,7 +33,7 @@ test("IndexedDB backend", async assert => {
 });
 
 test("Web Storage (localStorage) backend", async assert => {
-  useLocalStorage(true);
+  setUseLocalStorage(true);
   await deleteDb();
 
   let identity = await loadDbIdentity();

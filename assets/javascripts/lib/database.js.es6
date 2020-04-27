@@ -11,30 +11,20 @@ export const DB_NAME = "discourse-encrypt";
 export const DB_VERSION = "discourse-encrypt-version";
 
 /**
- * Checks if this is running in Safari or DiscourseHub app for iOS.
- *
- * Safari's implementation of IndexedDb cannot store `CryptoKey`, so local
- * storage is used instead. Moreover, the DiscourseHub for iOS also uses
- * `SFSafariViewController` which does not have a persistent IndexedDb.
- *
- * @todo Remove this and all usages when Safari is fixed.
- *
- * @see https://bugs.webkit.org/show_bug.cgi?id=177350
- * @see https://bugs.webkit.org/show_bug.cgi?id=182972
+ * When truthy, it uses local storage instead of IndexedDb to store user
+ * identities.
  *
  * @type {Boolean}
  */
-export let isSafari =
-  !!navigator.userAgent.match(/Version\/(\d+).+?Safari/) ||
-  !!navigator.userAgent.match(/(iPad|iPhone|iPod)/);
+export let useLocalStorage = false;
 
 /**
  * Force usage of local storage instead of IndexedDb.
  *
  * @param {Boolean} value Whether to use local storage.
  */
-export function useLocalStorage(value) {
-  isSafari = value;
+export function setUseLocalStorage(value) {
+  useLocalStorage = value;
 }
 
 /**
@@ -45,7 +35,7 @@ export function useLocalStorage(value) {
  * @return {IDBOpenDBRequest}
  */
 function openDb(create) {
-  let req = window.indexedDB.open(DB_NAME, 1);
+  const req = window.indexedDB.open(DB_NAME, 1);
 
   req.onupgradeneeded = evt => {
     if (!create) {
@@ -53,13 +43,20 @@ function openDb(create) {
       return;
     }
 
-    let db = evt.target.result;
+    const db = evt.target.result;
     if (!db.objectStoreNames.contains("keys")) {
       db.createObjectStore("keys", { keyPath: "id", autoIncrement: true });
     }
   };
 
   return req;
+}
+
+function saveIdentityToLocalStorage(identity) {
+  return exportIdentity(identity).then(exported => {
+    window.localStorage.setItem(DB_NAME, exported.private);
+    window.localStorage.setItem(DB_VERSION, identity.version);
+  });
 }
 
 /**
@@ -72,7 +69,7 @@ function openDb(create) {
 export function saveDbIdentity(identity) {
   /*
   if (
-    !isSafari &&
+    !useLocalStorage &&
     Object.values(identity).any(
       key => key instanceof CryptoKey && key.extractable
     )
@@ -82,33 +79,42 @@ export function saveDbIdentity(identity) {
   }
   */
 
-  if (isSafari) {
-    return exportIdentity(identity).then(exported => {
-      window.localStorage.setItem(DB_NAME, exported.private);
-      window.localStorage.setItem(DB_VERSION, identity.version);
-    });
+  if (useLocalStorage) {
+    return saveIdentityToLocalStorage(identity);
   }
 
   return new Promise((resolve, reject) => {
-    let req = openDb(true);
-
-    req.onerror = evt => reject(evt);
+    const req = openDb(true);
+    // eslint-disable-next-line no-unused-vars
+    req.onerror = evt => {
+      saveIdentityToLocalStorage(identity).then(resolve, reject);
+    };
 
     req.onsuccess = evt => {
-      let db = evt.target.result;
-      let tx = db.transaction("keys", "readwrite");
-      let st = tx.objectStore("keys");
+      const db = evt.target.result;
+      const tx = db.transaction("keys", "readwrite");
+      const st = tx.objectStore("keys");
 
-      let dataReq = st.add(identity);
+      const dataReq = st.add(identity);
       dataReq.onsuccess = dataEvt => {
         window.localStorage.setItem(DB_NAME, true);
         window.localStorage.setItem(DB_VERSION, identity.version);
         resolve(dataEvt);
         db.close();
       };
-      dataReq.onerror = dataEvt => reject(dataEvt);
+      // eslint-disable-next-line no-unused-vars
+      dataReq.onerror = dataEvt => {
+        saveIdentityToLocalStorage(identity).then(resolve, reject);
+      };
     };
   });
+}
+
+function loadIdentityFromLocalStorage() {
+  const exported = window.localStorage.getItem(DB_NAME);
+  return exported && exported !== "true"
+    ? importIdentity(exported)
+    : Promise.resolve(null);
 }
 
 /**
@@ -117,44 +123,50 @@ export function saveDbIdentity(identity) {
  * @return {Promise<Object>} A tuple consisting of public and private key.
  */
 export function loadDbIdentity() {
-  if (isSafari) {
-    const exported = window.localStorage.getItem(DB_NAME);
-    return exported ? importIdentity(exported) : Promise.resolve(null);
+  if (useLocalStorage) {
+    return loadIdentityFromLocalStorage();
   }
 
   return new Promise((resolve, reject) => {
-    let req = openDb(false);
-    req.onerror = () => resolve();
-    req.onsuccess = evt => {
-      let db = evt.target.result;
-      let tx = db.transaction("keys", "readonly");
-      let st = tx.objectStore("keys");
-
-      let dataReq = st.getAll();
-      dataReq.onsuccess = dataEvt => {
-        resolve(dataEvt.target.result);
-        db.close();
-      };
-      dataReq.onerror = dataEvt => reject(dataEvt);
+    const req = openDb(false);
+    // eslint-disable-next-line no-unused-vars
+    req.onerror = evt => {
+      loadIdentityFromLocalStorage().then(resolve, reject);
     };
-  }).then(identities => {
-    if (identities && identities.length > 0) {
-      let identity = identities[identities.length - 1];
-      /*
-      if (
-        !isSafari &&
-        Object.values(identity).any(
-          key => key instanceof CryptoKey && key.extractable
-        )
-      ) {
-        // eslint-disable-next-line no-console
-        console.warn("Loaded an extractable key from the database.", identity);
-      }
-      */
-      return identity;
-    }
 
-    return null;
+    req.onsuccess = evt => {
+      const db = evt.target.result;
+      const tx = db.transaction("keys", "readonly");
+      const st = tx.objectStore("keys");
+
+      const dataReq = st.getAll();
+      dataReq.onsuccess = dataEvt => {
+        const identities = dataEvt.target.result;
+        db.close();
+
+        if (identities && identities.length > 0) {
+          const identity = identities[identities.length - 1];
+          resolve(identity);
+        }
+      };
+      // eslint-disable-next-line no-unused-vars
+      dataReq.onerror = dataEvt => {
+        loadIdentityFromLocalStorage().then(resolve, reject);
+      };
+    };
+  }).then(identity => {
+    /*
+    if (
+      !useLocalStorage &&
+      Object.values(identity).any(
+        key => key instanceof CryptoKey && key.extractable
+      )
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn("Loaded an extractable key from the database.", identity);
+    }
+    */
+    return identity;
   });
 }
 
@@ -167,12 +179,8 @@ export function deleteDb() {
   window.localStorage.removeItem(DB_NAME);
   window.localStorage.removeItem(DB_VERSION);
 
-  if (isSafari) {
-    return Promise.resolve();
-  }
-
   return new Promise(resolve => {
-    let req = window.indexedDB.deleteDatabase(DB_NAME);
+    const req = window.indexedDB.deleteDatabase(DB_NAME);
 
     req.onsuccess = evt => resolve(evt);
     req.onerror = evt => resolve(evt);
