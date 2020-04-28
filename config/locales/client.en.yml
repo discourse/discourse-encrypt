@@ -79,5 +79,6 @@ en:
 
       reset:
         title: "Reset Encryption Key Pair"
-        instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever unless it was previously exported."
+        instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever and you will not be able to access any encrypted messages unless you previously exported it."
+        confirm_instructions: "Please type <code>{{username}}</code> to confirm:"
         everything: "Uninvite from all encrypted private conversations (if any)"

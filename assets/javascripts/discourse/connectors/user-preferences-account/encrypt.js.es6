@@ -172,6 +172,9 @@ export default {
         case "managePaperKeys":
           showModal("manage-paper-keys", { model: this.model });
           break;
+        case "reset":
+          showModal("reset-key-pair", { model: this.model });
+          break;
       }
     },
 

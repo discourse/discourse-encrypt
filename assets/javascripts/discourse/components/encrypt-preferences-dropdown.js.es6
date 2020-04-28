@@ -18,6 +18,11 @@ export default DropdownSelectBoxComponent.extend({
       id: "managePaperKeys",
       icon: "ticket-alt",
       name: I18n.t("encrypt.manage_paper_keys.title")
+    },
+    {
+      id: "reset",
+      icon: "trash-alt",
+      name: I18n.t("encrypt.preferences.reset")
     }
   ]
 });
