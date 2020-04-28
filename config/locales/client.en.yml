@@ -61,7 +61,7 @@ en:
 
       generate_paper_key:
         title: "Generate Paper Key"
-        title_device: "Add Device"
+        title_device: "Activate Another Device"
         instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
         instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
 
