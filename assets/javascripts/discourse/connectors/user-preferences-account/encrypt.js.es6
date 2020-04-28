@@ -10,8 +10,7 @@ import {
   canEnableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  getEncryptionStatus,
-  reload
+  getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import {
@@ -112,7 +111,6 @@ export default {
       return Promise.all([saveIdentityPromise, saveDbIdentityPromise]).then(
         () => {
           this.appEvents.trigger("encrypt:status-changed");
-          reload();
         }
       );
     },
@@ -129,7 +127,6 @@ export default {
       return identityPromise
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          reload();
         })
         .catch(() =>
           bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
@@ -150,7 +147,6 @@ export default {
       deleteDb()
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          reload();
         })
         .finally(() => this.set("inProgress", false));
     },

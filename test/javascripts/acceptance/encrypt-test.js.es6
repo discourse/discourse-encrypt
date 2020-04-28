@@ -443,7 +443,7 @@ test("topic titles in notification panel are decrypted", async assert => {
   // In test environments, because `Ember.run.debounce` is aliased to `Ember.run`.
   await window.Discourse.__container__
     .lookup("service:app-events")
-    .trigger("encrypt:status-changed");
+    .trigger("encrypt:status-changed", true);
 
   assert.equal(
     find(".quick-access-panel span[data-topic-id]").text(),
