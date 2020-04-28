@@ -111,6 +111,12 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     user.user_encryption_key&.delete
 
+    MessageBus.publish(
+      '/plugin/encrypt/keys',
+      { public: nil, private: nil },
+      user_ids: [user.id]
+    )
+
     render json: success_json
   end
 
