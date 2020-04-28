@@ -117,7 +117,7 @@ export default {
     // Decode composer on reply reload. This usually occurs when a post is
     // edited or a draft is loaded.
     const appEvents = container.lookup("service:app-events");
-    appEvents.on("composer:reply-reloaded", this, "composerReplyReloaded");
+    appEvents.on("composer:reply-reloaded", this, this.composerReplyReloaded);
   },
 
   composerReplyReloaded(model) {
