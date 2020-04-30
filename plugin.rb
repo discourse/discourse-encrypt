@@ -202,10 +202,18 @@ after_initialize do
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
 
-    if manager.args[:encrypted_title] && !manager.args[:encrypted_keys]
-      result = NewPostResult.new(:created_post, false)
-      result.errors.add(:base, I18n.t('encrypt.no_encrypt_keys'))
-      next result
+    if manager.args[:encrypted_title]
+      if manager.args[:target_recipients].blank?
+        result = NewPostResult.new(:created_post, false)
+        result.errors.add(:base, I18n.t('activerecord.errors.models.topic.attributes.base.no_user_selected'))
+        next result
+      end
+
+      if !manager.args[:encrypted_keys]
+        result = NewPostResult.new(:created_post, false)
+        result.errors.add(:base, I18n.t('encrypt.no_encrypt_keys'))
+        next result
+      end
     end
 
     manager.args[:raw] = manager.args[:encrypted_raw]
