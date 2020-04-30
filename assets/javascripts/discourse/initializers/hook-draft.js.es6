@@ -23,7 +23,7 @@ const ALLOWED_DRAFT_FIELDS = [
   "reply", // will be encrypted
   "tags",
   "title", // will be encrypted
-  "usernames",
+  "recipients",
   "whisper"
 ];
 

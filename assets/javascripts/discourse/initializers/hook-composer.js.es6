@@ -121,43 +121,43 @@ export default {
   },
 
   composerReplyReloaded(model) {
-    const draftKey = model.draftKey;
-
-    let encrypted, decTitle, decReply;
-    if (draftKey === Composer.NEW_PRIVATE_MESSAGE_KEY) {
-      encrypted = true;
-    } else if (draftKey.indexOf("topic_") === 0) {
-      const topicId = draftKey.substr("topic_".length);
-      encrypted = !!hasTopicKey(topicId);
+    if (!model.privateMessage) {
+      return;
     }
 
-    if (encrypted) {
-      if (model.action === "edit" && model.originalText) {
-        const topicId = model.get("topic.id");
-        decTitle = getTopicTitle(topicId);
-        decReply = getTopicKey(topicId)
-          .then(key => decrypt(key, model.reply))
+    let decTitle, decReply;
+
+    if (model.action === "edit" && model.originalText) {
+      const topicId = model.get("topic.id");
+      if (!hasTopicKey(topicId)) {
+        return;
+      }
+
+      decTitle = getTopicTitle(topicId);
+      decReply = getTopicKey(topicId)
+        .then(key => decrypt(key, model.reply))
+        .then(decrypted => decrypted.raw);
+    } else {
+      const pos = model.reply ? model.reply.indexOf("\n") : -1;
+      if (pos === -1) {
+        return;
+      }
+
+      const topicKey = model.reply.substr(0, pos).trim();
+      const reply = model.reply.substr(pos + 1).trim();
+
+      const decKey = getIdentity().then(identity =>
+        importKey(topicKey, identity.encryptPrivate)
+      );
+
+      if (model.title) {
+        decTitle = decKey.then(key => decrypt(key, model.title));
+      }
+
+      if (reply) {
+        decReply = decKey
+          .then(key => decrypt(key, reply))
           .then(decrypted => decrypted.raw);
-      } else {
-        const pos = model.reply ? model.reply.indexOf("\n") : -1;
-        if (pos !== -1) {
-          const topicKey = model.reply.substr(0, pos).trim();
-          const reply = model.reply.substr(pos + 1).trim();
-
-          const decKey = getIdentity().then(identity =>
-            importKey(topicKey, identity.encryptPrivate)
-          );
-
-          decTitle = model.title
-            ? decKey.then(key => decrypt(key, model.title))
-            : "";
-
-          decReply = reply
-            ? decKey
-                .then(key => decrypt(key, reply))
-                .then(decrypted => decrypted.raw)
-            : "";
-        }
       }
     }
 
