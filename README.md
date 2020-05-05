@@ -1,9 +1,7 @@
-## :warning: This plugin is work in progress. :warning:
-
 # discourse-encrypt [![Build Status](https://travis-ci.org/discourse/discourse-encrypt.svg?branch=master)](https://travis-ci.org/discourse/discourse-encrypt)
 
 Discourse Encrypt is a plugin that provides a secure communication channel
-through Discourse.
+through Discourse. [Read more about the plugin on Meta...](https://meta.discourse.org/t/discourse-encrypt-for-private-messages/107918)
 
 ## Installation
 
