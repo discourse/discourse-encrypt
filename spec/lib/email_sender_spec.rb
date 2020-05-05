@@ -3,6 +3,16 @@
 require 'rails_helper'
 
 describe Email::Sender do
+  before do
+    POP3PollingEnabledSettingValidator.any_instance.stubs(:authentication_works?).returns(true)
+    SiteSetting.pop3_polling_host = "localhost"
+    SiteSetting.pop3_polling_username = "test"
+    SiteSetting.pop3_polling_password = "test"
+    SiteSetting.pop3_polling_enabled = true
+    SiteSetting.reply_by_email_address = "test+%{reply_key}@example.com"
+    SiteSetting.reply_by_email_enabled = true
+  end
+
   fab!(:small_pdf) do
     SiteSetting.authorized_extensions = 'pdf'
     UploadCreator.new(file_from_fixtures("small.pdf", "pdf"), "small.pdf")
@@ -32,11 +42,13 @@ describe Email::Sender do
       )
     end
 
-    it "removes attachments from the email" do
+    it "removes attachments from the email and does not allow to respond via email" do
       SiteSetting.email_total_attachment_size_limit_kb = 10_000
       Email::Sender.new(message, :valid_type).send
 
       expect(message.attachments.length).to eq(0)
+      expect(message.reply_to).to eq(["noreply@test.localhost"])
+      expect(message.body.raw_source).not_to match("or reply to this email to respond")
     end
   end
 
@@ -61,11 +73,13 @@ describe Email::Sender do
       )
     end
 
-    it "adds non-image uploads as attachments to the email" do
+    it "adds non-image uploads as attachments to the email and allows to respond via email" do
       SiteSetting.email_total_attachment_size_limit_kb = 10_000
       Email::Sender.new(message, :valid_type).send
 
       expect(message.attachments.length).to eq(1)
+      expect(message.reply_to).to eq(["test+%{reply_key}@example.com"])
+      expect(message.body.raw_source).to match("or reply to this email to respond")
     end
   end
 end
