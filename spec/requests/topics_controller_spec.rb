@@ -46,4 +46,16 @@ describe TopicsController do
       expect(TopicAllowedGroup.where(group_id: group.id, topic_id: topic.id).exists?).to eq(false)
     end
   end
+
+  context '#remove_allowed_user' do
+    let(:topic) { Fabricate(:encrypt_topic, user: user) }
+    let(:other_user) { topic.topic_allowed_users.map(&:user).find { |u| u != user } }
+
+    it 'uninvites the user' do
+      put "/t/#{topic.id}/remove-allowed-user.json", params: { username: other_user.username }
+
+      expect(EncryptedTopicsUser.where(topic_id: topic.id, user_id: user.id)      .exists?).to eq(true)
+      expect(EncryptedTopicsUser.where(topic_id: topic.id, user_id: other_user.id).exists?).to eq(false)
+    end
+  end
 end
