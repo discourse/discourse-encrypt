@@ -8,9 +8,9 @@ en:
       no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate Paper Key</kbd> button and follow the instructions."
 
       integrity_check_pass: "The integrity check for this post has passed."
-      integrity_check_fail: "The integrity check for this post has failed ({{fields}} mismatch)."
+      integrity_check_fail: "The integrity check for this post has failed (%{fields} mismatch)."
       integrity_check_warn_updated_at: "Post metadata was updated without being signed again."
-      integrity_check_warn_signed_by: "This post was last signed by {{actual}}, not {{expected}}."
+      integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}."
 
       encrypted_topic_title: "A secret message"
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
@@ -31,7 +31,7 @@ en:
       composer:
         encrypt: "Encrypt message?"
         group_not_allowed: "You are not allowed to send messages to groups."
-        user_has_no_key: "Unfortunately {{username}} did not enable encrypted messages."
+        user_has_no_key: "Unfortunately %{username} did not enable encrypted messages."
 
       preferences:
         ie11: "The required cipher suite is unavailable in Internet Explorer 11."
@@ -80,5 +80,5 @@ en:
       reset:
         title: "Reset Encryption Key Pair"
         instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever and you will not be able to access any encrypted messages unless you previously exported it."
-        confirm_instructions: "Please type <code>{{username}}</code> to confirm:"
+        confirm_instructions: "Please type <code>%{username}</code> to confirm:"
         everything: "Uninvite from all encrypted private conversations (if any)"
