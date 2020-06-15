@@ -238,7 +238,7 @@ test("posting does not leak plaintext", async assert => {
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
 
-  if (find('.users-input').text().trim() != "") {
+  if (find('.users-input').text().trim() !== "") {
     globalAssert = null;
     throw new Error("Another test is leaking composer state");
   }
