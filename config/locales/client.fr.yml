@@ -1,0 +1,74 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+fr:
+  js:
+    encrypt:
+      title: "Messages chiffrés"
+      decrypting: "Déchiffrement en cours…"
+      decryption_failed: "Ce message n'a pas pu être déchiffré."
+      no_backup_warn: "Vous avez activé le chiffrement, mais n'avez généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour en générer une, veuillez vous rendre <a href='%{basePath}/my/preferences/account'>sur votre page de préférences</a> , cliquez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
+      integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
+      integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
+      integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
+      integrity_check_warn_signed_by: "Ce message a été signé la dernière fois par %{actual}, et non %{expected}."
+      encrypted_topic_title: "Un message secret"
+      encrypted_post: "Ceci est un message secret avec un chiffrement de bout en bout. Pour le visualiser, vous devez être invité sur ce sujet."
+      encrypted_post_email: "Ceci est un message secret avec un chiffrement de bout en bout. Vous devez visité le sujet pour le voir."
+      encrypted_icon_title: "Ce message est chiffré de bout en bout."
+      encrypted_uploads: "Les chargements de fichier ne peuvent être chiffrés pour le moment."
+      cannot_encrypt: "Vous ne pouvez pas chiffrer de messages dans cette conversation."
+      cannot_invite: "Vous ne pouvez pas inviter à cette discussion"
+      cannot_invite_group: "Vous ne pouvez pas inviter de groupes à des messages chiffrés"
+      checkbox:
+        checked: "Ce message sera chiffré"
+        unchecked: "Cliquez sur le cadenas pour chiffrer ce message"
+        disabled: "Un des destinataires n’a pas autorisé le chiffrement"
+      composer:
+        encrypt: "Chiffrer votre message ?"
+        group_not_allowed: "Vous n'avez pas la permission d'envoyer des messages aux groupes."
+        user_has_no_key: "Malheureusement %{username} n'a pas autorisé les messages chiffrés."
+      preferences:
+        ie11: "La suite cryptographique requise n'est pas disponible sous Internet Explorer 11."
+        insecure_context: "Le chiffrement ne peut pas être utilisé dans un contexte non sécurisé (sans HTTPS)."
+        status_enabled: "Vous avez activé le chiffrement et votre appareil est prêt à l'utiliser."
+        status_enabled_other: "Cet utilisateur a activé le chiffrement et peut recevoir des messages chiffrés."
+        status_enabled_but_inactive: "Vous avez activé le chiffrement mais vous devez aussi l'activer sur cet appareil."
+        status_disabled: "Vous n'avez pas activé le chiffrement sur ce compte."
+        status_disabled_other: "Cet utilisateur n'a pas activé le chiffrement et ne peut pas recevoir de messages chiffrés."
+        passphrase_label: "Phrase secrète :"
+        passphrase_invalid: "La phrase secrète est incorrecte."
+        import_key: "Je possède déjà une clé de chiffrement."
+        notice_active: |
+          <p>Merci d'utiliser un autre appareil déjà actif ou une clé papier pour activer le chiffrement sur cet appareil. Ne pas oublier les espaces entre les mots.<p>
+        notice_import: |
+          <p>Veuillez coller la clé de chiffrement que vous avez exportée précédemment.</p>
+        activate: "Activer les messages directs chiffrés"
+        deactivate: "Désactiver le chiffrement sur cet appareil"
+        enable: "Activer les messages directs chiffrés"
+        import: "Importer la paire de clés de chiffrement"
+        reset: "Réinitialiser la paire de clés de chiffrement"
+      generate_paper_key:
+        title: "Générer une clé papier"
+        title_device: "Activer un autre appareil"
+        instructions: "Voici votre clé papier unique, elle vous permettra d'activer le chiffrement sur d'autres appareils. Ceci est l'unique vue que vous en aurez, aussi assurez-vous de la recopier et la sauvegarder dans un endroit sûr."
+        instructions_device: "Sur votre appareil, allez dans les préférences et utilisez la phrase secrète suivante pour activer le chiffrement :"
+      manage_paper_keys:
+        title: "Gérer les clés papier"
+        instructions: "Vous pouvez supprimer ci-dessous des clés papier existantes. Une fois effacée, une clé papier ne peut pas être récupérée, aussi assurez-vous de conserver toujours au-moins une clé papier ou d'autres appareils actifs."
+        delete: "Supprimer"
+        no_key: "Vous n'avez aucune clé papier. Assurez-vous d'avoir au-moins une clé papier ou d'autres appareils actifs."
+        passphrase: "basé sur une phrase secrète"
+        not_recommended: "(non recommandé)"
+      export:
+        title: "Exporter la paire de clés de chiffrement"
+        instructions: "L'export de votre paire de clés de chiffrement offre un autre mécanisme de sauvegarde. Merci de tenir compte du fait que la paire de clé exportée n'est pas protégée et peut déchiffrer toutes vos conversations privées."
+      reset:
+        title: "Réinitialiser la paire de clés de chiffrement"
+        instructions: "Voulez-vous confirmer la réinitialisation de votre clé de chiffrement ? Cette opération supprime la clé de chiffrement définitivement et vous ne pourrez plus accéder à aucun message chiffré à moins d'en avoir exporté  une copie auparavant."
+        confirm_instructions: "Veuillez entrer <code>%{username}</code> pour confirmer :"
+        everything: "Résilier l'invitation à toute (éventuelle) conversation privée."

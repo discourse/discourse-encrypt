@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+nl:
+  encrypt:
+    encrypted_excerpt: "Dit bericht is versleuteld; lees het in de browser."
+    enabled_already: "U hebt versleutelde berichten al ingeschakeld."
+    only_pms: "Alleen privéberichten kunnen worden versleuteld."
+    no_encrypt_keys: "Er is iets misgegaan. Er waren geen coderingssleutels in de nettolading opgenomen."
+  site_settings:
+    encrypt_enabled: "Versleutelde privéberichten inschakelen."
+    encrypt_groups: "De naam van groepen die versleuteling kunnen gebruiken (leeg betekent iedereen)."

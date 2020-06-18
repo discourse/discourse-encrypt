@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+ru:
+  encrypt:
+    encrypted_excerpt: "Сообщение зашифровано, откройте его в браузере."
+    enabled_already: "Вы уже включили шифрование сообщений."
+    only_pms: "Зашифрованы могут быть только личные сообщения."
+    no_encrypt_keys: "Что-то пошло не так. Ключи шифрования не были задействованы."
+  site_settings:
+    encrypt_enabled: "Включить шифрование личных сообщений."
+    encrypt_groups: "Названия групп, которые могут использовать шифрование (оставьте пустым, если необходимо включить функционал для всех групп)."

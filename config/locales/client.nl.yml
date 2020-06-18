@@ -1,0 +1,74 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+nl:
+  js:
+    encrypt:
+      title: "Versleutelde berichten"
+      decrypting: "Ontcijferen..."
+      decryption_failed: "Dit bericht kon niet worden ontcijferd."
+      no_backup_warn: "U hebt versleuteling ingeschakeld, maar geen papieren sleutels gegenereerd. Zonder papieren sleutels loopt u het risico de toegang tot uw versleutelde berichten te verliezen. Navigeer naar de <a href='%{basePath}/my/preferences/account'>pagina met gebruikersvoorkeuren</a>, klik op de knop <kbd>Papieren sleutel genereren</kbd> en volg de instructies om er een te genereren."
+      integrity_check_pass: "De integriteitscontrole voor dit bericht is voltooid."
+      integrity_check_fail: "De integriteitscontrole voor dit bericht is mislukt (geen overeenkomst voor %{fields})."
+      integrity_check_warn_updated_at: "Metagegevens van zijn bericht bijgewerkt zonder opnieuw te worden ondertekend."
+      integrity_check_warn_signed_by: "Dit bericht is het laatst ondertekend door %{actual}, niet %{expected}."
+      encrypted_topic_title: "Een geheim bericht"
+      encrypted_post: "Dit is een geheim bericht met end-to-endversleuteling. U moet voor dit topic zijn uitgenodigd om het te bekijken."
+      encrypted_post_email: "Dit is een geheim bericht met end-to-endversleuteling. U moet het topic bezoeken om het te bekijken."
+      encrypted_icon_title: "Dit bericht is end-to-end versleuteld."
+      encrypted_uploads: "Uploads kunnen momenteel niet worden versleuteld."
+      cannot_encrypt: "U kunt geen berichten versleutelen in deze conversatie."
+      cannot_invite: "U kunt geen uitnodigingen sturen voor deze conversatie."
+      cannot_invite_group: "U kunt geen groepen uitnodigen voor versleutelde berichten."
+      checkbox:
+        checked: "Dit bericht wordt end-to-end versleuteld."
+        unchecked: "Klik op het slotsymbool om dit bericht te versleutelen."
+        disabled: "Een van de ontvangers heeft geen versleuteling ingeschakeld."
+      composer:
+        encrypt: "Bericht versleutelen?"
+        group_not_allowed: "U mag geen berichten naar groepen sturen."
+        user_has_no_key: "Helaas heeft %{username} geen versleutelde berichten ingeschakeld."
+      preferences:
+        ie11: "De vereiste coderingssuite is niet beschikbaar in Internet Explorer 11."
+        insecure_context: "Versleuteling kan niet worden gebruikt in een onveilige context (geen HTTPS)."
+        status_enabled: "U hebt op dit apparaat versleuteling ingeschakeld en geactiveerd."
+        status_enabled_other: "Deze gebruiker heeft versleuteling ingeschakeld en kan versleutelde berichten ontvangen."
+        status_enabled_but_inactive: "U hebt op dit apparaat versleuteling ingeschakeld, maar niet geactiveerd."
+        status_disabled: "U hebt op deze account geen versleuteling ingeschakeld."
+        status_disabled_other: "Deze gebruiker heeft geen versleuteling ingeschakeld en kan geen versleutelde berichten ontvangen."
+        passphrase_label: "Wachtwoordzin:"
+        passphrase_invalid: "De ingevoerde wachtwoordzin is onjuist."
+        import_key: "Ik heb al een coderingssleutel."
+        notice_active: |
+          <p>Gebruik een ander apparaat of een papieren sleutel om dit apparaat te activeren. Denk aan de spaties tussen woorden.<p>
+        notice_import: |
+          <p>Plak de coderingssleutel die u eerder hebt geëxporteerd.</p>
+        activate: "Versleutelde berichten activeren"
+        deactivate: "Versleuteling op dit apparaat deactiveren"
+        enable: "Versleutelde berichten inschakelen"
+        import: "Sleutelpaar importeren"
+        reset: "Sleutelpaar herinitialiseren"
+      generate_paper_key:
+        title: "Papieren sleutel genereren"
+        title_device: "Een ander apparaat activeren"
+        instructions: "Dit is uw unieke papieren sleutel; hiermee kunt u toekomstige versleutelde apparaten activeren. Dit is de enige keer dat u dit ziet, dus zorg ervoor dat u deze opschrijft en ergens veilig opbergt."
+        instructions_device: "Ga op uw nieuwe apparaat naar de voorkeuren en gebruik de volgende wachtwoordzin om versleuteling te activeren:"
+      manage_paper_keys:
+        title: "Papieren sleutels beheren"
+        instructions: "Hieronder kunt u eerder aangemaakte papieren sleutels verwijderen. Na verwijdering kan de papieren sleutel niet meer worden hersteld, dus zorg ervoor dat u minstens één papieren sleutel of andere actieve apparaten hebt."
+        delete: "Verwijderen"
+        no_key: "U hebt geen papieren sleutels. Zorg ervoor dat u minstens één papieren sleutel of andere actieve apparaten hebt."
+        passphrase: "wachtwoordzin-gebaseerd"
+        not_recommended: "(niet aanbevolen)"
+      export:
+        title: "Sleutelpaar exporteren"
+        instructions: "Exporteren van uw sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al uw privéconversaties kan ontcijferen."
+      reset:
+        title: "Sleutelpaar herinitialiseren"
+        instructions: "Weet u zeker dat u het sleutelpaar wilt herinitialiseren? Door deze bewerking wordt de coderingssleutel voorgoed verwijderd en hebt u geen toegang meer tot versleutelde berichten, tenzij u ze eerder hebt geëxporteerd."
+        confirm_instructions: "Typ <code>%{username}</code> ter bevestiging:"
+        everything: "Uitnodigingen van alle versleutelde privéconversaties intrekken (als ze bestaan)"

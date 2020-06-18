@@ -1,0 +1,74 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+it:
+  js:
+    encrypt:
+      title: "Messaggi Codificati"
+      decrypting: "Decodifica in corso..."
+      decryption_failed: "Questo messaggio non può essere decodificato."
+      no_backup_warn: "Hai abilitato la codifica, ma non hai generato alcuna chiave cartacea. Senza chiavi cartacee rischi di perdere l'accesso ai messaggi codificati. Per generare una chiave vai alla <a href='%{basePath}/my/preferences/account'>pagina delle preferenze</a>, premi il bottone <kbd>Genera Chiave Cartacea</kbd> e segui le istruzioni."
+      integrity_check_pass: "Il controllo di integrità per questo messaggio è riuscito."
+      integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito(%{fields}mancata corrispondenza)."
+      integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."
+      integrity_check_warn_signed_by: "Questo messaggio è stato firmato l'ultima volta da %{actual}, non da %{expected}."
+      encrypted_topic_title: "Un messaggio segreto"
+      encrypted_post: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi essere invitato a questo argomento."
+      encrypted_post_email: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi visitare questo argomento."
+      encrypted_icon_title: "Questo è un messaggio ha una codifica punto-punto.  "
+      encrypted_uploads: "I caricamenti non possono essere codificati al momento."
+      cannot_encrypt: "Non è possibile codificare i messaggi in questa conversazione."
+      cannot_invite: "Non puoi invitare a questa conversazione."
+      cannot_invite_group: "Non puoi invitare dei gruppi ai messaggi codificati."
+      checkbox:
+        checked: "Questo messaggio verrà codificato con codifica punto-punto."
+        unchecked: "Clicca il lucchetto per codificare questo messaggio."
+        disabled: "Uno dei destinatari non ha abilitato la codifica."
+      composer:
+        encrypt: "Codificare il messaggio?"
+        group_not_allowed: "Non sei abilitato all'invio di messaggi ai gruppi."
+        user_has_no_key: "Purtroppo %{username}non ha abilitato i messaggi codificati."
+      preferences:
+        ie11: "La suite di cifratura richiesta non è disponibile su Internet Explorer 11."
+        insecure_context: "La codifica non può essere usata in un contesto non sicuro (non HTTPS). "
+        status_enabled: "Hai abilitato ed attivato la codifica su questo dispositivo."
+        status_enabled_other: "Questo utente ha abilitato la codifica e può ricevere messaggi codificati. "
+        status_enabled_but_inactive: "Hai abilitato la codifica, ma non l'hai attivata su questo dispositivo."
+        status_disabled: "Non hai abilitato la codifica su questo account."
+        status_disabled_other: "L'utente non ha abilitato la codifica e non può ricevere messaggi codificati."
+        passphrase_label: "Password:"
+        passphrase_invalid: "La password che hai inserito non è corretta."
+        import_key: "Ho già una chiave di codifica."
+        notice_active: |
+          <p>Usa un'altro dispositivo o una chiave cartacea per attivare questo dispositivo. Non dimenticare gli spazi tra le parole.<p>
+        notice_import: |
+          <p>Incolla la chiave di codifica che hai precedentemente esportato.</p>
+        activate: "Attiva Codifica Messaggi"
+        deactivate: "Disattiva Codifica su questo Dispositivo"
+        enable: "Abilita Codifica Messaggi"
+        import: "Importa Coppia Chiavi Codifica"
+        reset: "Reimposta Coppia Chiavi Codifica"
+      generate_paper_key:
+        title: "Genera Chiave Cartacea"
+        title_device: "Attiva Altro Dispositivo"
+        instructions: "Ecco la tua chiave cartacea univoca, ti permetterà di attivare altri dispositivi codificati. Questa è l'unica volta in cui ti sarà mostrata, quindi accertati di copiarla e di custodirla in un luogo sicuro.  "
+        instructions_device: "Sul nuovo dispositivo vai sulle preferenze ed usa la seguente password per attivare la codifica:"
+      manage_paper_keys:
+        title: "Gestisci Chiavi Cartacee"
+        instructions: "Da qui puoi cancellare le chiavi cartacee generate in precedenza. Una volta cancellata una chiave cartacea non può più essere ripristinata, perciò assicurati di lasciarne almeno una, oppure di avere altri dispositivi attivi."
+        delete: "Elimina"
+        no_key: "Non hai chiavi cartacee. Assicurati di averne almeno una, oppure di avere altri dispositivi attivi."
+        passphrase: "basato su password"
+        not_recommended: "(sconsigliato)"
+      export:
+        title: "Esporta Coppia Chiavi Codifica"
+        instructions: "Si esporta una coppia di chiavi a scopo di backup. Nota bene: la coppia di chiavi esportata non è protetta e può decodificare tutte le tue conversazioni private. "
+      reset:
+        title: "Reimposta Coppia Chiavi Codifica"
+        instructions: "Sicuro di voler reimpostare la chiave di codifica? Questa operazione cancella definitivamente la chiave di codifica e non sarai in grado di accedere ai messaggi codificati senza una chiave precedentemente esportata."
+        confirm_instructions: "Digita <code>%{username}</code> per confermare:"
+        everything: "Rimuovi invito da tutte le conversazioni private codificate (se presenti)"

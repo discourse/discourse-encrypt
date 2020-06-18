@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+de:
+  encrypt:
+    encrypted_excerpt: "Diese Nachricht ist verschlüsselt, lies sie bitte im Browser."
+    enabled_already: "Die Funktion \"verschlüsselte Nachrichten\" ist bereits aktiviert."
+    only_pms: "Nur private Nachrichten können verschlüsselt werden. "
+    no_encrypt_keys: "Etwas ist schief gelaufen.  Kein Schlüssel zur Entschlüsselung ist in der Payload vorhanden."
+  site_settings:
+    encrypt_enabled: "Aktiviere verschlüsselte private Nachrichten."
+    encrypt_groups: "Namen von Gruppen, die verschlüsselte Nachrichten nutzen dürfen (leer bedeutet jeder)."

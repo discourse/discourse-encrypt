@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+he:
+  encrypt:
+    encrypted_excerpt: "הודעה זו מוצפנת. נא לקרוא אותה בדפדפן."
+    enabled_already: "כבר הפעלת הודעות מוצפנות."
+    only_pms: "ניתן להצפין הודעות פרטיות בלבד."
+    no_encrypt_keys: "משהו השתבש. לא נמצאו מפתחות הצפנה במטען."
+  site_settings:
+    encrypt_enabled: "הפעלת הודעות פרטיות מוצפנות."
+    encrypt_groups: "שמות הקבוצות שיכולים להשתמש בהצפנה (ריק כלומר כולן יכולות)."

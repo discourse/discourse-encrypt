@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+sv:
+  encrypt:
+    encrypted_excerpt: "Detta meddelande är krypterat, vänligen läs det i webbläsaren."
+    enabled_already: "Du har redan aktiverat krypterade meddelanden."
+    only_pms: "Enbart privata meddelanden kan krypteras."
+    no_encrypt_keys: "Något gick fel. Inga krypteringsnycklar var inkluderade i innehållet."
+  site_settings:
+    encrypt_enabled: "Aktivera krypterade privata meddelanden."
+    encrypt_groups: "Namnen på grupper som ska vara tillåtna att använda kryptering (tomt innebär samtliga)"

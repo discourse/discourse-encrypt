@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+fr:
+  encrypt:
+    encrypted_excerpt: "Ce message est chiffré, veuillez le lire dans le navigateur web."
+    enabled_already: "Vous avez déjà activé les messages chiffrés."
+    only_pms: "Seulement les messages directs peuvent être chiffrés."
+    no_encrypt_keys: "Un problème est survenu. Aucune clé de chiffrement n'était incluse dans les données reçues."
+  site_settings:
+    encrypt_enabled: "Activer les messages directs chiffrés."
+    encrypt_groups: "Le nom des groupes qui peuvent utiliser le chiffrement (laissez vide pour permettre tout le monde)."

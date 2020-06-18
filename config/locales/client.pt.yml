@@ -1,0 +1,17 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+pt:
+  js:
+    encrypt:
+      title: "Mensagens Encriptadas"
+      decrypting: "A desencriptar..."
+      decryption_failed: "Não foi possível desencriptar esta mensagem."
+      integrity_check_pass: "A verificação de integridade para esta publicação expirou."
+      integrity_check_fail: "A verificação de integridade para esta publicação falhou (disparidade %{fields})."
+      manage_paper_keys:
+        delete: "Eliminar"

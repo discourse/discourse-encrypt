@@ -1,0 +1,74 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+sv:
+  js:
+    encrypt:
+      title: "Krypterade meddelanden"
+      decrypting: "Avkrypterar..."
+      decryption_failed: "Detta meddelande kunde inte avkrypteras."
+      no_backup_warn: "Du aktiverade kryptering, men skapade aldrig några anteckningsnycklar. Utan några anteckningsnycklar riskerar du att förlora tillträde till krypterade meddelanden. För att generera en, vänligen navigera till <a href='%{basePath}/my/preferences/account'>användares inställningssida</a>, tryck sedan på knappen <kbd>Generera anteckningsnyckel</kbd> och följ instruktionerna."
+      integrity_check_pass: "Integritetskontrollen för detta inlägg har godkänts."
+      integrity_check_fail: "Integritetskontrollen för detta inlägg har misslyckats (%{fields} är felaktigt)."
+      integrity_check_warn_updated_at: "Inläggets metadata uppdaterades utan att signering utfördes igen. "
+      integrity_check_warn_signed_by: "Detta inlägg var senast signerat av %{actual}, inte %{expected}."
+      encrypted_topic_title: "Ett hemligt meddelande"
+      encrypted_post: "Detta är ett hemligt meddelande krypterat från början till slut. För att visa det måste du vara inbjuden till detta ämne. "
+      encrypted_post_email: "Detta är ett hemligt meddelande krypterat från början till slut. Du måste besöka ämnet för att visa det."
+      encrypted_icon_title: "Detta meddelande är krypterat från början till slut."
+      encrypted_uploads: "Uppladdningar kan inte krypteras för tillfället."
+      cannot_encrypt: "Du kan inte kryptera meddelanden i denna konversation."
+      cannot_invite: "Du kan inte bjuda in till denna konversation."
+      cannot_invite_group: "Du kan inte bjuda in grupper till krypterade meddelanden."
+      checkbox:
+        checked: "Detta meddelande kommer att vara krypterat från början till slut."
+        unchecked: "Klicka på låssymbolen för att kryptera detta meddelande."
+        disabled: "En av mottagarna har inte aktiverat kryptering."
+      composer:
+        encrypt: "Kryptera meddelande?"
+        group_not_allowed: "Du är inte behörig att skicka meddelanden till grupper."
+        user_has_no_key: "Tyvärr aktiverade inte %{username} krypterade meddelanden."
+      preferences:
+        ie11: "Den nödvändiga chiffer-uppsättningen är inte tillgänglig i Internet Explorer 11."
+        insecure_context: "Kryptering kan inte användas i en osäker miljö (icke HTTPS)."
+        status_enabled: "Du har aktiverat kryptering och det är aktivt för denna enhet."
+        status_enabled_other: "Denna användare har aktiverat kryptering och kan ta emot krypterade meddelanden."
+        status_enabled_but_inactive: "Du har aktiverat kryptering men det är inte aktiverat för denna enhet."
+        status_disabled: "Du har inte aktiverat kryptering för detta konto."
+        status_disabled_other: "Denna användare har inte aktiverat kryptering och kan inte ta emot krypterade meddelanden."
+        passphrase_label: "Lösenordsfras:"
+        passphrase_invalid: "Lösenordsfrasen som du har angett är felaktig."
+        import_key: "Jag har redan en krypteringsnyckel"
+        notice_active: |
+          <p>Vänligen använd en annan enhet eller en anteckningsnyckel för att aktivera denna enhet. Glöm inte mellanrummen mellan ord.<p>
+        notice_import: |
+          <p>Vänligen klistra in krypteringsnyckeln som du tidigare exporterade.</p>
+        activate: "Aktivera krypterade meddelanden"
+        deactivate: "Inaktivera kryptering för denna enhet"
+        enable: "Aktivera krypterade meddelanden"
+        import: "Importera nyckelpar för kryptering"
+        reset: "Återställ nyckelpar för kryptering"
+      generate_paper_key:
+        title: "Generera anteckningsnyckel"
+        title_device: "Aktivera en annan enhet"
+        instructions: "Här är din unika anteckningsnyckel, som kan användas för att aktivera framtida krypterade enheter. Detta är det enda tillfället som du kommer se denna så var säker på att du skriver ner den och sparar den någonstans säkert."
+        instructions_device: "På din nya enhet, gå till inställningar och använd följande lösenordsfras för att aktivera kryptering:"
+      manage_paper_keys:
+        title: "Hantera anteckningsnycklar"
+        instructions: "Nedanför kan du radera valfri av de tidigare genererade anteckningsnycklarna. När den väl är raderat kan anteckningsnyckeln inte återställas, så var säker på att du har åtminstone en anteckningsnyckel eller en annan aktiv enhet. "
+        delete: "Radera"
+        no_key: "Du har inga anteckningsnycklar. Försäkra att du har åtminstone en anteckningsnyckel eller en annan aktiv enhet."
+        passphrase: "lösenordsfras-baserad"
+        not_recommended: "(inte rekommenderat)"
+      export:
+        title: "Exportera nyckelpar för kryptering"
+        instructions: "Att exportera ditt nyckelpar är en annan reservåtgärd. Vänligen notera att det exporterade nyckelparet är oskyddat och kan avkryptera alla dina privata konversationer."
+      reset:
+        title: "Återställ nyckelparet för kryptering"
+        instructions: "Är du säker på att du vill återställa krypteringsnyckeln? Denna åtgärd raderar krypteringsnyckeln för alltid och du kommer inte  att kunna komma åt några krypterade meddelanden förutom de som du tidigare har exporterat."
+        confirm_instructions: "Vänligen ange <code>%{username}</code> för att konfirmera:"
+        everything: "Dra tillbaka inbjudningar från alla krypterade privata konversationer (om de finns)"

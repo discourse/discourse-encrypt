@@ -1,0 +1,16 @@
+# encoding: utf-8
+#
+# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+#
+# To work with us on translations, join this project:
+# https://www.transifex.com/projects/p/discourse-org/
+
+it:
+  encrypt:
+    encrypted_excerpt: "Questo messaggio è crittografato, per favore leggilo nel browser."
+    enabled_already: "Hai già abilitato i messaggi crittografati."
+    only_pms: "Solo i messaggi privati possono essere crittografati."
+    no_encrypt_keys: "Qualcosa è andato storto. Nessuna chiave di crittografia è stata inclusa nel payload."
+  site_settings:
+    encrypt_enabled: "Abilita messaggi privati crittografati."
+    encrypt_groups: "Nome dei gruppi che possono utilizzare la crittografia (vuoto significa tutti)."
