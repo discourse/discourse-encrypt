@@ -3,6 +3,10 @@ plugins:
     client: true
     default: true
     refresh: true
+  auto_enable_encrypt:
+    client: true
+    default: false
+    refresh: true
   encrypt_groups:
     default: ""
     client: true

@@ -6,6 +6,7 @@ import {
   loadDbIdentity,
   saveDbIdentity
 } from "discourse/plugins/discourse-encrypt/lib/database";
+import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import {
   decrypt,
   exportIdentity,
@@ -276,6 +277,30 @@ export function canEnableEncrypt(user) {
   }
 
   return false;
+}
+
+export function enableEncrypt(model, exportedIdentity) {
+  const identityPromise = exportedIdentity
+    ? importIdentity(unpackIdentity(exportedIdentity))
+    : generateIdentity();
+
+  const saveIdentityPromise = identityPromise
+    .then(identity => exportIdentity(identity))
+    .then(exported => {
+      model.set("encrypt_public", exported.public);
+      return ajax("/encrypt/keys", {
+        type: "PUT",
+        data: {
+          public: exported.public
+        }
+      });
+    });
+
+  const saveDbIdentityPromise = identityPromise.then(identity =>
+    saveDbIdentity(identity)
+  );
+
+  return Promise.all([saveIdentityPromise, saveDbIdentityPromise]);
 }
 
 /**
