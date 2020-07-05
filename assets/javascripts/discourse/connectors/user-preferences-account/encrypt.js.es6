@@ -1,4 +1,3 @@
-import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import User from "discourse/models/user";
 import {
@@ -8,17 +7,14 @@ import {
 import {
   activateEncrypt,
   canEnableEncrypt,
+  enableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
-import {
-  exportIdentity,
-  generateIdentity,
-  importIdentity
-} from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { Promise } from "rsvp";
+import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {
@@ -81,24 +77,10 @@ export default {
     enableEncrypt() {
       this.set("inProgress", true);
 
-      const identityPromise = this.importIdentity
-        ? importIdentity(unpackIdentity(this.identity))
-        : generateIdentity();
-
-      const saveIdentityPromise = identityPromise
-        .then(identity => exportIdentity(identity))
-        .then(exported => {
-          this.set("model.encrypt_public", exported.public);
-          return ajax("/encrypt/keys", {
-            type: "PUT",
-            data: {
-              public: exported.public
-            }
-          });
-        });
-
-      const saveDbIdentityPromise = identityPromise
-        .then(identity => saveDbIdentity(identity))
+      return enableEncrypt(this.model, this.importIdentity && this.identity)
+        .then(() => {
+          this.appEvents.trigger("encrypt:status-changed");
+        })
         .finally(() => {
           this.setProperties({
             passphrase: "",
@@ -107,12 +89,6 @@ export default {
             identity: ""
           });
         });
-
-      return Promise.all([saveIdentityPromise, saveDbIdentityPromise]).then(
-        () => {
-          this.appEvents.trigger("encrypt:status-changed");
-        }
-      );
     },
 
     activateEncrypt() {
