@@ -6,7 +6,7 @@ import {
   putTopicKey,
   putTopicTitle
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import PreloadStore from "preload-store";
+import PreloadStore from "discourse/lib/preload-store";
 
 export default {
   name: "hook-gather-keys",
