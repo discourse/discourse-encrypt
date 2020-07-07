@@ -6,6 +6,7 @@ import {
   getEncryptionStatus,
   reload
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import getURL from "discourse-common/lib/get-url";
 
 export default {
   name: "update-state",
@@ -33,8 +34,9 @@ export default {
         Object.keys(JSON.parse(currentUser.encrypt_private)).length === 0)
     ) {
       withPluginApi("0.8.37", api => {
+        let basePath = getURL('/').replace(/\/$/, '');
         api.addGlobalNotice(
-          I18n.t("encrypt.no_backup_warn", { basePath: Discourse.BaseUri }),
+          I18n.t("encrypt.no_backup_warn", { basePath }),
           "key-backup-notice",
           {
             level: "warn",
