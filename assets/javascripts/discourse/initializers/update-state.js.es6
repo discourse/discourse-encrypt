@@ -34,7 +34,7 @@ export default {
         Object.keys(JSON.parse(currentUser.encrypt_private)).length === 0)
     ) {
       withPluginApi("0.8.37", api => {
-        let basePath = getURL('/').replace(/\/$/, '');
+        let basePath = getURL("/").replace(/\/$/, "");
         api.addGlobalNotice(
           I18n.t("encrypt.no_backup_warn", { basePath }),
           "key-backup-notice",
