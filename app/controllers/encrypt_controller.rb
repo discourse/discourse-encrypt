@@ -44,6 +44,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     current_user.user_encryption_key.save
     current_user.publish_identity
 
+    DiscourseEvent.trigger(:enabled_encrypt, current_user) if !old_identity
+
     render json: success_json
   end
 
