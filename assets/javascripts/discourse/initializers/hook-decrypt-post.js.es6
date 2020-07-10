@@ -3,17 +3,9 @@ import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import {
-  fetchUnseenCategoryHashtags,
-  linkSeenCategoryHashtags
-} from "discourse/lib/link-category-hashtags";
-import {
   fetchUnseenMentions,
   linkSeenMentions
 } from "discourse/lib/link-mentions";
-import {
-  fetchUnseenTagHashtags,
-  linkSeenTagHashtags
-} from "discourse/lib/link-tag-hashtag";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
@@ -228,27 +220,52 @@ function lookupAndResolveShortUrlElement(urls, $elements) {
 function postProcessPost(siteSettings, topicId, $post) {
   // Paint mentions.
   const unseenMentions = linkSeenMentions($post, siteSettings);
-  if (unseenMentions.length) {
+  if (unseenMentions.length > 0) {
     fetchUnseenMentions(unseenMentions, topicId).then(() =>
       linkSeenMentions($post, siteSettings)
     );
   }
 
-  // Paint category hashtags.
-  const unseenCategoryHashtags = linkSeenCategoryHashtags($post);
-  if (unseenCategoryHashtags.length) {
-    fetchUnseenCategoryHashtags(unseenCategoryHashtags).then(() => {
-      linkSeenCategoryHashtags($post);
-    });
-  }
+  try {
+    const { linkSeenHashtags, fetchUnseenHashtags } = require.call(
+      null,
+      "discourse/lib/link-hashtags"
+    );
 
-  // Paint tag hashtags.
-  if (siteSettings.tagging_enabled) {
-    const unseenTagHashtags = linkSeenTagHashtags($post);
-    if (unseenTagHashtags.length) {
-      fetchUnseenTagHashtags(unseenTagHashtags).then(() => {
-        linkSeenTagHashtags($post);
+    // Paint category and tag hashtags.
+    const unseenTagHashtags = linkSeenHashtags($post);
+    if (unseenTagHashtags.length > 0) {
+      fetchUnseenHashtags(unseenTagHashtags).then(() => {
+        linkSeenHashtags($post);
       });
+    }
+  } catch (_) {
+    const {
+      fetchUnseenCategoryHashtags,
+      linkSeenCategoryHashtags
+    } = require.call(null, "discourse/lib/link-category-hashtags");
+
+    const { fetchUnseenTagHashtags, linkSeenTagHashtags } = require.call(
+      null,
+      "discourse/lib/link-tag-hashtag"
+    );
+
+    // Paint category hashtags.
+    const unseenCategoryHashtags = linkSeenCategoryHashtags($post);
+    if (unseenCategoryHashtags.length > 0) {
+      fetchUnseenCategoryHashtags(unseenCategoryHashtags).then(() => {
+        linkSeenCategoryHashtags($post);
+      });
+    }
+
+    // Paint tag hashtags.
+    if (siteSettings.tagging_enabled) {
+      const unseenTagHashtags = linkSeenTagHashtags($post);
+      if (unseenTagHashtags.length > 0) {
+        fetchUnseenTagHashtags(unseenTagHashtags).then(() => {
+          linkSeenTagHashtags($post);
+        });
+      }
     }
   }
 
