@@ -23,7 +23,6 @@ import { default as userFixtures } from "fixtures/user_fixtures";
 import { parsePostData } from "helpers/create-pretender";
 import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import selectKit from "helpers/select-kit-helper";
-import { Promise } from "rsvp";
 
 /*
  * Checks if a string is not contained in a string.
@@ -442,18 +441,8 @@ test("topic titles in notification panel are decrypted", async assert => {
     }
   ]);
 
-  const stub = sandbox.stub(EncryptLibDiscourse, "getTopicTitle");
-  stub.returns(Promise.resolve("Top Secret :male_detective:"));
-
   await visit("/");
   await click(".header-dropdown-toggle.current-user");
-
-  // The plugin debounces the decryption operation to ensure that DOM elements
-  // containing encrypted information are displayed.
-  // In test environments, because `Ember.run.debounce` is aliased to `Ember.run`.
-  await window.Discourse.__container__
-    .lookup("service:app-events")
-    .trigger("encrypt:status-changed", true);
 
   assert.equal(
     find(".quick-access-panel span[data-topic-id]").text(),

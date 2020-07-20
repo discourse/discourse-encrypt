@@ -7,7 +7,9 @@ import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
   getTopicTitle,
-  hasTopicTitle
+  syncGetTopicTitle,
+  hasTopicTitle,
+  waitForPendingTitles
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
@@ -89,7 +91,54 @@ export default {
       }
     });
 
-    // Decrypt notifications when opening the user menu or searching.
+    withPluginApi("0.8.31", api => {
+      // All quick-access panels
+      api.reopenWidget("quick-access-panel", {
+        setItems() {
+          // Artificially delay loading until all titles are decrypted
+          return waitForPendingTitles().then(() => this._super(...arguments));
+        }
+      });
+
+      // Notification topic titles
+      api.reopenWidget("default-notification-item", {
+        description() {
+          if (
+            this.attrs.fancy_title &&
+            this.attrs.topic_id &&
+            this.attrs.topic_key
+          ) {
+            const decrypted = syncGetTopicTitle(this.attrs.topic_id);
+            if (decrypted)
+              return `<span data-topic-id="${
+                this.attrs.topic_id
+              }">${escapeExpression(decrypted)}</span>`;
+          }
+          return this._super(...arguments);
+        }
+      });
+
+      // Non-notification quick-access topic titles (assign, bookmarks, PMs)
+      api.reopenWidget("quick-access-item", {
+        _contentHtml() {
+          const href = this.attrs.href;
+          if (href) {
+            let topicId = href.match(/\/t\/.*?\/(\d+)/);
+            if (topicId && topicId[1]) {
+              topicId = parseInt(topicId[1], 10);
+              const decrypted = syncGetTopicTitle(topicId);
+              if (decrypted)
+                return `<span data-topic-id="${
+                  this.attrs.topic_id
+                }">${escapeExpression(decrypted)}</span>`;
+            }
+          }
+
+          return this._super(...arguments);
+        }
+      });
+    });
+
     withPluginApi("0.8.31", api => {
       api.decorateWidget("header:after", helper => {
         if (
@@ -113,7 +162,6 @@ export default {
     decryptElements("a.topic-link[data-topic-id]", "span");
     decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
     decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
-    decryptElements(".quick-access-panel span[data-topic-id]");
     decryptElements(".search-result-topic span[data-topic-id]");
   },
 
