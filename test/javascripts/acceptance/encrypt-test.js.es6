@@ -23,7 +23,7 @@ import { default as userFixtures } from "fixtures/user_fixtures";
 import { parsePostData } from "helpers/create-pretender";
 import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import selectKit from "helpers/select-kit-helper";
-
+import { Promise } from "rsvp";
 /*
  * Checks if a string is not contained in a string.
  *
@@ -440,6 +440,15 @@ test("topic titles in notification panel are decrypted", async assert => {
       load_more_notifications: "/notifications?offset=60&username=dan"
     }
   ]);
+
+  const stub = sandbox.stub(EncryptLibDiscourse, "syncGetTopicTitle");
+  stub.returns("Top Secret :male_detective:");
+
+  const stub2 = sandbox.stub(EncryptLibDiscourse, "getTopicTitle");
+  stub2.returns(Promise.resolve("Top Secret :male_detective:"));
+
+  const stub3 = sandbox.stub(EncryptLibDiscourse, "waitForPendingTitles");
+  stub3.returns(Promise.resolve());
 
   await visit("/");
   await click(".header-dropdown-toggle.current-user");
