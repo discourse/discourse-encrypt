@@ -51,9 +51,27 @@ const userIdentities = {};
 const topicKeys = {};
 
 /**
- * @var {Object} topicTitles Dictionary of all encrypted topic titles.
+ * @var {Object} topicTitles Dictionary of all topic title objects (topic_id => TopicTitle).
  */
 const topicTitles = {};
+
+class TopicTitle {
+  constructor(topicId, encrypted) {
+    this.topicId = topicId;
+    this.encrypted = encrypted;
+  }
+
+  get promise() {
+    if (!this._promise) {
+      this._promise = getTopicKey(this.topicId)
+        .then(key => decrypt(key, this.encrypted))
+        .then(decrypted => decrypted.raw)
+        .then(result => (this.result = result));
+    }
+
+    return this._promise;
+  }
+}
 
 /**
  * Gets current user's identity from the database and caches it for future
@@ -176,9 +194,10 @@ export function hasTopicKey(topicId) {
  * @param {String} title
  */
 export function putTopicTitle(topicId, title) {
-  if (topicId && title) {
-    topicTitles[topicId] = title;
-  }
+  if (!(topicId && title)) return;
+  if (topicTitles[topicId] && topicTitles[topicId].encrypted === title) return;
+
+  topicTitles[topicId] = new TopicTitle(topicId, title);
 }
 
 /**
@@ -189,17 +208,22 @@ export function putTopicTitle(topicId, title) {
  * @return {Promise<String>}
  */
 export function getTopicTitle(topicId) {
-  let title = topicTitles[topicId];
+  const title = topicTitles[topicId];
+  if (!title) return Promise.reject();
+  return title.promise;
+}
 
-  if (!title) {
-    return Promise.reject();
-  } else if (!(title instanceof Promise || title instanceof window.Promise)) {
-    topicTitles[topicId] = getTopicKey(topicId)
-      .then(key => decrypt(key, title))
-      .then(decrypted => decrypted.raw);
-  }
-
-  return topicTitles[topicId];
+/**
+ * Gets a topic title from storage synchronously, returning null if missing or unresolved
+ *
+ * @param {Number|String} topicId
+ *
+ * @return {String|null}
+ */
+export function syncGetTopicTitle(topicId) {
+  const title = topicTitles[topicId];
+  if (!title) return null;
+  return title.result;
 }
 
 /**
@@ -211,6 +235,19 @@ export function getTopicTitle(topicId) {
  */
 export function hasTopicTitle(topicId) {
   return !!topicTitles[topicId];
+}
+
+/**
+ * Returns a promise which resolves when all stored  titles are decrypted
+ *
+ * @return {Promise}
+ */
+export function waitForPendingTitles() {
+  return Promise.all(
+    Object.values(topicTitles)
+      .filter(t => !t.result)
+      .map(t => t.promise)
+  );
 }
 
 /*
