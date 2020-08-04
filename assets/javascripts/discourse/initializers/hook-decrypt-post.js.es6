@@ -168,14 +168,12 @@ function resolveShortUrlElement($el) {
       return;
     }
 
-    $el.text($el.text().replace(/\.encrypted$/, ""));
     $el.on("click", () => {
       downloadEncryptedFile(url, keyPromise, { type: $el.data("type") }).then(
         (file) => {
           const a = document.createElement("a");
           a.href = window.URL.createObjectURL(file.blob);
-          a.download = file.name || $el.text();
-          a.download = a.download.replace(/\.encrypted$/, "");
+          a.download = (file.name || $el.text()).replace(/\.encrypted$/, "");
           a.style.display = "none";
 
           document.body.appendChild(a);
