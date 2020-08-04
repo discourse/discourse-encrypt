@@ -12,7 +12,7 @@
   }
 
   .select-kit-row.is-highlighted[data-value="reset"] {
-    background-color: $danger-low;
+    background-color: var(--danger-low, $danger-low);
   }
 }
 
@@ -73,22 +73,22 @@ pre.exported-key-pair {
     .d-icon {
       margin: 0 5px;
       &.enabled {
-        color: $success;
+        color: var(--success, $success);
       }
       &.disabled {
-        color: $primary-low-mid;
+        color: var(--primary-low-mid, $primary-low-mid);
       }
     }
 
     .error {
-      color: $danger;
+      color: var(--danger, $danger);
     }
   }
 }
 
 .post-info {
   &.integrity-pass {
-    color: $success;
+    color: var(--success, $success);
     margin: 0 0 0 0.5em;
   }
 
@@ -98,7 +98,7 @@ pre.exported-key-pair {
   }
 
   &.integrity-fail {
-    color: $danger;
+    color: var(--danger, $danger);
     margin: 0 0 0 0.5em;
   }
 }
