@@ -1,9 +1,8 @@
-# encoding: utf-8
-#
-# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
 #
 # To work with us on translations, join this project:
-# https://www.transifex.com/projects/p/discourse-org/
+# https://translate.discourse.org/
 
 zh_CN:
   encrypt:
@@ -13,4 +12,5 @@ zh_CN:
     no_encrypt_keys: "出了点问题。数据中没有包含加密密钥。"
   site_settings:
     encrypt_enabled: "启动加密私信功能。"
+    auto_enable_encrypt: "自动为所有登录的用户启用加密"
     encrypt_groups: "能够使用加密功能的群组名称（留空表示所有群组）。"

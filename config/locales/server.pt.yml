@@ -1,8 +1,15 @@
-# encoding: utf-8
-#
-# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
 #
 # To work with us on translations, join this project:
-# https://www.transifex.com/projects/p/discourse-org/
+# https://translate.discourse.org/
 
-pt: {}
+pt:
+  encrypt:
+    encrypted_excerpt: "Esta mensagem está encriptada, por favor, leia-a no navegador."
+    enabled_already: "Já ativou as mensagens encriptadas."
+    only_pms: "Apenas as mensagens privadas podem ser encriptadas."
+    no_encrypt_keys: "Ocorreu algo de errado. Não foram incluídas chaves de encriptação na carga útil."
+  site_settings:
+    encrypt_enabled: "Ative as mensagens privadas encriptadas."
+    encrypt_groups: "O nome dos grupos que podem utilizar a encriptação (vazio significa toda a gente)."

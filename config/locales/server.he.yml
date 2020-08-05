@@ -1,9 +1,8 @@
-# encoding: utf-8
-#
-# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
 #
 # To work with us on translations, join this project:
-# https://www.transifex.com/projects/p/discourse-org/
+# https://translate.discourse.org/
 
 he:
   encrypt:
@@ -13,4 +12,5 @@ he:
     no_encrypt_keys: "משהו השתבש. לא נמצאו מפתחות הצפנה במטען."
   site_settings:
     encrypt_enabled: "הפעלת הודעות פרטיות מוצפנות."
+    auto_enable_encrypt: "להפעיל הצפנה לכל המשתמשים שנכנסו למערכת באופן אוטומטי"
     encrypt_groups: "שמות הקבוצות שיכולים להשתמש בהצפנה (ריק כלומר כולן יכולות)."

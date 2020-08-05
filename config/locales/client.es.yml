@@ -1,12 +1,15 @@
-# encoding: utf-8
-#
-# Never edit this file. It will be overwritten when translations are pulled from Transifex.
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
 #
 # To work with us on translations, join this project:
-# https://www.transifex.com/projects/p/discourse-org/
+# https://translate.discourse.org/
 
 es:
   js:
     encrypt:
+      decrypting: "Descodificación"
+      decryption_failed: "Este mensaje no se ha podido descodificar."
+      encrypted_topic_title: "Un mensaje codificado"
+      cannot_invite: "No puedes invitar a esta conversación"
       manage_paper_keys:
         delete: "Eliminar"
