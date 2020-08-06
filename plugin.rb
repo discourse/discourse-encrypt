@@ -9,6 +9,7 @@
 enabled_site_setting :encrypt_enabled
 
 register_asset 'stylesheets/common/encrypt.scss'
+register_asset "stylesheets/colors.scss", :color_definitions
 %w[bars exchange-alt far-clipboard file-export file-import lock plus ticket-alt times trash-alt unlock wrench].each { |i| register_svg_icon(i) }
 
 Rails.configuration.filter_parameters << :encrypt_private

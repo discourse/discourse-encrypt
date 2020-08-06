@@ -93,7 +93,7 @@ pre.exported-key-pair {
   }
 
   &.integrity-warn {
-    color: mix($danger, #ffff00);
+    color: var(--encrypt-warn, mix($danger, #ffff00));
     margin: 0 0 0 0.5em;
   }
 
