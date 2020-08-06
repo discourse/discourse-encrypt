@@ -45,9 +45,15 @@ pre.exported-key-pair {
 
   tr {
     height: 3em;
+    td:first-child {
+      padding-left: 5px;
+    }
+    td:last-child {
+      padding-right: 5px;
+    }
 
     &:hover {
-      background-color: darken($secondary, 2.5%);
+      background-color: rgba(var(--primary-rgb), 0.05);
     }
 
     &:last-child {
@@ -56,7 +62,7 @@ pre.exported-key-pair {
   }
 
   span.paper-key {
-    background-color: lighten($primary, 80%);
+    background-color: rgba(var(--primary-rgb), 0.08);
     border-radius: 5px;
     font-size: 1em;
     margin: 0 0.5em;
