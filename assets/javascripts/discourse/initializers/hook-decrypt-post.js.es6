@@ -11,6 +11,8 @@ import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
+import lightbox from "discourse/lib/lightbox";
+
 import {
   ENCRYPT_DISABLED,
   getDebouncedUserIdentities,
@@ -225,6 +227,18 @@ function postProcessPost(siteSettings, topicId, $post) {
       linkSeenMentions($post, siteSettings)
     );
   }
+
+  $post
+    .find(".cooked img")
+    .not($(".d-lazyload-hidden"))
+    .each(function() {
+      $(this).wrap(
+        '<div class="lightbox-wrapper"><a class="lightbox" href="' +
+          $(this).attr("src") +
+          '"</a></div>'
+      );
+    });
+  lightbox($post[0], siteSettings);
 
   try {
     const { linkSeenHashtags, fetchUnseenHashtags } = require.call(
