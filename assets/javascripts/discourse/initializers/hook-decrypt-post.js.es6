@@ -232,11 +232,16 @@ function postProcessPost(siteSettings, topicId, $post) {
     .find(".cooked img")
     .not($(".d-lazyload-hidden"))
     .each(function() {
-      $(this).wrap(
-        '<div class="lightbox-wrapper"><a class="lightbox" href="' +
-          $(this).attr("src") +
-          '"</a></div>'
-      );
+      if (
+        this.naturalWidth > siteSettings.max_image_width ||
+        this.naturalHeight > siteSettings.max_image_height
+      ) {
+        $(this).wrap(
+          '<div class="lightbox-wrapper"><a class="lightbox" href="' +
+            $(this).attr("src") +
+            '"</a></div>'
+        );
+      }
     });
   lightbox($post[0], siteSettings);
 
