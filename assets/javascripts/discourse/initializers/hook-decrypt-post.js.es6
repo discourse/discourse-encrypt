@@ -228,23 +228,6 @@ function postProcessPost(siteSettings, topicId, $post) {
     );
   }
 
-  $post
-    .find(".cooked img")
-    .not($(".d-lazyload-hidden"))
-    .each(function() {
-      if (
-        this.naturalWidth > siteSettings.max_image_width ||
-        this.naturalHeight > siteSettings.max_image_height
-      ) {
-        $(this).wrap(
-          '<div class="lightbox-wrapper"><a class="lightbox" href="' +
-            $(this).attr("src") +
-            '"</a></div>'
-        );
-      }
-    });
-  lightbox($post[0], siteSettings);
-
   try {
     const { linkSeenHashtags, fetchUnseenHashtags } = require.call(
       null,
@@ -319,6 +302,28 @@ export default {
       const verified = {};
 
       api.includePostAttributes("encrypted_raw");
+
+      api.decorateWidget("post-contents:after-cooked", dec => {
+        const siteSettings = dec.widget.siteSettings;
+        $(".cooked img")
+          .not($(".d-lazyload-hidden"))
+          .not($("a.lightbox img"))
+          .each(function() {
+            const src = $(this).attr("src");
+            if (
+              (this.naturalWidth > siteSettings.max_image_width ||
+                this.naturalHeight > siteSettings.max_image_height) &&
+              src.startsWith("blob:")
+            ) {
+              $(this).wrap(
+                '<div class="lightbox-wrapper"><a class="lightbox" href="' +
+                  src +
+                  '"</a></div>'
+              );
+              lightbox($(this).parents(".cooked")[0], siteSettings);
+            }
+          });
+      });
 
       api.decorateWidget("post-meta-data:after", helper => {
         const result = verified[helper.attrs.id];
