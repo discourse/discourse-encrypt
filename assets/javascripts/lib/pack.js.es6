@@ -23,7 +23,7 @@ export function unpackIdentity(identity) {
     .replace(PACKED_KEY_HEADER, "")
     .replace(PACKED_KEY_FOOTER, "")
     .split(/\s+/)
-    .map(x => x.trim())
+    .map((x) => x.trim())
     .join("");
 
   // Backwards compatibility pre-refactoring.

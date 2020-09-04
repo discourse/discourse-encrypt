@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import { debounce, scheduleOnce } from "@ember/runloop";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
@@ -9,7 +10,7 @@ import {
   getTopicTitle,
   syncGetTopicTitle,
   hasTopicTitle,
-  waitForPendingTitles
+  waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 /**
@@ -25,7 +26,7 @@ import {
 function decryptElements(containerSelector, elementSelector, opts) {
   opts = opts || {};
 
-  $(containerSelector).each(function() {
+  $(containerSelector).each(function () {
     const topicId = $(this).data("topic-id");
     const $el = elementSelector ? $(this).find(elementSelector) : $(this);
     if (!topicId || !hasTopicTitle(topicId) || !$el.length) {
@@ -33,11 +34,11 @@ function decryptElements(containerSelector, elementSelector, opts) {
     }
 
     getTopicTitle(topicId)
-      .then(title => {
+      .then((title) => {
         title = emojiUnescape(escapeExpression(title));
         const icon = iconHTML("user-secret", {
           title: "encrypt.encrypted_icon_title",
-          class: "private-message-glyph"
+          class: "private-message-glyph",
         });
 
         if (opts.replaceIcon) {
@@ -55,15 +56,10 @@ function decryptElements(containerSelector, elementSelector, opts) {
       .catch(() => $(this).data("decrypted", null));
 
     // TODO: Hide quick-edit button for the time being.
-    $(this)
-      .find(".edit-topic")
-      .hide();
+    $(this).find(".edit-topic").hide();
 
     // Hide excerpt in search
-    $(this)
-      .parents(".search-link")
-      .find(".blurb")
-      .hide();
+    $(this).parents(".search-link").find(".blurb").hide();
   });
 }
 
@@ -88,16 +84,16 @@ export default {
           debounce(self, self.decryptTitles, 500);
         });
         return this._super(...arguments);
-      }
+      },
     });
 
-    withPluginApi("0.8.31", api => {
+    withPluginApi("0.8.31", (api) => {
       // All quick-access panels
       api.reopenWidget("quick-access-panel", {
         setItems() {
           // Artificially delay loading until all titles are decrypted
           return waitForPendingTitles().then(() => this._super(...arguments));
-        }
+        },
       });
 
       // Notification topic titles
@@ -115,7 +111,7 @@ export default {
               }">${escapeExpression(decrypted)}</span>`;
           }
           return this._super(...arguments);
-        }
+        },
       });
 
       // Non-notification quick-access topic titles (assign, bookmarks, PMs)
@@ -132,12 +128,12 @@ export default {
           }
 
           return this._super(...arguments);
-        }
+        },
       });
     });
 
-    withPluginApi("0.8.31", api => {
-      api.decorateWidget("header:after", helper => {
+    withPluginApi("0.8.31", (api) => {
+      api.decorateWidget("header:after", (helper) => {
         if (
           helper.widget.state.userVisible ||
           helper.widget.state.searchVisible
@@ -167,7 +163,7 @@ export default {
       const topicId = Discourse.__container__
         .lookup("controller:topic")
         .get("model.id");
-      getTopicTitle(topicId).then(topicTitle =>
+      getTopicTitle(topicId).then((topicTitle) =>
         Discourse.set(
           "_docTitle",
           data.title.replace(
@@ -177,5 +173,5 @@ export default {
         )
       );
     }
-  }
+  },
 };

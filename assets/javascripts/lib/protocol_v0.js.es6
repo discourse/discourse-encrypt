@@ -1,6 +1,6 @@
 import {
   base64ToBuffer,
-  bufferToBase64
+  bufferToBase64,
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { Promise } from "rsvp";
 
@@ -42,7 +42,7 @@ export function _exportPublicKey(publicKey) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .exportKey("jwk", publicKey)
-      .then(jwk => bufferToBase64(_stringToBuffer(JSON.stringify(jwk))))
+      .then((jwk) => bufferToBase64(_stringToBuffer(JSON.stringify(jwk))))
       .then(resolve, reject);
   });
 }
@@ -83,7 +83,7 @@ export function _exportPrivateKey(privateKey, key) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .wrapKey("jwk", privateKey, key, { name: "AES-GCM", iv })
-      .then(buffer => bufferToBase64(iv) + bufferToBase64(buffer))
+      .then((buffer) => bufferToBase64(iv) + bufferToBase64(buffer))
       .then(resolve, reject);
   });
 }
@@ -133,13 +133,13 @@ export function _getPassphraseKey(passphrase, salt) {
         false,
         ["deriveBits", "deriveKey"]
       )
-      .then(key =>
+      .then((key) =>
         window.crypto.subtle.deriveKey(
           {
             name: "PBKDF2",
             salt: base64ToBuffer(salt),
             iterations: 128000,
-            hash: "SHA-256"
+            hash: "SHA-256",
           },
           key,
           { name: "AES-GCM", length: 256 },
@@ -159,14 +159,14 @@ export function generateIdentity() {
           name: "RSA-OAEP",
           modulusLength: 4096,
           publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-          hash: { name: "SHA-256" }
+          hash: { name: "SHA-256" },
         },
         true,
         ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
       )
-      .then(keyPair => ({
+      .then((keyPair) => ({
         publicKey: keyPair.publicKey,
-        privateKey: keyPair.privateKey
+        privateKey: keyPair.privateKey,
       }))
       .then(resolve, reject);
   });
@@ -177,20 +177,20 @@ export function exportIdentity(identity, passphrase) {
     const salt = _getSalt();
     return Promise.all([
       _exportPublicKey(identity.publicKey),
-      _getPassphraseKey(passphrase, salt).then(key =>
+      _getPassphraseKey(passphrase, salt).then((key) =>
         _exportPrivateKey(identity.privateKey, key)
-      )
+      ),
     ]).then(([publicKey, privateKey]) => ({
       public: publicKey,
-      private: publicKey + "$" + privateKey + "$" + salt
+      private: publicKey + "$" + privateKey + "$" + salt,
     }));
   } else {
     return Promise.all([
       _exportPublicKey(identity.publicKey),
-      _exportPublicKey(identity.privateKey)
+      _exportPublicKey(identity.privateKey),
     ]).then(([publicKey, privateKey]) => ({
       public: publicKey,
-      private: publicKey + "$" + privateKey
+      private: publicKey + "$" + privateKey,
     }));
   }
 }
@@ -200,9 +200,9 @@ export function importIdentity(identity, passphrase, extractable) {
     const [publicStr, privateStr, salt] = identity.split("$");
     return Promise.all([
       _importPublicKey(publicStr, null, extractable),
-      _getPassphraseKey(passphrase, salt).then(key =>
+      _getPassphraseKey(passphrase, salt).then((key) =>
         _importPrivateKey(privateStr, key, extractable)
-      )
+      ),
     ]).then(([publicKey, privateKey]) => ({ publicKey, privateKey }));
   } else {
     const [publicStr, privateStr] = identity.split("$");
@@ -210,7 +210,7 @@ export function importIdentity(identity, passphrase, extractable) {
       _importPublicKey(publicStr, null, extractable),
       privateStr
         ? _importPublicKey(privateStr, ["decrypt", "unwrapKey"], extractable)
-        : undefined
+        : undefined,
     ]).then(([publicKey, privateKey]) => ({ publicKey, privateKey }));
   }
 }
@@ -226,7 +226,7 @@ export function encrypt(key, plaintext) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .encrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, buffer)
-      .then(encrypted => bufferToBase64(iv) + bufferToBase64(encrypted))
+      .then((encrypted) => bufferToBase64(iv) + bufferToBase64(encrypted))
       .then(resolve, reject);
   });
 }
@@ -238,7 +238,7 @@ export function decrypt(key, ciphertext) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, encrypted)
-      .then(buffer => _bufferToString(buffer))
+      .then((buffer) => _bufferToString(buffer))
       .then(resolve, reject);
   });
 }

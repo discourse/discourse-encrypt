@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import PostAdapter from "discourse/adapters/post";
 import { ajax } from "discourse/lib/ajax";
 import Topic from "discourse/models/topic";
@@ -10,12 +11,12 @@ import {
   getUserIdentities,
   hasTopicKey,
   putTopicKey,
-  putTopicTitle
+  putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
   exportKey,
-  generateKey
+  generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
 
@@ -70,13 +71,13 @@ export default {
         }
 
         return getTopicKey(topic.id)
-          .then(key => encrypt(key, { raw: props.title }))
-          .then(encryptedTitle => {
+          .then((key) => encrypt(key, { raw: props.title }))
+          .then((encryptedTitle) => {
             props.title = I18n.t("encrypt.encrypted_topic_title");
             props.encrypted_title = encryptedTitle;
           })
           .then(() => _super.call(this, ...arguments));
-      }
+      },
     });
 
     PostAdapter.reopen({
@@ -97,8 +98,8 @@ export default {
 
         let titlePromise = title
           ? topicKeyPromise
-              .then(key => encrypt(key, { raw: title }))
-              .then(encryptedTitle => (args.encrypted_title = encryptedTitle))
+              .then((key) => encrypt(key, { raw: title }))
+              .then((encryptedTitle) => (args.encrypted_title = encryptedTitle))
               .finally(() => {
                 args.title = I18n.t("encrypt.encrypted_topic_title");
               })
@@ -106,8 +107,8 @@ export default {
 
         let replyPromise = raw
           ? topicKeyPromise
-              .then(key => encrypt(key, { raw }, { includeUploads: true }))
-              .then(encryptedRaw => (args.encrypted_raw = encryptedRaw))
+              .then((key) => encrypt(key, { raw }, { includeUploads: true }))
+              .then((encryptedRaw) => (args.encrypted_raw = encryptedRaw))
               .finally(() => {
                 args.raw = I18n.t("encrypt.encrypted_post");
               })
@@ -129,7 +130,7 @@ export default {
 
           encryptedKeysPromise = Promise.all([
             topicKeyPromise,
-            identitiesPromise
+            identitiesPromise,
           ])
             .then(([key, identities]) => {
               const promises = [];
@@ -141,14 +142,14 @@ export default {
               }
               return Promise.all(promises);
             })
-            .then(userKeys => {
+            .then((userKeys) => {
               args.encrypted_keys = {};
               for (let i = 0; i < userKeys.length; ++i) {
                 args.encrypted_keys[usernames[i]] = userKeys[i];
               }
               args.encrypted_keys = JSON.stringify(args.encrypted_keys);
             })
-            .catch(username => {
+            .catch((username) => {
               bootbox.alert(
                 I18n.t("encrypt.composer.user_has_no_key", { username })
               );
@@ -163,7 +164,7 @@ export default {
 
         return Promise.all([titlePromise, replyPromise, encryptedKeysPromise])
           .then(() => _super.call(this, ...arguments))
-          .then(result =>
+          .then((result) =>
             Promise.all([topicKeyPromise, titlePromise, identityPromise])
               .then(([key, encTitle, identity]) => {
                 putTopicKey(result.payload.topic_id, key);
@@ -184,20 +185,20 @@ export default {
                     post_id: result.payload.id,
                     post_number: result.payload.post_number,
                     created_at: result.payload.created_at,
-                    updated_at: result.payload.updated_at
+                    updated_at: result.payload.updated_at,
                   },
                   {
                     signKey: identity.signPrivate,
-                    includeUploads: true
+                    includeUploads: true,
                   }
-                ).then(encryptedRaw => {
+                ).then((encryptedRaw) => {
                   result.payload.encrypted_raw = encryptedRaw;
                   return ajax("/encrypt/post", {
                     type: "PUT",
                     data: {
                       post_id: result.payload.id,
-                      encrypted_raw: encryptedRaw
-                    }
+                      encrypted_raw: encryptedRaw,
+                    },
                   });
                 });
               })
@@ -216,16 +217,16 @@ export default {
           .then(([key, identity]) =>
             encrypt(key, addMetadata({ raw: attrs.raw }), {
               signKey: identity.signPrivate,
-              includeUploads: true
+              includeUploads: true,
             })
           )
-          .then(encryptedRaw => {
+          .then((encryptedRaw) => {
             delete attrs.cooked;
             delete attrs.raw_old;
             attrs.raw = encryptedRaw;
           })
           .then(() => _super.call(this, ...arguments));
-      }
+      },
     });
-  }
+  },
 };

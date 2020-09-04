@@ -1,23 +1,24 @@
 import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
+import I18n from "I18n";
 
 export default DropdownSelectBoxComponent.extend({
   classNames: ["encrypt-enable-dropdown"],
 
   selectKitOptions: {
     icon: "bars",
-    showFullTitle: false
+    showFullTitle: false,
   },
 
   content: [
     {
       id: "import",
       icon: "file-import",
-      name: I18n.t("encrypt.preferences.import")
+      name: I18n.t("encrypt.preferences.import"),
     },
     {
       id: "reset",
       icon: "trash-alt",
-      name: I18n.t("encrypt.preferences.reset")
-    }
-  ]
+      name: I18n.t("encrypt.preferences.reset"),
+    },
+  ],
 });

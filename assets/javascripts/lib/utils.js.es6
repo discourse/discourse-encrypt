@@ -9,7 +9,7 @@
 export function filterObjectKeys(obj, keys) {
   const newObj = {};
 
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (key in obj) {
       newObj[key] = obj[key];
     }

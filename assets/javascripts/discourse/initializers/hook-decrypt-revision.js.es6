@@ -4,7 +4,7 @@ import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
   getTopicKey,
-  hasTopicKey
+  hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
@@ -20,22 +20,22 @@ export default {
 
     Post.reopenClass({
       loadRevision() {
-        return this._super(...arguments).then(result => {
+        return this._super(...arguments).then((result) => {
           if (!hasTopicKey(result.topic_id)) {
             return result;
           }
 
           const topicKey = getTopicKey(result.topic_id);
           return Promise.all([
-            topicKey.then(k => decrypt(k, result.raws.previous)),
-            topicKey.then(k => decrypt(k, result.raws.current))
+            topicKey.then((k) => decrypt(k, result.raws.previous)),
+            topicKey.then((k) => decrypt(k, result.raws.current)),
           ])
             .then(([previous, current]) =>
               Promise.all([
                 previous.raw,
                 cookAsync(previous.raw),
                 current.raw,
-                cookAsync(current.raw)
+                cookAsync(current.raw),
               ])
             )
             .then(([prevRaw, prevCooked, currRaw, currCooked]) => {
@@ -52,7 +52,7 @@ export default {
               return result;
             });
         });
-      }
+      },
     });
-  }
+  },
 };

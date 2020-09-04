@@ -2049,7 +2049,7 @@ const WORD_LIST = [
   "ZEBRA",
   "ZERO",
   "ZONE",
-  "ZOO"
+  "ZOO",
 ];
 
 const BITS_PER_WORD = Math.floor(Math.log2(WORD_LIST.length));

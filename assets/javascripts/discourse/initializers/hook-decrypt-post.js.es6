@@ -1,10 +1,11 @@
+import I18n from "I18n";
 import { debounce } from "@ember/runloop";
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import {
   fetchUnseenMentions,
-  linkSeenMentions
+  linkSeenMentions,
 } from "discourse/lib/link-mentions";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
@@ -20,17 +21,17 @@ import {
   getIdentity,
   getTopicKey,
   hasTopicKey,
-  hasTopicTitle
+  hasTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   decrypt,
-  verify
+  verify,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
   lookupCachedUploadUrl,
   lookupUncachedUploadUrls,
-  MISSING
+  MISSING,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
 
@@ -42,11 +43,11 @@ function checkMetadata(attrs, expected) {
     updated_at: attrs.updated_at,
     topic_id: attrs.topicId,
     post_id: attrs.id,
-    post_number: attrs.post_number
+    post_number: attrs.post_number,
   };
 
   const diff = [];
-  Object.keys(expected).forEach(attr => {
+  Object.keys(expected).forEach((attr) => {
     if (
       attr === "raw" ||
       attr === "signed_by_id" ||
@@ -77,7 +78,7 @@ function checkMetadata(attrs, expected) {
     diff.push({
       attr: "signed_by_name",
       actual: expected.signed_by_name,
-      expected: attrs.username
+      expected: attrs.username,
     });
   }
 
@@ -86,7 +87,7 @@ function checkMetadata(attrs, expected) {
     let warning = "";
     warning += `Integrity check for post #${attrs.post_number} (post ID ${attrs.id}) failed.\n`;
     diff.forEach(
-      d =>
+      (d) =>
         (warning += `  - ${d.attr} - expected "${d.expected}" vs actual "${d.actual}"\n`)
     );
 
@@ -104,7 +105,7 @@ function downloadEncryptedFile(url, keyPromise, opts) {
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.responseType = "arraybuffer";
-    req.onload = function() {
+    req.onload = function () {
       let filename = req.getResponseHeader("Content-Disposition");
       if (filename) {
         // Requires Access-Control-Expose-Headers: Content-Disposition.
@@ -124,9 +125,9 @@ function downloadEncryptedFile(url, keyPromise, opts) {
       window.crypto.subtle
         .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, content)
         .then(resolve, reject);
-    }).then(buffer => ({
+    }).then((buffer) => ({
       blob: new Blob([buffer], { type: opts.type || "application/x-binary" }),
-      name: download.filename
+      name: download.filename,
     }));
   });
 }
@@ -170,7 +171,7 @@ function resolveShortUrlElement($el) {
     $el.text($el.text().replace(/\.encrypted$/, ""));
     $el.on("click", () => {
       downloadEncryptedFile(url, keyPromise, { type: $el.data("type") }).then(
-        file => {
+        (file) => {
           const a = document.createElement("a");
           a.href = window.URL.createObjectURL(file.blob);
           a.download = file.name || $el.text();
@@ -200,8 +201,8 @@ function resolveShortUrlElement($el) {
     }
 
     return downloadEncryptedFile(url, keyPromise, {
-      type: $el.data("type")
-    }).then(file => {
+      type: $el.data("type"),
+    }).then((file) => {
       const imageName = file.name
         ? markdownNameFromFileName(file.name)
         : $el.attr("alt").replace(/\.encrypted$/, "");
@@ -244,7 +245,7 @@ function postProcessPost(siteSettings, topicId, $post) {
   } catch (_) {
     const {
       fetchUnseenCategoryHashtags,
-      linkSeenCategoryHashtags
+      linkSeenCategoryHashtags,
     } = require.call(null, "discourse/lib/link-category-hashtags");
 
     const { fetchUnseenTagHashtags, linkSeenTagHashtags } = require.call(
@@ -298,17 +299,17 @@ export default {
       return;
     }
 
-    withPluginApi("0.8.25", api => {
+    withPluginApi("0.8.25", (api) => {
       const verified = {};
 
       api.includePostAttributes("encrypted_raw");
 
-      api.decorateWidget("post-contents:after-cooked", dec => {
+      api.decorateWidget("post-contents:after-cooked", (dec) => {
         const siteSettings = dec.widget.siteSettings;
         $(".cooked img")
           .not($(".d-lazyload-hidden"))
           .not($("a.lightbox img"))
-          .each(function() {
+          .each(function () {
             const src = $(this).attr("src");
             if (
               (this.naturalWidth > siteSettings.max_image_width ||
@@ -325,7 +326,7 @@ export default {
           });
       });
 
-      api.decorateWidget("post-meta-data:after", helper => {
+      api.decorateWidget("post-meta-data:after", (helper) => {
         const result = verified[helper.attrs.id];
         if (result === undefined) {
           return;
@@ -338,18 +339,18 @@ export default {
         }
 
         const fields = result
-          .map(x => x.attr)
-          .filter(x => x !== "updated_at" && x !== "signed_by_name");
+          .map((x) => x.attr)
+          .filter((x) => x !== "updated_at" && x !== "signed_by_name");
 
         const warns = [];
         if (fields.length > 0) {
           warns.push(
             I18n.t("encrypt.integrity_check_fail", {
-              fields: fields.join(", ")
+              fields: fields.join(", "),
             })
           );
         } else {
-          result.forEach(x => {
+          result.forEach((x) => {
             if (x.attr === "updated_at") {
               warns.push(I18n.t("encrypt.integrity_check_warn_updated_at"));
             } else if (x.attr === "signed_by_name") {
@@ -388,7 +389,7 @@ export default {
               state.error = I18n.t("encrypt.preferences.insecure_context");
             } else {
               state.decrypting = true;
-              getIdentity().then(identity => {
+              getIdentity().then((identity) => {
                 if (!identity) {
                   // Absence of private key means user did not activate encryption.
                   showModal("activate-encrypt", { model: this });
@@ -396,24 +397,24 @@ export default {
                 }
 
                 getTopicKey(topicId)
-                  .then(key => decrypt(key, ciphertext))
-                  .then(plaintext => {
+                  .then((key) => decrypt(key, ciphertext))
+                  .then((plaintext) => {
                     if (plaintext.signature) {
                       getDebouncedUserIdentities([plaintext.signed_by_name])
-                        .then(identities => {
+                        .then((identities) => {
                           return verify(
                             identities[plaintext.signed_by_name].signPublic,
                             plaintext,
                             ciphertext
                           );
                         })
-                        .then(result => {
+                        .then((result) => {
                           verified[attrs.id] = checkMetadata(attrs, plaintext);
                           if (!result) {
                             verified[attrs.id].push({
                               attr: "signature",
                               actual: false,
-                              expected: true
+                              expected: true,
                             });
                           }
                         })
@@ -422,8 +423,8 @@ export default {
                             {
                               attr: "signature",
                               actual: false,
-                              expected: true
-                            }
+                              expected: true,
+                            },
                           ];
                         })
                         .finally(() => this.scheduleRerender());
@@ -431,7 +432,7 @@ export default {
 
                     return cookAsync(plaintext.raw);
                   })
-                  .then(cooked => (state.decrypted = cooked.string))
+                  .then((cooked) => (state.decrypted = cooked.string))
                   .catch(() => {
                     state.decrypted = true;
                     state.error = I18n.t("encrypt.decryption_failed");
@@ -468,8 +469,8 @@ export default {
           }
 
           return this._super(...arguments);
-        }
+        },
       });
     });
-  }
+  },
 };

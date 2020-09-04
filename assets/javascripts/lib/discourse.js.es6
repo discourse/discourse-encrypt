@@ -4,7 +4,7 @@ import {
   DB_NAME,
   DB_VERSION,
   loadDbIdentity,
-  saveDbIdentity
+  saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import {
@@ -12,7 +12,7 @@ import {
   exportIdentity,
   generateIdentity,
   importIdentity,
-  importKey
+  importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
 
@@ -64,9 +64,9 @@ class TopicTitle {
   get promise() {
     if (!this._promise) {
       this._promise = getTopicKey(this.topicId)
-        .then(key => decrypt(key, this.encrypted))
-        .then(decrypted => decrypted.raw)
-        .then(result => (this.result = result));
+        .then((key) => decrypt(key, this.encrypted))
+        .then((decrypted) => decrypted.raw)
+        .then((result) => (this.result = result));
     }
 
     return this._promise;
@@ -88,14 +88,14 @@ export function getIdentity() {
 }
 
 export function getUserIdentities(usernames) {
-  if (usernames.some(username => !userIdentities[username])) {
+  if (usernames.some((username) => !userIdentities[username])) {
     const promise = ajax("/encrypt/user", {
       type: "GET",
-      data: { usernames }
+      data: { usernames },
     });
 
-    usernames.forEach(username => {
-      userIdentities[username] = promise.then(identities =>
+    usernames.forEach((username) => {
+      userIdentities[username] = promise.then((identities) =>
         identities[username]
           ? importIdentity(identities[username])
           : Promise.reject(username)
@@ -103,30 +103,30 @@ export function getUserIdentities(usernames) {
     });
   }
 
-  return Promise.all(usernames.map(username => userIdentities[username])).then(
-    identities => {
-      const imported = {};
-      for (let i = 0; i < usernames.length; ++i) {
-        imported[usernames[i]] = identities[i];
-      }
-      return imported;
+  return Promise.all(
+    usernames.map((username) => userIdentities[username])
+  ).then((identities) => {
+    const imported = {};
+    for (let i = 0; i < usernames.length; ++i) {
+      imported[usernames[i]] = identities[i];
     }
-  );
+    return imported;
+  });
 }
 
 const debouncedUsernames = new Set();
 
 function _getDebouncedUserIdentities(resolve, reject) {
   getUserIdentities(Array.from(debouncedUsernames))
-    .then(identities => {
-      Object.keys(identities).forEach(u => debouncedUsernames.delete(u));
+    .then((identities) => {
+      Object.keys(identities).forEach((u) => debouncedUsernames.delete(u));
       return identities;
     })
     .then(resolve, reject);
 }
 
 export function getDebouncedUserIdentities(usernames) {
-  usernames.forEach(u => debouncedUsernames.add(u));
+  usernames.forEach((u) => debouncedUsernames.add(u));
 
   return new Promise((resolve, reject) => {
     debounce(
@@ -168,7 +168,7 @@ export function getTopicKey(topicId) {
   } else if (key instanceof CryptoKey) {
     return Promise.resolve(key);
   } else if (!(key instanceof Promise || key instanceof window.Promise)) {
-    topicKeys[topicId] = getIdentity().then(identity =>
+    topicKeys[topicId] = getIdentity().then((identity) =>
       importKey(key, identity.encryptPrivate)
     );
   }
@@ -245,8 +245,8 @@ export function hasTopicTitle(topicId) {
 export function waitForPendingTitles() {
   return Promise.all(
     Object.values(topicTitles)
-      .filter(t => !t.result)
-      .map(t => t.promise)
+      .filter((t) => !t.result)
+      .map((t) => t.promise)
   );
 }
 
@@ -305,10 +305,10 @@ export function canEnableEncrypt(user) {
 
     const encryptGroups = Discourse.SiteSettings.encrypt_groups
       .split("|")
-      .map(groupName => groupName.toLowerCase());
-    const groups = (user.groups || []).map(group => group.name.toLowerCase());
+      .map((groupName) => groupName.toLowerCase());
+    const groups = (user.groups || []).map((group) => group.name.toLowerCase());
 
-    if (groups.some(group => encryptGroups.includes(group))) {
+    if (groups.some((group) => encryptGroups.includes(group))) {
       return true;
     }
   }
@@ -322,18 +322,18 @@ export function enableEncrypt(model, exportedIdentity) {
     : generateIdentity();
 
   const saveIdentityPromise = identityPromise
-    .then(identity => exportIdentity(identity))
-    .then(exported => {
+    .then((identity) => exportIdentity(identity))
+    .then((exported) => {
       model.set("encrypt_public", exported.public);
       return ajax("/encrypt/keys", {
         type: "PUT",
         data: {
-          public: exported.public
-        }
+          public: exported.public,
+        },
       });
     });
 
-  const saveDbIdentityPromise = identityPromise.then(identity =>
+  const saveDbIdentityPromise = identityPromise.then((identity) =>
     saveDbIdentity(identity)
   );
 
@@ -360,11 +360,7 @@ export function activateEncrypt(currentUser, passphrase) {
       promise = promise.catch(() =>
         importIdentity(
           privateKeys[label],
-          passphrase
-            .split(" ")
-            .filter(Boolean)
-            .join(" ")
-            .toUpperCase()
+          passphrase.split(" ").filter(Boolean).join(" ").toUpperCase()
         )
       );
     }
@@ -385,8 +381,8 @@ export function activateEncrypt(currentUser, passphrase) {
   }
 
   return promise
-    .then(identity => upgradeIdentity(currentUser, passphrase, identity))
-    .then(identity => saveDbIdentity(identity));
+    .then((identity) => upgradeIdentity(currentUser, passphrase, identity))
+    .then((identity) => saveDbIdentity(identity));
 }
 
 /**
@@ -403,16 +399,16 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
   // encryption keys with old ones.
   if (oldIdentity.version === 0) {
     return generateIdentity(1)
-      .then(identity => {
+      .then((identity) => {
         identity.encryptPublic = oldIdentity.encryptPublic;
         identity.encryptPrivate = oldIdentity.encryptPrivate;
         return identity;
       })
-      .then(identity => {
+      .then((identity) => {
         const savePromise = exportIdentity(identity, passphrase).then(
-          exported => {
+          (exported) => {
             const exportedPrivate = JSON.stringify({
-              passphrase: exported.private
+              passphrase: exported.private,
             });
 
             return ajax("/encrypt/keys", {
@@ -420,13 +416,13 @@ function upgradeIdentity(currentUser, passphrase, oldIdentity) {
               data: {
                 public: exported.public,
                 private: exportedPrivate,
-                overwrite: true
-              }
+                overwrite: true,
+              },
             });
           }
         );
 
-        return Promise.all([identity, savePromise]).then(result => result[0]);
+        return Promise.all([identity, savePromise]).then((result) => result[0]);
       });
   }
 

@@ -4,19 +4,19 @@ import {
   setUseLocalStorage,
   deleteDb,
   loadDbIdentity,
-  saveDbIdentity
+  saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 
 QUnit.module("discourse-encrypt:lib:database");
 
-test("IndexedDB backend", async assert => {
+test("IndexedDB backend", async (assert) => {
   setUseLocalStorage(false);
   await deleteDb();
 
   let identity = await loadDbIdentity();
   assert.equal(identity, null);
 
-  await generateIdentity().then(id => saveDbIdentity(id));
+  await generateIdentity().then((id) => saveDbIdentity(id));
   assert.ok(window.localStorage.getItem(DB_NAME));
 
   identity = await loadDbIdentity();
@@ -32,14 +32,14 @@ test("IndexedDB backend", async assert => {
   assert.equal(window.localStorage.getItem(DB_NAME), null);
 });
 
-test("Web Storage (localStorage) backend", async assert => {
+test("Web Storage (localStorage) backend", async (assert) => {
   setUseLocalStorage(true);
   await deleteDb();
 
   let identity = await loadDbIdentity();
   assert.equal(identity, null);
 
-  await generateIdentity().then(id => saveDbIdentity(id));
+  await generateIdentity().then((id) => saveDbIdentity(id));
   assert.ok(window.localStorage.getItem(DB_NAME));
 
   identity = await loadDbIdentity();

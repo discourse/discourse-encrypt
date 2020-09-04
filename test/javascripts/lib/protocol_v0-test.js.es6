@@ -7,12 +7,12 @@ import {
   _importPrivateKey,
   _getSalt,
   _getPassphraseKey,
-  generateIdentity
+  generateIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v0";
 
 QUnit.module("discourse-encrypt:lib:protocol_v0");
 
-test("string to buffer", assert => {
+test("string to buffer", (assert) => {
   let check = (actual, expected) =>
     assert.arrayEqual(new Uint16Array(_stringToBuffer(actual)), expected);
 
@@ -23,7 +23,7 @@ test("string to buffer", assert => {
   check("ABCD", [0x41, 0x42, 0x43, 0x44]);
 });
 
-test("buffer to string", assert => {
+test("buffer to string", (assert) => {
   let check = (actual, expected) =>
     assert.equal(_bufferToString(new Uint16Array(actual)), expected);
 
@@ -34,7 +34,7 @@ test("buffer to string", assert => {
   check([0x41, 0x42, 0x43, 0x44], "ABCD");
 });
 
-test("buffer to string to buffer", assert => {
+test("buffer to string to buffer", (assert) => {
   const array = [];
   for (let i = 0; i < 32; ++i) {
     const expected = new Uint16Array(array);
@@ -46,29 +46,29 @@ test("buffer to string to buffer", assert => {
   }
 });
 
-test("_exportPublicKey & _importPublicKey", async assert => {
+test("_exportPublicKey & _importPublicKey", async (assert) => {
   const { publicKey } = await generateIdentity();
   const exported = await _exportPublicKey(publicKey);
   assert.ok((await _importPublicKey(exported)) instanceof CryptoKey);
 });
 
-test("_exportPrivateKey & _importPrivateKey", async assert => {
+test("_exportPrivateKey & _importPrivateKey", async (assert) => {
   const key = await _getPassphraseKey("passphrase", _getSalt());
   const { privateKey } = await generateIdentity();
   const exported = await _exportPrivateKey(privateKey, key);
   assert.ok((await _importPrivateKey(exported, key)) instanceof CryptoKey);
 });
 
-test("_getPassphraseKey", async assert => {
+test("_getPassphraseKey", async (assert) => {
   const key = await _getPassphraseKey("passphrase", _getSalt());
   assert.ok(key instanceof CryptoKey);
 });
 
-test("_getSalt", async assert => {
+test("_getSalt", async (assert) => {
   assert.equal(24, _getSalt().length);
 });
 
-test("generateIdentity", async assert => {
+test("generateIdentity", async (assert) => {
   const { publicKey, privateKey } = await generateIdentity();
   assert.ok(publicKey instanceof CryptoKey);
   assert.ok(privateKey instanceof CryptoKey);
@@ -81,13 +81,13 @@ test("generateIdentity", async assert => {
  * @param needle
  * @param message
  */
-QUnit.assert.arrayEqual = function(actual, expected) {
+QUnit.assert.arrayEqual = function (actual, expected) {
   if (actual.length !== expected.length) {
     this.pushResult({
       result: false,
       actual: actual.length,
       expected: expected.length,
-      message: "array lengths are not equal"
+      message: "array lengths are not equal",
     });
 
     return;
@@ -102,7 +102,7 @@ QUnit.assert.arrayEqual = function(actual, expected) {
         result,
         actual: actual[i],
         expected: expected[i],
-        message: `index ${i} mismatches`
+        message: `index ${i} mismatches`,
       });
     }
   }
@@ -112,7 +112,7 @@ QUnit.assert.arrayEqual = function(actual, expected) {
       result,
       actual: actual,
       expected: expected,
-      message: "arrays match"
+      message: "arrays match",
     });
   }
 };

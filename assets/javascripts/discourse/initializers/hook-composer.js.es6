@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import { observes, on } from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
@@ -7,11 +8,11 @@ import {
   getIdentity,
   getTopicKey,
   getTopicTitle,
-  hasTopicKey
+  hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   decrypt,
-  importKey
+  importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default {
@@ -47,7 +48,7 @@ export default {
           /** @var Current encryption error. */
           encryptError: "",
           /** @var Immediately show encryption error if it is fatal. */
-          showEncryptError: false
+          showEncryptError: false,
         });
       },
 
@@ -67,7 +68,7 @@ export default {
           this.setProperties({
             isEncrypted: true,
             disableEncryptIndicator: false,
-            encryptError: ""
+            encryptError: "",
           });
           return;
         }
@@ -75,21 +76,21 @@ export default {
         const usernames = this.targetRecipients.split(",");
         usernames.push(this.user.username);
 
-        const groupNames = new Set(this.site.groups.map(g => g.name));
-        if (usernames.some(username => groupNames.has(username))) {
+        const groupNames = new Set(this.site.groups.map((g) => g.name));
+        if (usernames.some((username) => groupNames.has(username))) {
           this.setProperties({
             isEncrypted: false,
             disableEncryptIndicator: true,
             encryptError: I18n.t("encrypt.composer.group_not_allowed"),
-            showEncryptError: this.showEncryptError || this.isEncrypted
+            showEncryptError: this.showEncryptError || this.isEncrypted,
           });
           return;
         }
 
         ajax("/encrypt/user", {
           type: "GET",
-          data: { usernames }
-        }).then(userKeys => {
+          data: { usernames },
+        }).then((userKeys) => {
           for (let i = 0; i < usernames.length; ++i) {
             const username = usernames[i];
             if (!userKeys[username]) {
@@ -98,9 +99,9 @@ export default {
                 overwriteDefault: true,
                 disableEncryptIndicator: true,
                 encryptError: I18n.t("encrypt.composer.user_has_no_key", {
-                  username
+                  username,
                 }),
-                showEncryptError: this.showEncryptError || this.isEncrypted
+                showEncryptError: this.showEncryptError || this.isEncrypted,
               });
               return;
             }
@@ -108,10 +109,10 @@ export default {
 
           this.setProperties({
             disableEncryptIndicator: false,
-            encryptError: ""
+            encryptError: "",
           });
         });
-      }
+      },
     });
 
     // Decode composer on reply reload. This usually occurs when a post is
@@ -135,8 +136,8 @@ export default {
 
       decTitle = getTopicTitle(topicId);
       decReply = getTopicKey(topicId)
-        .then(key => decrypt(key, model.reply))
-        .then(decrypted => decrypted.raw);
+        .then((key) => decrypt(key, model.reply))
+        .then((decrypted) => decrypted.raw);
     } else {
       const pos = model.reply ? model.reply.indexOf("\n") : -1;
       if (pos === -1) {
@@ -146,27 +147,31 @@ export default {
       const topicKey = model.reply.substr(0, pos).trim();
       const reply = model.reply.substr(pos + 1).trim();
 
-      const decKey = getIdentity().then(identity =>
+      const decKey = getIdentity().then((identity) =>
         importKey(topicKey, identity.encryptPrivate)
       );
 
       if (model.title) {
-        decTitle = decKey.then(key => decrypt(key, model.title));
+        decTitle = decKey.then((key) => decrypt(key, model.title));
       }
 
       if (reply) {
         decReply = decKey
-          .then(key => decrypt(key, reply))
-          .then(decrypted => decrypted.raw);
+          .then((key) => decrypt(key, reply))
+          .then((decrypted) => decrypted.raw);
       }
     }
 
     if (decTitle) {
-      decTitle.then(title => model.setProperties({ title, isEncrypted: true }));
+      decTitle.then((title) =>
+        model.setProperties({ title, isEncrypted: true })
+      );
     }
 
     if (decReply) {
-      decReply.then(reply => model.setProperties({ reply, isEncrypted: true }));
+      decReply.then((reply) =>
+        model.setProperties({ reply, isEncrypted: true })
+      );
     }
-  }
+  },
 };
