@@ -2,7 +2,7 @@ import showModal from "discourse/lib/show-modal";
 import User from "discourse/models/user";
 import {
   deleteDb,
-  saveDbIdentity
+  saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   activateEncrypt,
@@ -10,7 +10,7 @@ import {
   enableEncrypt,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  getEncryptionStatus
+  getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
@@ -31,7 +31,7 @@ export default {
       /** Whether plugin is enabled for current user. */
       canEnableEncrypt: canEnableEncrypt(args.model),
       /** Whether the encryption is enabled or not. */
-      isEncryptEnabled: !!args.model.encrypt_public
+      isEncryptEnabled: !!args.model.encrypt_public,
     });
 
     if (isCurrentUser) {
@@ -58,7 +58,7 @@ export default {
           const newStatus = getEncryptionStatus(args.model);
           component.setProperties({
             isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-            isEncryptActive: newStatus === ENCRYPT_ACTIVE
+            isEncryptActive: newStatus === ENCRYPT_ACTIVE,
           });
         },
         didInsertElement() {
@@ -68,7 +68,7 @@ export default {
         willDestroyElement() {
           this._super(...arguments);
           this.appEvents.off("encrypt:status-changed", this, this.listener);
-        }
+        },
       });
     }
   },
@@ -86,7 +86,7 @@ export default {
             passphrase: "",
             inProgress: false,
             importIdentity: false,
-            identity: ""
+            identity: "",
           });
         });
     },
@@ -95,7 +95,7 @@ export default {
       this.set("inProgress", true);
 
       const identityPromise = this.importIdentity
-        ? importIdentity(unpackIdentity(this.identity)).then(identity =>
+        ? importIdentity(unpackIdentity(this.identity)).then((identity) =>
             saveDbIdentity(identity)
           )
         : activateEncrypt(this.model, this.passphrase);
@@ -112,7 +112,7 @@ export default {
             passphrase: "",
             inProgress: false,
             importIdentity: false,
-            identity: ""
+            identity: "",
           })
         );
     },
@@ -131,8 +131,8 @@ export default {
       showModal("generate-paper-key", {
         model: {
           user: this.model,
-          device
-        }
+          device,
+        },
       });
     },
 
@@ -159,6 +159,6 @@ export default {
           showModal("reset-key-pair", { model: this.model });
           break;
       }
-    }
-  }
+    },
+  },
 };

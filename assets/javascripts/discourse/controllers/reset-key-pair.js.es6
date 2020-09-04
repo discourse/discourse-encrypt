@@ -10,7 +10,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     this.setProperties({
       inProgress: false,
       everything: true,
-      confirmation: ""
+      confirmation: "",
     });
   },
 
@@ -28,15 +28,15 @@ export default Ember.Controller.extend(ModalFunctionality, {
           type: "POST",
           data: {
             user_id: this.get("model.id"),
-            everything: this.everything
-          }
+            everything: this.everything,
+          },
         }),
-        deleteDb
+        deleteDb,
       ])
         .then(() => {
           this.currentUser.setProperties({
             encrypt_public: null,
-            encrypt_private: null
+            encrypt_private: null,
           });
 
           this.appEvents.trigger("encrypt:status-changed");
@@ -46,6 +46,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
         .finally(() => {
           this.set("inProgress", false);
         });
-    }
-  }
+    },
+  },
 });

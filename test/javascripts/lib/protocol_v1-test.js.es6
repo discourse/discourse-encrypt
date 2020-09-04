@@ -1,17 +1,17 @@
 import {
   exportIdentity,
   generateIdentity,
-  importIdentity
+  importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v1";
 
 QUnit.module("discourse-encrypt:lib:protocol_v1");
 
-test("generateIdentity", async assert => {
+test("generateIdentity", async (assert) => {
   const {
     encryptPublic,
     encryptPrivate,
     signPublic,
-    signPrivate
+    signPrivate,
   } = await generateIdentity();
 
   assert.ok(encryptPublic instanceof CryptoKey);
@@ -20,7 +20,7 @@ test("generateIdentity", async assert => {
   assert.ok(signPrivate instanceof CryptoKey);
 });
 
-test("exportIdentity & importIdentity", async assert => {
+test("exportIdentity & importIdentity", async (assert) => {
   const identity = await generateIdentity();
 
   let exported = await exportIdentity(identity);

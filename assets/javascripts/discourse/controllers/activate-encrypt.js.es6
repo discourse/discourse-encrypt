@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { activateEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
@@ -9,13 +10,13 @@ export default Ember.Controller.extend(ModalFunctionality, {
     this.setProperties({
       models: models,
       passphrase: "",
-      error: ""
+      error: "",
     });
   },
 
   onClose() {
     const models = this.models || [];
-    models.forEach(model => {
+    models.forEach((model) => {
       model.state.decrypting = false;
       model.state.decrypted = true;
       model.state.error = I18n.t(
@@ -33,7 +34,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
       return activateEncrypt(this.currentUser, this.passphrase)
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.models.forEach(model => {
+          this.models.forEach((model) => {
             model.state.decrypting = true;
             model.state.decrypted = false;
             model.scheduleRerender();
@@ -45,6 +46,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
           this.set("error", I18n.t("encrypt.preferences.passphrase_invalid"))
         )
         .finally(() => this.set("inProgress", false));
-    }
-  }
+    },
+  },
 });

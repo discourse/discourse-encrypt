@@ -5,7 +5,7 @@ import {
   getEncryptionStatus,
   getTopicKey,
   getUserIdentities,
-  hasTopicKey
+  hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
@@ -31,19 +31,19 @@ export default {
           .then(([key, identities]) =>
             exportKey(key, identities[user].encryptPublic)
           )
-          .then(key => {
+          .then((key) => {
             ajax(`/t/${this.get("id")}/invite`, {
               type: "POST",
-              data: { user, key, group_names, custom_message }
+              data: { user, key, group_names, custom_message },
             });
           })
-          .catch(username => {
+          .catch((username) => {
             bootbox.alert(
               I18n.t("encrypt.composer.user_has_no_key", { username })
             );
             return Promise.reject(username);
           });
-      }
+      },
     });
-  }
+  },
 };

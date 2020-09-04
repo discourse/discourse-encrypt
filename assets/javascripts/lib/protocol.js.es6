@@ -1,6 +1,6 @@
 import {
   base64ToBuffer,
-  bufferToBase64
+  bufferToBase64,
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { useLocalStorage } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
@@ -8,7 +8,7 @@ import {
   encrypt as encryptV0,
   exportIdentity as exportIdentityV0,
   generateIdentity as generateIdentityV0,
-  importIdentity as importIdentityV0
+  importIdentity as importIdentityV0,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v0";
 import {
   decrypt as decryptV1,
@@ -16,7 +16,7 @@ import {
   exportIdentity as exportIdentityV1,
   generateIdentity as generateIdentityV1,
   importIdentity as importIdentityV1,
-  verify as verifyV1
+  verify as verifyV1,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v1";
 import { Promise } from "rsvp";
 
@@ -39,15 +39,15 @@ export function generateIdentity(version) {
 
   let promise;
   if (version === 0) {
-    promise = generateIdentityV0().then(id => ({
+    promise = generateIdentityV0().then((id) => ({
       encryptPublic: id.publicKey,
-      encryptPrivate: id.privateKey
+      encryptPrivate: id.privateKey,
     }));
   } else if (version === 1) {
     promise = generateIdentityV1();
   }
 
-  return promise.then(id => {
+  return promise.then((id) => {
     id.version = version;
     return id;
   });
@@ -68,7 +68,7 @@ export function exportIdentity(identity, passphrase) {
     promise = exportIdentityV0(
       {
         publicKey: identity.encryptPublic,
-        privateKey: identity.encryptPrivate
+        privateKey: identity.encryptPrivate,
       },
       passphrase
     );
@@ -76,9 +76,9 @@ export function exportIdentity(identity, passphrase) {
     promise = exportIdentityV1(identity, passphrase);
   }
 
-  return promise.then(exported => ({
+  return promise.then((exported) => ({
     public: identity.version + "$" + exported.public,
-    private: identity.version + "$" + exported.private
+    private: identity.version + "$" + exported.private,
   }));
 }
 
@@ -102,15 +102,17 @@ export function importIdentity(identity, passphrase, extractable) {
 
   let promise;
   if (version === 0) {
-    promise = importIdentityV0(identity, passphrase, extractable).then(id => ({
-      encryptPublic: id.publicKey,
-      encryptPrivate: id.privateKey
-    }));
+    promise = importIdentityV0(identity, passphrase, extractable).then(
+      (id) => ({
+        encryptPublic: id.publicKey,
+        encryptPrivate: id.privateKey,
+      })
+    );
   } else if (version === 1) {
     promise = importIdentityV1(identity, passphrase, extractable);
   }
 
-  return promise.then(id => {
+  return promise.then((id) => {
     id.version = version;
     return id;
   });
@@ -143,7 +145,7 @@ export function encrypt(key, data, opts) {
   if (opts && opts.includeUploads) {
     const uploads = data.raw.match(/upload:\/\/[A-Za-z0-9\.]+/g);
     if (uploads) {
-      extra += "\n" + uploads.map(upload => `[](${upload})`).join();
+      extra += "\n" + uploads.map((upload) => `[](${upload})`).join();
     }
   }
 
@@ -156,7 +158,7 @@ export function encrypt(key, data, opts) {
     promise = encryptV1(key, opts && opts.signKey, data);
   }
 
-  return promise.then(ciphertext => version + "$" + ciphertext + extra);
+  return promise.then((ciphertext) => version + "$" + ciphertext + extra);
 }
 
 /**
@@ -175,8 +177,8 @@ export function decrypt(key, ciphertext) {
   ciphertext = ciphertext.substr(sep + 1);
 
   if (version === 0) {
-    return decryptV0(key, ciphertext).then(plaintext => ({
-      raw: plaintext
+    return decryptV0(key, ciphertext).then((plaintext) => ({
+      raw: plaintext,
     }));
   } else if (version === 1) {
     return decryptV1(key, ciphertext);
@@ -218,7 +220,7 @@ export function generateKey() {
     window.crypto.subtle
       .generateKey({ name: "AES-GCM", length: 256 }, true, [
         "encrypt",
-        "decrypt"
+        "decrypt",
       ])
       .then(resolve, reject);
   });
@@ -237,9 +239,9 @@ export function exportKey(key, publicKey) {
     window.crypto.subtle
       .wrapKey("raw", key, publicKey, {
         name: "RSA-OAEP",
-        hash: { name: "SHA-256" }
+        hash: { name: "SHA-256" },
       })
-      .then(wrapped => bufferToBase64(wrapped))
+      .then((wrapped) => bufferToBase64(wrapped))
       .then(resolve, reject);
   });
 }

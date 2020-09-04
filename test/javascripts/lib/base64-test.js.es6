@@ -1,6 +1,6 @@
 import {
   base64ToBuffer,
-  bufferToBase64
+  bufferToBase64,
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 
 /*
@@ -10,13 +10,13 @@ import {
  * @param needle
  * @param message
  */
-QUnit.assert.arrayEqual = function(actual, expected) {
+QUnit.assert.arrayEqual = function (actual, expected) {
   if (actual.length !== expected.length) {
     this.pushResult({
       result: false,
       actual: actual.length,
       expected: expected.length,
-      message: "array lengths are equal"
+      message: "array lengths are equal",
     });
 
     return;
@@ -31,7 +31,7 @@ QUnit.assert.arrayEqual = function(actual, expected) {
         result,
         actual: actual[i],
         expected: expected[i],
-        message: `index ${i} matches`
+        message: `index ${i} matches`,
       });
     }
   }
@@ -41,14 +41,14 @@ QUnit.assert.arrayEqual = function(actual, expected) {
       result,
       actual: actual,
       expected: expected,
-      message: "arrays match"
+      message: "arrays match",
     });
   }
 };
 
 QUnit.module("discourse-encrypt:lib:base64");
 
-test("base64 to buffer", assert => {
+test("base64 to buffer", (assert) => {
   let check = (actual, expected) =>
     assert.arrayEqual(base64ToBuffer(actual), expected);
 
@@ -59,7 +59,7 @@ test("base64 to buffer", assert => {
   check("QUJDRA==", [0x41, 0x42, 0x43, 0x44]);
 });
 
-test("buffer to base64", assert => {
+test("buffer to base64", (assert) => {
   let check = (actual, expected) =>
     assert.equal(bufferToBase64(new Uint8Array(actual)), expected);
 
@@ -70,7 +70,7 @@ test("buffer to base64", assert => {
   check([0x41, 0x42, 0x43, 0x44], "QUJDRA==");
 });
 
-test("buffer to base64 to buffer", assert => {
+test("buffer to base64 to buffer", (assert) => {
   const array = [];
   for (let i = 0; i < 32; ++i) {
     const buffer = new Uint8Array(array);

@@ -2,21 +2,21 @@ import User from "discourse/models/user";
 import {
   deleteDb,
   loadDbIdentity,
-  saveDbIdentity
+  saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import EncryptLibDiscourse, {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
   getEncryptionStatus,
-  getIdentity
+  getIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
   exportIdentity,
   exportKey,
   generateIdentity,
-  generateKey
+  generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { NOTIFICATION_TYPES } from "fixtures/concerns/notification-types";
 import { default as userFixtures } from "fixtures/user_fixtures";
@@ -36,7 +36,7 @@ QUnit.assert.notContains = function notContains(haystack, needle, message) {
     result: haystack.indexOf(needle) === -1,
     actual: haystack,
     expected: "not to contain " + needle,
-    message
+    message,
   });
 };
 
@@ -145,7 +145,7 @@ acceptance("Encrypt", {
 
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send = function(body) {
+    XMLHttpRequest.prototype.send = function (body) {
       requests.push(this.url);
       if (body && globalAssert) {
         globalAssert.notContains(body, PLAINTEXT, "does not leak plaintext");
@@ -162,19 +162,19 @@ acceptance("Encrypt", {
   },
 
   pretend(server, helper) {
-    server.get("/encrypt/user", request => {
+    server.get("/encrypt/user", (request) => {
       const response = {};
-      request.queryParams["usernames"].forEach(u => (response[u] = keys[u]));
+      request.queryParams["usernames"].forEach((u) => (response[u] = keys[u]));
       return helper.response(response);
     });
 
     server.put("/encrypt/post", () => {
       return helper.response({});
     });
-  }
+  },
 });
 
-test("meta: leak checker works", async assert => {
+test("meta: leak checker works", async (assert) => {
   globalAssert = { notContains: () => assert.ok(true) };
 
   await visit("/");
@@ -191,7 +191,7 @@ test("meta: leak checker works", async assert => {
   globalAssert = null;
 });
 
-test("posting does not leak plaintext", async assert => {
+test("posting does not leak plaintext", async (assert) => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
   globalAssert = assert;
 
@@ -205,14 +205,14 @@ test("posting does not leak plaintext", async assert => {
           {
             username: "eviltrout",
             name: "eviltrout",
-            avatar_template: "/images/avatar.png"
-          }
-        ]
-      }
+            avatar_template: "/images/avatar.png",
+          },
+        ],
+      },
     ];
   });
 
-  server.post("/posts", request => {
+  server.post("/posts", (request) => {
     const body = parsePostData(request.requestBody);
     assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
     assert.equal(body.title, I18n.t("encrypt.encrypted_topic_title"));
@@ -226,7 +226,7 @@ test("posting does not leak plaintext", async assert => {
     return [
       200,
       { "Content-Type": "application/json" },
-      { action: "create_post", post: { topic_id: 34 } }
+      { action: "create_post", post: { topic_id: 34 } },
     ];
   });
 
@@ -237,11 +237,7 @@ test("posting does not leak plaintext", async assert => {
   await composerActions.expand();
   await composerActions.selectRowByValue("reply_as_private_message");
 
-  if (
-    find(".users-input")
-      .text()
-      .trim() !== ""
-  ) {
+  if (find(".users-input").text().trim() !== "") {
     globalAssert = null;
     throw new Error("Another test is leaking composer state");
   }
@@ -268,10 +264,10 @@ test("posting does not leak plaintext", async assert => {
   globalAssert = null;
 });
 
-test("new draft for public topic is not encrypted", async assert => {
+test("new draft for public topic is not encrypted", async (assert) => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
-  server.post("/draft.json", request => {
+  server.post("/draft.json", (request) => {
     const data = JSON.parse(parsePostData(request.requestBody).data);
     if (data.title) {
       assert.equal(data.title, `Some public message ${PLAINTEXT}`);
@@ -294,7 +290,7 @@ test("new draft for public topic is not encrypted", async assert => {
   );
 });
 
-test("enabling works", async assert => {
+test("enabling works", async (assert) => {
   await setEncryptionStatus(ENCRYPT_DISABLED);
 
   let ajaxRequested = false;
@@ -315,7 +311,7 @@ test("enabling works", async assert => {
   assert.ok(identity.signPrivate instanceof CryptoKey);
 });
 
-test("activation works", async assert => {
+test("activation works", async (assert) => {
   await setEncryptionStatus(ENCRYPT_ENABLED);
 
   await visit("/u/eviltrout/preferences");
@@ -329,7 +325,7 @@ test("activation works", async assert => {
   assert.ok(identity.signPrivate instanceof CryptoKey);
 });
 
-test("deactivation works", async assert => {
+test("deactivation works", async (assert) => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   await visit("/u/eviltrout/preferences");
@@ -339,7 +335,7 @@ test("deactivation works", async assert => {
   assert.equal(identity, null);
 });
 
-test("encrypt settings visible only to allowed groups", async assert => {
+test("encrypt settings visible only to allowed groups", async (assert) => {
   await setEncryptionStatus(ENCRYPT_DISABLED);
 
   await visit("/u/eviltrout/preferences");
@@ -350,9 +346,9 @@ test("encrypt settings visible only to allowed groups", async assert => {
     groups: [
       Ember.Object.create({
         id: 1,
-        name: "not_allowed_group"
-      })
-    ]
+        name: "not_allowed_group",
+      }),
+    ],
   });
 
   await visit("/u/eviltrout/preferences");
@@ -365,20 +361,20 @@ test("encrypt settings visible only to allowed groups", async assert => {
     groups: [
       Ember.Object.create({
         id: 1,
-        name: "not_allowed_group"
+        name: "not_allowed_group",
       }),
       Ember.Object.create({
         id: 2,
-        name: "allowed_group"
-      })
-    ]
+        name: "allowed_group",
+      }),
+    ],
   });
 
   await visit("/u/eviltrout/preferences");
   assert.ok(find(".encrypt").text().length > 0, "encrypt settings are visible");
 });
 
-test("user preferences connector works for other users", async assert => {
+test("user preferences connector works for other users", async (assert) => {
   /* global server */
   server.get("/u/eviltrout2.json", () => {
     const json = JSON.parse(JSON.stringify(userFixtures["/u/eviltrout.json"]));
@@ -398,7 +394,7 @@ test("user preferences connector works for other users", async assert => {
   );
 });
 
-test("topic titles in notification panel are decrypted", async assert => {
+test("topic titles in notification panel are decrypted", async (assert) => {
   await setEncryptionStatus(ENCRYPT_ACTIVE);
 
   const identity = await getIdentity();
@@ -429,16 +425,16 @@ test("topic titles in notification panel are decrypted", async assert => {
             original_post_type: 1,
             original_username: "foo",
             revision_number: null,
-            display_username: "foo"
+            display_username: "foo",
           },
           encrypted_title: encryptedTitle,
-          topic_key: exportedKey
-        }
+          topic_key: exportedKey,
+        },
       ],
       total_rows_notifications: 1,
       seen_notification_id: 5,
-      load_more_notifications: "/notifications?offset=60&username=dan"
-    }
+      load_more_notifications: "/notifications?offset=60&username=dan",
+    },
   ]);
 
   const stub = sandbox.stub(EncryptLibDiscourse, "syncGetTopicTitle");

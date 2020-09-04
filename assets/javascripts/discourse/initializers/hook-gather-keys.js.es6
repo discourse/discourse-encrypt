@@ -4,7 +4,7 @@ import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
   putTopicKey,
-  putTopicTitle
+  putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import PreloadStore from "discourse/lib/preload-store";
 
@@ -38,8 +38,8 @@ export default {
     // Hook `Notification` adapter to gather encrypted topic keys.
     NotificationAdapter.reopen({
       find() {
-        return this._super(...arguments).then(result => {
-          result.notifications.forEach(notification => {
+        return this._super(...arguments).then((result) => {
+          result.notifications.forEach((notification) => {
             if (notification.topic_key) {
               putTopicKey(notification.topic_id, notification.topic_key);
               putTopicTitle(
@@ -50,7 +50,7 @@ export default {
           });
           return result;
         });
-      }
+      },
     });
 
     // Hook `Topic` model to gather encrypted topic keys.
@@ -61,7 +61,7 @@ export default {
           putTopicTitle(args.id, args.encrypted_title);
         }
         return this._super(...arguments);
-      }
+      },
     });
 
     Topic.reopen({
@@ -71,7 +71,7 @@ export default {
           putTopicTitle(json.id, json.encrypted_title);
         }
         return this._super(...arguments);
-      }
+      },
     });
-  }
+  },
 };

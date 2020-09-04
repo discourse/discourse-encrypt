@@ -1,7 +1,7 @@
 import {
   enableEncrypt,
   ENCRYPT_DISABLED,
-  getEncryptionStatus
+  getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 const AUTO_ENABLE_KEY = "discourse-encrypt-auto-enable";
@@ -30,5 +30,5 @@ export default {
     } else {
       window.localStorage.removeItem(AUTO_ENABLE_KEY);
     }
-  }
+  },
 };

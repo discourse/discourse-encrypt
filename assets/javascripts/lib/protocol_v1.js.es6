@@ -1,6 +1,6 @@
 import {
   base64ToBuffer,
-  bufferToBase64
+  bufferToBase64,
 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { Promise } from "rsvp";
 
@@ -18,13 +18,13 @@ function getPassphraseKey(passphrase, salt) {
         false,
         ["deriveBits", "deriveKey"]
       )
-      .then(key =>
+      .then((key) =>
         window.crypto.subtle.deriveKey(
           {
             name: "PBKDF2",
             salt,
             iterations: 128000,
-            hash: "SHA-256"
+            hash: "SHA-256",
           },
           key,
           { name: "AES-GCM", length: 256 },
@@ -50,7 +50,7 @@ export function generateIdentity() {
       name: "RSA-OAEP",
       modulusLength: 4096,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: { name: "SHA-256" }
+      hash: { name: "SHA-256" },
     },
     true,
     ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
@@ -61,7 +61,7 @@ export function generateIdentity() {
       name: "RSA-PSS",
       modulusLength: 4096,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: { name: "SHA-256" }
+      hash: { name: "SHA-256" },
     },
     true,
     ["sign", "verify"]
@@ -72,7 +72,7 @@ export function generateIdentity() {
       encryptPublic: encryptKey.publicKey,
       encryptPrivate: encryptKey.privateKey,
       signPublic: signKey.publicKey,
-      signPrivate: signKey.privateKey
+      signPrivate: signKey.privateKey,
     })
   );
 }
@@ -82,20 +82,20 @@ export function exportIdentity(identity, passphrase) {
     window.crypto.subtle.exportKey("jwk", identity.encryptPublic),
     window.crypto.subtle.exportKey("jwk", identity.encryptPrivate),
     window.crypto.subtle.exportKey("jwk", identity.signPublic),
-    window.crypto.subtle.exportKey("jwk", identity.signPrivate)
+    window.crypto.subtle.exportKey("jwk", identity.signPrivate),
   ]).then(([encryptPublic, encryptPrivate, signPublic, signPrivate]) => ({
     encryptPublic,
     encryptPrivate,
     signPublic,
-    signPrivate
+    signPrivate,
   }));
 
-  const publicPromise = identityPromise.then(exported =>
+  const publicPromise = identityPromise.then((exported) =>
     bufferToBase64(
       new TextEncoder().encode(
         JSON.stringify({
           encryptPublic: exported.encryptPublic,
-          signPublic: exported.signPublic
+          signPublic: exported.signPublic,
         })
       )
     )
@@ -107,7 +107,7 @@ export function exportIdentity(identity, passphrase) {
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
     privatePromise = Promise.all([
       getPassphraseKey(passphrase, salt),
-      identityPromise
+      identityPromise,
     ])
       .then(([key, exported]) =>
         window.crypto.subtle.encrypt(
@@ -117,11 +117,11 @@ export function exportIdentity(identity, passphrase) {
         )
       )
       .then(
-        exported =>
+        (exported) =>
           bufferToBase64(salt) + bufferToBase64(iv) + bufferToBase64(exported)
       );
   } else {
-    privatePromise = identityPromise.then(exported =>
+    privatePromise = identityPromise.then((exported) =>
       bufferToBase64(new TextEncoder().encode(JSON.stringify(exported)))
     );
   }
@@ -129,7 +129,7 @@ export function exportIdentity(identity, passphrase) {
   return Promise.all([publicPromise, privatePromise]).then(
     ([publicIdentity, privateIdentity]) => ({
       public: publicIdentity,
-      private: privateIdentity
+      private: privateIdentity,
     })
   );
 }
@@ -142,7 +142,7 @@ export function importIdentity(identity, passphrase, extractable) {
     const iv = base64ToBuffer(identity.substring(24, 40));
     const encrypted = base64ToBuffer(identity.substring(40));
 
-    decrypted = getPassphraseKey(passphrase, salt).then(key =>
+    decrypted = getPassphraseKey(passphrase, salt).then((key) =>
       window.crypto.subtle.decrypt(
         { name: "AES-GCM", iv, tagLength: 128 },
         key,
@@ -153,7 +153,7 @@ export function importIdentity(identity, passphrase, extractable) {
     decrypted = Promise.resolve(base64ToBuffer(identity));
   }
 
-  return decrypted.then(exported => {
+  return decrypted.then((exported) => {
     identity = JSON.parse(new TextDecoder().decode(exported));
     return Promise.all([
       window.crypto.subtle.importKey(
@@ -187,12 +187,12 @@ export function importIdentity(identity, passphrase, extractable) {
             !!extractable,
             ["sign"]
           )
-        : undefined
+        : undefined,
     ]).then(([encryptPublic, encryptPrivate, signPublic, signPrivate]) => ({
       encryptPublic,
       encryptPrivate,
       signPublic,
-      signPrivate
+      signPrivate,
     }));
   });
 }
@@ -209,7 +209,7 @@ export function encrypt(key, signKey, plaintext) {
           signKey,
           plaintextToBuffer(plaintext)
         )
-        .then(signature => {
+        .then((signature) => {
           plaintext.signature = bufferToBase64(signature);
           return plaintext;
         })
@@ -218,14 +218,14 @@ export function encrypt(key, signKey, plaintext) {
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
   return new Promise((resolve, reject) => {
     plaintextPromise
-      .then(unencrypted =>
+      .then((unencrypted) =>
         window.crypto.subtle.encrypt(
           { name: "AES-GCM", iv, tagLength: 128 },
           key,
           plaintextToBuffer(unencrypted)
         )
       )
-      .then(encrypted => bufferToBase64(iv) + bufferToBase64(encrypted))
+      .then((encrypted) => bufferToBase64(iv) + bufferToBase64(encrypted))
       .then(resolve, reject);
   });
 }
@@ -237,7 +237,7 @@ export function decrypt(key, ciphertext) {
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, encrypted)
-      .then(buffer => JSON.parse(new TextDecoder().decode(buffer)))
+      .then((buffer) => JSON.parse(new TextDecoder().decode(buffer)))
       .then(resolve, reject);
   });
 }
@@ -246,7 +246,7 @@ export function verify(key, plaintext) {
   const { signature } = plaintext;
   delete plaintext.signature;
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     window.crypto.subtle
       .verify(
         { name: "RSA-PSS", saltLength: 32 },
@@ -254,7 +254,7 @@ export function verify(key, plaintext) {
         base64ToBuffer(signature),
         plaintextToBuffer(plaintext)
       )
-      .then(isValid => (isValid ? resolve(true) : resolve(false)))
+      .then((isValid) => (isValid ? resolve(true) : resolve(false)))
       .catch(() => resolve(false));
   });
 }

@@ -13,8 +13,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
       : "paper_" + paperKey.substr(0, paperKey.indexOf(" ")).toLowerCase();
 
     getIdentity()
-      .then(identity => exportIdentity(identity, paperKey))
-      .then(exported => {
+      .then((identity) => exportIdentity(identity, paperKey))
+      .then((exported) => {
         this.set("paperKey", paperKey);
 
         return ajax("/encrypt/keys", {
@@ -22,8 +22,8 @@ export default Ember.Controller.extend(ModalFunctionality, {
           data: {
             public: exported.public,
             private: exported.private,
-            label: label
-          }
+            label: label,
+          },
         });
       })
       .finally(() => this.set("inProgress", false));
@@ -32,7 +32,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
   onClose() {
     this.setProperties({
       paperKey: "",
-      inProgress: false
+      inProgress: false,
     });
-  }
+  },
 });

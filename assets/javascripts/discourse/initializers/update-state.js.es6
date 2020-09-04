@@ -1,10 +1,11 @@
+import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
-  reload
+  reload,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import getURL from "discourse-common/lib/get-url";
 
@@ -16,7 +17,7 @@ export default {
     const messageBus = container.lookup("message-bus:main");
 
     const appEvents = container.lookup("service:app-events");
-    appEvents.on("encrypt:status-changed", skipReload => {
+    appEvents.on("encrypt:status-changed", (skipReload) => {
       if (!skipReload) {
         reload();
       }
@@ -33,7 +34,7 @@ export default {
       (!currentUser.encrypt_private ||
         Object.keys(JSON.parse(currentUser.encrypt_private)).length === 0)
     ) {
-      withPluginApi("0.8.37", api => {
+      withPluginApi("0.8.37", (api) => {
         let basePath = getURL("/").replace(/\/$/, "");
         api.addGlobalNotice(
           I18n.t("encrypt.no_backup_warn", { basePath }),
@@ -41,20 +42,20 @@ export default {
           {
             level: "warn",
             dismissable: true,
-            dismissDuration: moment.duration(1, "day")
+            dismissDuration: moment.duration(1, "day"),
           }
         );
       });
     }
 
     if (messageBus && status !== ENCRYPT_DISABLED) {
-      messageBus.subscribe("/plugin/encrypt/keys", function(data) {
+      messageBus.subscribe("/plugin/encrypt/keys", function (data) {
         currentUser.setProperties({
           encrypt_public: data.public,
-          encrypt_private: data.private
+          encrypt_private: data.private,
         });
         appEvents.trigger("encrypt:status-changed", true);
       });
     }
-  }
+  },
 };

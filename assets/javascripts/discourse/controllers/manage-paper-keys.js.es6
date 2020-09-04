@@ -9,17 +9,17 @@ export default Ember.Controller.extend(ModalFunctionality, {
     const keys = [];
     if (this.model.encrypt_private) {
       const privateKeys = JSON.parse(this.model.encrypt_private);
-      Object.keys(privateKeys).forEach(label => {
+      Object.keys(privateKeys).forEach((label) => {
         if (label.startsWith("paper_")) {
           keys.push({
             isPaper: true,
             label,
-            name: label.substr("paper_".length)
+            name: label.substr("paper_".length),
           });
         } else if (label === "passphrase") {
           keys.unshift({
             isPassphrase: true,
-            label: "passphrase"
+            label: "passphrase",
           });
         }
       });
@@ -32,16 +32,16 @@ export default Ember.Controller.extend(ModalFunctionality, {
       showModal("generate-paper-key", {
         model: {
           user: this.model,
-          device: false
-        }
+          device: false,
+        },
       });
     },
 
     delete(label) {
       return ajax("/encrypt/keys", {
         type: "DELETE",
-        data: { label }
+        data: { label },
       });
-    }
-  }
+    },
+  },
 });

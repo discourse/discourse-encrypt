@@ -3,7 +3,7 @@ import { registerHelper } from "discourse-common/lib/helpers";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
-  getEncryptionStatus
+  getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 // TODO: I believe this should get into core.
@@ -25,7 +25,7 @@ export default {
         const newStatus = getEncryptionStatus(currentUser);
         component.setProperties({
           isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-          isEncryptActive: newStatus === ENCRYPT_ACTIVE
+          isEncryptActive: newStatus === ENCRYPT_ACTIVE,
         });
       },
 
@@ -45,7 +45,7 @@ export default {
           this.set("model.isEncrypted", !this.get("model.isEncrypted"));
           this.set("model.overwriteDefault", true);
         }
-      }
+      },
     });
 
     Ember.defineProperty(
@@ -65,5 +65,5 @@ export default {
         }
       )
     );
-  }
+  },
 };

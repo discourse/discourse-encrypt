@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import copyText from "discourse/lib/copy-text";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
@@ -9,17 +10,17 @@ export default Ember.Controller.extend(ModalFunctionality, {
     this.setProperties({ inProgress: true, exported: "" });
 
     getIdentity()
-      .then(identity => exportIdentity(identity))
-      .then(exported => {
+      .then((identity) => exportIdentity(identity))
+      .then((exported) => {
         this.setProperties({
           exported: packIdentity(exported.private),
-          inProgress: false
+          inProgress: false,
         });
       })
       .catch(() => {
         this.setProperties({
           inProgress: false,
-          error: I18n.t("encrypt.preferences.passphrase_invalid")
+          error: I18n.t("encrypt.preferences.passphrase_invalid"),
         });
       });
   },
@@ -35,6 +36,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
         this.set("copied", true);
         Ember.run.later(() => this.set("copied", false), 2000);
       }
-    }
-  }
+    },
+  },
 });

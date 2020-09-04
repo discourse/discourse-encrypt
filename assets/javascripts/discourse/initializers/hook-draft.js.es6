@@ -3,12 +3,12 @@ import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
   getIdentity,
-  hasTopicKey
+  hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
   exportKey,
-  generateKey
+  generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
 import { Promise } from "rsvp";
@@ -24,7 +24,7 @@ const ALLOWED_DRAFT_FIELDS = [
   "tags",
   "title", // will be encrypted
   "recipients",
-  "whisper"
+  "whisper",
 ];
 
 let globalContainer;
@@ -82,15 +82,15 @@ export default {
 
           const encKey = Promise.all([
             topicKey,
-            getIdentity()
+            getIdentity(),
           ]).then(([key, identity]) => exportKey(key, identity.encryptPublic));
 
           const encTitle = data.title
-            ? topicKey.then(key => encrypt(key, data.title))
+            ? topicKey.then((key) => encrypt(key, data.title))
             : "";
 
           const encReply = data.reply
-            ? topicKey.then(key =>
+            ? topicKey.then((key) =>
                 encrypt(key, { raw: data.reply }, { includeUploads: true })
               )
             : "";
@@ -105,7 +105,7 @@ export default {
         }
 
         return _super.call(this, ...arguments);
-      }
+      },
     });
-  }
+  },
 };
