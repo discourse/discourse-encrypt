@@ -26,7 +26,7 @@ describe TopicsController do
   it 'not invited admin does not have access' do
     sign_in(admin2)
     get "/t/#{topic.slug}/#{topic.id}.json"
-    expect(response.status).to eq(404)
+    expect(response.status).to eq(403)
 
     TopicAllowedUser.create!(user_id: admin2.id, topic_id: topic.id)
     get "/t/#{topic.slug}/#{topic.id}.json"
