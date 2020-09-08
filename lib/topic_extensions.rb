@@ -3,6 +3,7 @@
 module TopicExtensions
   def self.prepended(base)
     base.has_one :encrypted_topics_data
+    base.has_many :encrypted_topics_users
   end
 
   def is_encrypted?

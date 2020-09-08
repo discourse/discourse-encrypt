@@ -108,7 +108,7 @@ after_initialize do
   # paired private key.
 
   add_to_serializer(:topic_view, :topic_key, false) do
-    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
+    object.topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
@@ -116,7 +116,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
-    EncryptedTopicsUser.find_by(topic_id: object.id, user_id: scope.user.id)&.key
+    object.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
@@ -124,7 +124,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :topic_key, false) do
-    EncryptedTopicsUser.find_by(topic_id: object.topic.id, user_id: scope.user.id)&.key
+    object.topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
@@ -201,6 +201,17 @@ after_initialize do
   add_permitted_post_create_param(:encrypted_title)
   add_permitted_post_create_param(:encrypted_raw)
   add_permitted_post_create_param(:encrypted_keys)
+
+  # TODO: Remove if check once Discourse 2.6 is stable
+  if respond_to?(:register_search_topic_eager_load)
+    register_search_topic_eager_load do |topic_eager_loads, opts|
+      if opts[:search_pms] && SiteSetting.encrypt_enabled?
+        topic_eager_loads << :encrypted_topics_users
+        topic_eager_loads << :encrypted_topics_data
+      end
+      topic_eager_loads
+    end
+  end
 
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]
