@@ -204,12 +204,8 @@ after_initialize do
 
   # TODO: Remove if check once Discourse 2.6 is stable
   if respond_to?(:register_search_topic_eager_load)
-    register_search_topic_eager_load do |topic_eager_loads, opts|
-      if opts[:search_pms] && SiteSetting.encrypt_enabled?
-        topic_eager_loads << :encrypted_topics_users
-        topic_eager_loads << :encrypted_topics_data
-      end
-      topic_eager_loads
+    register_search_topic_eager_load do |opts|
+      %i(encrypted_topics_users encrypted_topics_data) if opts[:search_pms] && SiteSetting.encrypt_enabled?
     end
   end
 
