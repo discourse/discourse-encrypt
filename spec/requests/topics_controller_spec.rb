@@ -6,12 +6,9 @@ describe TopicsController do
   let(:topic) { Fabricate(:encrypt_topic) }
   let(:user) { Fabricate(:user) }
   let(:group) { Fabricate(:group) }
-  let(:admin) { Fabricate(:admin) }
-  let(:admin2) { Fabricate(:admin) }
 
   before do
-    TopicAllowedUser.create!(user_id: admin.id, topic_id: topic.id)
-    sign_in(admin)
+    sign_in(Fabricate(:admin))
   end
 
   context '#update' do
@@ -21,16 +18,6 @@ describe TopicsController do
       expect(response.status).to eq(200)
       expect(topic.reload.encrypted_topics_data.title).to eq('new encrypted title')
     end
-  end
-
-  it 'not invited admin does not have access' do
-    sign_in(admin2)
-    get "/t/#{topic.slug}/#{topic.id}.json"
-    expect(response.status).to eq(403)
-
-    TopicAllowedUser.create!(user_id: admin2.id, topic_id: topic.id)
-    get "/t/#{topic.slug}/#{topic.id}.json"
-    expect(response.status).to eq(200)
   end
 
   context '#invite' do
