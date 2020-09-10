@@ -165,8 +165,7 @@ after_initialize do
   end
 
   add_to_class(:guardian, :is_user_a_member_of_encrypted_conversation?) do |topic|
-    return false unless topic
-    if SiteSetting.encrypt_enabled? && topic.is_encrypted?
+    if SiteSetting.encrypt_enabled? && topic && topic.is_encrypted?
       authenticated? && topic.all_allowed_users.where(id: @user.id).exists?
     else
       true

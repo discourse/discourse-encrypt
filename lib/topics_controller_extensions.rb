@@ -3,7 +3,7 @@
 module TopicsControllerExtensions
   def show
     if SiteSetting.encrypt_enabled?
-      topic = Topic.find_by(id: params[:topic_id])
+      topic = Topic.find_by(id: (params[:topic_id] || params[:id]))
       raise Discourse::InvalidAccess if !guardian.is_user_a_member_of_encrypted_conversation?(topic)
     end
     super
