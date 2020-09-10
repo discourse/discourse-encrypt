@@ -109,4 +109,24 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(200)
     end
   end
+
+  context '#update_post' do
+    let!(:post) { Fabricate(:encrypt_post) }
+
+    before do
+      SiteSetting.min_trust_to_edit_post = 2
+    end
+
+    it 'is not raising error when user cannot edit because min trust level' do
+      sign_in(post.user)
+      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      expect(response.status).to eq(200)
+    end
+
+    it 'does not work if user is not author of post' do
+      sign_in(user)
+      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      expect(response.status).to eq(403)
+    end
+  end
 end
