@@ -29,6 +29,7 @@ after_initialize do
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
   load File.expand_path('../lib/topic_extensions.rb', __FILE__)
   load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
+  load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/user_extensions.rb', __FILE__)
   load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
   load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
@@ -51,12 +52,13 @@ after_initialize do
   end
 
   reloadable_patch do |plugin|
-    Post.class_eval              { prepend PostExtensions }
-    Topic.class_eval             { prepend TopicExtensions }
-    TopicsController.class_eval  { prepend TopicsControllerExtensions }
-    User.class_eval              { prepend UserExtensions }
-    Email::Sender.class_eval     { prepend EmailSenderExtensions }
-    UserNotifications.class_eval { prepend UserNotificationsExtensions }
+    Post.class_eval                  { prepend PostExtensions }
+    Topic.class_eval                 { prepend TopicExtensions }
+    TopicsController.class_eval      { prepend TopicsControllerExtensions }
+    PostActionsController.class_eval { prepend PostActionsControllerExtensions }
+    User.class_eval                  { prepend UserExtensions }
+    Email::Sender.class_eval         { prepend EmailSenderExtensions }
+    UserNotifications.class_eval     { prepend UserNotificationsExtensions }
   end
 
   # Send plugin-specific topic data to client via serializers.
@@ -160,6 +162,14 @@ after_initialize do
 
   add_to_serializer(:current_user, :encrypt_private) do
     object.user_encryption_key&.encrypt_private
+  end
+
+  add_to_class(:guardian, :is_user_a_member_of_encrypted_conversation?) do |topic|
+    if SiteSetting.encrypt_enabled? && topic && topic.is_encrypted?
+      authenticated? && topic.all_allowed_users.where(id: @user.id).exists?
+    else
+      true
+    end
   end
 
   #
