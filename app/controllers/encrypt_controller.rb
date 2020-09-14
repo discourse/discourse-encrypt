@@ -136,7 +136,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     post = Post.find_by(id: post_id)
 
-    raise Discourse::InvalidAccess if post.user != current_user
+    guardian.ensure_can_encrypt_post!(post)
 
     if post.updated_at < 5.seconds.ago
       return render_json_error(I18n.t('too_late_to_edit'), status: 409)

@@ -172,6 +172,10 @@ after_initialize do
     end
   end
 
+  add_to_class(:guardian, :can_encrypt_post?) do |post|
+    SiteSetting.encrypt_enabled? && post.topic.is_encrypted? && post.user == @user
+  end
+
   #
   # Hide cooked content.
   #
