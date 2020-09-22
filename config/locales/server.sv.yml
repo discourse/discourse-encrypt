@@ -6,10 +6,10 @@
 
 sv:
   encrypt:
-    encrypted_excerpt: "Detta meddelande är krypterat, vänligen läs det i webbläsaren."
+    encrypted_excerpt: "Detta meddelande är krypterat, läs det i webbläsaren."
     enabled_already: "Du har redan aktiverat krypterade meddelanden."
     only_pms: "Enbart privata meddelanden kan krypteras."
-    no_encrypt_keys: "Något gick fel. Inga krypteringsnycklar var inkluderade i innehållet."
+    no_encrypt_keys: "Något gick fel. Inga krypteringsnycklar inkluderades i innehållet."
   site_settings:
     encrypt_enabled: "Aktivera krypterade privata meddelanden."
     auto_enable_encrypt: "Aktivera automatiskt kryptering för alla inloggade användare."
