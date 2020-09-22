@@ -105,10 +105,11 @@ export default {
             this.attrs.topic_key
           ) {
             const decrypted = syncGetTopicTitle(this.attrs.topic_id);
-            if (decrypted)
+            if (decrypted) {
               return `<span data-topic-id="${
                 this.attrs.topic_id
               }">${escapeExpression(decrypted)}</span>`;
+            }
           }
           return this._super(...arguments);
         },
@@ -123,7 +124,9 @@ export default {
             if (topicId && topicId[1]) {
               topicId = parseInt(topicId[1], 10);
               const decrypted = syncGetTopicTitle(topicId);
-              if (decrypted) return escapeExpression(decrypted);
+              if (decrypted) {
+                return escapeExpression(decrypted);
+              }
             }
           }
 

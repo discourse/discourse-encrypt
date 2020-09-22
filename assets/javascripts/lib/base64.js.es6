@@ -28,8 +28,12 @@ export function base64ToBuffer(str) {
     let enc4 = BASE64.indexOf(str.charAt(j++));
 
     ret[i] = (enc1 << 2) | (enc2 >> 4);
-    if (enc3 !== 64) ret[i + 1] = ((enc2 & 15) << 4) | (enc3 >> 2);
-    if (enc4 !== 64) ret[i + 2] = ((enc3 & 3) << 6) | enc4;
+    if (enc3 !== 64) {
+      ret[i + 1] = ((enc2 & 15) << 4) | (enc3 >> 2);
+    }
+    if (enc4 !== 64) {
+      ret[i + 2] = ((enc3 & 3) << 6) | enc4;
+    }
   }
   /* eslint-enable no-bitwise */
 

@@ -194,8 +194,12 @@ export function hasTopicKey(topicId) {
  * @param {String} title
  */
 export function putTopicTitle(topicId, title) {
-  if (!(topicId && title)) return;
-  if (topicTitles[topicId] && topicTitles[topicId].encrypted === title) return;
+  if (!(topicId && title)) {
+    return;
+  }
+  if (topicTitles[topicId] && topicTitles[topicId].encrypted === title) {
+    return;
+  }
 
   topicTitles[topicId] = new TopicTitle(topicId, title);
 }
@@ -209,7 +213,9 @@ export function putTopicTitle(topicId, title) {
  */
 export function getTopicTitle(topicId) {
   const title = topicTitles[topicId];
-  if (!title) return Promise.reject();
+  if (!title) {
+    return Promise.reject();
+  }
   return title.promise;
 }
 
@@ -222,7 +228,9 @@ export function getTopicTitle(topicId) {
  */
 export function syncGetTopicTitle(topicId) {
   const title = topicTitles[topicId];
-  if (!title) return null;
+  if (!title) {
+    return null;
+  }
   return title.result;
 }
 
