@@ -11,3 +11,4 @@ plugins:
     default: ""
     client: true
     type: list
+    list_type: simple
