@@ -46,8 +46,6 @@ en:
         passphrase_label: "Passphrase:"
         passphrase_invalid: "The passphrase you entered is incorrect."
 
-        import_key: "I already have an encryption key."
-
         notice_active: |
           <p>Please use another device or a paper key to activate this device. Do not forget about the spaces between words.<p>
         notice_import: |
@@ -57,6 +55,8 @@ en:
         deactivate: "Deactivate Encryption on this Device"
         enable: "Enable Encrypted Messages"
         import: "Import Encryption Key Pair"
+        use_paper_key: "Decrypt Key Pair Using Paper Key"
+        generate_key: "Generate New Encryption Key Pair"
         reset: "Reset Encryption Key Pair"
 
       generate_paper_key:
