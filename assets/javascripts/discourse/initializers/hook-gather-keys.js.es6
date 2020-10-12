@@ -56,7 +56,7 @@ export default {
     // Hook `Topic` model to gather encrypted topic keys.
     Topic.reopenClass({
       create(args) {
-        if (args.topic_key) {
+        if (args && args.topic_key) {
           putTopicKey(args.id, args.topic_key);
           putTopicTitle(args.id, args.encrypted_title);
         }
