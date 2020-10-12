@@ -81,6 +81,9 @@ export default {
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
         })
+        .catch(() =>
+          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
+        )
         .finally(() => {
           this.setProperties({
             passphrase: "",
@@ -104,9 +107,13 @@ export default {
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
         })
-        .catch(() =>
-          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
-        )
+        .catch(() => {
+          if (this.importIdentity) {
+            bootbox.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
+          } else {
+            bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
+          }
+        })
         .finally(() =>
           this.setProperties({
             passphrase: "",
