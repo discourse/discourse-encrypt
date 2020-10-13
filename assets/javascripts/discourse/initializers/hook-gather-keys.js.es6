@@ -18,7 +18,7 @@ export default {
     }
 
     // Go through the `PreloadStore` and look for any preloaded topic keys.
-    for (var storeKey in PreloadStore.data) {
+    for (let storeKey in PreloadStore.data) {
       if (storeKey.includes("topic_")) {
         const topic = PreloadStore.data[storeKey];
 

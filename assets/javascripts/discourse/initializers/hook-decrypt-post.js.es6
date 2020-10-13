@@ -102,7 +102,7 @@ function downloadEncryptedFile(url, keyPromise, opts) {
   opts = opts || {};
 
   const downloadPromise = new Promise((resolve, reject) => {
-    var req = new XMLHttpRequest();
+    let req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.responseType = "arraybuffer";
     req.onload = function () {

@@ -77,7 +77,7 @@ export default {
     appEvents.on("page:changed", this, this.decryptDocTitle);
 
     // Try to decrypt new titles that may appear after rendering a component.
-    var self = this;
+    let self = this;
     Ember.Component.reopen({
       didRender() {
         scheduleOnce("afterRender", self, () => {
