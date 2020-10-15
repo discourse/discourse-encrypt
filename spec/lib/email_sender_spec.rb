@@ -42,13 +42,14 @@ describe Email::Sender do
       )
     end
 
-    it "removes attachments from the email and does not allow to respond via email" do
+    it "removes attachments from the email, does not allow to respond via email and adds topic id to subject" do
       SiteSetting.email_total_attachment_size_limit_kb = 10_000
       Email::Sender.new(message, :valid_type).send
 
       expect(message.attachments.length).to eq(0)
       expect(message.reply_to).to eq(["noreply@test.localhost"])
       expect(message.body.raw_source).not_to match("or reply to this email to respond")
+      expect(message.subject).to match("[Discourse] [PM] A secret message ##{encrypted_topic.id}")
     end
   end
 
@@ -80,6 +81,7 @@ describe Email::Sender do
       expect(message.attachments.length).to eq(1)
       expect(message.reply_to).to eq(["test+%{reply_key}@example.com"])
       expect(message.body.raw_source).to match("or reply to this email to respond")
+      expect(message.subject).to match("[Discourse] #{post.topic.title}")
     end
   end
 end
