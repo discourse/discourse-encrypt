@@ -37,7 +37,7 @@ export const ENCRYPT_PROTOCOL_VERSION = 1;
 export function generateIdentity(version) {
   version = version || ENCRYPT_PROTOCOL_VERSION;
 
-  let promise;
+  let promise = Promise.reject();
   if (version === 0) {
     promise = generateIdentityV0().then((id) => ({
       encryptPublic: id.publicKey,
@@ -63,7 +63,7 @@ export function generateIdentity(version) {
  * @return {Promise<String | { public: String, private: String }>}
  */
 export function exportIdentity(identity, passphrase) {
-  let promise;
+  let promise = Promise.reject();
   if (identity.version === 0) {
     promise = exportIdentityV0(
       {
@@ -100,7 +100,7 @@ export function importIdentity(identity, passphrase, extractable) {
   const version = parseInt(identity.substr(0, sep), 10);
   identity = identity.substr(sep + 1);
 
-  let promise;
+  let promise = Promise.reject();
   if (version === 0) {
     promise = importIdentityV0(identity, passphrase, extractable).then(
       (id) => ({
@@ -151,7 +151,7 @@ export function encrypt(key, data, opts) {
 
   const version = (opts && opts.version) || ENCRYPT_PROTOCOL_VERSION;
 
-  let promise;
+  let promise = Promise.reject();
   if (version === 0) {
     promise = encryptV0(key, typeof data === "object" ? data.raw : data);
   } else if (version === 1) {
