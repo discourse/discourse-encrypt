@@ -82,7 +82,7 @@ export default {
           this.appEvents.trigger("encrypt:status-changed");
         })
         .catch(() =>
-          bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"))
+          bootbox.alert(I18n.t("encrypt.preferences.key_pair_invalid"))
         )
         .finally(() => {
           this.setProperties({
