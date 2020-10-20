@@ -54,9 +54,13 @@
               {{textarea class="imported-key-pair" value=identity}}
             {{/if}}
             {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
-            {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
-                                      importIdentity=importIdentity
-                                      onChange=(action "selectEncryptEnableDropdownAction")}}
+            {{#if importIdentity}}
+              {{d-button action=(action "selectEncryptEnableDropdownAction" "import") label="cancel"}}
+            {{else}}
+              {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
+                                        importIdentity=importIdentity
+                                        onChange=(action "selectEncryptEnableDropdownAction")}}
+            {{/if}}
           {{/if}}
         {{else}}
           {{#if isEncryptEnabled}}
