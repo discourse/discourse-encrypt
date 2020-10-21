@@ -41,7 +41,9 @@
                              type="submit"
                              disabled=inProgress
                              label="encrypt.preferences.activate"}}
-                  {{encrypt-enable-dropdown onChange=(action "selectEncryptEnableDropdownAction")}}
+                  {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
+                                            importIdentity=importIdentity
+                                            onChange=(action "selectEncryptEnableDropdownAction")}}
                 </p>
               </form>
             {{/if}}
@@ -53,9 +55,11 @@
             {{/if}}
             {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
             {{#if importIdentity}}
-              <span><a {{action (mut importIdentity) false}}>{{i18n 'cancel'}}</a></span>
+              {{d-button action=(action "selectEncryptEnableDropdownAction" "import") label="cancel"}}
             {{else}}
-              <span><a {{action (mut importIdentity) true}}>{{i18n 'encrypt.preferences.import_key'}}</a></span>
+              {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
+                                        importIdentity=importIdentity
+                                        onChange=(action "selectEncryptEnableDropdownAction")}}
             {{/if}}
           {{/if}}
         {{else}}

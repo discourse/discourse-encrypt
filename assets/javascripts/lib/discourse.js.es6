@@ -360,6 +360,11 @@ export function activateEncrypt(currentUser, passphrase) {
   const privateKeys = JSON.parse(currentUser.encrypt_private);
   let promise = Promise.reject();
 
+  // User may have no private keys if they did not generate any private keys.
+  if (!privateKeys) {
+    return promise;
+  }
+
   // Importing from a paper key.
   const spacePos = passphrase.indexOf(" ");
   if (spacePos !== -1) {

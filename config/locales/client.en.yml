@@ -5,7 +5,7 @@ en:
       decrypting: "Decrypting..."
       decryption_failed: "This message could not be decrypted."
 
-      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate Paper Key</kbd> button and follow the instructions."
+      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
 
       integrity_check_pass: "The integrity check for this post has passed."
       integrity_check_fail: "The integrity check for this post has failed (%{fields} mismatch)."
@@ -45,28 +45,29 @@ en:
 
         passphrase_label: "Passphrase:"
         passphrase_invalid: "The passphrase you entered is incorrect."
-
-        import_key: "I already have an encryption key."
+        key_pair_invalid: "The key pair you entered is incorrect."
 
         notice_active: |
           <p>Please use another device or a paper key to activate this device. Do not forget about the spaces between words.<p>
         notice_import: |
           <p>Please paste the encryption key you previously exported.</p>
 
-        activate: "Activate Encrypted Messages"
-        deactivate: "Deactivate Encryption on this Device"
-        enable: "Enable Encrypted Messages"
-        import: "Import Encryption Key Pair"
-        reset: "Reset Encryption Key Pair"
+        activate: "Activate encrypted messages"
+        deactivate: "Deactivate encryption on this device"
+        enable: "Enable encrypted messages"
+        import: "Import encryption key pair"
+        use_paper_key: "Decrypt key pair using paper key"
+        generate_key: "Generate new encryption key pair"
+        reset: "Reset encryption key pair"
 
       generate_paper_key:
-        title: "Generate Paper Key"
-        title_device: "Activate Another Device"
+        title: "Generate paper key"
+        title_device: "Activate another device"
         instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
         instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
 
       manage_paper_keys:
-        title: "Manage Paper Keys"
+        title: "Manage paper keys"
         instructions: "Below you can delete any of the previously generated paper keys. Once deleted, the paper key cannot be recovered, so please make sure you have at least one paper key or other active devices."
         delete: "Delete"
         no_key: "You have no paper keys. Make sure you have at least one paper key or other active devices."
@@ -74,11 +75,11 @@ en:
         not_recommended: "(not recommended)"
 
       export:
-        title: "Export Encryption Key Pair"
+        title: "Export encryption key pair"
         instructions: "Exporting your key pair is another backup mechanism. Please note that the exported key pair is unprotected and it can decrypt all your private conversations."
 
       reset:
-        title: "Reset Encryption Key Pair"
+        title: "Reset encryption key pair"
         instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever and you will not be able to access any encrypted messages unless you previously exported it."
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
         everything: "Uninvite from all encrypted private conversations (if any)"
