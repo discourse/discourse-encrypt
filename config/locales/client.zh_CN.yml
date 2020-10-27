@@ -10,7 +10,6 @@ zh_CN:
       title: "已加密消息"
       decrypting: "正在解密..."
       decryption_failed: "这条私信/消息无法被解密"
-      no_backup_warn: "你启用了加密功能，但没有生成任何纸质密钥。如果没有任何纸质密钥，你就有可能失去对加密信息的访问权限。要生成纸质密钥，请前往<a href='%{basePath}/my/preferences/account'>用户偏好设置</a>页面，按<kbd>生成纸质密钥</kbd>按钮，并按照说明操作。"
       integrity_check_pass: "这个帖子的完整性检查已通过"
       integrity_check_fail: "这个帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据更新，但没有再次签名。"
@@ -41,33 +40,22 @@ zh_CN:
         status_disabled_other: "该用户没有启用加密功能，无法接收加密私信/消息。"
         passphrase_label: "密码短语："
         passphrase_invalid: "你输入的密码短语不正确。"
-        import_key: "我已经有一个加密密钥。"
         notice_active: |
           <p>请使用其他设备或纸质钥匙来激活这个设备。不要忘记字与字之间的空格。<p>
         notice_import: |
           <p>请粘贴你之前导出的加密密钥。</p>
-        activate: "激活加密私信/消息功能"
-        deactivate: "在此设备上停用加密功能"
-        enable: "启用加密私信/消息功能"
-        import: "导入加密密钥对"
-        reset: "重置加密密钥对"
       generate_paper_key:
-        title: "生成纸质密钥"
-        title_device: "激活另一台设备"
         instructions: "这是你唯一的纸质密钥，它允许你激活未来的其它加密设备。这是你唯一一次看到它，请一定要写下来，并把它存放在安全的地方。"
         instructions_device: "在你的新设备上，进入偏好设置，使用以下密码短语激活加密功能："
       manage_paper_keys:
-        title: "管理纸质密钥"
         instructions: "你可以在下面删除任何一个之前生成的纸质密钥。一旦删除，纸质密钥将无法恢复，所以请确保你至少有一个纸质密钥或其它活动设备。"
         delete: "删除"
         no_key: "你没有纸质密钥，请确保你至少有一个纸质密钥或其它活动设备。"
         passphrase: "基于密码短语"
         not_recommended: "（不推荐）"
       export:
-        title: "导出密钥对"
         instructions: "导出你的密钥对是另一种备份机制。请注意，导出的密钥对是不受保护的，它可以解密你的所有私人对话。"
       reset:
-        title: "重置加密密钥对"
         instructions: "你确定你要重置加密密钥吗？此操作将永远删除加密密钥，你将无法访问任何加密信息，除非你之前导出了它。"
         confirm_instructions: "请点击<code>%{username}</code>确认："
         everything: "取消所有的加密讨论（如果有）"

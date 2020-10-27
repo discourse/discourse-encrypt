@@ -10,7 +10,6 @@ fr:
       title: "Messages chiffrés"
       decrypting: "Déchiffrement en cours…"
       decryption_failed: "Ce message n'a pas pu être déchiffré."
-      no_backup_warn: "Vous avez activé le chiffrement, mais n'avez généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour en générer une, veuillez vous rendre <a href='%{basePath}/my/preferences/account'>sur votre page de préférences</a> , cliquez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
@@ -41,33 +40,22 @@ fr:
         status_disabled_other: "Cet utilisateur n'a pas activé le chiffrement et ne peut pas recevoir de messages chiffrés."
         passphrase_label: "Phrase secrète :"
         passphrase_invalid: "La phrase secrète est incorrecte."
-        import_key: "Je possède déjà une clé de chiffrement."
         notice_active: |
           <p>Merci d'utiliser un autre appareil déjà actif ou une clé papier pour activer le chiffrement sur cet appareil. Ne pas oublier les espaces entre les mots.<p>
         notice_import: |
           <p>Veuillez coller la clé de chiffrement que vous avez exportée précédemment.</p>
-        activate: "Activer les messages directs chiffrés"
-        deactivate: "Désactiver le chiffrement sur cet appareil"
-        enable: "Activer les messages directs chiffrés"
-        import: "Importer la paire de clés de chiffrement"
-        reset: "Réinitialiser la paire de clés de chiffrement"
       generate_paper_key:
-        title: "Générer une clé papier"
-        title_device: "Activer un autre appareil"
         instructions: "Voici votre clé papier unique, elle vous permettra d'activer le chiffrement sur d'autres appareils. Ceci est l'unique vue que vous en aurez, aussi assurez-vous de la recopier et la sauvegarder dans un endroit sûr."
         instructions_device: "Sur votre appareil, allez dans les préférences et utilisez la phrase secrète suivante pour activer le chiffrement :"
       manage_paper_keys:
-        title: "Gérer les clés papier"
         instructions: "Vous pouvez supprimer ci-dessous des clés papier existantes. Une fois effacée, une clé papier ne peut pas être récupérée, aussi assurez-vous de conserver toujours au-moins une clé papier ou d'autres appareils actifs."
         delete: "Supprimer"
         no_key: "Vous n'avez aucune clé papier. Assurez-vous d'avoir au-moins une clé papier ou d'autres appareils actifs."
         passphrase: "basé sur une phrase secrète"
         not_recommended: "(non recommandé)"
       export:
-        title: "Exporter la paire de clés de chiffrement"
         instructions: "L'export de votre paire de clés de chiffrement offre un autre mécanisme de sauvegarde. Merci de tenir compte du fait que la paire de clé exportée n'est pas protégée et peut déchiffrer toutes vos conversations privées."
       reset:
-        title: "Réinitialiser la paire de clés de chiffrement"
         instructions: "Voulez-vous confirmer la réinitialisation de votre clé de chiffrement ? Cette opération supprime la clé de chiffrement définitivement et vous ne pourrez plus accéder à aucun message chiffré à moins d'en avoir exporté  une copie auparavant."
         confirm_instructions: "Veuillez entrer <code>%{username}</code> pour confirmer :"
         everything: "Résilier l'invitation à toute (éventuelle) conversation privée."

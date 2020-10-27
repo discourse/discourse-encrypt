@@ -10,7 +10,6 @@ de:
       title: "Verschlüsselte Nachrichten"
       decrypting: "Entschlüssele..."
       decryption_failed: "Diese Nachricht kann nicht entschlüsselt werden."
-      no_backup_warn: "Verschlüsselung ist aktiviert, aber keine Papierschlüssel wurde generiert. Ohne Papierschlüssel besteht die Gefahr, dass der Zugriff auf verschlüsselte Nachrichten verloren geht. Um einen Papierschlüssel zu generieren, navigiere zur <a href='%{basePath}/my/preferences/account'> Benutzereinstellungen Seite</a> und drücke die Schaltfläche <kbd>Papierschlüssel generieren</kbd> und befolge die Anweisungen."
       integrity_check_pass: "Die Integritätsprüfung für diesen Beitrag war gültig."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurde aktualisiert ohne erneut signiert zu werden. "
@@ -41,33 +40,22 @@ de:
         status_disabled_other: "Dieser Benutzer hat die Verschlüsselung nicht aktiviert und kann keine verschlüsselten Nachrichten empfangen."
         passphrase_label: "Passphrase:"
         passphrase_invalid: "Die eingegebene Passphrase ist falsch."
-        import_key: "Ich habe bereits einen Verschlüsselungsschlüssel."
         notice_active: |
           <p> Bitte verwende ein anderes Gerät oder einen Papierschlüssel, um dieses Gerät zu aktivieren. Vergieß nicht die Zwischenräume zwischen den Wörtern. <p>
         notice_import: |
           <p> Bitte füge den zuvor exportierten Verschlüsselungsschlüssel ein. </p>
-        activate: "Aktiviere verschlüsselte Nachrichten"
-        deactivate: "Deaktiviere die Verschlüsselung auf diesem Gerät"
-        enable: "Aktiviere verschlüsselte Nachrichten"
-        import: "Importiere das Verschlüsselungsschlüsselpaar"
-        reset: "Verschlüsselungsschlüsselpaar zurücksetzen"
       generate_paper_key:
-        title: "Papierschlüssel generieren"
-        title_device: "Aktiviere ein anderes Gerät"
         instructions: "Hier ist dein eindeutiger Papierschlüssel, mit dem du zukünftige verschlüsselte Geräte aktivieren kanst. Dies ist das einzige Mal, dass du diesen sehen kannst. Schreibe ihn also auf und bewahre ihn an einem sicheren Ort auf."
         instructions_device: "Gehe bei dem neuen Gerät zu den Einstellungen und verwende die folgende Passphrase, um die Verschlüsselung zu aktivieren:"
       manage_paper_keys:
-        title: "Papierschlüssel verwalten"
         instructions: "Unten kannst du alle zuvor generierten Papierschlüssel löschen. Nach dem Löschen kann der Papierschlüssel nicht wiederhergestellt werden. Stelle daher sicher, dass du mindestens einen Papierschlüssel oder ein anderes aktives Geräte hast."
         delete: "Löschen"
         no_key: "Kein Papierschlüssel vorhanden. Stelle sicher, dass mindestens ein Papierschlüssel existiert oder andere verschlüsselte Geräte vorhanden sind."
         passphrase: "Passphrase-basiert"
         not_recommended: "(nicht empfohlen)"
       export:
-        title: "Exportiere das Verschlüsselungsschlüsselpaar"
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
       reset:
-        title: "Verschlüsselungsschlüsselpaar zurücksetzen"
         instructions: "Möchtest du den Verschlüsselungsschlüssel wirklich zurücksetzen? Durch diesen Vorgang wird der Verschlüsselungsschlüssel für immer gelöscht und du kannst nur dann auf verschlüsselte Nachrichten zugreifen, wenn du diesen zuvor exportiert hast."
         confirm_instructions: "Bitte gib <code>%{username}</code> zur Bestätigung ein:"
         everything: "Einladung von allen verschlüsselten privaten Nachrichten zurücknehmen (falls vorhanden)"

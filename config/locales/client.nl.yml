@@ -41,16 +41,13 @@ nl:
         status_disabled_other: "Deze gebruiker heeft geen versleuteling ingeschakeld en kan geen versleutelde berichten ontvangen."
         passphrase_label: "Wachtwoordzin:"
         passphrase_invalid: "De ingevoerde wachtwoordzin is onjuist."
-        import_key: "Ik heb al een coderingssleutel."
+        key_pair_invalid: "Het ingevoerde sleutelpaar is onjuist."
         notice_active: |
           <p>Gebruik een ander apparaat of een papieren sleutel om dit apparaat te activeren. Denk aan de spaties tussen woorden.<p>
         notice_import: |
           <p>Plak de coderingssleutel die u eerder hebt geëxporteerd.</p>
-        activate: "Versleutelde berichten activeren"
-        deactivate: "Versleuteling op dit apparaat deactiveren"
-        enable: "Versleutelde berichten inschakelen"
-        import: "Sleutelpaar importeren"
-        reset: "Sleutelpaar herinitialiseren"
+        use_paper_key: "Sleutelpaar decoderen met behulp van papieren sleutel"
+        generate_key: "Nieuw coderingssleutelpaar genereren"
       generate_paper_key:
         title: "Papieren sleutel genereren"
         title_device: "Een ander apparaat activeren"
@@ -64,10 +61,8 @@ nl:
         passphrase: "wachtwoordzin-gebaseerd"
         not_recommended: "(niet aanbevolen)"
       export:
-        title: "Sleutelpaar exporteren"
         instructions: "Exporteren van uw sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al uw privéconversaties kan ontcijferen."
       reset:
-        title: "Sleutelpaar herinitialiseren"
         instructions: "Weet u zeker dat u het sleutelpaar wilt herinitialiseren? Door deze bewerking wordt de coderingssleutel voorgoed verwijderd en hebt u geen toegang meer tot versleutelde berichten, tenzij u ze eerder hebt geëxporteerd."
         confirm_instructions: "Typ <code>%{username}</code> ter bevestiging:"
         everything: "Uitnodigingen van alle versleutelde privéconversaties intrekken (als ze bestaan)"
