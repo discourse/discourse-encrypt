@@ -83,3 +83,13 @@ en:
         instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever and you will not be able to access any encrypted messages unless you previously exported it."
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
         everything: "Uninvite from all encrypted private conversations (if any)"
+      time_bomb: 
+        confirmation: "Time bomb will permanently delete a message after time. Are you sure?"
+        never: "Never"
+        3minutes: "3 minutes"
+        1hour: "1 hour"
+        3hours: "3 hour"
+        12hours: "12 hours"
+        24hours: "24 hours"
+        3days: "3 days"
+        7days: "7 days"

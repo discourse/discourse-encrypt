@@ -108,3 +108,21 @@ pre.exported-key-pair {
     margin: 0 0 0 0.5em;
   }
 }
+
+.encrypt-time-bomb-dropdown {
+  .btn {
+    background: transparent;
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.time-bomb-counter {
+  margin-right: 0.5em;
+  color: var(--danger, $danger);
+
+  svg {
+    margin-right: 0.5em;
+  }
+}

@@ -5,6 +5,8 @@ import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import I18n from "I18n";
+import bootbox from "bootbox";
 
 // TODO: I believe this should get into core.
 // Handlebars offers `if` but no other helpers for conditions, which eventually
@@ -44,6 +46,7 @@ export default {
         if (!this.get("model.disableEncryptIndicator")) {
           this.set("model.isEncrypted", !this.get("model.isEncrypted"));
           this.set("model.overwriteDefault", true);
+          this.set("model.explodeAfterMinutes", null);
         }
       },
     });
@@ -65,5 +68,21 @@ export default {
         }
       )
     );
+  },
+  actions: {
+    timeBombClicked(actionId) {
+      if (actionId) {
+        bootbox.confirm(
+          I18n.t("encrypt.time_bomb.confirmation"),
+          (confirmed) => {
+            if (confirmed) {
+              this.set("model.explodeAfterMinutes", actionId);
+            }
+          }
+        );
+      } else {
+        this.set("model.explodeAfterMinutes", actionId);
+      }
+    },
   },
 };

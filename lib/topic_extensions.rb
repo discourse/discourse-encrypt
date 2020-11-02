@@ -2,8 +2,8 @@
 
 module TopicExtensions
   def self.prepended(base)
-    base.has_one :encrypted_topics_data
-    base.has_many :encrypted_topics_users
+    base.has_one :encrypted_topics_data, dependent: :destroy
+    base.has_many :encrypted_topics_users, dependent: :destroy
   end
 
   def is_encrypted?

@@ -26,6 +26,7 @@ export default {
 
     // Register custom fields to be saved for new post.
     Composer.serializeOnCreate("is_encrypted", "isEncrypted");
+    Composer.serializeOnCreate("explode_after_minutes", "explodeAfterMinutes");
 
     // Check recipients and show encryption status in composer.
     Composer.reopen({

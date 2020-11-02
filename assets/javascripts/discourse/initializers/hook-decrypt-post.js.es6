@@ -471,6 +471,11 @@ export default {
           return this._super(...arguments);
         },
       });
+
+      api.decorateWidget("post-menu:before-extra-controls", (dec) => {
+        const post = dec.getModel();
+        return dec.attach("encrypt-time-bomb-counter", { post: post });
+      });
     });
   },
 };

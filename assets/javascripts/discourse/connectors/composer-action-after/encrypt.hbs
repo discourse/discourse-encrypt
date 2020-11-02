@@ -4,6 +4,12 @@
       {{d-icon (if model.isEncrypted "lock" "unlock") class=(concat (if model.isEncrypted "enabled ") (if model.disableEncryptIndicator "disabled"))}}
     </a>
 
+    {{#if model.isEncrypted}}
+      {{#if model.isNew}}
+        {{encrypt-time-bomb-dropdown topicDetonateAt=this.model.topic.detonate_at onChange=(action "timeBombClicked")}}
+      {{/if}}
+    {{/if}}
+
     {{#if model.showEncryptError}}
       <span class="error">{{model.encryptError}}</span>
     {{/if}}

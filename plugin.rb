@@ -10,7 +10,7 @@ enabled_site_setting :encrypt_enabled
 
 register_asset 'stylesheets/common/encrypt.scss'
 register_asset "stylesheets/colors.scss", :color_definitions
-%w[bars exchange-alt far-clipboard file-export file-import lock plus ticket-alt times trash-alt unlock wrench].each { |i| register_svg_icon(i) }
+%w[bars exchange-alt far-clipboard file-export file-import lock plus ticket-alt times trash-alt unlock wrench stopwatch].each { |i| register_svg_icon(i) }
 
 Rails.configuration.filter_parameters << :encrypt_private
 
@@ -20,10 +20,12 @@ after_initialize do
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_time_bomb.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/encrypted_time_bomb_detonator.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
@@ -32,6 +34,7 @@ after_initialize do
   load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/user_extensions.rb', __FILE__)
   load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
 
   class DiscourseEncrypt::Engine < Rails::Engine
@@ -59,6 +62,7 @@ after_initialize do
     User.class_eval                  { prepend UserExtensions }
     Email::Sender.class_eval         { prepend EmailSenderExtensions }
     UserNotifications.class_eval     { prepend UserNotificationsExtensions }
+    TopicViewSerializer.class_eval   { prepend TopicViewSerializerExtension }
   end
 
   # Send plugin-specific topic data to client via serializers.
@@ -74,6 +78,10 @@ after_initialize do
     object.topic&.is_encrypted?
   end
 
+  add_to_serializer(:post, :detonate_at, false) do
+    object.encrypted_time_bomb&.detonate_at
+  end
+
   # +encrypted_title+
   #
   # Topic title encrypted with topic key.
@@ -84,6 +92,10 @@ after_initialize do
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
     scope&.user.present? && object.topic.private_message?
+  end
+
+  add_to_serializer(:topic_view, :detonate_at, false) do
+    object.topic.posts.first&.encrypted_time_bomb&.detonate_at
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
@@ -215,6 +227,7 @@ after_initialize do
   add_permitted_post_create_param(:encrypted_title)
   add_permitted_post_create_param(:encrypted_raw)
   add_permitted_post_create_param(:encrypted_keys)
+  add_permitted_post_create_param(:explode_after_minutes)
 
   # TODO: Remove if check once Discourse 2.6 is stable
   if respond_to?(:register_search_topic_eager_load)
@@ -254,6 +267,10 @@ after_initialize do
     if result.success? && encrypted_title = manager.args[:encrypted_title]
       encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: result.post.topic_id)
       encrypt_topic_title.update!(title: encrypted_title)
+    end
+
+    if manager.args[:explode_after_minutes].present?
+      EncryptedTimeBomb.create!(post: result.post, detonate_at: result.post.created_at + manager.args[:explode_after_minutes].to_i.minutes)
     end
 
     result
