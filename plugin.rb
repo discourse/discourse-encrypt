@@ -10,7 +10,7 @@ enabled_site_setting :encrypt_enabled
 
 register_asset 'stylesheets/common/encrypt.scss'
 register_asset "stylesheets/colors.scss", :color_definitions
-%w[bars exchange-alt far-clipboard file-export file-import lock plus ticket-alt times trash-alt unlock wrench stopwatch].each { |i| register_svg_icon(i) }
+%w[bars exchange-alt far-clipboard file-export file-import lock plus stopwatch ticket-alt times trash-alt unlock wrench].each { |i| register_svg_icon(i) }
 
 Rails.configuration.filter_parameters << :encrypt_private
 
@@ -235,7 +235,7 @@ after_initialize do
   add_permitted_post_create_param(:encrypted_title)
   add_permitted_post_create_param(:encrypted_raw)
   add_permitted_post_create_param(:encrypted_keys)
-  add_permitted_post_create_param(:explode_after_minutes)
+  add_permitted_post_create_param(:delete_after_minutes)
 
   # TODO: Remove if check once Discourse 2.6 is stable
   if respond_to?(:register_search_topic_eager_load)
@@ -277,8 +277,8 @@ after_initialize do
       encrypt_topic_title.update!(title: encrypted_title)
     end
 
-    if result.success? && manager.args[:explode_after_minutes].present?
-      EncryptedPostTimer.create!(post: result.post, delete_at: result.post.created_at + manager.args[:explode_after_minutes].to_i.minutes)
+    if result.success? && manager.args[:delete_after_minutes].present?
+      EncryptedPostTimer.create!(post: result.post, delete_at: result.post.created_at + manager.args[:delete_after_minutes].to_i.minutes)
     end
 
     result

@@ -2,14 +2,15 @@ import { createWidget } from "discourse/widgets/widget";
 import { iconNode } from "discourse-common/lib/icon-library";
 import { later } from "@ember/runloop";
 
-
 createWidget("encrypted-post-timer-counter", {
   tagName: "div.encrypted-post-timer-counter",
 
-  init() {
-    later(() => {
-      this.scheduleRerender();
-    }, 60000);
+  init(attrs) {
+    if (attrs.post.delete_at) {
+      later(() => {
+        this.scheduleRerender();
+      }, 60000);
+    }
   },
 
   formatedClock(attrs) {

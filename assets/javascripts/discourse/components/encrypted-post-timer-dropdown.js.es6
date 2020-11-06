@@ -3,7 +3,6 @@ import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-bo
 import { computed } from "@ember/object";
 import { empty } from "@ember/object/computed";
 
-
 const TIMER_OPTIONS = [
   { id: "", name: I18n.t("encrypt.time_bomb.never") },
   { id: "3", name: I18n.t("encrypt.time_bomb.3_minutes") },
@@ -18,7 +17,6 @@ const TIMER_OPTIONS = [
 export default DropdownSelectBoxComponent.extend({
   classNames: ["encrypted-post-timer-dropdown"],
   classNameBindings: ["hidden:hidden"],
-
 
   selectKitOptions: {
     icon: "stopwatch",

@@ -5,9 +5,10 @@
     </a>
 
     {{#if model.isEncrypted}}
-      {{#if model.isNew}}
-        {{encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timeBombClicked")}}
-      {{/if}}
+      {{#unless model.editingPost}}
+        {{encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timerClicked")}}
+        {{this.model.deleteAfterMinutesLabel}}
+      {{/unless}}
     {{/if}}
 
     {{#if model.showEncryptError}}

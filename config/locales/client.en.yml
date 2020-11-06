@@ -84,7 +84,6 @@ en:
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
         everything: "Uninvite from all encrypted private conversations (if any)"
       time_bomb: 
-        confirmation: "Time bomb will permanently delete a message after time. Are you sure?"
         never: "Never"
         3_minutes: "3 minutes"
         1_hour: "1 hour"
