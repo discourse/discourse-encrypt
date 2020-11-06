@@ -109,16 +109,14 @@ pre.exported-key-pair {
   }
 }
 
-.encrypt-time-bomb-dropdown {
-  .btn {
+.encrypted-post-timer-dropdown {
+  .btn,
+  .btn:hover {
     background: transparent;
-    &:hover {
-      background: transparent;
-    }
   }
 }
 
-.time-bomb-counter {
+.encrypted-post-timer-counter {
   margin-right: 0.5em;
   color: var(--danger, $danger);
 

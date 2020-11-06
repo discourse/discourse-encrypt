@@ -474,7 +474,7 @@ export default {
 
       api.decorateWidget("post-menu:before-extra-controls", (dec) => {
         const post = dec.getModel();
-        return dec.attach("encrypt-time-bomb-counter", { post: post });
+        return dec.attach("encrypted-post-timer-counter", { post });
       });
     });
   },

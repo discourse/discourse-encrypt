@@ -6,7 +6,7 @@
 
     {{#if model.isEncrypted}}
       {{#if model.isNew}}
-        {{encrypt-time-bomb-dropdown topicDetonateAt=this.model.topic.detonate_at onChange=(action "timeBombClicked")}}
+        {{encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timeBombClicked")}}
       {{/if}}
     {{/if}}
 

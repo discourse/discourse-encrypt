@@ -20,12 +20,12 @@ after_initialize do
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_time_bomb.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_post_timer.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
   load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
-  load File.expand_path('../app/jobs/scheduled/encrypted_time_bomb_detonator.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/encrypted_post_timer_evaluator.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
@@ -78,8 +78,12 @@ after_initialize do
     object.topic&.is_encrypted?
   end
 
-  add_to_serializer(:post, :detonate_at, false) do
-    object.encrypted_time_bomb&.detonate_at
+  add_to_serializer(:post, :delete_at, false) do
+    object.encrypted_post_timer&.delete_at
+  end
+
+  add_to_serializer(:post, :include_delete_at?) do
+    object.encrypted_post_timer.present?
   end
 
   # +encrypted_title+
@@ -94,8 +98,12 @@ after_initialize do
     scope&.user.present? && object.topic.private_message?
   end
 
-  add_to_serializer(:topic_view, :detonate_at, false) do
-    object.topic.posts.first&.encrypted_time_bomb&.detonate_at
+  add_to_serializer(:topic_view, :delete_at, false) do
+    object.topic.posts.first&.encrypted_post_timer&.delete_at
+  end
+
+  add_to_serializer(:topic_view, :include_delete_at?) do
+    object.topic.posts.first&.encrypted_post_timer
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
@@ -269,8 +277,8 @@ after_initialize do
       encrypt_topic_title.update!(title: encrypted_title)
     end
 
-    if manager.args[:explode_after_minutes].present?
-      EncryptedTimeBomb.create!(post: result.post, detonate_at: result.post.created_at + manager.args[:explode_after_minutes].to_i.minutes)
+    if result.success? && manager.args[:explode_after_minutes].present?
+      EncryptedPostTimer.create!(post: result.post, delete_at: result.post.created_at + manager.args[:explode_after_minutes].to_i.minutes)
     end
 
     result

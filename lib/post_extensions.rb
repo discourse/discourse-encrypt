@@ -2,7 +2,7 @@
 
 module PostExtensions
   def self.prepended(base)
-    base.has_one :encrypted_time_bomb
+    base.has_one :encrypted_post_timer
   end
 
   def ciphertext
