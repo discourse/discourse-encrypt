@@ -23,7 +23,7 @@ export default DropdownSelectBoxComponent.extend({
     {
       id: "reset",
       icon: "trash-alt",
-      name: I18n.t("encrypt.preferences.reset"),
+      name: I18n.t("encrypt.reset.title"),
     },
   ],
 });
