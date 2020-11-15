@@ -6,6 +6,7 @@ describe TopicViewSerializer do
   let(:user) { Fabricate(:user) }
 
   let(:encrypt_topic) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+  let(:encrypt_post) { Fabricate(:encrypt_post, topic: encrypt_topic) }
   let(:topic) { Fabricate(:private_message_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
 
   let(:encrypt_topic_view) { TopicView.new(encrypt_topic.id, user) }
@@ -23,5 +24,10 @@ describe TopicViewSerializer do
     serialized = described_class.new(encrypt_topic_view, scope: Guardian.new, root: false).as_json
     expect(serialized[:encrypted_title]).to eq(nil)
     expect(serialized[:topic_key]).to eq(nil)
+    expect(serialized[:delete_at]).to eq(nil)
+
+    EncryptedPostTimer.create!(post: encrypt_post, delete_at: 1.hour.from_now)
+    serialized = described_class.new(encrypt_topic_view, scope: Guardian.new, root: false).as_json
+    expect(serialized[:delete_at]).not_to eq(nil)
   end
 end
