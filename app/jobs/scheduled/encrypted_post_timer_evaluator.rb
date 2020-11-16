@@ -4,7 +4,7 @@ module Jobs
   class EncryptedPostTimerEvaluator < ::Jobs::Scheduled
     every 1.minute
 
-    def self.execute(args)
+    def execute(args)
       EncryptedPostTimer.pending.order(delete_at: :asc).find_each do |encrypted_post_timer|
         ActiveRecord::Base.transaction do
           encrypted_post_timer.touch(:destroyed_at)
@@ -17,7 +17,7 @@ module Jobs
       end
     end
 
-    def self.posts_to_delete(encrypted_post_timer)
+    def posts_to_delete(encrypted_post_timer)
       encrypted_post_timer.post.is_first_post? ? encrypted_post_timer.post.topic.posts.with_deleted.order(created_at: :desc) : [encrypted_post_timer.post]
     end
   end
