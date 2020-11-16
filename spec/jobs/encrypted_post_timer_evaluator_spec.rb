@@ -45,5 +45,12 @@ describe Jobs::EncryptedPostTimerEvaluator do
       expect(topic.reload.persisted?).to be true
       expect(encrypted_post_timer.reload.destroyed_at).not_to be nil
     end
+
+    it 'does not error when post is already deleted' do
+      encrypted_post_timer = EncryptedPostTimer.create!(post_id: -5, delete_at: 1.hour.from_now)
+      freeze_time 61.minutes.from_now
+      described_class.execute({})
+      expect(encrypted_post_timer.reload.destroyed_at).not_to be nil
+    end
   end
 end

@@ -8,9 +8,9 @@ module Jobs
       EncryptedPostTimer.pending.order(delete_at: :asc).find_each do |encrypted_post_timer|
         ActiveRecord::Base.transaction do
           encrypted_post_timer.touch(:destroyed_at)
-          next if !encrypted_post_timer.post.persisted?
+          next if !encrypted_post_timer.post&.persisted?
           posts_to_delete(encrypted_post_timer).each do |post|
-            next if !post.persisted?
+            next if !post&.persisted?
             PostDestroyer.new(post.user, post, permanent: true).destroy
           end
         end
