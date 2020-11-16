@@ -58,7 +58,6 @@ en:
         import: "Import encryption key pair"
         use_paper_key: "Decrypt key pair using paper key"
         generate_key: "Generate new encryption key pair"
-        reset: "Reset encryption key pair"
 
       generate_paper_key:
         title: "Generate paper key"
@@ -79,10 +78,10 @@ en:
         instructions: "Exporting your key pair is another backup mechanism. Please note that the exported key pair is unprotected and it can decrypt all your private conversations."
 
       reset:
-        title: "Reset encryption key pair"
-        instructions: "Are you sure you want to reset the encryption key? This operation deletes the encryption key forever and you will not be able to access any encrypted messages unless you previously exported it."
+        title: "Disable encrypted messages"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever. You will not be able to access any of your current encrypted private messages unless you have the exported key pair. However, you can enable encrypted messages by generating a new key pair at any later time."
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
-        everything: "Uninvite from all encrypted private conversations (if any)"
+        everything: "Remove me from all encrypted private messages (leave unchecked if you plan to import this key pair at a later time)"
       time_bomb: 
         never: "Never"
         3_minutes: "3 minutes"
