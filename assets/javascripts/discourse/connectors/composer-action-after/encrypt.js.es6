@@ -42,8 +42,12 @@ export default {
       clicked() {
         this.set("model.showEncryptError", true);
         if (!this.get("model.disableEncryptIndicator")) {
-          this.set("model.isEncrypted", !this.get("model.isEncrypted"));
-          this.set("model.overwriteDefault", true);
+          this.model.setProperties({
+            isEncrypted: !this.get("model.isEncrypted"),
+            overwriteDefault: true,
+            deleteAfterMinutes: null,
+            deleteAfterMinutesLabel: null,
+          });
         }
       },
     });
@@ -65,5 +69,20 @@ export default {
         }
       )
     );
+  },
+  actions: {
+    timerClicked(actionId, { name }) {
+      if (actionId) {
+        this.model.setProperties({
+          deleteAfterMinutes: actionId,
+          deleteAfterMinutesLabel: name,
+        });
+      } else {
+        this.model.setProperties({
+          deleteAfterMinutes: null,
+          deleteAfterMinutesLabel: null,
+        });
+      }
+    },
   },
 };

@@ -108,3 +108,19 @@ pre.exported-key-pair {
     margin: 0 0 0 0.5em;
   }
 }
+
+.encrypted-post-timer-dropdown {
+  .btn,
+  .btn:hover {
+    background: transparent;
+  }
+}
+
+.encrypted-post-timer-counter {
+  margin-right: 0.5em;
+  color: var(--danger, $danger);
+
+  svg {
+    margin-right: 0.5em;
+  }
+}
