@@ -52,7 +52,6 @@ sv:
         import: "Importera nyckelpar för kryptering"
         use_paper_key: "Avkryptera nyckelpar med pappersnyckel"
         generate_key: "Skapa ett nytt krypteringsnyckelpar"
-        reset: "Återställ nyckelpar för kryptering"
       generate_paper_key:
         title: "Skapa pappersnyckel"
         title_device: "Aktivera en annan enhet"
@@ -69,7 +68,16 @@ sv:
         title: "Exportera nyckelpar för kryptering"
         instructions: "Att exportera ditt nyckelpar är en annan reservåtgärd. Notera att det exporterade nyckelparet är oskyddat och kan avkryptera alla dina privata samtal."
       reset:
-        title: "Återställ nyckelpar för kryptering"
-        instructions: "Är du säker på att du vill återställa krypteringsnyckeln? Denna åtgärd raderar krypteringsnyckeln för alltid och du kommer inte att kunna komma åt några krypterade meddelanden förutom de som du tidigare har exporterat."
+        title: "Inaktivera krypterade meddelanden"
+        instructions: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Denna åtgärd tar bort krypteringsnyckeln för evigt. Du kommer inte att kunna komma åt något av dina nuvarande krypterade privata meddelanden om du inte har det exporterade nyckelparet. Du kan dock aktivera krypterade meddelanden genom att generera ett nytt nyckelpar vid ett senare tillfälle."
         confirm_instructions: "Ange <code>%{username}</code> för att bekräfta:"
-        everything: "Dra tillbaka inbjudningar från alla krypterade privata samtal (i förekommande fall)"
+        everything: "Ta bort mig från alla krypterade privata meddelanden (lämna omarkerat om du planerar att importera nyckelparet vid ett senare tillfälle)"
+      time_bomb:
+        never: "Aldrig"
+        3_minutes: "3 minuter"
+        1_hour: "1 timme"
+        3_hours: "3 timmar"
+        12_hours: "12 timmar"
+        24_hours: "24 timmar"
+        3_days: "3 dagar"
+        7_days: "7 dagar"

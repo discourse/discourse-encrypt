@@ -63,6 +63,4 @@ nl:
       export:
         instructions: "Exporteren van uw sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al uw privéconversaties kan ontcijferen."
       reset:
-        instructions: "Weet u zeker dat u het sleutelpaar wilt herinitialiseren? Door deze bewerking wordt de coderingssleutel voorgoed verwijderd en hebt u geen toegang meer tot versleutelde berichten, tenzij u ze eerder hebt geëxporteerd."
         confirm_instructions: "Typ <code>%{username}</code> ter bevestiging:"
-        everything: "Uitnodigingen van alle versleutelde privéconversaties intrekken (als ze bestaan)"

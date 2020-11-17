@@ -56,6 +56,4 @@ zh_CN:
       export:
         instructions: "导出你的密钥对是另一种备份机制。请注意，导出的密钥对是不受保护的，它可以解密你的所有私人对话。"
       reset:
-        instructions: "你确定你要重置加密密钥吗？此操作将永远删除加密密钥，你将无法访问任何加密信息，除非你之前导出了它。"
         confirm_instructions: "请点击<code>%{username}</code>确认："
-        everything: "取消所有的加密讨论（如果有）"
