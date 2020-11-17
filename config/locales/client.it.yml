@@ -56,6 +56,4 @@ it:
       export:
         instructions: "Si esporta una coppia di chiavi a scopo di backup. Nota bene: la coppia di chiavi esportata non è protetta e può decodificare tutte le tue conversazioni private. "
       reset:
-        instructions: "Sicuro di voler reimpostare la chiave di codifica? Questa operazione cancella definitivamente la chiave di codifica e non sarai in grado di accedere ai messaggi codificati senza una chiave precedentemente esportata."
         confirm_instructions: "Digita <code>%{username}</code> per confermare:"
-        everything: "Rimuovi invito da tutte le conversazioni private codificate (se presenti)"

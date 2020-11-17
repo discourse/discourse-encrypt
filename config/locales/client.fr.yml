@@ -56,6 +56,4 @@ fr:
       export:
         instructions: "L'export de votre paire de clés de chiffrement offre un autre mécanisme de sauvegarde. Merci de tenir compte du fait que la paire de clé exportée n'est pas protégée et peut déchiffrer toutes vos conversations privées."
       reset:
-        instructions: "Voulez-vous confirmer la réinitialisation de votre clé de chiffrement ? Cette opération supprime la clé de chiffrement définitivement et vous ne pourrez plus accéder à aucun message chiffré à moins d'en avoir exporté  une copie auparavant."
         confirm_instructions: "Veuillez entrer <code>%{username}</code> pour confirmer :"
-        everything: "Résilier l'invitation à toute (éventuelle) conversation privée."

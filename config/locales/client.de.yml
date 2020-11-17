@@ -56,6 +56,4 @@ de:
       export:
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
       reset:
-        instructions: "Möchtest du den Verschlüsselungsschlüssel wirklich zurücksetzen? Durch diesen Vorgang wird der Verschlüsselungsschlüssel für immer gelöscht und du kannst nur dann auf verschlüsselte Nachrichten zugreifen, wenn du diesen zuvor exportiert hast."
         confirm_instructions: "Bitte gib <code>%{username}</code> zur Bestätigung ein:"
-        everything: "Einladung von allen verschlüsselten privaten Nachrichten zurücknehmen (falls vorhanden)"

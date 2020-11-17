@@ -10,3 +10,12 @@ fa_IR:
       title: "پیام‌های رمزگذاری شده"
       manage_paper_keys:
         delete: "حذف"
+      time_bomb:
+        never: "هرگز"
+        3_minutes: "۳ دقیقه"
+        1_hour: "۱ ساعت"
+        3_hours: "۳ ساعت"
+        12_hours: "۱۲ ساعت"
+        24_hours: "۲۴ ساعت"
+        3_days: "۳ روز"
+        7_days: "۷ روز"
