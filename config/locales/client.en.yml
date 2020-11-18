@@ -83,6 +83,7 @@ en:
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
         everything: "Remove me from all encrypted private messages (leave unchecked if you plan to import this key pair at a later time)"
       time_bomb: 
+        title: "This message will be permanently deleted after %{after}"
         never: "Never"
         3_minutes: "3 minutes"
         1_hour: "1 hour"

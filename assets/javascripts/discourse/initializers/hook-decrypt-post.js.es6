@@ -472,7 +472,7 @@ export default {
         },
       });
 
-      api.decorateWidget("post-menu:before-extra-controls", (dec) => {
+      api.decorateWidget("post-meta-data:after", (dec) => {
         const post = dec.getModel();
         return dec.attach("encrypted-post-timer-counter", { post });
       });
