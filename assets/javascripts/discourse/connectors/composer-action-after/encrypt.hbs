@@ -7,7 +7,7 @@
     {{#if model.isEncrypted}}
       {{#unless model.editingPost}}
         {{encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timerClicked")}}
-        {{this.model.deleteAfterMinutesLabel}}
+        <span title={{ i18n "encrypt.time_bomb.title" after=this.model.deleteAfterMinutesLabel}}>{{this.model.deleteAfterMinutesLabel}}</span>
       {{/unless}}
     {{/if}}
 

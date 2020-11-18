@@ -1,6 +1,8 @@
 import { createWidget } from "discourse/widgets/widget";
 import { iconNode } from "discourse-common/lib/icon-library";
 import { later } from "@ember/runloop";
+import { h } from "virtual-dom";
+import i18n from "I18n";
 
 createWidget("encrypted-post-timer-counter", {
   tagName: "div.encrypted-post-timer-counter",
@@ -18,12 +20,23 @@ createWidget("encrypted-post-timer-counter", {
       moment(attrs.post.delete_at) - moment().utc(),
       60000
     );
+
     return moment.duration(miliseconds).humanize();
   },
 
   html(attrs) {
     if (attrs.post.delete_at) {
-      return [iconNode("stopwatch"), this.formatedClock(attrs)];
+      return h(
+        "div",
+        {
+          attributes: {
+            title: i18n.t("encrypt.time_bomb.title", {
+              after: this.formatedClock(attrs),
+            }),
+          },
+        },
+        [this.formatedClock(attrs), iconNode("stopwatch")]
+      );
     }
   },
 });
