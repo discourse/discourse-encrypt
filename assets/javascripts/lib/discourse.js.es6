@@ -114,28 +114,37 @@ export function getUserIdentities(usernames) {
   });
 }
 
-const debouncedUsernames = new Set();
+const queuedUsernames = {};
 
-function _getDebouncedUserIdentities(resolve, reject) {
-  getUserIdentities(Array.from(debouncedUsernames))
+function _getDebouncedUserIdentity() {
+  const usernames = Object.keys(queuedUsernames);
+  getUserIdentities(usernames)
     .then((identities) => {
-      Object.keys(identities).forEach((u) => debouncedUsernames.delete(u));
-      return identities;
+      Object.keys(identities).forEach((username) => {
+        if (queuedUsernames[username]) {
+          const identity = identities[username];
+          queuedUsernames[username].forEach(({ resolve }) => resolve(identity));
+          delete queuedUsernames[username];
+        }
+      });
     })
-    .then(resolve, reject);
+    .catch(() => {
+      usernames.forEach((username) => {
+        if (queuedUsernames[username]) {
+          queuedUsernames[username].forEach(({ reject }) => reject());
+          delete queuedUsernames[username];
+        }
+      });
+    });
 }
 
-export function getDebouncedUserIdentities(usernames) {
-  usernames.forEach((u) => debouncedUsernames.add(u));
-
+export function getDebouncedUserIdentity(username) {
   return new Promise((resolve, reject) => {
-    debounce(
-      debouncedUsernames,
-      _getDebouncedUserIdentities,
-      resolve,
-      reject,
-      500
-    );
+    if (!queuedUsernames[username]) {
+      queuedUsernames[username] = [];
+    }
+    queuedUsernames[username].push({ resolve, reject });
+    debounce(queuedUsernames, _getDebouncedUserIdentity, 500);
   });
 }
 

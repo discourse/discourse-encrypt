@@ -16,7 +16,7 @@ import lightbox from "discourse/lib/lightbox";
 
 import {
   ENCRYPT_DISABLED,
-  getDebouncedUserIdentities,
+  getDebouncedUserIdentity,
   getEncryptionStatus,
   getIdentity,
   getTopicKey,
@@ -400,10 +400,10 @@ export default {
                   .then((key) => decrypt(key, ciphertext))
                   .then((plaintext) => {
                     if (plaintext.signature) {
-                      getDebouncedUserIdentities([plaintext.signed_by_name])
-                        .then((identities) => {
+                      getDebouncedUserIdentity(plaintext.signed_by_name)
+                        .then((userIdentity) => {
                           return verify(
-                            identities[plaintext.signed_by_name].signPublic,
+                            userIdentity.signPublic,
                             plaintext,
                             ciphertext
                           );
