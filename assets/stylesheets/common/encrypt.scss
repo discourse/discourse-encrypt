@@ -119,6 +119,7 @@ pre.exported-key-pair {
 .encrypted-post-timer-counter {
   margin-left: 0.5em;
   color: var(--danger, $danger);
+  flex: 0 0 auto;
 
   svg {
     margin-left: 0.5em;
