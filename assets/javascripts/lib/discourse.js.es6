@@ -139,6 +139,10 @@ function _getDebouncedUserIdentity() {
 }
 
 export function getDebouncedUserIdentity(username) {
+  if (userIdentities[username]) {
+    return userIdentities[username];
+  }
+
   return new Promise((resolve, reject) => {
     if (!queuedUsernames[username]) {
       queuedUsernames[username] = [];
