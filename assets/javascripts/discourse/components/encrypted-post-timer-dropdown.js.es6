@@ -11,7 +11,7 @@ const TIMER_OPTIONS = [
   { id: "720", name: I18n.t("encrypt.time_bomb.12_hours") },
   { id: "1440", name: I18n.t("encrypt.time_bomb.24_hours") },
   { id: "4320", name: I18n.t("encrypt.time_bomb.3_days") },
-  { id: "10080", name: I18n.t("encrypt.time_bomb.7_days") },
+  { id: "10080", name: I18n.t("encrypt.time_bomb.7_days") }
 ];
 
 export default DropdownSelectBoxComponent.extend({
@@ -19,13 +19,13 @@ export default DropdownSelectBoxComponent.extend({
   classNameBindings: ["hidden:hidden"],
 
   selectKitOptions: {
-    icon: "stopwatch",
-    showFullTitle: true,
+    icon: "discourse-trash-clock",
+    showFullTitle: true
   },
 
-  content: computed("topicDeleteAt", function () {
+  content: computed("topicDeleteAt", function() {
     if (this.topicDeleteAt) {
-      return TIMER_OPTIONS.filter((option) => {
+      return TIMER_OPTIONS.filter(option => {
         return (
           option.id.length > 0 &&
           moment().add(option.id, "minutes") < moment(this.topicDeleteAt)
@@ -36,5 +36,5 @@ export default DropdownSelectBoxComponent.extend({
     }
   }),
 
-  hidden: empty("content"),
+  hidden: empty("content")
 });

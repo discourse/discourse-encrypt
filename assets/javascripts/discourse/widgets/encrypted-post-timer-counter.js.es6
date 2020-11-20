@@ -31,12 +31,12 @@ createWidget("encrypted-post-timer-counter", {
         {
           attributes: {
             title: i18n.t("encrypt.time_bomb.title", {
-              after: this.formatedClock(attrs),
-            }),
-          },
+              after: this.formatedClock(attrs)
+            })
+          }
         },
-        [this.formatedClock(attrs), iconNode("stopwatch")]
+        [iconNode("discourse-trash-clock"), this.formatedClock(attrs)]
       );
     }
-  },
+  }
 });
