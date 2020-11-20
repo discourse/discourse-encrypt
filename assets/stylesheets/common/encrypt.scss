@@ -92,7 +92,7 @@ pre.exported-key-pair {
 }
 
 .encrypt-controls {
-  margin-left: 0.5em;
+  margin-left: 0.25em;
   display: flex;
   align-items: center;
 }
@@ -143,10 +143,13 @@ pre.exported-key-pair {
 
 #reply-control .reply-to {
   // needs to be a little extra-specific due to core styles
-  .encrypted-post-timer-dropdown .btn:hover .d-icon {
-    color: var(--primary-very-low);
+  .encrypted-post-timer-dropdown {
+    .discourse-no-touch & {
+      .btn:hover .d-icon {
+        color: var(--primary-very-low);
+      }
+    }
   }
-
   .btn.encrypt-toggle {
     &.enabled {
       .d-icon {
@@ -155,7 +158,7 @@ pre.exported-key-pair {
     }
 
     &:not(.disabled) {
-      &:hover {
+      .discourse-no-touch & &:hover {
         .d-icon {
           color: var(--primary-very-low);
         }
