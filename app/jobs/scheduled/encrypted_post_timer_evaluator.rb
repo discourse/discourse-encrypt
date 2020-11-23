@@ -5,7 +5,7 @@ module Jobs
     every 1.minute
 
     def execute(args)
-      EncryptedPostTimer.pending.order(delete_at: :asc).find_each do |encrypted_post_timer|
+      EncryptedPostTimer.pending.find_each do |encrypted_post_timer|
         ActiveRecord::Base.transaction do
           encrypted_post_timer.touch(:destroyed_at)
           next if !encrypted_post_timer.post&.persisted?
