@@ -19,7 +19,7 @@ export default DropdownSelectBoxComponent.extend({
   classNameBindings: ["hidden:hidden"],
 
   selectKitOptions: {
-    icon: "stopwatch",
+    icon: "discourse-trash-clock",
     showFullTitle: true,
   },
 

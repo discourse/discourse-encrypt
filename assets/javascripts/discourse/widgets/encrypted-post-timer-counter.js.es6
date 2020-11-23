@@ -35,7 +35,7 @@ createWidget("encrypted-post-timer-counter", {
             }),
           },
         },
-        [this.formatedClock(attrs), iconNode("stopwatch")]
+        [iconNode("discourse-trash-clock"), this.formatedClock(attrs)]
       );
     }
   },
