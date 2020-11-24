@@ -4,4 +4,13 @@
 # To work with us on translations, join this project:
 # https://translate.discourse.org/
 
-pl_PL: 
+pl_PL:
+  encrypt:
+    encrypted_excerpt: "Ta wiadomość jest zaszyfrowana, przeczytaj ją w przeglądarce."
+    enabled_already: "Masz już włączone szyfrowane wiadomości."
+    only_pms: "Można szyfrować tylko wiadomości prywatne."
+    no_encrypt_keys: "Coś poszło nie tak. W zapytaniu nie uwzględniono kluczy szyfrowania."
+  site_settings:
+    encrypt_enabled: "Włącz zaszyfrowane wiadomości prywatne."
+    auto_enable_encrypt: "Automatycznie włącz szyfrowanie dla wszystkich zalogowanych użytkowników"
+    encrypt_groups: "Nazwy grup, które mogą używać szyfrowania (puste oznacza wszystkich)."

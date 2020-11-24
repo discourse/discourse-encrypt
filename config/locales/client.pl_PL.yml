@@ -7,5 +7,77 @@
 pl_PL:
   js:
     encrypt:
+      title: "Zaszyfrowane wiadomości"
+      decrypting: "Odszyfrowywanie ..."
+      decryption_failed: "Nie można odszyfrować tej wiadomości."
+      no_backup_warn: "Włączyłeś szyfrowanie, ale nie wygenerowałeś żadnych papierowych kluczy. Bez papierowych kluczy ryzykujesz utratę dostępu do zaszyfrowanych wiadomości. Aby je wygenerować, przejdź do strony <a href='%{basePath}/my/preferences/account'>preferencji użytkownika</a>, naciśnij przycisk <kbd>wygeneruj papierowy klucz</kbd> i postępuj zgodnie z instrukcjami."
+      integrity_check_pass: "Sprawdzanie integralności tego postu zakończyło się pomyślnie."
+      integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
+      integrity_check_warn_updated_at: "Metadane postu zostały zaktualizowane bez ponownego podpisywania."
+      integrity_check_warn_signed_by: "Ten post został ostatnio podpisany przez %{actual}, a nie %{expected}."
+      encrypted_topic_title: "Tajna wiadomość"
+      encrypted_post: "To jest tajna wiadomość z szyfrowaniem end-to-end. Aby ją zobaczyć, musisz zostać zaproszony do tego tematu."
+      encrypted_post_email: "To jest tajna wiadomość z szyfrowaniem end-to-end. Musisz odwiedzić temat, aby go wyświetlić."
+      encrypted_icon_title: "Ta wiadomość jest zaszyfrowana end-to-end."
+      encrypted_uploads: "Przesłanych plików nie można obecnie zaszyfrować."
+      cannot_encrypt: "Nie możesz zaszyfrować wiadomości w tej rozmowie."
+      cannot_invite: "Nie możesz zaprosić do tej rozmowy."
+      cannot_invite_group: "Nie możesz zapraszać grup do zaszyfrowanych wiadomości."
+      checkbox:
+        checked: "Ta wiadomość będzie zaszyfrowana end-to-end."
+        unchecked: "Kliknij symbol kłódki, aby zaszyfrować tę wiadomość."
+        disabled: "Jeden z odbiorców nie włączył szyfrowania."
+      composer:
+        encrypt: "Zaszyfrować wiadomość?"
+        group_not_allowed: "Nie masz uprawnień do wysyłania wiadomości do grup."
+        user_has_no_key: "Niestety %{username} nie włączył zaszyfrowanych wiadomości."
+      preferences:
+        ie11: "Wymagany zestaw szyfrów jest niedostępny w przeglądarce Internet Explorer 11."
+        insecure_context: "Szyfrowania nie można używać w niezabezpieczonym kontekście (bez HTTPS)."
+        status_enabled: "Włączyłeś szyfrowanie i aktywowałeś je na tym urządzeniu."
+        status_enabled_other: "Ten użytkownik włączył szyfrowanie i może odbierać zaszyfrowane wiadomości."
+        status_enabled_but_inactive: "Włączyłeś szyfrowanie, ale nie aktywowałeś go na tym urządzeniu."
+        status_disabled: "Nie włączyłeś szyfrowania na tym koncie."
+        status_disabled_other: "Ten użytkownik nie włączył szyfrowania i nie może odbierać zaszyfrowanych wiadomości."
+        passphrase_label: "Hasło:"
+        passphrase_invalid: "Podane hasło jest nieprawidłowe."
+        key_pair_invalid: "Wprowadzona para kluczy jest nieprawidłowa."
+        notice_active: |
+          <p>Aby aktywować to urządzenie, użyj innego urządzenia lub papierowego klucza. Nie zapomnij o odstępach między słowami.<p>
+        notice_import: |
+          <p>Wklej wcześniej wyeksportowany klucz szyfrowania.</p>
+        activate: "Aktywuj zaszyfrowane wiadomości"
+        deactivate: "Wyłącz szyfrowanie na tym urządzeniu"
+        enable: "Włącz zaszyfrowane wiadomości"
+        import: "Importuj parę kluczy szyfrowania"
+        use_paper_key: "Odszyfruj parę kluczy za pomocą klucza papierowego"
+        generate_key: "Wygeneruj nową parę kluczy szyfrowania"
+      generate_paper_key:
+        title: "Wygeneruj klucz papierowy"
+        title_device: "Aktywuj inne urządzenie"
+        instructions: "Oto Twój unikalny papierowy klucz, który może umożliwić aktywację zaszyfrowanych urządzeń w przyszłości. To jedyny raz, kiedy go zobaczysz, więc zapisz swój klucz i przechowuj w bezpiecznym miejscu."
+        instructions_device: "Na nowym urządzeniu przejdź do ustawień i użyj następującego hasła, aby aktywować szyfrowanie:"
       manage_paper_keys:
+        title: "Zarządzaj kluczami papierowymi"
+        instructions: "Poniżej możesz usunąć dowolny z wcześniej wygenerowanych kluczy papierowych. Po usunięciu klucza papierowego nie można odzyskać, więc upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         delete: "Usuń"
+        no_key: "Nie masz papierowych kluczy. Upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
+        passphrase: "oparte na hasłach"
+        not_recommended: "(nie zalecane)"
+      export:
+        title: "Eksportuj parę kluczy szyfrowania"
+        instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
+      reset:
+        title: "Wyłącz zaszyfrowane wiadomości"
+        instructions: "Czy na pewno chcesz wyłączyć szyfrowane wiadomości i zresetować klucz szyfrowania? Ta operacja usuwa klucz szyfrowania na zawsze. Nie będziesz mieć dostępu do żadnej ze swoich aktualnie zaszyfrowanych prywatnych wiadomości, jeśli nie masz wyeksportowanej pary kluczy. Możesz jednak włączyć zaszyfrowane wiadomości, generując nową parę kluczy w dowolnym późniejszym czasie."
+        confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
+        everything: "Usuń mnie ze wszystkich zaszyfrowanych wiadomości prywatnych (pozostaw niezaznaczone, jeśli planujesz zaimportować tę parę kluczy w późniejszym czasie)"
+      time_bomb:
+        title: "Ta wiadomość zostanie trwale usunięta po %{after}"
+        never: "Nigdy"
+        3_minutes: "3 minuty"
+        1_hour: "1 godzina"
+        12_hours: "12 godzin"
+        24_hours: "24 godziny"
+        3_days: "3 dni"
+        7_days: "7 dni"

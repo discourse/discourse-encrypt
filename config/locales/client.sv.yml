@@ -73,10 +73,10 @@ sv:
         confirm_instructions: "Ange <code>%{username}</code> för att bekräfta:"
         everything: "Ta bort mig från alla krypterade privata meddelanden (lämna omarkerat om du planerar att importera nyckelparet vid ett senare tillfälle)"
       time_bomb:
+        title: "Detta meddelande raderas permanent efter %{after}"
         never: "Aldrig"
         3_minutes: "3 minuter"
         1_hour: "1 timme"
-        3_hours: "3 timmar"
         12_hours: "12 timmar"
         24_hours: "24 timmar"
         3_days: "3 dagar"
