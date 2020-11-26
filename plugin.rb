@@ -225,6 +225,10 @@ after_initialize do
   on(:reduce_cooked) do |fragment, post|
     if post&.is_encrypted?
       fragment.inner_html = "<p>#{I18n.t('js.encrypt.encrypted_post_email')}</p>"
+      if timer = (post.encrypted_post_timer || post.topic.posts.first.encrypted_post_timer)
+        fragment.inner_html += "<p>#{I18n.t('js.encrypt.encrypted_post_email_timer_annotation', delete_at: I18n.l(timer.delete_at, format: :long))}</p>"
+      end
+      fragment
     end
   end
 
