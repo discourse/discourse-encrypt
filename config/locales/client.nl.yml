@@ -18,6 +18,7 @@ nl:
       encrypted_topic_title: "Een geheim bericht"
       encrypted_post: "Dit is een geheim bericht met end-to-endversleuteling. U moet voor dit topic zijn uitgenodigd om het te bekijken."
       encrypted_post_email: "Dit is een geheim bericht met end-to-endversleuteling. U moet het topic bezoeken om het te bekijken."
+      encrypted_post_email_timer_annotation: "Dit bericht wordt op %{delete_at} definitief verwijderd"
       encrypted_icon_title: "Dit bericht is end-to-end versleuteld."
       encrypted_uploads: "Uploads kunnen momenteel niet worden versleuteld."
       cannot_encrypt: "U kunt geen berichten versleutelen in deze conversatie."
@@ -64,3 +65,13 @@ nl:
         instructions: "Exporteren van uw sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al uw privéconversaties kan ontcijferen."
       reset:
         confirm_instructions: "Typ <code>%{username}</code> ter bevestiging:"
+      time_bomb:
+        title: "Dit bericht wordt na %{after} definitief verwijderd"
+        never: "Nooit"
+        3_minutes: "3 minuten"
+        1_hour: "1 uur"
+        3_hours: "3 uur"
+        12_hours: "12 uur"
+        24_hours: "24 uur"
+        3_days: "3 dagen"
+        7_days: "7 dagen"
