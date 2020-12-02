@@ -18,6 +18,7 @@ sv:
       encrypted_topic_title: "Ett hemligt meddelande"
       encrypted_post: "Detta är ett hemligt meddelande som krypterats från början till slut. För att visa det måste du vara inbjuden till detta ämne."
       encrypted_post_email: "Detta är ett hemligt meddelande som krypterats från början till slut. Du måste gå till ämnet för att visa det."
+      encrypted_post_email_timer_annotation: "Detta meddelande raderas permanent kl. %{delete_at}"
       encrypted_icon_title: "Detta meddelande är krypterat från början till slut."
       encrypted_uploads: "Uppladdningar kan inte krypteras för tillfället."
       cannot_encrypt: "Du kan inte kryptera meddelanden i detta samtal."
