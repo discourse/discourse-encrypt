@@ -371,106 +371,125 @@ export default {
       api.reopenWidget("post-contents", {
         html(attrs, state) {
           const topicId = attrs.topicId;
-          if (attrs.id === -1 || !hasTopicTitle(topicId)) {
-            return this._super(...arguments);
+          if (attrs.id !== -1 && hasTopicTitle(topicId)) {
+            decryptPost.call(this, attrs, state, topicId);
           }
-
-          const ciphertext = attrs.encrypted_raw;
-          if (
-            hasTopicKey(topicId) &&
-            ciphertext &&
-            (!state.encrypted || state.encrypted !== ciphertext)
-          ) {
-            state.encrypted = ciphertext;
-
-            if (!window.isSecureContext) {
-              state.decrypting = false;
-              state.decrypted = true;
-              state.error = I18n.t("encrypt.preferences.insecure_context");
-            } else {
-              state.decrypting = true;
-              getIdentity().then((identity) => {
-                if (!identity) {
-                  // Absence of private key means user did not activate encryption.
-                  showModal("activate-encrypt", { model: this });
-                  return;
-                }
-
-                getTopicKey(topicId)
-                  .then((key) => decrypt(key, ciphertext))
-                  .then((plaintext) => {
-                    if (plaintext.signature) {
-                      getDebouncedUserIdentity(plaintext.signed_by_name)
-                        .then((userIdentity) => {
-                          return verify(
-                            userIdentity.signPublic,
-                            plaintext,
-                            ciphertext
-                          );
-                        })
-                        .then((result) => {
-                          verified[attrs.id] = checkMetadata(attrs, plaintext);
-                          if (!result) {
-                            verified[attrs.id].push({
-                              attr: "signature",
-                              actual: false,
-                              expected: true,
-                            });
-                          }
-                        })
-                        .catch(() => {
-                          verified[attrs.id] = [
-                            {
-                              attr: "signature",
-                              actual: false,
-                              expected: true,
-                            },
-                          ];
-                        })
-                        .finally(() => this.scheduleRerender());
-                    }
-
-                    return cookAsync(plaintext.raw);
-                  })
-                  .then((cooked) => (state.decrypted = cooked.string))
-                  .catch(() => {
-                    state.decrypted = true;
-                    state.error = I18n.t("encrypt.decryption_failed");
-                  })
-                  .finally(() => {
-                    state.decrypting = false;
-                    this.scheduleRerender();
-                  });
-              });
-            }
-          }
-
-          if (state.decrypted && state.decrypted !== true) {
-            attrs.cooked = state.decrypted;
-            Ember.run.next(() => {
-              const $post = $(`article[data-post-id='${attrs.id}']`);
-              postProcessPost(this.siteSettings, topicId, $post);
-            });
-          } else if (state.decrypting) {
-            attrs.cooked =
-              "<div class='alert alert-info'>" +
-              renderSpinner("small") +
-              " " +
-              I18n.t("encrypt.decrypting") +
-              "</div>";
-          } else {
-            attrs.cooked =
-              "<div class='alert alert-error'>" +
-              iconHTML("times") +
-              " " +
-              state.error +
-              "</div>" +
-              attrs.cooked;
-          }
-
           return this._super(...arguments);
         },
       });
+
+      api.reopenWidget("post-small-action", {
+        html(attrs, state) {
+          const topicId = attrs.topicId;
+          if (
+            attrs.id !== -1 &&
+            hasTopicTitle(topicId) &&
+            attrs.encrypted_raw !== ""
+          ) {
+            decryptPost.call(this, attrs, state, topicId);
+          }
+          return this._super(...arguments);
+        },
+      });
+
+      function decryptPost(attrs, state, topicId) {
+        const ciphertext = attrs.encrypted_raw;
+        if (
+          hasTopicKey(topicId) &&
+          ciphertext &&
+          (!state.encrypted || state.encrypted !== ciphertext)
+        ) {
+          state.encrypted = ciphertext;
+
+          if (!window.isSecureContext) {
+            state.decrypting = false;
+            state.decrypted = true;
+            state.error = I18n.t("encrypt.preferences.insecure_context");
+          } else {
+            state.decrypting = true;
+            getIdentity().then((identity) => {
+              if (!identity) {
+                // Absence of private key means user did not activate encryption.
+                showModal("activate-encrypt", { model: this });
+                return;
+              }
+
+              getTopicKey(topicId)
+                .then((key) => decrypt(key, ciphertext))
+                .then((plaintext) => {
+                  if (plaintext.signature) {
+                    getDebouncedUserIdentity(plaintext.signed_by_name)
+                      .then((userIdentity) => {
+                        return verify(
+                          userIdentity.signPublic,
+                          plaintext,
+                          ciphertext
+                        );
+                      })
+                      .then((result) => {
+                        verified[attrs.id] = checkMetadata(attrs, plaintext);
+                        if (!result) {
+                          verified[attrs.id].push({
+                            attr: "signature",
+                            actual: false,
+                            expected: true,
+                          });
+                        }
+                      })
+                      .catch(() => {
+                        verified[attrs.id] = [
+                          {
+                            attr: "signature",
+                            actual: false,
+                            expected: true,
+                          },
+                        ];
+                      })
+                      .finally(() => this.scheduleRerender());
+                  }
+
+                  return cookAsync(plaintext.raw);
+                })
+                .then((cooked) => (state.decrypted = cooked.string))
+                .catch(() => {
+                  state.decrypted = true;
+                  state.error = I18n.t("encrypt.decryption_failed");
+                })
+                .finally(() => {
+                  state.decrypting = false;
+                  this.scheduleRerender();
+                });
+            });
+          }
+        }
+
+        if (state.decrypted && state.decrypted !== true) {
+          attrs.cooked = state.decrypted;
+          Ember.run.next(() => {
+            let $post = $(`article[data-post-id='${attrs.id}']`);
+            if ($post.length === 0) {
+              $post = $(`#post_${attrs.post_number}.small-action`);
+            }
+
+            postProcessPost(this.siteSettings, topicId, $post);
+          });
+        } else if (state.decrypting) {
+          attrs.cooked =
+            "<div class='alert alert-info'>" +
+            renderSpinner("small") +
+            " " +
+            I18n.t("encrypt.decrypting") +
+            "</div>";
+        } else {
+          attrs.cooked =
+            "<div class='alert alert-error'>" +
+            iconHTML("times") +
+            " " +
+            state.error +
+            "</div>" +
+            attrs.cooked;
+        }
+      }
 
       api.decorateWidget("post-meta-data:after", (dec) => {
         const post = dec.getModel();
