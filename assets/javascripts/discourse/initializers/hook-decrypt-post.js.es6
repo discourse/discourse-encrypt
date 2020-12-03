@@ -372,7 +372,7 @@ export default {
         html(attrs, state) {
           const topicId = attrs.topicId;
           if (attrs.id !== -1 && hasTopicTitle(topicId)) {
-            decryptPost.bind(this)(attrs, state, topicId);
+            decryptPost.call(this, attrs, state, topicId);
           }
           return this._super(...arguments);
         },
@@ -386,7 +386,7 @@ export default {
             hasTopicTitle(topicId) &&
             attrs.encrypted_raw !== ""
           ) {
-            decryptPost.bind(this)(attrs, state, topicId);
+            decryptPost.call(this, attrs, state, topicId);
           }
           return this._super(...arguments);
         },
@@ -466,7 +466,11 @@ export default {
         if (state.decrypted && state.decrypted !== true) {
           attrs.cooked = state.decrypted;
           Ember.run.next(() => {
-            const $post = $(`article[data-post-id='${attrs.id}']`);
+            let $post = $(`article[data-post-id='${attrs.id}']`);
+            if ($post.length === 0) {
+              $post = $(`#post_${attrs.post_number}.small-action`);
+            }
+
             postProcessPost(this.siteSettings, topicId, $post);
           });
         } else if (state.decrypting) {
