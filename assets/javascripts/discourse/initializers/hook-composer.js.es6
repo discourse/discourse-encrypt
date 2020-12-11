@@ -1,6 +1,5 @@
 import I18n from "I18n";
 import { observes, on } from "discourse-common/utils/decorators";
-import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import {
   ENCRYPT_ACTIVE,
@@ -8,6 +7,7 @@ import {
   getIdentity,
   getTopicKey,
   getTopicTitle,
+  getUserIdentities,
   hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
@@ -88,31 +88,24 @@ export default {
           return;
         }
 
-        ajax("/encrypt/user", {
-          type: "GET",
-          data: { usernames },
-        }).then((userKeys) => {
-          for (let i = 0; i < usernames.length; ++i) {
-            const username = usernames[i];
-            if (!userKeys[username]) {
-              this.setProperties({
-                isEncrypted: false,
-                overwriteDefault: true,
-                disableEncryptIndicator: true,
-                encryptError: I18n.t("encrypt.composer.user_has_no_key", {
-                  username,
-                }),
-                showEncryptError: this.showEncryptError || this.isEncrypted,
-              });
-              return;
-            }
-          }
-
-          this.setProperties({
-            disableEncryptIndicator: false,
-            encryptError: "",
+        getUserIdentities(usernames)
+          .then(() => {
+            this.setProperties({
+              disableEncryptIndicator: false,
+              encryptError: "",
+            });
+          })
+          .catch((username) => {
+            this.setProperties({
+              isEncrypted: false,
+              overwriteDefault: true,
+              disableEncryptIndicator: true,
+              encryptError: I18n.t("encrypt.composer.user_has_no_key", {
+                username,
+              }),
+              showEncryptError: this.showEncryptError || this.isEncrypted,
+            });
           });
-        });
       },
     });
 

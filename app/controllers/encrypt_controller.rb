@@ -79,7 +79,11 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def show_user
     usernames = params.require(:usernames)
 
-    identities = Hash[User.includes(:user_encryption_key).where(username: usernames).map { |u| [u.username, u.user_encryption_key&.encrypt_public] }]
+    identities = User
+      .includes(:user_encryption_key)
+      .where(username_lower: usernames.map(&:downcase))
+      .map { |u| [u.username, u.user_encryption_key&.encrypt_public] }
+      .to_h
 
     render json: identities
   end

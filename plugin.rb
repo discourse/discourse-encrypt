@@ -269,11 +269,10 @@ after_initialize do
 
     result = manager.perform_create_post
     if result.success? && encrypted_keys = manager.args[:encrypted_keys]
-      keys = JSON.parse(encrypted_keys)
       topic_id = result.post.topic_id
-      users = Hash[User.where(username: keys.keys).map { |u| [u.username, u] }]
-
-      keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: users[u].id, key: k) }
+      keys = JSON.parse(encrypted_keys).map { |u, k| [u.downcase, k] }.to_h
+      user_ids = User.where(username_lower: keys.keys).pluck(:username_lower, :id).to_h
+      keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_ids[u], key: k) }
     end
 
     if result.success? && encrypted_title = manager.args[:encrypted_title]

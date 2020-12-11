@@ -14,6 +14,7 @@ import {
   importIdentity,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { getCaseInsensitiveObj } from "discourse/plugins/discourse-encrypt/lib/utils";
 import { Promise } from "rsvp";
 
 /*
@@ -43,7 +44,7 @@ let userIdentity;
 /**
  * @var {Object} userIdentities Cached user identities.
  */
-const userIdentities = {};
+const userIdentities = getCaseInsensitiveObj();
 
 /**
  * @var {Object} topicKeys Dictionary of all topic keys (topic_id => key).
@@ -92,7 +93,7 @@ export function getUserIdentities(usernames) {
     const promise = ajax("/encrypt/user", {
       type: "GET",
       data: { usernames },
-    });
+    }).then((identities) => getCaseInsensitiveObj(identities));
 
     usernames.forEach((username) => {
       userIdentities[username] = promise.then((identities) =>
@@ -110,11 +111,11 @@ export function getUserIdentities(usernames) {
     for (let i = 0; i < usernames.length; ++i) {
       imported[usernames[i]] = identities[i];
     }
-    return imported;
+    return getCaseInsensitiveObj(imported);
   });
 }
 
-const queuedUsernames = {};
+const queuedUsernames = getCaseInsensitiveObj();
 
 function _getDebouncedUserIdentity() {
   const usernames = Object.keys(queuedUsernames);
