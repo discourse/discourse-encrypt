@@ -55,8 +55,8 @@ class EncryptedPostCreator < PostCreator
 
   def users
     @users ||= begin
-      usernames = @opts[:target_usernames].split(',')
-      users = User.where(username: usernames)
+      usernames = @opts[:target_usernames].split(',').map(&:downcase)
+      users = User.where(username_lower: usernames)
       users
     end
   end
