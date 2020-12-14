@@ -5,7 +5,7 @@
  * @return {Proxy}
  */
 export function getCaseInsensitiveObj(object) {
-  object ||= {};
+  object = object || {};
   return new Proxy(object, {
     get(obj, key) {
       if (obj[key]) {
