@@ -11,6 +11,16 @@
     width: 100%;
   }
 
+  .select-kit-row[data-value="reset"] {
+    .name {
+      color: var(--danger, $danger);
+    }
+
+    .d-icon {
+      color: var(--danger-medium, $danger-medium);
+    }
+  }
+
   .select-kit-row.is-highlighted[data-value="reset"] {
     background-color: var(--danger-low, $danger-low);
   }
