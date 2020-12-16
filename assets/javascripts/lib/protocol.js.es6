@@ -183,6 +183,8 @@ export function decrypt(key, ciphertext) {
   } else if (version === 1) {
     return decryptV1(key, ciphertext);
   }
+
+  return Promise.reject();
 }
 
 /**
@@ -204,6 +206,8 @@ export function verify(key, plaintext, ciphertext) {
   } else if (version === 1) {
     return verifyV1(key, plaintext, ciphertext);
   }
+
+  return Promise.reject();
 }
 
 /*

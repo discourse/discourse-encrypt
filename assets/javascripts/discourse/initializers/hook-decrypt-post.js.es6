@@ -373,6 +373,7 @@ export default {
           const topicId = attrs.topicId;
           if (attrs.id !== -1 && hasTopicTitle(topicId)) {
             decryptPost.call(this, attrs, state, topicId);
+            updateHtml.call(this, attrs, state, topicId);
           }
           return this._super(...arguments);
         },
@@ -387,6 +388,7 @@ export default {
             attrs.encrypted_raw !== ""
           ) {
             decryptPost.call(this, attrs, state, topicId);
+            updateHtml.call(this, attrs, state, topicId);
           }
           return this._super(...arguments);
         },
@@ -394,75 +396,104 @@ export default {
 
       function decryptPost(attrs, state, topicId) {
         const ciphertext = attrs.encrypted_raw;
-        if (
-          hasTopicKey(topicId) &&
-          ciphertext &&
-          (!state.encrypted || state.encrypted !== ciphertext)
-        ) {
-          state.encrypted = ciphertext;
 
-          if (!window.isSecureContext) {
-            state.decrypting = false;
-            state.decrypted = true;
-            state.error = I18n.t("encrypt.preferences.insecure_context");
-          } else {
-            state.decrypting = true;
-            getIdentity().then((identity) => {
-              if (!identity) {
-                // Absence of private key means user did not activate encryption.
-                showModal("activate-encrypt", { model: this });
-                return;
-              }
-
-              getTopicKey(topicId)
-                .then((key) => decrypt(key, ciphertext))
-                .then((plaintext) => {
-                  if (plaintext.signature) {
-                    getDebouncedUserIdentity(plaintext.signed_by_name)
-                      .then((userIdentity) => {
-                        return verify(
-                          userIdentity.signPublic,
-                          plaintext,
-                          ciphertext
-                        );
-                      })
-                      .then((result) => {
-                        verified[attrs.id] = checkMetadata(attrs, plaintext);
-                        if (!result) {
-                          verified[attrs.id].push({
-                            attr: "signature",
-                            actual: false,
-                            expected: true,
-                          });
-                        }
-                      })
-                      .catch(() => {
-                        verified[attrs.id] = [
-                          {
-                            attr: "signature",
-                            actual: false,
-                            expected: true,
-                          },
-                        ];
-                      })
-                      .finally(() => this.scheduleRerender());
-                  }
-
-                  return cookAsync(plaintext.raw);
-                })
-                .then((cooked) => (state.decrypted = cooked.string))
-                .catch(() => {
-                  state.decrypted = true;
-                  state.error = I18n.t("encrypt.decryption_failed");
-                })
-                .finally(() => {
-                  state.decrypting = false;
-                  this.scheduleRerender();
-                });
-            });
-          }
+        if (!window.isSecureContext) {
+          state.decrypting = false;
+          state.decrypted = true;
+          state.error = I18n.t("encrypt.preferences.insecure_context");
+          return;
+        } else if (ciphertext && !hasTopicKey(topicId)) {
+          state.decrypting = false;
+          state.decrypted = true;
+          state.error = I18n.t("encrypt.missing_topic_key");
+          return;
         }
 
+        if (
+          !ciphertext ||
+          !hasTopicKey(topicId) ||
+          (state.encrypted && state.encrypted === ciphertext)
+        ) {
+          return;
+        }
+
+        state.encrypted = ciphertext;
+        state.decrypting = true;
+
+        getIdentity()
+          .then((identity) => {
+            if (!identity) {
+              // Absence of private key means user did not activate encryption.
+              showModal("activate-encrypt", { model: this });
+              return;
+            }
+
+            getTopicKey(topicId)
+              .then((key) => {
+                decrypt(key, ciphertext)
+                  .then((plaintext) => {
+                    if (plaintext.signature) {
+                      getDebouncedUserIdentity(plaintext.signed_by_name)
+                        .then((userIdentity) => {
+                          return verify(
+                            userIdentity.signPublic,
+                            plaintext,
+                            ciphertext
+                          );
+                        })
+                        .then((result) => {
+                          verified[attrs.id] = checkMetadata(attrs, plaintext);
+                          if (!result) {
+                            verified[attrs.id].push({
+                              attr: "signature",
+                              actual: false,
+                              expected: true,
+                            });
+                          }
+                        })
+                        .catch(() => {
+                          verified[attrs.id] = [
+                            {
+                              attr: "signature",
+                              actual: false,
+                              expected: true,
+                            },
+                          ];
+                        })
+                        .finally(() => this.scheduleRerender());
+                    }
+                    return cookAsync(plaintext.raw);
+                  })
+                  .then((cooked) => (state.decrypted = cooked.string))
+                  .catch(() => {
+                    state.decrypted = true;
+                    state.error = I18n.t("encrypt.invalid_ciphertext");
+                  })
+                  .finally(() => {
+                    state.decrypting = false;
+                    this.scheduleRerender();
+                  });
+              })
+              .catch(() => {
+                state.decrypted = true;
+                state.error = I18n.t("encrypt.invalid_topic_key");
+              })
+              .finally(() => {
+                state.decrypting = false;
+                this.scheduleRerender();
+              });
+          })
+          .catch(() => {
+            state.decrypted = true;
+            state.error = I18n.t("encrypt.invalid_identity");
+          })
+          .finally(() => {
+            state.decrypting = false;
+            this.scheduleRerender();
+          });
+      }
+
+      function updateHtml(attrs, state, topicId) {
         if (state.decrypted && state.decrypted !== true) {
           attrs.cooked = state.decrypted;
           Ember.run.next(() => {
