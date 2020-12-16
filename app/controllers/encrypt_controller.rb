@@ -151,6 +151,34 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
+  # Gets stats (encrypted PMs count) for the a user.
+  #
+  # Params:
+  # +user_id+::     ID of user to be reset
+  #
+  # Returns status code 200 and the number of encrypted PMs the user can
+  # access.
+  def stats
+    user_id = params.require(:user_id)
+
+    user = User.find_by(id: user_id)
+    raise Discourse::NotFound if user.blank?
+
+    guardian.ensure_can_edit!(user)
+
+    pms_count = TopicAllowedUser
+      .joins(topic: :encrypted_topics_data)
+      .where.not(encrypted_topics_data: { id: nil })
+      .where(topic_allowed_users: { user_id: user.id })
+      .count
+
+    keys_count = EncryptedTopicsUser
+      .where(user_id: user.id)
+      .count
+
+    render json: success_json.merge(encrypted_pms_count: [pms_count, keys_count].max)
+  end
+
   private
 
   def ensure_encrypt_enabled

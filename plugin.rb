@@ -48,6 +48,7 @@ after_initialize do
     get    '/encrypt/user'  => 'encrypt#show_user'
     post   '/encrypt/reset' => 'encrypt#reset_user'
     put    '/encrypt/post'  => 'encrypt#update_post'
+    get    '/encrypt/stats' => 'encrypt#stats'
   end
 
   Discourse::Application.routes.append do

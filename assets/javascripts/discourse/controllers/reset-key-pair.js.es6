@@ -8,15 +8,42 @@ import { Promise } from "rsvp";
 export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
     this.setProperties({
+      isLoadingStats: true,
       inProgress: false,
-      everything: true,
+      encryptedPmsCount: null,
       confirmation: "",
     });
+
+    ajax("/encrypt/stats", { data: { user_id: this.get("model.id") } })
+      .then((result) => {
+        if (result.encrypted_pms_count > 0) {
+          this.set("encryptedPmsCount", result.encrypted_pms_count);
+        }
+      })
+      .finally(() => {
+        this.set("isLoadingStats", false);
+      });
   },
 
-  @discourseComputed("inProgress", "currentUser.username", "confirmation")
-  disabled(inProgress, username, confirmation) {
-    return inProgress || username !== confirmation;
+  @discourseComputed(
+    "isLoadingStats",
+    "inProgress",
+    "encryptedPmsCount",
+    "currentUser.username",
+    "confirmation"
+  )
+  disabled(
+    isLoadingStats,
+    inProgress,
+    encryptedPmsCount,
+    username,
+    confirmation
+  ) {
+    return (
+      isLoadingStats ||
+      inProgress ||
+      (encryptedPmsCount && encryptedPmsCount > 0 && username !== confirmation)
+    );
   },
 
   actions: {
@@ -26,10 +53,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
       Promise.all([
         ajax("/encrypt/reset", {
           type: "POST",
-          data: {
-            user_id: this.get("model.id"),
-            everything: this.everything,
-          },
+          data: { user_id: this.get("model.id") },
         }),
         deleteDb,
       ])
