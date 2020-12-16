@@ -80,9 +80,12 @@ en:
 
       reset:
         title: "Disable encrypted messages"
-        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever. You will not be able to access any of your current encrypted private messages unless you have the exported key pair. However, you can enable encrypted messages by generating a new key pair at any later time."
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
-        everything: "Remove me from all encrypted private messages (leave unchecked if you plan to import this key pair at a later time)"
       time_bomb:
         title: "This message will be permanently deleted after %{after}"
         never: "Never"

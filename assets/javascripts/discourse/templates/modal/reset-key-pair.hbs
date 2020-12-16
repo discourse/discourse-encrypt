@@ -1,13 +1,16 @@
 {{#d-modal-body title="encrypt.reset.title"}}
-  <p>{{i18n "encrypt.reset.instructions"}}</p>
-  <p>
-    <label>
-      {{input type="checkbox" checked=everything disabled=inProgress}}
-      {{i18n "encrypt.reset.everything"}}
-    </label>
-  </p>
-  <p>{{{i18n "encrypt.reset.confirm_instructions" username=currentUser.username}}}</p>
-  {{input type="text" value=confirmation}}
+  {{#conditional-loading-section isLoading=isLoadingStats}}
+    {{#if encryptedPmsCount}}
+      <p>{{i18n "encrypt.reset.instructions"}}</p>
+      <p>
+        {{{i18n "encrypt.reset.instructions_lost_pms" count=encryptedPmsCount}}}
+        {{{i18n "encrypt.reset.confirm_instructions" username=currentUser.username}}}
+      </p>
+      {{input type="text" value=confirmation}}
+    {{else}}
+      <p>{{i18n "encrypt.reset.instructions_safe"}}</p>
+    {{/if}}
+  {{/conditional-loading-section}}
 {{/d-modal-body}}
 
 <div class="modal-footer">
