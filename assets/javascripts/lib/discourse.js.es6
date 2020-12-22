@@ -1,4 +1,4 @@
-import { debounce } from "@ember/runloop";
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
@@ -149,6 +149,7 @@ export function getDebouncedUserIdentity(username) {
       queuedUsernames[username] = [];
     }
     queuedUsernames[username].push({ resolve, reject });
+
     debounce(queuedUsernames, _getDebouncedUserIdentity, 500);
   });
 }
