@@ -12,4 +12,5 @@ de:
     no_encrypt_keys: "Etwas ist schief gelaufen.  Kein Schlüssel zur Entschlüsselung ist in der Payload vorhanden."
   site_settings:
     encrypt_enabled: "Aktiviere verschlüsselte private Nachrichten."
+    auto_enable_encrypt: "Verschlüsselung für alle angemeldeten Benutzer automatisch aktivieren"
     encrypt_groups: "Namen von Gruppen, die verschlüsselte Nachrichten nutzen dürfen (leer bedeutet jeder)."
