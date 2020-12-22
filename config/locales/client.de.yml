@@ -10,6 +10,7 @@ de:
       title: "Verschlüsselte Nachrichten"
       decrypting: "Entschlüssele..."
       decryption_failed: "Diese Nachricht kann nicht entschlüsselt werden."
+      no_backup_warn: "Sie haben die Verschlüsselung aktiviert, aber keine Papierschlüssel generiert. Ohne Papierschlüssel laufen Sie Gefahr, den Zugriff auf Ihre verschlüsselten Nachrichten zu verlieren. Um eine zu generieren, navigieren Sie bitte auf <a href='%{basePath}/my/preferences/account'>Benutzereinstellungen Seite</a>, drücken Sie die <kbd>Papier-Taste</kbd> und folgen Sie den Anweisungen."
       integrity_check_pass: "Die Integritätsprüfung für diesen Beitrag war gültig."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurde aktualisiert ohne erneut signiert zu werden. "
@@ -17,6 +18,7 @@ de:
       encrypted_topic_title: "Eine sichere Nachricht."
       encrypted_post: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Um sie anzuzeigen, musst du zu diesem Thema eingeladen sein."
       encrypted_post_email: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Du musst dieses Thema besuchen, um sie anzuzeigen."
+      encrypted_post_email_timer_annotation: "Diese Nachricht wird dauerhaft gelöscht am %{delete_at}"
       encrypted_icon_title: "Diese Nachricht ist Ende-zu-Ende verschlüsselt."
       encrypted_uploads: "Uploads können aktuell nicht verschlüsselt werden. "
       cannot_encrypt: "Du kannst keine Nachrichten in dieser Unterhaltung verschlüsseln. "
@@ -40,20 +42,44 @@ de:
         status_disabled_other: "Dieser Benutzer hat die Verschlüsselung nicht aktiviert und kann keine verschlüsselten Nachrichten empfangen."
         passphrase_label: "Passphrase:"
         passphrase_invalid: "Die eingegebene Passphrase ist falsch."
+        key_pair_invalid: "Das eingegebene Schlüsselpaar ist falsch."
         notice_active: |
           <p> Bitte verwende ein anderes Gerät oder einen Papierschlüssel, um dieses Gerät zu aktivieren. Vergieß nicht die Zwischenräume zwischen den Wörtern. <p>
         notice_import: |
           <p> Bitte füge den zuvor exportierten Verschlüsselungsschlüssel ein. </p>
+        activate: "Verschlüsselte Nachrichten aktivieren"
+        deactivate: "Verschlüsselung auf diesem Gerät deaktivieren"
+        enable: "Aktivieren von verschlüsselten Nachrichten"
+        import: "Importieren von Verschlüsselungsschlüsselpaar"
+        use_paper_key: "Entschlüsseln des Schlüsselpaars mit dem Papierschlüssel"
+        generate_key: "Neues Verschlüsselungsschlüsselpaar generieren"
       generate_paper_key:
+        title: "Papierschlüssel erzeugen"
+        title_device: "Ein anderes Gerät aktivieren"
         instructions: "Hier ist dein eindeutiger Papierschlüssel, mit dem du zukünftige verschlüsselte Geräte aktivieren kanst. Dies ist das einzige Mal, dass du diesen sehen kannst. Schreibe ihn also auf und bewahre ihn an einem sicheren Ort auf."
         instructions_device: "Gehe bei dem neuen Gerät zu den Einstellungen und verwende die folgende Passphrase, um die Verschlüsselung zu aktivieren:"
       manage_paper_keys:
+        title: "Verwalten von Papierschlüsseln"
         instructions: "Unten kannst du alle zuvor generierten Papierschlüssel löschen. Nach dem Löschen kann der Papierschlüssel nicht wiederhergestellt werden. Stelle daher sicher, dass du mindestens einen Papierschlüssel oder ein anderes aktives Geräte hast."
         delete: "Löschen"
         no_key: "Kein Papierschlüssel vorhanden. Stelle sicher, dass mindestens ein Papierschlüssel existiert oder andere verschlüsselte Geräte vorhanden sind."
         passphrase: "Passphrase-basiert"
         not_recommended: "(nicht empfohlen)"
       export:
+        title: "Exportieren von Verschlüsselungsschlüsselpaar"
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
       reset:
+        title: "Deaktivieren verschlüsselter Nachrichten"
+        instructions: "Möchten Sie verschlüsselte Nachrichten wirklich deaktivieren und Ihren Verschlüsselungsschlüssel zurücksetzen? Dieser Vorgang löscht Ihren Verschlüsselungsschlüssel für immer. Sie können auf keine Ihrer aktuell verschlüsselten privaten Nachrichten zugreifen, es sei denn, Sie haben das exportierte Schlüsselpaar. Sie können jedoch verschlüsselte Nachrichten aktivieren, indem Sie zu einem späteren Zeitpunkt ein neues Schlüsselpaar generieren."
         confirm_instructions: "Bitte gib <code>%{username}</code> zur Bestätigung ein:"
+        everything: "Entferne mich aus allen verschlüsselten privaten Nachrichten (lassen Sie deaktiviert, wenn Sie dieses Schlüsselpaar zu einem späteren Zeitpunkt importieren möchten)"
+      time_bomb:
+        title: "Diese Nachricht wird nach %{after}dauerhaft gelöscht"
+        never: "nie"
+        3_minutes: "3 Minuten"
+        1_hour: "1 Stunde"
+        3_hours: "3 Stunden"
+        12_hours: "12 Stunden"
+        24_hours: "24 Stunden"
+        3_days: "3 Tage"
+        7_days: "7 Tage"
