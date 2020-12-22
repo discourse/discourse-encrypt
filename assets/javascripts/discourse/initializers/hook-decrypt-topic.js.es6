@@ -1,5 +1,6 @@
 import I18n from "I18n";
-import { debounce, scheduleOnce } from "@ember/runloop";
+import { scheduleOnce } from "@ember/runloop";
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";

@@ -1,5 +1,5 @@
 import I18n from "I18n";
-import { debounce } from "@ember/runloop";
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
