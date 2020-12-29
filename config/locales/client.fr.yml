@@ -9,7 +9,6 @@ fr:
     encrypt:
       title: "Messages chiffrés"
       decrypting: "Déchiffrement en cours…"
-      decryption_failed: "Ce message n'a pas pu être déchiffré."
       no_backup_warn: "Vous avez activé le chiffrement, mais n'avez généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour en générer une, veuillez vous rendre <a href='%{basePath}/my/preferences/account'>sur votre page de préférences</a> , cliquez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
@@ -70,9 +69,7 @@ fr:
         instructions: "L'export de votre paire de clés de chiffrement offre un autre mécanisme de sauvegarde. Merci de tenir compte du fait que la paire de clé exportée n'est pas protégée et peut déchiffrer toutes vos conversations privées."
       reset:
         title: "Désactiver les messages directs chiffrés"
-        instructions: "Êtes-vous sûr de vouloir désactiver les messages directs chiffrés et réinitialiser votre clé de chiffrement ? Cette opération supprime votre clé de chiffrement pour toujours. Vous ne pourrez accéder à aucun de vos messages directs chiffrés sauf si vous avez exporté la paire de clés. Toutefois, vous pouvez activer les messages directs chiffrés en générant une nouvelle paire de clés ultérieurement."
         confirm_instructions: "Veuillez entrer <code>%{username}</code> pour confirmer :"
-        everything: "Supprimez-moi de tous les messages directs chiffrés (laissez cette case décochée si vous prévoyez d'importer cette paire de clés ultérieurement)"
       time_bomb:
         title: "Ce message sera définitivement supprimé après %{after}"
         never: "Jamais"

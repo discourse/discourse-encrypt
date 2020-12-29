@@ -9,7 +9,6 @@ pl_PL:
     encrypt:
       title: "Zaszyfrowane wiadomości"
       decrypting: "Odszyfrowywanie ..."
-      decryption_failed: "Nie można odszyfrować tej wiadomości."
       no_backup_warn: "Włączyłeś szyfrowanie, ale nie wygenerowałeś żadnych papierowych kluczy. Bez papierowych kluczy ryzykujesz utratę dostępu do zaszyfrowanych wiadomości. Aby je wygenerować, przejdź do strony <a href='%{basePath}/my/preferences/account'>preferencji użytkownika</a>, naciśnij przycisk <kbd>wygeneruj papierowy klucz</kbd> i postępuj zgodnie z instrukcjami."
       integrity_check_pass: "Sprawdzanie integralności tego postu zakończyło się pomyślnie."
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
@@ -70,9 +69,7 @@ pl_PL:
         instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
       reset:
         title: "Wyłącz zaszyfrowane wiadomości"
-        instructions: "Czy na pewno chcesz wyłączyć szyfrowane wiadomości i zresetować klucz szyfrowania? Ta operacja usuwa klucz szyfrowania na zawsze. Nie będziesz mieć dostępu do żadnej ze swoich aktualnie zaszyfrowanych prywatnych wiadomości, jeśli nie masz wyeksportowanej pary kluczy. Możesz jednak włączyć zaszyfrowane wiadomości, generując nową parę kluczy w dowolnym późniejszym czasie."
         confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
-        everything: "Usuń mnie ze wszystkich zaszyfrowanych wiadomości prywatnych (pozostaw niezaznaczone, jeśli planujesz zaimportować tę parę kluczy w późniejszym czasie)"
       time_bomb:
         title: "Ta wiadomość zostanie trwale usunięta po %{after}"
         never: "Nigdy"

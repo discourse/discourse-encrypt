@@ -9,7 +9,6 @@ it:
     encrypt:
       title: "Messaggi Codificati"
       decrypting: "Decodifica in corso..."
-      decryption_failed: "Questo messaggio non può essere decodificato."
       integrity_check_pass: "Il controllo di integrità per questo messaggio è riuscito."
       integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito(%{fields}mancata corrispondenza)."
       integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."

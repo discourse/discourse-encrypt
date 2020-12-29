@@ -9,7 +9,10 @@ sv:
     encrypt:
       title: "Krypterade meddelanden"
       decrypting: "Avkrypterar..."
-      decryption_failed: "Detta meddelande kunde inte avkrypteras."
+      missing_topic_key: "Det här meddelandet kunde inte avkrypteras eftersom du inte har någon ämnesnyckel för det här meddelandet. Har du bjudits in till det här ämnet?"
+      invalid_ciphertext: "Meddelandet kunde inte avkrypteras eftersom chiffertexten i detta meddelande är ogiltig."
+      invalid_topic_key: "Meddelandet kunde inte avkrypteras eftersom din ämnesnyckel är ogiltig."
+      invalid_identity: "Meddelandet kunde inte avkrypteras eftersom användaridentiteten är ogiltig."
       no_backup_warn: "Du aktiverade kryptering, men skapade inga pappersnycklar. Utan några pappersnycklar riskerar du att förlora åtkomst till dina krypterade meddelanden. För att generera en, vänligen navigera till <a href='%{basePath}/my/preferences/account'>sida för användarinställningar</a>, Tryck på <kbd>Generera pappersnyckel</kbd> och följ instruktionerna."
       integrity_check_pass: "Integritetskontrollen för detta inlägg har godkänts."
       integrity_check_fail: "Integritetskontrollen för detta inlägg har misslyckats (%{fields} är felaktigt)."
@@ -70,9 +73,12 @@ sv:
         instructions: "Att exportera ditt nyckelpar är en annan reservåtgärd. Notera att det exporterade nyckelparet är oskyddat och kan avkryptera alla dina privata samtal."
       reset:
         title: "Inaktivera krypterade meddelanden"
-        instructions: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Denna åtgärd tar bort krypteringsnyckeln för evigt. Du kommer inte att kunna komma åt något av dina nuvarande krypterade privata meddelanden om du inte har det exporterade nyckelparet. Du kan dock aktivera krypterade meddelanden genom att generera ett nytt nyckelpar vid ett senare tillfälle."
+        instructions: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Den här åtgärden raderar din krypteringsnyckel för alltid och du kommer inte att kunna komma åt några av dina krypterade privata meddelanden längre."
+        instructions_lost_pms:
+          one: "Du kommer <strong>permanent</strong> att förlora åtkomst till %{count} krypterat meddelande."
+          other: "Du kommer <strong>permanent</strong> att förlora åtkomst till %{count} krypterade meddelanden."
+        instructions_safe: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Du kan aktivera krypterade meddelanden igen genom att generera ett nytt nyckelpar."
         confirm_instructions: "Ange <code>%{username}</code> för att bekräfta:"
-        everything: "Ta bort mig från alla krypterade privata meddelanden (lämna omarkerat om du planerar att importera nyckelparet vid ett senare tillfälle)"
       time_bomb:
         title: "Detta meddelande raderas permanent efter %{after}"
         never: "Aldrig"

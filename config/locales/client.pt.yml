@@ -9,7 +9,6 @@ pt:
     encrypt:
       title: "Mensagens Encriptadas"
       decrypting: "A desencriptar..."
-      decryption_failed: "Não foi possível desencriptar esta mensagem."
       integrity_check_pass: "A verificação de integridade para esta publicação expirou."
       integrity_check_fail: "A verificação de integridade para esta publicação falhou (disparidade %{fields})."
       manage_paper_keys:
