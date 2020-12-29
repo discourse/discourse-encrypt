@@ -9,7 +9,10 @@ de:
     encrypt:
       title: "Verschlüsselte Nachrichten"
       decrypting: "Entschlüssele..."
-      decryption_failed: "Diese Nachricht kann nicht entschlüsselt werden."
+      missing_topic_key: "Diese Nachricht konnte nicht entschlüsselt werden, da Sie keinen Themenschlüssel für diese Nachricht haben. Wurden Sie zu diesem Thema eingeladen?"
+      invalid_ciphertext: "Die Nachricht konnte nicht entschlüsselt werden, da der Verschlüsselungstext dieser Nachricht ungültig ist."
+      invalid_topic_key: "Die Nachricht konnte nicht entschlüsselt werden, da Ihr Themenschlüssel ungültig ist."
+      invalid_identity: "Die Nachricht konnte nicht entschlüsselt werden, da die Benutzeridentität ungültig ist."
       no_backup_warn: "Sie haben die Verschlüsselung aktiviert, aber keine Papierschlüssel generiert. Ohne Papierschlüssel laufen Sie Gefahr, den Zugriff auf Ihre verschlüsselten Nachrichten zu verlieren. Um eine zu generieren, navigieren Sie bitte auf <a href='%{basePath}/my/preferences/account'>Benutzereinstellungen Seite</a>, drücken Sie die <kbd>Papier-Taste</kbd> und folgen Sie den Anweisungen."
       integrity_check_pass: "Die Integritätsprüfung für diesen Beitrag war gültig."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
@@ -70,9 +73,12 @@ de:
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
       reset:
         title: "Deaktivieren verschlüsselter Nachrichten"
-        instructions: "Möchten Sie verschlüsselte Nachrichten wirklich deaktivieren und Ihren Verschlüsselungsschlüssel zurücksetzen? Dieser Vorgang löscht Ihren Verschlüsselungsschlüssel für immer. Sie können auf keine Ihrer aktuell verschlüsselten privaten Nachrichten zugreifen, es sei denn, Sie haben das exportierte Schlüsselpaar. Sie können jedoch verschlüsselte Nachrichten aktivieren, indem Sie zu einem späteren Zeitpunkt ein neues Schlüsselpaar generieren."
+        instructions: "Möchten Sie verschlüsselte Nachrichten wirklich deaktivieren und Ihren Verschlüsselungsschlüssel zurücksetzen? Dieser Vorgang löscht Ihren Verschlüsselungsschlüssel für immer und Sie können nicht mehr auf Ihre verschlüsselten privaten Nachrichten zugreifen."
+        instructions_lost_pms:
+          one: "Sie werden <strong>dauerhaft</strong> den Zugriff auf %{count} verschlüsselte Nachrichten verlieren."
+          other: "Sie werden <strong>dauerhaft</strong> den Zugriff auf %{count} verschlüsselte Nachrichten verlieren."
+        instructions_safe: "Sind Sie sicher, dass Sie verschlüsselte Nachrichten deaktivieren und Ihren Verschlüsselungsschlüssel zurücksetzen möchten? Sie können verschlüsselte Nachrichten wieder aktivieren, indem Sie ein neues Schlüsselpaar erzeugen."
         confirm_instructions: "Bitte gib <code>%{username}</code> zur Bestätigung ein:"
-        everything: "Entferne mich aus allen verschlüsselten privaten Nachrichten (lassen Sie deaktiviert, wenn Sie dieses Schlüsselpaar zu einem späteren Zeitpunkt importieren möchten)"
       time_bomb:
         title: "Diese Nachricht wird nach %{after}dauerhaft gelöscht"
         never: "nie"

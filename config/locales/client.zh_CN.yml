@@ -9,7 +9,6 @@ zh_CN:
     encrypt:
       title: "已加密消息"
       decrypting: "正在解密..."
-      decryption_failed: "这条私信/消息无法被解密"
       integrity_check_pass: "这个帖子的完整性检查已通过"
       integrity_check_fail: "这个帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据更新，但没有再次签名。"

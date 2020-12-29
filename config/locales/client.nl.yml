@@ -9,7 +9,6 @@ nl:
     encrypt:
       title: "Versleutelde berichten"
       decrypting: "Ontcijferen..."
-      decryption_failed: "Dit bericht kon niet worden ontcijferd."
       no_backup_warn: "U hebt versleuteling ingeschakeld, maar geen papieren sleutels gegenereerd. Zonder papieren sleutels loopt u het risico de toegang tot uw versleutelde berichten te verliezen. Navigeer naar de <a href='%{basePath}/my/preferences/account'>pagina met gebruikersvoorkeuren</a>, klik op de knop <kbd>Papieren sleutel genereren</kbd> en volg de instructies om er een te genereren."
       integrity_check_pass: "De integriteitscontrole voor dit bericht is voltooid."
       integrity_check_fail: "De integriteitscontrole voor dit bericht is mislukt (geen overeenkomst voor %{fields})."
