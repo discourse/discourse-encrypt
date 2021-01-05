@@ -69,6 +69,11 @@ fr:
         instructions: "L'export de votre paire de clés de chiffrement offre un autre mécanisme de sauvegarde. Merci de tenir compte du fait que la paire de clé exportée n'est pas protégée et peut déchiffrer toutes vos conversations privées."
       reset:
         title: "Désactiver les messages directs chiffrés"
+        instructions: "Êtes-vous sûr de vouloir désactiver les messages chiffrés et réinitialiser votre clé de chiffrement ? Cette opération supprime définitivement votre clé de chiffrement et vous ne pourrez plus accéder à aucun de vos messages directs chiffrés."
+        instructions_lost_pms:
+          one: "Vous perdrez <strong>définitivement</strong> l'accès à %{count} message chiffré."
+          other: "Vous perdrez <strong>définitivement</strong> l'accès à %{count} messages chiffrés."
+        instructions_safe: "Êtes-vous sûr de vouloir désactiver les messages chiffrés et réinitialiser votre clé de chiffrement ? Vous pouvez réactiver les messages chiffrés en générant une nouvelle paire de clés."
         confirm_instructions: "Veuillez entrer <code>%{username}</code> pour confirmer :"
       time_bomb:
         title: "Ce message sera définitivement supprimé après %{after}"
