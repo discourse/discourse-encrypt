@@ -30,6 +30,7 @@ after_initialize do
   load File.expand_path('../lib/openssl.rb', __FILE__)
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
   load File.expand_path('../lib/topic_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topic_guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/user_extensions.rb', __FILE__)
@@ -64,6 +65,7 @@ after_initialize do
     Email::Sender.class_eval         { prepend EmailSenderExtensions }
     UserNotifications.class_eval     { prepend UserNotificationsExtensions }
     TopicViewSerializer.class_eval   { prepend TopicViewSerializerExtension }
+    TopicGuardian.class_eval         { prepend TopicGuardianExtension }
   end
 
   # Send plugin-specific topic data to client via serializers.
