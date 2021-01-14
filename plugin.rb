@@ -20,22 +20,23 @@ after_initialize do
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_post_timer.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
-  load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypted_post_timer_evaluator.rb', __FILE__)
+  load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_post_timer.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
+  load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
+  load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
+  load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
+  load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
   load File.expand_path('../lib/topic_extensions.rb', __FILE__)
-  load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
-  load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
-  load File.expand_path('../lib/user_extensions.rb', __FILE__)
-  load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topic_guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/topic_view_serializer_extension.rb', __FILE__)
-  load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
+  load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
+  load File.expand_path('../lib/user_extensions.rb', __FILE__)
 
   class DiscourseEncrypt::Engine < Rails::Engine
     engine_name DiscourseEncrypt::PLUGIN_NAME
@@ -56,14 +57,15 @@ after_initialize do
   end
 
   reloadable_patch do |plugin|
-    Post.class_eval                  { prepend PostExtensions }
-    Topic.class_eval                 { prepend TopicExtensions }
-    TopicsController.class_eval      { prepend TopicsControllerExtensions }
-    PostActionsController.class_eval { prepend PostActionsControllerExtensions }
-    User.class_eval                  { prepend UserExtensions }
     Email::Sender.class_eval         { prepend EmailSenderExtensions }
-    UserNotifications.class_eval     { prepend UserNotificationsExtensions }
+    Post.class_eval                  { prepend PostExtensions }
+    PostActionsController.class_eval { prepend PostActionsControllerExtensions }
+    Topic.class_eval                 { prepend TopicExtensions }
+    TopicGuardian.class_eval         { prepend TopicGuardianExtension }
+    TopicsController.class_eval      { prepend TopicsControllerExtensions }
     TopicViewSerializer.class_eval   { prepend TopicViewSerializerExtension }
+    User.class_eval                  { prepend UserExtensions }
+    UserNotifications.class_eval     { prepend UserNotificationsExtensions }
   end
 
   # Send plugin-specific topic data to client via serializers.
