@@ -35,7 +35,7 @@ en:
 
       composer:
         encrypt: "Encrypt message?"
-        group_not_allowed: "You are not allowed to send messages to groups."
+        group_not_allowed: "You are not allowed to send encrypted messages to groups."
         user_has_no_key: "Unfortunately %{username} did not enable encrypted messages."
 
       preferences:
