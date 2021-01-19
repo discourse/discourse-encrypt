@@ -27,7 +27,6 @@ it:
         disabled: "Uno dei destinatari non ha abilitato la codifica."
       composer:
         encrypt: "Codificare il messaggio?"
-        group_not_allowed: "Non sei abilitato all'invio di messaggi ai gruppi."
         user_has_no_key: "Purtroppo %{username}non ha abilitato i messaggi codificati."
       preferences:
         ie11: "La suite di cifratura richiesta non è disponibile su Internet Explorer 11."

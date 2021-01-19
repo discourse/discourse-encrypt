@@ -27,7 +27,6 @@ zh_CN:
         disabled: "其中一个收件人没有启用加密功能。"
       composer:
         encrypt: "加密私信/消息？"
-        group_not_allowed: "你不被允许向群组发送私信/消息。"
         user_has_no_key: "可惜%{username}没有启用加密私信/消息。"
       preferences:
         ie11: "所需的密码套件在 Internet Explorer 11 中不可用。"
