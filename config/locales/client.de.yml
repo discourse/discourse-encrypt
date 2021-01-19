@@ -33,7 +33,6 @@ de:
         disabled: "Eine Empfänger hat Verschlüsselung nicht aktiviert."
       composer:
         encrypt: "Nachricht verschlüsseln?"
-        group_not_allowed: "Du bist nicht berechtigt Nachrichten an Gruppen zu schicken. "
         user_has_no_key: "Leider hat %{username} keine verschlüsselten Nachrichten aktiviert."
       preferences:
         ie11: "Die erforderliche Verschlüsselungssuite ist in Internet Explorer 11 nicht verfügbar."

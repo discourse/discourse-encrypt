@@ -29,7 +29,6 @@ pl_PL:
         disabled: "Jeden z odbiorców nie włączył szyfrowania."
       composer:
         encrypt: "Zaszyfrować wiadomość?"
-        group_not_allowed: "Nie masz uprawnień do wysyłania wiadomości do grup."
         user_has_no_key: "Niestety %{username} nie włączył zaszyfrowanych wiadomości."
       preferences:
         ie11: "Wymagany zestaw szyfrów jest niedostępny w przeglądarce Internet Explorer 11."

@@ -33,7 +33,6 @@ he:
         disabled: "אחד הנמענים לא הפעיל הצפנה."
       composer:
         encrypt: "להצפין את ההודעה?"
-        group_not_allowed: "אסור לך לשלוח הודעות לקבוצות."
         user_has_no_key: "לרוע המזל לא הופעלו הודעות מוצפנות מצד %{username}."
       preferences:
         ie11: "סדרת הצפנית הנדרשת אינה זמינה ב־Internet Explorer 11."

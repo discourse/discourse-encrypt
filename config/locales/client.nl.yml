@@ -29,7 +29,6 @@ nl:
         disabled: "Een van de ontvangers heeft geen versleuteling ingeschakeld."
       composer:
         encrypt: "Bericht versleutelen?"
-        group_not_allowed: "U mag geen berichten naar groepen sturen."
         user_has_no_key: "Helaas heeft %{username} geen versleutelde berichten ingeschakeld."
       preferences:
         ie11: "De vereiste coderingssuite is niet beschikbaar in Internet Explorer 11."

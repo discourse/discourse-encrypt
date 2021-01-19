@@ -29,7 +29,6 @@ fr:
         disabled: "Un des destinataires n’a pas autorisé le chiffrement"
       composer:
         encrypt: "Chiffrer votre message ?"
-        group_not_allowed: "Vous n'avez pas la permission d'envoyer des messages aux groupes."
         user_has_no_key: "Malheureusement %{username} n'a pas autorisé les messages chiffrés."
       preferences:
         ie11: "La suite cryptographique requise n'est pas disponible sous Internet Explorer 11."
