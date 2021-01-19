@@ -33,7 +33,7 @@ ru:
         disabled: "Один из получателей не включил шифрование."
       composer:
         encrypt: "Зашифровать сообщение?"
-        group_not_allowed: "У вас нет прав для отправки сообщений группам пользователей."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "К сожалению, пользователь %{username} не включил шифрование сообщений."
       preferences:
         ie11: "Требуемый способ шифрования не поддерживается браузером Internet Explorer 11."

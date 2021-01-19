@@ -12,4 +12,5 @@ it:
     no_encrypt_keys: "Qualcosa è andato storto. Nessuna chiave di crittografia è stata inclusa nel payload."
   site_settings:
     encrypt_enabled: "Abilita messaggi privati crittografati."
+    auto_enable_encrypt: "Automatically enable encrypt for all logged in users"
     encrypt_groups: "Nome dei gruppi che possono utilizzare la crittografia (vuoto significa tutti)."

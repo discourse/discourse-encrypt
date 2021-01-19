@@ -33,7 +33,7 @@ sv:
         disabled: "En av mottagarna har inte aktiverat kryptering."
       composer:
         encrypt: "Kryptera meddelande?"
-        group_not_allowed: "Du är inte behörig att skicka meddelanden till grupper."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "Tyvärr aktiverade inte %{username} krypterade meddelanden."
       preferences:
         ie11: "Den nödvändiga chiffer-uppsättningen är inte tillgänglig i Internet Explorer 11."

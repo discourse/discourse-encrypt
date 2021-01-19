@@ -9,6 +9,11 @@ zh_CN:
     encrypt:
       title: "已加密消息"
       decrypting: "正在解密..."
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
+      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
       integrity_check_pass: "这个帖子的完整性检查已通过"
       integrity_check_fail: "这个帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据更新，但没有再次签名。"
@@ -16,6 +21,7 @@ zh_CN:
       encrypted_topic_title: "一条安全私信/消息"
       encrypted_post: "这是一条端到端加密的私信/消息。你必须受到邀请才能查看这个主题。"
       encrypted_post_email: "这是一条端到端加密的私信/消息。你必须访问该主题才能查看。"
+      encrypted_post_email_timer_annotation: "This message will be permanently deleted at %{delete_at}"
       encrypted_icon_title: "这个私信/消息是端到端加密的。"
       encrypted_uploads: "目前无法对上传内容进行加密。"
       cannot_encrypt: "你不能在这个讨论中加密私信/消息。"
@@ -27,7 +33,7 @@ zh_CN:
         disabled: "其中一个收件人没有启用加密功能。"
       composer:
         encrypt: "加密私信/消息？"
-        group_not_allowed: "你不被允许向群组发送私信/消息。"
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "可惜%{username}没有启用加密私信/消息。"
       preferences:
         ie11: "所需的密码套件在 Internet Explorer 11 中不可用。"
@@ -39,20 +45,46 @@ zh_CN:
         status_disabled_other: "该用户没有启用加密功能，无法接收加密私信/消息。"
         passphrase_label: "密码短语："
         passphrase_invalid: "你输入的密码短语不正确。"
+        key_pair_invalid: "The key pair you entered is incorrect."
         notice_active: |
           <p>请使用其他设备或纸质钥匙来激活这个设备。不要忘记字与字之间的空格。<p>
         notice_import: |
           <p>请粘贴你之前导出的加密密钥。</p>
+        activate: "Activate encrypted messages"
+        deactivate: "Deactivate encryption on this device"
+        enable: "Enable encrypted messages"
+        import: "Import encryption key pair"
+        use_paper_key: "Decrypt key pair using paper key"
+        generate_key: "Generate new encryption key pair"
       generate_paper_key:
+        title: "Generate paper key"
+        title_device: "Activate another device"
         instructions: "这是你唯一的纸质密钥，它允许你激活未来的其它加密设备。这是你唯一一次看到它，请一定要写下来，并把它存放在安全的地方。"
         instructions_device: "在你的新设备上，进入偏好设置，使用以下密码短语激活加密功能："
       manage_paper_keys:
+        title: "Manage paper keys"
         instructions: "你可以在下面删除任何一个之前生成的纸质密钥。一旦删除，纸质密钥将无法恢复，所以请确保你至少有一个纸质密钥或其它活动设备。"
         delete: "删除"
         no_key: "你没有纸质密钥，请确保你至少有一个纸质密钥或其它活动设备。"
         passphrase: "基于密码短语"
         not_recommended: "（不推荐）"
       export:
+        title: "Export encryption key pair"
         instructions: "导出你的密钥对是另一种备份机制。请注意，导出的密钥对是不受保护的，它可以解密你的所有私人对话。"
       reset:
+        title: "Disable encrypted messages"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "请点击<code>%{username}</code>确认："
+      time_bomb:
+        title: "This message will be permanently deleted after %{after}"
+        never: "Never"
+        3_minutes: "3 minutes"
+        1_hour: "1 hour"
+        3_hours: "3 hours"
+        12_hours: "12 hours"
+        24_hours: "24 hours"
+        3_days: "3 days"
+        7_days: "7 days"

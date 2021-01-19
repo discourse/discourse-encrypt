@@ -12,4 +12,5 @@ pt:
     no_encrypt_keys: "Ocorreu algo de errado. Não foram incluídas chaves de encriptação na carga útil."
   site_settings:
     encrypt_enabled: "Ative as mensagens privadas encriptadas."
+    auto_enable_encrypt: "Automatically enable encrypt for all logged in users"
     encrypt_groups: "O nome dos grupos que podem utilizar a encriptação (vazio significa toda a gente)."

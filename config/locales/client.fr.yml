@@ -9,6 +9,10 @@ fr:
     encrypt:
       title: "Messages chiffrés"
       decrypting: "Déchiffrement en cours…"
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
       no_backup_warn: "Vous avez activé le chiffrement, mais n'avez généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour en générer une, veuillez vous rendre <a href='%{basePath}/my/preferences/account'>sur votre page de préférences</a> , cliquez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
@@ -29,7 +33,7 @@ fr:
         disabled: "Un des destinataires n’a pas autorisé le chiffrement"
       composer:
         encrypt: "Chiffrer votre message ?"
-        group_not_allowed: "Vous n'avez pas la permission d'envoyer des messages aux groupes."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "Malheureusement %{username} n'a pas autorisé les messages chiffrés."
       preferences:
         ie11: "La suite cryptographique requise n'est pas disponible sous Internet Explorer 11."

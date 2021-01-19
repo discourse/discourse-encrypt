@@ -4,4 +4,13 @@
 # To work with us on translations, join this project:
 # https://translate.discourse.org/
 
-lt: 
+lt:
+  encrypt:
+    encrypted_excerpt: "This message is encrypted, please read it in the browser."
+    enabled_already: "You have already enabled encrypted messages."
+    only_pms: "Only private messages can be encrypted."
+    no_encrypt_keys: "Something went wrong. No encryption keys were included in the payload."
+  site_settings:
+    encrypt_enabled: "Enable encrypted private messages."
+    auto_enable_encrypt: "Automatically enable encrypt for all logged in users"
+    encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."

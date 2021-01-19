@@ -9,6 +9,10 @@ pl_PL:
     encrypt:
       title: "Zaszyfrowane wiadomości"
       decrypting: "Odszyfrowywanie ..."
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
       no_backup_warn: "Włączyłeś szyfrowanie, ale nie wygenerowałeś żadnych papierowych kluczy. Bez papierowych kluczy ryzykujesz utratę dostępu do zaszyfrowanych wiadomości. Aby je wygenerować, przejdź do strony <a href='%{basePath}/my/preferences/account'>preferencji użytkownika</a>, naciśnij przycisk <kbd>wygeneruj papierowy klucz</kbd> i postępuj zgodnie z instrukcjami."
       integrity_check_pass: "Sprawdzanie integralności tego postu zakończyło się pomyślnie."
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
@@ -29,7 +33,7 @@ pl_PL:
         disabled: "Jeden z odbiorców nie włączył szyfrowania."
       composer:
         encrypt: "Zaszyfrować wiadomość?"
-        group_not_allowed: "Nie masz uprawnień do wysyłania wiadomości do grup."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "Niestety %{username} nie włączył zaszyfrowanych wiadomości."
       preferences:
         ie11: "Wymagany zestaw szyfrów jest niedostępny w przeglądarce Internet Explorer 11."
@@ -69,6 +73,13 @@ pl_PL:
         instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
       reset:
         title: "Wyłącz zaszyfrowane wiadomości"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
+          few: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+          many: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
       time_bomb:
         title: "Ta wiadomość zostanie trwale usunięta po %{after}"

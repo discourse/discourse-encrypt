@@ -9,6 +9,11 @@ uk:
     encrypt:
       title: "Зашифровані повідомлення"
       decrypting: "Дешифрування ..."
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
+      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
       integrity_check_pass: "Перевірка цілісності для цієї публікації пройшла."
       integrity_check_fail: "Не вдалося перевірити цілісність цієї публікації (невідповідність %{fields})."
       integrity_check_warn_updated_at: "Метадані публікації оновлено, без підписування знову."
@@ -16,6 +21,7 @@ uk:
       encrypted_topic_title: "Таємне повідомлення"
       encrypted_post: "Це таємне повідомлення з шифруванням. Щоб переглянути його, вас потрібно бути запрошено до цієї теми."
       encrypted_post_email: "Це таємне повідомлення з шифруванням. Ви повинні відвідати тему, щоб переглянути це."
+      encrypted_post_email_timer_annotation: "This message will be permanently deleted at %{delete_at}"
       encrypted_icon_title: "Це повідомлення зашифроване."
       encrypted_uploads: "Наразі завантаження не можна зашифрувати."
       cannot_encrypt: "Ви не можете шифрувати повідомлення в цій розмові."
@@ -27,7 +33,7 @@ uk:
         disabled: "Один із одержувачів не ввімкнув шифрування."
       composer:
         encrypt: "Шифрувати повідомлення?"
-        group_not_allowed: "Вам не дозволяється надсилати повідомлення групам."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "На жаль, %{username} не включив зашифровані повідомлення."
       preferences:
         ie11: "Необхідний набір шифрів недоступний в Internet Explorer 11."
@@ -39,18 +45,49 @@ uk:
         status_disabled_other: "Цей користувач не ввімкнув шифрування і не може отримувати зашифровані повідомлення."
         passphrase_label: "Парольна фраза:"
         passphrase_invalid: "Введений вами пароль невірний."
+        key_pair_invalid: "The key pair you entered is incorrect."
         notice_active: |
           <p>Для активації цього пристрою використовуйте інший пристрій або паперовий носій. Не забувайте про пробіли між словами.<p>
         notice_import: |
           <p>Будь ласка, вставте ключ шифрування, який ви експортували раніше.</p>
+        activate: "Activate encrypted messages"
+        deactivate: "Deactivate encryption on this device"
+        enable: "Enable encrypted messages"
+        import: "Import encryption key pair"
+        use_paper_key: "Decrypt key pair using paper key"
+        generate_key: "Generate new encryption key pair"
       generate_paper_key:
+        title: "Generate paper key"
+        title_device: "Activate another device"
         instructions: "Ось ваш унікальний паперовий ключ, він може дозволити вам активувати майбутні зашифровані пристрої. Це єдиний раз, коли ви це побачите, тому обов&#39;язково запишіть його та зберігайте десь у безпеці."
         instructions_device: "На новому пристрої перейдіть до налаштувань і використовуйте наступну фразу для активації шифрування:"
       manage_paper_keys:
+        title: "Manage paper keys"
         instructions: "Нижче ви можете видалити будь-який зі створених раніше паперових ключів. Після видалення ключ неможливо відновити, тому переконайтеся, що у вас є хоча б один паперовий ключ або інші активні пристрої."
         delete: "Видалити"
         no_key: "У вас немає паперових ключів. Переконайтеся, що у вас є принаймні один ключ на папері або інші активні пристрої."
         passphrase: "на основі парольної фрази"
         not_recommended: "(не рекомендовано)"
       export:
+        title: "Export encryption key pair"
         instructions: "Експорт вашої пари ключів - ще один механізм резервного копіювання. Зауважте, що експортована пара ключів незахищена, і вона зможе розшифрувати всі ваші приватні розмови."
+      reset:
+        title: "Disable encrypted messages"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
+          few: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+          many: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
+        confirm_instructions: "Please type <code>%{username}</code> to confirm:"
+      time_bomb:
+        title: "This message will be permanently deleted after %{after}"
+        never: "Never"
+        3_minutes: "3 minutes"
+        1_hour: "1 hour"
+        3_hours: "3 hours"
+        12_hours: "12 hours"
+        24_hours: "24 hours"
+        3_days: "3 days"
+        7_days: "7 days"

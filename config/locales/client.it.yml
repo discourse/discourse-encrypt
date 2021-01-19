@@ -9,6 +9,11 @@ it:
     encrypt:
       title: "Messaggi Codificati"
       decrypting: "Decodifica in corso..."
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
+      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
       integrity_check_pass: "Il controllo di integrità per questo messaggio è riuscito."
       integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito(%{fields}mancata corrispondenza)."
       integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."
@@ -16,6 +21,7 @@ it:
       encrypted_topic_title: "Un messaggio segreto"
       encrypted_post: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi essere invitato a questo argomento."
       encrypted_post_email: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi visitare questo argomento."
+      encrypted_post_email_timer_annotation: "This message will be permanently deleted at %{delete_at}"
       encrypted_icon_title: "Questo è un messaggio ha una codifica punto-punto.  "
       encrypted_uploads: "I caricamenti non possono essere codificati al momento."
       cannot_encrypt: "Non è possibile codificare i messaggi in questa conversazione."
@@ -27,7 +33,7 @@ it:
         disabled: "Uno dei destinatari non ha abilitato la codifica."
       composer:
         encrypt: "Codificare il messaggio?"
-        group_not_allowed: "Non sei abilitato all'invio di messaggi ai gruppi."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "Purtroppo %{username}non ha abilitato i messaggi codificati."
       preferences:
         ie11: "La suite di cifratura richiesta non è disponibile su Internet Explorer 11."
@@ -39,20 +45,47 @@ it:
         status_disabled_other: "L'utente non ha abilitato la codifica e non può ricevere messaggi codificati."
         passphrase_label: "Password:"
         passphrase_invalid: "La password che hai inserito non è corretta."
+        key_pair_invalid: "The key pair you entered is incorrect."
         notice_active: |
           <p>Usa un'altro dispositivo o una chiave cartacea per attivare questo dispositivo. Non dimenticare gli spazi tra le parole.<p>
         notice_import: |
           <p>Incolla la chiave di codifica che hai precedentemente esportato.</p>
+        activate: "Activate encrypted messages"
+        deactivate: "Deactivate encryption on this device"
+        enable: "Enable encrypted messages"
+        import: "Import encryption key pair"
+        use_paper_key: "Decrypt key pair using paper key"
+        generate_key: "Generate new encryption key pair"
       generate_paper_key:
+        title: "Generate paper key"
+        title_device: "Activate another device"
         instructions: "Ecco la tua chiave cartacea univoca, ti permetterà di attivare altri dispositivi codificati. Questa è l'unica volta in cui ti sarà mostrata, quindi accertati di copiarla e di custodirla in un luogo sicuro.  "
         instructions_device: "Sul nuovo dispositivo vai sulle preferenze ed usa la seguente password per attivare la codifica:"
       manage_paper_keys:
+        title: "Manage paper keys"
         instructions: "Da qui puoi cancellare le chiavi cartacee generate in precedenza. Una volta cancellata una chiave cartacea non può più essere ripristinata, perciò assicurati di lasciarne almeno una, oppure di avere altri dispositivi attivi."
         delete: "Elimina"
         no_key: "Non hai chiavi cartacee. Assicurati di averne almeno una, oppure di avere altri dispositivi attivi."
         passphrase: "basato su password"
         not_recommended: "(sconsigliato)"
       export:
+        title: "Export encryption key pair"
         instructions: "Si esporta una coppia di chiavi a scopo di backup. Nota bene: la coppia di chiavi esportata non è protetta e può decodificare tutte le tue conversazioni private. "
       reset:
+        title: "Disable encrypted messages"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "Digita <code>%{username}</code> per confermare:"
+      time_bomb:
+        title: "This message will be permanently deleted after %{after}"
+        never: "Never"
+        3_minutes: "3 minutes"
+        1_hour: "1 hour"
+        3_hours: "3 hours"
+        12_hours: "12 hours"
+        24_hours: "24 hours"
+        3_days: "3 days"
+        7_days: "7 days"

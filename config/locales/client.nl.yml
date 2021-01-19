@@ -9,6 +9,10 @@ nl:
     encrypt:
       title: "Versleutelde berichten"
       decrypting: "Ontcijferen..."
+      missing_topic_key: "This message could not be decrypted because you have no topic key for this message. Were you invited to this topic?"
+      invalid_ciphertext: "The message could not be decrypted because the ciphertext of this message is invalid."
+      invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
+      invalid_identity: "The message could not be decrypted because the user identity is invalid."
       no_backup_warn: "U hebt versleuteling ingeschakeld, maar geen papieren sleutels gegenereerd. Zonder papieren sleutels loopt u het risico de toegang tot uw versleutelde berichten te verliezen. Navigeer naar de <a href='%{basePath}/my/preferences/account'>pagina met gebruikersvoorkeuren</a>, klik op de knop <kbd>Papieren sleutel genereren</kbd> en volg de instructies om er een te genereren."
       integrity_check_pass: "De integriteitscontrole voor dit bericht is voltooid."
       integrity_check_fail: "De integriteitscontrole voor dit bericht is mislukt (geen overeenkomst voor %{fields})."
@@ -29,7 +33,7 @@ nl:
         disabled: "Een van de ontvangers heeft geen versleuteling ingeschakeld."
       composer:
         encrypt: "Bericht versleutelen?"
-        group_not_allowed: "U mag geen berichten naar groepen sturen."
+        group_not_allowed: "Encryption disabled - unsupported for group messages."
         user_has_no_key: "Helaas heeft %{username} geen versleutelde berichten ingeschakeld."
       preferences:
         ie11: "De vereiste coderingssuite is niet beschikbaar in Internet Explorer 11."
@@ -46,6 +50,10 @@ nl:
           <p>Gebruik een ander apparaat of een papieren sleutel om dit apparaat te activeren. Denk aan de spaties tussen woorden.<p>
         notice_import: |
           <p>Plak de coderingssleutel die u eerder hebt geëxporteerd.</p>
+        activate: "Activate encrypted messages"
+        deactivate: "Deactivate encryption on this device"
+        enable: "Enable encrypted messages"
+        import: "Import encryption key pair"
         use_paper_key: "Sleutelpaar decoderen met behulp van papieren sleutel"
         generate_key: "Nieuw coderingssleutelpaar genereren"
       generate_paper_key:
@@ -61,8 +69,15 @@ nl:
         passphrase: "wachtwoordzin-gebaseerd"
         not_recommended: "(niet aanbevolen)"
       export:
+        title: "Export encryption key pair"
         instructions: "Exporteren van uw sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al uw privéconversaties kan ontcijferen."
       reset:
+        title: "Disable encrypted messages"
+        instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
+        instructions_lost_pms:
+          one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
+          other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
+        instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "Typ <code>%{username}</code> ter bevestiging:"
       time_bomb:
         title: "Dit bericht wordt na %{after} definitief verwijderd"
