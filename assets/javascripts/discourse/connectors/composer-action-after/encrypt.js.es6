@@ -1,15 +1,10 @@
+import I18n from "I18n";
 import { getOwner } from "discourse-common/lib/get-owner";
-import { registerHelper } from "discourse-common/lib/helpers";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-
-// TODO: I believe this should get into core.
-// Handlebars offers `if` but no other helpers for conditions, which eventually
-// lead to a lot of JavaScript bloat.
-registerHelper("or", ([a, b]) => a || b);
 
 export default {
   setupComponent(args, component) {
@@ -40,36 +35,92 @@ export default {
       },
 
       clicked() {
-        this.set("model.showEncryptError", true);
-        if (!this.get("model.disableEncryptIndicator")) {
+        if (!this.disabled) {
           this.model.setProperties({
-            isEncrypted: !this.get("model.isEncrypted"),
-            overwriteDefault: true,
+            isEncrypted: !this.model.isEncrypted,
+            showEncryptError: !this.model.isEncrypted,
             deleteAfterMinutes: null,
             deleteAfterMinutesLabel: null,
           });
+        } else {
+          this.model.set("showEncryptError", !this.model.showEncryptError);
         }
       },
     });
 
     Ember.defineProperty(
       component,
-      "title",
+      "showEncryptControls",
       Ember.computed(
-        "model.isEncrypted",
-        "model.disableEncryptIndicator",
+        "model.isNew",
+        "model.creatingPrivateMessage",
+        "model.topic.encrypted_title",
         () => {
-          if (this.model.isEncrypted) {
-            return "encrypt.checkbox.checked";
-          } else if (this.model.disableEncryptIndicator) {
-            return "encrypt.checkbox.disabled";
-          } else {
-            return "encrypt.checkbox.unchecked";
-          }
+          return (
+            (this.model.isNew && this.model.creatingPrivateMessage) ||
+            (this.model.topic && this.model.topic.encrypted_title)
+          );
         }
       )
     );
+
+    // Whether the user can encrypt the current message or not.
+    //
+    // This is true usually when an encrypt error is set:
+    //  - the user does not have a key for the current topic
+    //  - one of the recipients is a group
+    //  - one of the recipients did not enable encrypt
+    Ember.defineProperty(
+      component,
+      "canEncrypt",
+      Ember.computed("model.encryptError", () => {
+        return !this.model.encryptError;
+      })
+    );
+
+    // Whether the user can disable encryption for the current message or not.
+    //
+    // A user cannot disable encryption when replying to an already encrypted
+    // private message.
+    Ember.defineProperty(
+      component,
+      "canDisableEncrypt",
+      Ember.computed("model.topic.encrypted_title", () => {
+        return !(this.model.topic && this.model.topic.encrypted_title);
+      })
+    );
+
+    // Whether the encryption checkbox is disabled or not.
+    Ember.defineProperty(
+      component,
+      "disabled",
+      Ember.computed(
+        "model.isEncrypted",
+        "canEncrypt",
+        "canDisableEncrypt",
+        () => {
+          return this.model.isEncrypted
+            ? !this.canDisableEncrypt
+            : !this.canEncrypt;
+        }
+      )
+    );
+
+    Ember.defineProperty(
+      component,
+      "title",
+      Ember.computed("model.isEncrypted", "model.encryptError", () => {
+        if (this.model.isEncrypted) {
+          return I18n.t("encrypt.checkbox.checked");
+        } else if (this.model.encryptError) {
+          return this.model.encryptError;
+        } else {
+          return I18n.t("encrypt.checkbox.unchecked");
+        }
+      })
+    );
   },
+
   actions: {
     timerClicked(actionId, { name }) {
       if (actionId) {
