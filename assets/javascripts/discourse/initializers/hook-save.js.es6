@@ -120,9 +120,6 @@ export default {
         if (args.target_recipients) {
           usernames = args.target_recipients.split(",");
         }
-        if (args.target_usernames) {
-          usernames = args.target_usernames.split(",");
-        }
 
         if (usernames.length > 0) {
           usernames.push(User.current().username);
