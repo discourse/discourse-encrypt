@@ -1,5 +1,8 @@
 import I18n from "I18n";
-import { observes, on } from "discourse-common/utils/decorators";
+import discourseComputed, {
+  observes,
+  on,
+} from "discourse-common/utils/decorators";
 import Composer from "discourse/models/composer";
 import {
   ENCRYPT_ACTIVE,
@@ -14,6 +17,7 @@ import {
   decrypt,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { Promise } from "rsvp";
 
 export default {
   name: "hook-composer",
@@ -30,46 +34,33 @@ export default {
 
     // Check recipients and show encryption status in composer.
     Composer.reopen({
+      @on("init")
+      @observes("creatingPrivateMessage", "topic")
       updateEncryptProperties() {
-        const encryptedTopic = this.topic && this.topic.encrypted_title;
-        const canEncryptTopic = this.topic && hasTopicKey(this.topic.id);
-        const newIsEncryped =
-          (encryptedTopic && canEncryptTopic) ||
-          (this.overwriteDefault
-            ? this.isEncrypted
-            : this.isNew && this.creatingPrivateMessage);
+        const isEncrypted =
+          (this.isNew && this.creatingPrivateMessage) ||
+          (this.get("topic.encrypted_title") && hasTopicKey(this.topic.id));
 
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
-          isEncrypted: newIsEncryped,
-          /** @var Disable encrypt indicator to enforce encrypted message, if
-                   message is encrypted, or enforce decrypted message if one
-                   of the recipients does not have encryption enabled. */
-          disableEncryptIndicator: encryptedTopic,
-          /** @var Current encryption error. */
-          encryptError: "",
-          /** @var Immediately show encryption error if it is fatal. */
-          showEncryptError: false,
+          isEncrypted,
+
+          /** @var Whether current error is shown or not. In most cases, it
+           *       is equal to `isEncrypted` except when `isEncrypted` is
+           *       forcibly set to false (i.e. when an error occurs).
+           */
+          showEncryptError: isEncrypted,
         });
       },
 
-      @on("init")
-      initEncrypt() {
-        this.updateEncryptProperties();
-      },
-
-      @observes("creatingPrivateMessage", "topic")
-      updateComposerEncrypt() {
-        this.updateEncryptProperties();
-      },
-
       @observes("targetRecipients")
-      checkKeys() {
+      checkEncryptRecipients() {
         if (!this.targetRecipients) {
           this.setProperties({
             isEncrypted: true,
-            disableEncryptIndicator: false,
-            encryptError: "",
+            showEncryptError: true,
+            encryptErrorUser: false,
+            encryptErrorGroup: false,
           });
           return;
         }
@@ -81,31 +72,61 @@ export default {
         if (usernames.some((username) => groupNames.has(username))) {
           this.setProperties({
             isEncrypted: false,
-            disableEncryptIndicator: true,
-            encryptError: I18n.t("encrypt.composer.group_not_allowed"),
             showEncryptError: this.showEncryptError || this.isEncrypted,
+            encryptErrorGroup: true,
           });
-          return;
+        } else {
+          this.setProperties({ encryptErrorGroup: false });
         }
 
         getUserIdentities(usernames)
           .then(() => {
-            this.setProperties({
-              disableEncryptIndicator: false,
-              encryptError: "",
-            });
+            this.setProperties({ encryptErrorUser: false });
           })
           .catch((username) => {
             this.setProperties({
               isEncrypted: false,
-              overwriteDefault: true,
-              disableEncryptIndicator: true,
-              encryptError: I18n.t("encrypt.composer.user_has_no_key", {
-                username,
-              }),
               showEncryptError: this.showEncryptError || this.isEncrypted,
+              encryptErrorUser: username,
             });
           });
+      },
+
+      @discourseComputed("topic.encrypted_title", "topic.id")
+      encryptErrorMissingKey(encryptedTitle, topicId) {
+        return encryptedTitle && !hasTopicKey(topicId);
+      },
+
+      @discourseComputed(
+        "encryptErrorMissingKey",
+        "encryptErrorUser",
+        "encryptErrorGroup"
+      )
+      encryptError(missingKey, username, group) {
+        if (missingKey) {
+          return I18n.t("encrypt.composer.no_topic_key");
+        } else if (username) {
+          return I18n.t("encrypt.composer.user_has_no_key", { username });
+        } else if (group) {
+          return I18n.t("encrypt.composer.group_not_allowed");
+        }
+      },
+
+      beforeSave() {
+        if (!this.showEncryptError || !this.encryptError) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) => {
+          bootbox.confirm(
+            I18n.t("encrypt.composer.confirm.message", {
+              error: this.encryptError,
+            }),
+            I18n.t("encrypt.composer.confirm.no_value"),
+            I18n.t("encrypt.composer.confirm.yes_value"),
+            (result) => (result ? resolve() : reject())
+          );
+        });
       },
     });
 

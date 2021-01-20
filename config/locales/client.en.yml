@@ -31,12 +31,16 @@ en:
       checkbox:
         checked: "This message will be end-to-end encrypted."
         unchecked: "Click the lock symbol to encrypt this message."
-        disabled: "One of the recipients did not enable encryption."
 
       composer:
-        encrypt: "Encrypt message?"
-        group_not_allowed: "Encryption disabled - unsupported for group messages."
-        user_has_no_key: "Unfortunately %{username} did not enable encrypted messages."
+        no_topic_key: "You cannot encrypt messages in this topic."
+        user_has_no_key: "%{username} did not enable encrypted messages."
+        group_not_allowed: "You are not allowed to send encrypted messages to groups."
+
+        confirm:
+          message: "%{error} Do you want to continue?"
+          no_value: "No, go back"
+          yes_value: "Yes, send unencrypted"
 
       preferences:
         ie11: "The required cipher suite is unavailable in Internet Explorer 11."
@@ -90,6 +94,7 @@ en:
           other: "You will <strong>permanently</strong> lose access to %{count} encrypted messages."
         instructions_safe: "Are you sure you want to disable encrypted messages and reset your encryption key? You can enable encrypted messages again by generating a new key pair."
         confirm_instructions: "Please type <code>%{username}</code> to confirm:"
+
       time_bomb:
         title: "This message will be permanently deleted after %{after}"
         never: "Never"

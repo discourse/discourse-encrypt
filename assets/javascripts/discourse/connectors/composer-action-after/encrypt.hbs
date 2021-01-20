@@ -1,10 +1,10 @@
-{{#if (or model.creatingPrivateMessage model.topic.encrypted_title)}}
+{{#if showEncryptControls}}
   <div class="encrypt-controls">
     {{#if isEncryptActive}}
-      <a {{action clicked}} title={{i18n title}} class=
-      'btn btn-default btn-icon no-text encrypt-toggle {{if model.isEncrypted "enabled"}} {{if model.disableEncryptIndicator "disabled"}}'>
+      <a {{action clicked}} title={{title}} class='btn btn-default btn-icon no-text encrypt-toggle {{if model.isEncrypted "enabled"}} {{if disabled "disabled"}}'>
         {{d-icon (if model.isEncrypted "lock" "unlock")}}
       </a>
+
       {{~#if model.isEncrypted}}
         {{~#unless model.editingPost~}}
           <div class="composer-action-divider"></div>
