@@ -37,9 +37,24 @@ export default {
       @on("init")
       @observes("creatingPrivateMessage", "topic")
       updateEncryptProperties() {
-        const isEncrypted =
-          (this.isNew && this.creatingPrivateMessage) ||
-          (this.get("topic.encrypted_title") && hasTopicKey(this.topic.id));
+        let isEncrypted = this.isEncrypted;
+
+        if (
+          this.topic &&
+          this.topic.encrypted_title &&
+          hasTopicKey(this.topic.id)
+        ) {
+          // Force encryption for existing encrypted topics.
+          isEncrypted = true;
+        } else if (this.isNew && this.creatingPrivateMessage) {
+          // `isEncryptedChanged` is set true only when the value of
+          // `isEncrypted` is changed. This is needed because during save
+          // (serialization), this method is called and `isEncrypted` is
+          // reset.
+          if (!this.isEncryptedChanged) {
+            isEncrypted = this.siteSettings.encrypt_pms_default;
+          }
+        }
 
         this.setProperties({
           /** @var Whether the current message is going to be encrypted. */
@@ -57,7 +72,8 @@ export default {
       checkEncryptRecipients() {
         if (!this.targetRecipients) {
           this.setProperties({
-            isEncrypted: true,
+            isEncrypted: this.siteSettings.encrypt_pms_default,
+            isEncryptedChanged: true,
             showEncryptError: true,
             encryptErrorUser: false,
             encryptErrorGroup: false,
@@ -65,19 +81,31 @@ export default {
           return;
         }
 
-        const usernames = this.targetRecipients.split(",");
-        usernames.push(this.user.username);
+        const recipients = this.targetRecipients.split(",");
+        recipients.push(this.user.username);
 
-        const groupNames = new Set(this.site.groups.map((g) => g.name));
-        if (usernames.some((username) => groupNames.has(username))) {
+        const allGroupNames = new Set(
+          this.site.groups.map((g) => g.name.toLowerCase())
+        );
+
+        const groups = recipients.filter((r) =>
+          allGroupNames.has(r.toLowerCase())
+        );
+
+        if (groups.length > 0) {
           this.setProperties({
             isEncrypted: false,
+            isEncryptedChanged: true,
             showEncryptError: this.showEncryptError || this.isEncrypted,
             encryptErrorGroup: true,
           });
         } else {
           this.setProperties({ encryptErrorGroup: false });
         }
+
+        const usernames = recipients.filter(
+          (r) => !allGroupNames.has(r.toLowerCase())
+        );
 
         getUserIdentities(usernames)
           .then(() => {
@@ -86,6 +114,7 @@ export default {
           .catch((username) => {
             this.setProperties({
               isEncrypted: false,
+              isEncryptedChanged: true,
               showEncryptError: this.showEncryptError || this.isEncrypted,
               encryptErrorUser: username,
             });
@@ -179,13 +208,21 @@ export default {
 
     if (decTitle) {
       decTitle.then((title) =>
-        model.setProperties({ title, isEncrypted: true })
+        model.setProperties({
+          title,
+          isEncrypted: true,
+          isEncryptedChanged: true,
+        })
       );
     }
 
     if (decReply) {
       decReply.then((reply) =>
-        model.setProperties({ reply, isEncrypted: true })
+        model.setProperties({
+          reply,
+          isEncrypted: true,
+          isEncryptedChanged: true,
+        })
       );
     }
   },

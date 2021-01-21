@@ -29,6 +29,7 @@ import {
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import { Promise } from "rsvp";
 import sinon from "sinon";
+
 /*
  * Checks if a string is not contained in a string.
  *
@@ -143,7 +144,11 @@ async function wait(statusOrWaiter, func) {
 
 acceptance("Encrypt", function (needs) {
   needs.user();
-  needs.settings({ encrypt_enabled: true, encrypt_groups: "" });
+  needs.settings({
+    encrypt_enabled: true,
+    encrypt_groups: "",
+    encrypt_pms_default: true,
+  });
 
   needs.hooks.beforeEach(() => {
     sinon.stub(EncryptLibDiscourse, "reload");
@@ -218,18 +223,17 @@ acceptance("Encrypt", function (needs) {
 
     server.post("/posts", (request) => {
       const body = parsePostData(request.requestBody);
+
       assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
       assert.equal(body.title, I18n.t("encrypt.encrypted_topic_title"));
       assert.equal(body.archetype, "private_message");
-      assert.equal(
-        body.target_recipients || body.target_usernames,
-        "eviltrout"
-      );
+      assert.equal(body.target_recipients, "eviltrout");
       assert.equal(body.draft_key, "new_topic");
       assert.equal(body.is_encrypted, "true");
       assert.ok(body.encrypted_title.startsWith("1$"));
       assert.ok(body.encrypted_raw.startsWith("1$"));
       assert.ok(JSON.parse(body.encrypted_keys).eviltrout);
+
       return [
         200,
         { "Content-Type": "application/json" },

@@ -12,3 +12,6 @@ plugins:
     client: true
     type: list
     list_type: simple
+  encrypt_pms_default:
+    client: true
+    default: true
