@@ -397,28 +397,20 @@ export default {
       function decryptPost(attrs, state, topicId) {
         const ciphertext = attrs.encrypted_raw;
 
-        if (!window.isSecureContext) {
-          state.decrypting = false;
-          state.decrypted = true;
+        if (!ciphertext || state.ciphertext === ciphertext) {
+          return;
+        } else if (!window.isSecureContext) {
+          state.encryptState = "error";
           state.error = I18n.t("encrypt.preferences.insecure_context");
           return;
         } else if (ciphertext && !hasTopicKey(topicId)) {
-          state.decrypting = false;
-          state.decrypted = true;
+          state.encryptState = "error";
           state.error = I18n.t("encrypt.missing_topic_key");
           return;
         }
 
-        if (
-          !ciphertext ||
-          !hasTopicKey(topicId) ||
-          (state.encrypted && state.encrypted === ciphertext)
-        ) {
-          return;
-        }
-
-        state.encrypted = ciphertext;
-        state.decrypting = true;
+        state.encryptState = "decrypting";
+        state.ciphertext = ciphertext;
 
         getIdentity()
           .then((identity) => {
@@ -464,38 +456,40 @@ export default {
                     }
                     return cookAsync(plaintext.raw);
                   })
-                  .then((cooked) => (state.decrypted = cooked.string))
-                  .catch(() => {
-                    state.decrypted = true;
-                    state.error = I18n.t("encrypt.invalid_ciphertext");
+                  .then((cooked) => {
+                    state.encryptState = "decrypted";
+                    state.plaintext = cooked.string;
+                    this.scheduleRerender();
                   })
-                  .finally(() => {
-                    state.decrypting = false;
+                  .catch(() => {
+                    state.encryptState = "error";
+                    state.error = I18n.t("encrypt.invalid_ciphertext");
                     this.scheduleRerender();
                   });
               })
               .catch(() => {
-                state.decrypted = true;
+                state.encryptState = "error";
                 state.error = I18n.t("encrypt.invalid_topic_key");
-              })
-              .finally(() => {
-                state.decrypting = false;
                 this.scheduleRerender();
               });
           })
           .catch(() => {
-            state.decrypted = true;
+            state.encryptState = "error";
             state.error = I18n.t("encrypt.invalid_identity");
-          })
-          .finally(() => {
-            state.decrypting = false;
             this.scheduleRerender();
           });
       }
 
       function updateHtml(attrs, state, topicId) {
-        if (state.decrypted && state.decrypted !== true) {
-          attrs.cooked = state.decrypted;
+        if (state.encryptState === "decrypting") {
+          attrs.cooked =
+            "<div class='alert alert-info'>" +
+            renderSpinner("small") +
+            " " +
+            I18n.t("encrypt.decrypting") +
+            "</div>";
+        } else if (state.encryptState === "decrypted") {
+          attrs.cooked = state.plaintext;
           Ember.run.next(() => {
             let $post = $(`article[data-post-id='${attrs.id}']`);
             if ($post.length === 0) {
@@ -504,14 +498,7 @@ export default {
 
             postProcessPost(this.siteSettings, topicId, $post);
           });
-        } else if (state.decrypting) {
-          attrs.cooked =
-            "<div class='alert alert-info'>" +
-            renderSpinner("small") +
-            " " +
-            I18n.t("encrypt.decrypting") +
-            "</div>";
-        } else {
+        } else if (state.encryptState === "error") {
           attrs.cooked =
             "<div class='alert alert-error'>" +
             iconHTML("times") +
@@ -520,6 +507,7 @@ export default {
             "</div>" +
             attrs.cooked;
         }
+        return attrs.cooked;
       }
 
       api.decorateWidget("post-meta-data:after", (dec) => {

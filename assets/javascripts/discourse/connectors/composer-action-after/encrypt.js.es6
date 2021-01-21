@@ -111,10 +111,10 @@ export default {
       component,
       "title",
       Ember.computed("model.isEncrypted", "model.encryptError", () => {
-        if (this.model.isEncrypted) {
-          return I18n.t("encrypt.checkbox.checked");
-        } else if (this.model.encryptError) {
+        if (this.model.encryptError) {
           return this.model.encryptError;
+        } else if (this.model.isEncrypted) {
+          return I18n.t("encrypt.checkbox.checked");
         } else {
           return I18n.t("encrypt.checkbox.unchecked");
         }
