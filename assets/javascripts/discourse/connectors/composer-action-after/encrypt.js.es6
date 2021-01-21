@@ -38,6 +38,7 @@ export default {
         if (!this.disabled) {
           this.model.setProperties({
             isEncrypted: !this.model.isEncrypted,
+            isEncryptedChanged: true,
             showEncryptError: !this.model.isEncrypted,
             deleteAfterMinutes: null,
             deleteAfterMinutesLabel: null,
