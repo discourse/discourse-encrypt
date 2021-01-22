@@ -151,7 +151,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
-  # Gets stats (encrypted PMs count) for the a user.
+  # Gets stats (encrypted PMs count) for a user.
   #
   # Params:
   # +user_id+::     ID of user to be reset
@@ -177,6 +177,43 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       .count
 
     render json: success_json.merge(encrypted_pms_count: [pms_count, keys_count].max)
+  end
+
+  # Get all topic keys for current user.
+  #
+  # Returns all keys to all encrypted PMs.
+  def show_all_keys
+    topic_keys = EncryptedTopicsUser.where(user: current_user).pluck(:topic_id, :key).to_h
+    render json: success_json.merge(topic_keys: topic_keys)
+  end
+
+  # Updates all keys for current user.
+  #
+  # Params:
+  # +keys+::    All topic keys
+  # +public+::  Serialized public identity
+  #
+  # Returns status code 200 if all keys are updated or status code 400 if not
+  # all keys have a replacement.
+  def update_all_keys
+    raise Discourse::InvalidParameters.new(:public) if params[:public].blank?
+
+    ActiveRecord::Base.transaction do
+      a = EncryptedTopicsUser.where(user: current_user).pluck(:topic_id)
+      b = (params[:keys] || {}).keys.map(&:to_i)
+      raise Discourse::InvalidParameters.new(:keys) if a.sort != b.sort
+
+      user_key = UserEncryptionKey.find_or_initialize_by(user_id: current_user.id)
+      user_key.encrypt_public = params[:public]
+      user_key.encrypt_private = nil
+      user_key.save!
+
+      params[:keys].each do |topic_id, key|
+        EncryptedTopicsUser.where(user: current_user, topic_id: topic_id).update_all(key: key)
+      end
+    end
+
+    render json: success_json
   end
 
   private
