@@ -61,21 +61,21 @@ en:
         notice_import: |
           <p>Please paste the encryption key you previously exported.</p>
 
-        activate: "Activate encrypted messages"
-        deactivate: "Deactivate encryption on this device"
-        enable: "Enable encrypted messages"
-        import: "Import encryption key pair"
-        use_paper_key: "Decrypt key pair using paper key"
-        generate_key: "Generate new encryption key pair"
+        activate: "Activate Encrypted Messages"
+        deactivate: "Deactivate This Device"
+        enable: "Enable Encrypted Messages"
+        import: "Import Encryption Key Pair"
+        use_paper_key: "Use Paper Key"
+        generate_key: "Generate New Key Pair"
 
       generate_paper_key:
-        title: "Generate paper key"
-        title_device: "Activate another device"
+        title: "Generate Paper Key"
+        title_device: "Activate Another Device"
         instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
         instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
 
       manage_paper_keys:
-        title: "Manage paper keys"
+        title: "Manage Paper Keys"
         instructions: "Below you can delete any of the previously generated paper keys. Once deleted, the paper key cannot be recovered, so please make sure you have at least one paper key or other active devices."
         delete: "Delete"
         no_key: "You have no paper keys. Make sure you have at least one paper key or other active devices."
@@ -83,11 +83,14 @@ en:
         not_recommended: "(not recommended)"
 
       export:
-        title: "Export encryption key pair"
+        title: "Export Encryption Key Pair"
         instructions: "Exporting your key pair is another backup mechanism. Please note that the exported key pair is unprotected and it can decrypt all your private conversations."
 
+      rotate:
+        title: "Rotate Encryption Key Pair"
+
       reset:
-        title: "Disable encrypted messages"
+        title: "Disable Encrypted Messages"
         instructions: "Are you sure you want to disable encrypted messages and reset your encryption key? This operation deletes your encryption key forever and you will not be able to access any of your encrypted private messages anymore."
         instructions_lost_pms:
           one: "You will <strong>permanently</strong> lose access to %{count} encrypted message."
