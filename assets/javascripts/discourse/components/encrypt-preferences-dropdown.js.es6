@@ -21,6 +21,11 @@ export default DropdownSelectBoxComponent.extend({
       name: I18n.t("encrypt.manage_paper_keys.title"),
     },
     {
+      id: "rotate",
+      icon: "sync",
+      name: I18n.t("encrypt.rotate.title"),
+    },
+    {
       id: "reset",
       icon: "trash-alt",
       name: I18n.t("encrypt.reset.title"),

@@ -129,4 +129,67 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(403)
     end
   end
+
+  context '#show_all_keys' do
+    let!(:topic1) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+    let!(:topic2) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+    let!(:topic3) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user2) ]) }
+
+    it 'returns all topic keys' do
+      sign_in(user)
+
+      get '/encrypt/rotate'
+
+      expect(response.parsed_body['keys']).to eq(nil)
+    end
+  end
+
+  context '#update_all_keys' do
+    let!(:topic1) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+    let!(:topic2) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+    let!(:topic3) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user2) ]) }
+
+    it 'updates only if public keys is present' do
+      sign_in(user)
+
+      put '/encrypt/rotate', params: {
+        keys: {
+          topic1.id => 'first key',
+          topic2.id => 'second key'
+        }
+      }
+
+      expect(response.status).to eq(400)
+    end
+
+    it 'updates only if all topic keys are present' do
+      sign_in(user)
+
+      put '/encrypt/rotate', params: {
+        public: 'public key'
+      }
+
+      expect(response.status).to eq(400)
+    end
+
+    it 'updates all keys' do
+      sign_in(user)
+
+      put '/encrypt/rotate', params: {
+        public: 'public key',
+        keys: {
+          topic1.id => 'first key',
+          topic2.id => 'second key'
+        }
+      }
+
+      expect(response.status).to eq(200)
+
+      expect(UserEncryptionKey.find_by(user: user).encrypt_public).to eq('public key')
+      expect(UserEncryptionKey.find_by(user: user).encrypt_private).to eq(nil)
+
+      expect(EncryptedTopicsUser.find_by(user: user, topic: topic1).key).to eq('first key')
+      expect(EncryptedTopicsUser.find_by(user: user, topic: topic2).key).to eq('second key')
+    end
+  end
 end

@@ -44,12 +44,14 @@ after_initialize do
   end
 
   DiscourseEncrypt::Engine.routes.draw do
-    put    '/encrypt/keys'  => 'encrypt#update_keys'
-    delete '/encrypt/keys'  => 'encrypt#delete_key'
-    get    '/encrypt/user'  => 'encrypt#show_user'
-    post   '/encrypt/reset' => 'encrypt#reset_user'
-    put    '/encrypt/post'  => 'encrypt#update_post'
-    get    '/encrypt/stats' => 'encrypt#stats'
+    put    '/encrypt/keys'   => 'encrypt#update_keys'
+    delete '/encrypt/keys'   => 'encrypt#delete_key'
+    get    '/encrypt/user'   => 'encrypt#show_user'
+    post   '/encrypt/reset'  => 'encrypt#reset_user'
+    put    '/encrypt/post'   => 'encrypt#update_post'
+    get    '/encrypt/stats'  => 'encrypt#stats'
+    get    '/encrypt/rotate' => 'encrypt#show_all_keys'
+    put    '/encrypt/rotate' => 'encrypt#update_all_keys'
   end
 
   Discourse::Application.routes.append do
