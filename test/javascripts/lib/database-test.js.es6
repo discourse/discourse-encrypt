@@ -1,10 +1,10 @@
 import { generateIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import {
   DB_NAME,
-  setUseLocalStorage,
   deleteDb,
   loadDbIdentity,
   saveDbIdentity,
+  setUseLocalStorage,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 
 QUnit.module("discourse-encrypt:lib:database");

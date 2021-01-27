@@ -5,11 +5,11 @@ import {
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
+  ENCRYPT_ACTIVE,
+  ENCRYPT_DISABLED,
   activateEncrypt,
   canEnableEncrypt,
   enableEncrypt,
-  ENCRYPT_ACTIVE,
-  ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";

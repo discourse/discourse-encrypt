@@ -29,9 +29,9 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
+  MISSING,
   lookupCachedUploadUrl,
   lookupUncachedUploadUrls,
-  MISSING,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
 

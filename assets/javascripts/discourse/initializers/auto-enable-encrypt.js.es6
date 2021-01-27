@@ -1,6 +1,6 @@
 import {
-  enableEncrypt,
   ENCRYPT_DISABLED,
+  enableEncrypt,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
