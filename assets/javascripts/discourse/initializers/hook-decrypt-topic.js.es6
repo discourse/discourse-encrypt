@@ -9,8 +9,8 @@ import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
   getTopicTitle,
-  syncGetTopicTitle,
   hasTopicTitle,
+  syncGetTopicTitle,
   waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 

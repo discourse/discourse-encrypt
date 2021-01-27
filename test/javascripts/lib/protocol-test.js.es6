@@ -2,8 +2,8 @@ import {
   decrypt,
   encrypt,
   exportKey,
-  generateKey,
   generateIdentity,
+  generateKey,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 

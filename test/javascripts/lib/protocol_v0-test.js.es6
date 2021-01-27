@@ -1,12 +1,12 @@
 import {
-  _stringToBuffer,
   _bufferToString,
-  _exportPublicKey,
-  _importPublicKey,
   _exportPrivateKey,
-  _importPrivateKey,
-  _getSalt,
+  _exportPublicKey,
   _getPassphraseKey,
+  _getSalt,
+  _importPrivateKey,
+  _importPublicKey,
+  _stringToBuffer,
   generateIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v0";
 

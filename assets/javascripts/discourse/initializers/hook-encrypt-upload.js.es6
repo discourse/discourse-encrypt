@@ -2,9 +2,9 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
+  generateUploadKey,
   getMetadata,
   readFile,
-  generateUploadKey,
 } from "discourse/plugins/discourse-encrypt/lib/uploads";
 import {
   ENCRYPT_ACTIVE,
