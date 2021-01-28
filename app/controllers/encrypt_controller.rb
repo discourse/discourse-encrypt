@@ -13,7 +13,6 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   # +public+::    Serialized public identity
   # +private+::   Serialized private identity
   # +label+::     Private identity label
-  # +overwrite+:: Force overwrite of public and private identities
   #
   # Returns status code 200 on success or 409 if user already has an
   # identity and public identities mismatch.
@@ -24,7 +23,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     # Check if encryption is already enabled (but not changing passphrase).
     old_identity = current_user.user_encryption_key&.encrypt_public
-    if params[:overwrite].blank? && old_identity && old_identity != public_identity
+    if old_identity && old_identity != public_identity
       return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
     end
 

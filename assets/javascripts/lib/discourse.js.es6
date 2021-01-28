@@ -408,53 +408,7 @@ export function activateEncrypt(currentUser, passphrase) {
     );
   }
 
-  return promise
-    .then((identity) => upgradeIdentity(currentUser, passphrase, identity))
-    .then((identity) => saveDbIdentity(identity));
-}
-
-/**
- * Upgrade a user's identity to new version.
- *
- * @param {User} currentUser
- * @param {string} passphrase
- * @param {Object} oldIdentity
- *
- * @return {Object}
- */
-function upgradeIdentity(currentUser, passphrase, oldIdentity) {
-  // Upgrade identity to version 1 by creating a v1 identity, but replacing
-  // encryption keys with old ones.
-  if (oldIdentity.version === 0) {
-    return generateIdentity(1)
-      .then((identity) => {
-        identity.encryptPublic = oldIdentity.encryptPublic;
-        identity.encryptPrivate = oldIdentity.encryptPrivate;
-        return identity;
-      })
-      .then((identity) => {
-        const savePromise = exportIdentity(identity, passphrase).then(
-          (exported) => {
-            const exportedPrivate = JSON.stringify({
-              passphrase: exported.private,
-            });
-
-            return ajax("/encrypt/keys", {
-              type: "PUT",
-              data: {
-                public: exported.public,
-                private: exportedPrivate,
-                overwrite: true,
-              },
-            });
-          }
-        );
-
-        return Promise.all([identity, savePromise]).then((result) => result[0]);
-      });
-  }
-
-  return oldIdentity;
+  return promise.then((identity) => saveDbIdentity(identity));
 }
 
 export function reload() {
