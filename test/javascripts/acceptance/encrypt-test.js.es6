@@ -249,9 +249,9 @@ acceptance("Encrypt", function (needs) {
       throw new Error("Another test is leaking composer state");
     }
 
-    await fillIn("#private-message-users", "admin");
-    await keyEvent("#private-message-users", "keydown", 8);
-    await keyEvent("#private-message-users", "keydown", 13);
+    // simulate selecting from autocomplete suggestions
+    await fillIn("#private-message-users .filter-input", "evilt");
+    await keyEvent("#private-message-users .filter-input", "keydown", 13);
 
     requests = [];
     await wait(
