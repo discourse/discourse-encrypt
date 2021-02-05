@@ -16,4 +16,9 @@ describe UploadValidatorExtensions do
     expect { Fabricate(:upload, original_filename: "test.bar") }.not_to raise_exception
     expect { Fabricate(:upload, original_filename: "test.bar.encrypted") }.not_to raise_exception
   end
+
+  it "removes '.encrypted' extension and validates the real image extension" do
+    expect { Fabricate(:upload, original_filename: "test.jpg") }.not_to raise_exception
+    expect { Fabricate(:upload, original_filename: "test.jpg.encrypted") }.not_to raise_exception
+  end
 end

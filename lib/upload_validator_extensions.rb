@@ -5,11 +5,11 @@ module UploadValidatorExtensions
     extension = File.extname(upload.original_filename)[1..-1] || ""
 
     if extension == "encrypted"
-      original_filename = upload.original_filename.gsub(/\.encrypted$/, "")
-      extension = File.extname(original_filename)[1..-1] || ""
+      filename = upload.original_filename.gsub(/\.encrypted$/, "")
+      extension = File.extname(filename)[1..-1] || ""
 
       if is_authorized?(upload, extension)
-        if FileHelper.is_supported_image?(upload.original_filename)
+        if FileHelper.is_supported_image?(filename)
           authorized_image_extension(upload, extension)
           maximum_image_file_size(upload)
         else
