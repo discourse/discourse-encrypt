@@ -9,8 +9,6 @@ sk:
     encrypt:
       decrypting: "Dešifrujem..."
       encrypted_topic_title: "Tajná správa"
-      composer:
-        encrypt: "Zašifrovať správu?"
       preferences:
         passphrase_label: "Prístupové heslo:"
       manage_paper_keys:

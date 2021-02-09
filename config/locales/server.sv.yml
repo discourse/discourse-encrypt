@@ -14,3 +14,4 @@ sv:
     encrypt_enabled: "Aktivera krypterade privata meddelanden."
     auto_enable_encrypt: "Aktivera automatiskt kryptering för alla inloggade användare."
     encrypt_groups: "Namnen på grupper som ska vara tillåtna att använda kryptering (tomt innebär samtliga)"
+    encrypt_pms_default: "Kryptera alla nya privata meddelanden som standard"

@@ -24,10 +24,6 @@ zh_CN:
       checkbox:
         checked: "此私信/消息将被端对端加密。"
         unchecked: "点击锁定符号来加密此私信/消息。"
-        disabled: "其中一个收件人没有启用加密功能。"
-      composer:
-        encrypt: "加密私信/消息？"
-        user_has_no_key: "可惜%{username}没有启用加密私信/消息。"
       preferences:
         ie11: "所需的密码套件在 Internet Explorer 11 中不可用。"
         insecure_context: "在不安全的情况下不能使用加密（不是 HTTPS）。"

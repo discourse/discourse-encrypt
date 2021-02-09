@@ -26,10 +26,6 @@ nl:
       checkbox:
         checked: "Dit bericht wordt end-to-end versleuteld."
         unchecked: "Klik op het slotsymbool om dit bericht te versleutelen."
-        disabled: "Een van de ontvangers heeft geen versleuteling ingeschakeld."
-      composer:
-        encrypt: "Bericht versleutelen?"
-        user_has_no_key: "Helaas heeft %{username} geen versleutelde berichten ingeschakeld."
       preferences:
         ie11: "De vereiste coderingssuite is niet beschikbaar in Internet Explorer 11."
         insecure_context: "Versleuteling kan niet worden gebruikt in een onveilige context (geen HTTPS)."
@@ -45,15 +41,10 @@ nl:
           <p>Gebruik een ander apparaat of een papieren sleutel om dit apparaat te activeren. Denk aan de spaties tussen woorden.<p>
         notice_import: |
           <p>Plak de coderingssleutel die u eerder hebt geëxporteerd.</p>
-        use_paper_key: "Sleutelpaar decoderen met behulp van papieren sleutel"
-        generate_key: "Nieuw coderingssleutelpaar genereren"
       generate_paper_key:
-        title: "Papieren sleutel genereren"
-        title_device: "Een ander apparaat activeren"
         instructions: "Dit is uw unieke papieren sleutel; hiermee kunt u toekomstige versleutelde apparaten activeren. Dit is de enige keer dat u dit ziet, dus zorg ervoor dat u deze opschrijft en ergens veilig opbergt."
         instructions_device: "Ga op uw nieuwe apparaat naar de voorkeuren en gebruik de volgende wachtwoordzin om versleuteling te activeren:"
       manage_paper_keys:
-        title: "Papieren sleutels beheren"
         instructions: "Hieronder kunt u eerder aangemaakte papieren sleutels verwijderen. Na verwijdering kan de papieren sleutel niet meer worden hersteld, dus zorg ervoor dat u minstens één papieren sleutel of andere actieve apparaten hebt."
         delete: "Verwijderen"
         no_key: "U hebt geen papieren sleutels. Zorg ervoor dat u minstens één papieren sleutel of andere actieve apparaten hebt."

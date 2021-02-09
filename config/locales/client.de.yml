@@ -30,10 +30,6 @@ de:
       checkbox:
         checked: "Diese Nachricht wird Ende-zu-Ende verschlüsselt."
         unchecked: "Kicke das Schloss Symbol zum Verschlüsseln dieser Nachricht."
-        disabled: "Eine Empfänger hat Verschlüsselung nicht aktiviert."
-      composer:
-        encrypt: "Nachricht verschlüsseln?"
-        user_has_no_key: "Leider hat %{username} keine verschlüsselten Nachrichten aktiviert."
       preferences:
         ie11: "Die erforderliche Verschlüsselungssuite ist in Internet Explorer 11 nicht verfügbar."
         insecure_context: "Die Verschlüsselung kann nicht in einem unsicheren Kontext verwendet werden (nicht HTTPS)."
@@ -49,29 +45,18 @@ de:
           <p> Bitte verwende ein anderes Gerät oder einen Papierschlüssel, um dieses Gerät zu aktivieren. Vergieß nicht die Zwischenräume zwischen den Wörtern. <p>
         notice_import: |
           <p> Bitte füge den zuvor exportierten Verschlüsselungsschlüssel ein. </p>
-        activate: "Verschlüsselte Nachrichten aktivieren"
-        deactivate: "Verschlüsselung auf diesem Gerät deaktivieren"
-        enable: "Aktivieren von verschlüsselten Nachrichten"
-        import: "Importieren von Verschlüsselungsschlüsselpaar"
-        use_paper_key: "Entschlüsseln des Schlüsselpaars mit dem Papierschlüssel"
-        generate_key: "Neues Verschlüsselungsschlüsselpaar generieren"
       generate_paper_key:
-        title: "Papierschlüssel erzeugen"
-        title_device: "Ein anderes Gerät aktivieren"
         instructions: "Hier ist dein eindeutiger Papierschlüssel, mit dem du zukünftige verschlüsselte Geräte aktivieren kanst. Dies ist das einzige Mal, dass du diesen sehen kannst. Schreibe ihn also auf und bewahre ihn an einem sicheren Ort auf."
         instructions_device: "Gehe bei dem neuen Gerät zu den Einstellungen und verwende die folgende Passphrase, um die Verschlüsselung zu aktivieren:"
       manage_paper_keys:
-        title: "Verwalten von Papierschlüsseln"
         instructions: "Unten kannst du alle zuvor generierten Papierschlüssel löschen. Nach dem Löschen kann der Papierschlüssel nicht wiederhergestellt werden. Stelle daher sicher, dass du mindestens einen Papierschlüssel oder ein anderes aktives Geräte hast."
         delete: "Löschen"
         no_key: "Kein Papierschlüssel vorhanden. Stelle sicher, dass mindestens ein Papierschlüssel existiert oder andere verschlüsselte Geräte vorhanden sind."
         passphrase: "Passphrase-basiert"
         not_recommended: "(nicht empfohlen)"
       export:
-        title: "Exportieren von Verschlüsselungsschlüsselpaar"
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
       reset:
-        title: "Deaktivieren verschlüsselter Nachrichten"
         instructions: "Möchten Sie verschlüsselte Nachrichten wirklich deaktivieren und Ihren Verschlüsselungsschlüssel zurücksetzen? Dieser Vorgang löscht Ihren Verschlüsselungsschlüssel für immer und Sie können nicht mehr auf Ihre verschlüsselten privaten Nachrichten zugreifen."
         instructions_lost_pms:
           one: "Sie werden <strong>dauerhaft</strong> den Zugriff auf %{count} verschlüsselte Nachrichten verlieren."
