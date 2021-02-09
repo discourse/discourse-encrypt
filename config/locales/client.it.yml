@@ -24,10 +24,6 @@ it:
       checkbox:
         checked: "Questo messaggio verrà codificato con codifica punto-punto."
         unchecked: "Clicca il lucchetto per codificare questo messaggio."
-        disabled: "Uno dei destinatari non ha abilitato la codifica."
-      composer:
-        encrypt: "Codificare il messaggio?"
-        user_has_no_key: "Purtroppo %{username}non ha abilitato i messaggi codificati."
       preferences:
         ie11: "La suite di cifratura richiesta non è disponibile su Internet Explorer 11."
         insecure_context: "La codifica non può essere usata in un contesto non sicuro (non HTTPS). "

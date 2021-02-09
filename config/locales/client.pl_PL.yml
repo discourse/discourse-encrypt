@@ -26,10 +26,12 @@ pl_PL:
       checkbox:
         checked: "Ta wiadomość będzie zaszyfrowana end-to-end."
         unchecked: "Kliknij symbol kłódki, aby zaszyfrować tę wiadomość."
-        disabled: "Jeden z odbiorców nie włączył szyfrowania."
       composer:
-        encrypt: "Zaszyfrować wiadomość?"
-        user_has_no_key: "Niestety %{username} nie włączył zaszyfrowanych wiadomości."
+        no_topic_key: "Nie możesz szyfrować wiadomości w tym temacie."
+        confirm:
+          message: "%{error} Czy chcesz kontynuować?"
+          no_value: "Nie, wróć"
+          yes_value: "Tak, wyślij niezaszyfrowane"
       preferences:
         ie11: "Wymagany zestaw szyfrów jest niedostępny w przeglądarce Internet Explorer 11."
         insecure_context: "Szyfrowania nie można używać w niezabezpieczonym kontekście (bez HTTPS)."
@@ -45,29 +47,23 @@ pl_PL:
           <p>Aby aktywować to urządzenie, użyj innego urządzenia lub papierowego klucza. Nie zapomnij o odstępach między słowami.<p>
         notice_import: |
           <p>Wklej wcześniej wyeksportowany klucz szyfrowania.</p>
-        activate: "Aktywuj zaszyfrowane wiadomości"
-        deactivate: "Wyłącz szyfrowanie na tym urządzeniu"
-        enable: "Włącz zaszyfrowane wiadomości"
-        import: "Importuj parę kluczy szyfrowania"
-        use_paper_key: "Odszyfruj parę kluczy za pomocą klucza papierowego"
-        generate_key: "Wygeneruj nową parę kluczy szyfrowania"
       generate_paper_key:
-        title: "Wygeneruj klucz papierowy"
-        title_device: "Aktywuj inne urządzenie"
         instructions: "Oto Twój unikalny papierowy klucz, który może umożliwić aktywację zaszyfrowanych urządzeń w przyszłości. To jedyny raz, kiedy go zobaczysz, więc zapisz swój klucz i przechowuj w bezpiecznym miejscu."
         instructions_device: "Na nowym urządzeniu przejdź do ustawień i użyj następującego hasła, aby aktywować szyfrowanie:"
       manage_paper_keys:
-        title: "Zarządzaj kluczami papierowymi"
         instructions: "Poniżej możesz usunąć dowolny z wcześniej wygenerowanych kluczy papierowych. Po usunięciu klucza papierowego nie można odzyskać, więc upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         delete: "Usuń"
         no_key: "Nie masz papierowych kluczy. Upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         passphrase: "oparte na hasłach"
         not_recommended: "(nie zalecane)"
       export:
-        title: "Eksportuj parę kluczy szyfrowania"
         instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
+      rotate:
+        loading: "Ładowanie starych kluczy tematów ..."
+        saving: "Zapisywanie nowych kluczy tematów ..."
+        updating: "Aktualizowanie klucza..."
+        finished: "Gotowe!"
       reset:
-        title: "Wyłącz zaszyfrowane wiadomości"
         confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
       time_bomb:
         title: "Ta wiadomość zostanie trwale usunięta po %{after}"

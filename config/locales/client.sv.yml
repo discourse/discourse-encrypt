@@ -30,10 +30,14 @@ sv:
       checkbox:
         checked: "Detta meddelande kommer att vara krypterat från början till slut."
         unchecked: "Klicka på låssymbolen för att kryptera detta meddelande."
-        disabled: "En av mottagarna har inte aktiverat kryptering."
       composer:
-        encrypt: "Kryptera meddelande?"
-        user_has_no_key: "Tyvärr aktiverade inte %{username} krypterade meddelanden."
+        no_topic_key: "Du kan inte kryptera meddelanden i detta ämne."
+        user_has_no_key: "%{username} aktiverade inte krypterade meddelanden."
+        group_not_allowed: "Du är inte behörig att skicka krypterade meddelanden till grupper."
+        confirm:
+          message: "%{error} Vill du fortsätta?"
+          no_value: "Nej, gå tillbaka"
+          yes_value: "Ja, skicka okrypterat"
       preferences:
         ie11: "Den nödvändiga chiffer-uppsättningen är inte tillgänglig i Internet Explorer 11."
         insecure_context: "Kryptering kan inte användas i en osäker miljö (utan HTTPS)."
@@ -50,13 +54,13 @@ sv:
         notice_import: |
           <p>Klistra in krypteringsnyckeln som du tidigare exporterade.</p>
         activate: "Aktivera krypterade meddelanden"
-        deactivate: "Inaktivera kryptering för denna enhet"
+        deactivate: "Inaktivera den här enheten"
         enable: "Aktivera krypterade meddelanden"
         import: "Importera nyckelpar för kryptering"
-        use_paper_key: "Avkryptera nyckelpar med pappersnyckel"
-        generate_key: "Skapa ett nytt krypteringsnyckelpar"
+        use_paper_key: "Använd pappersnyckel"
+        generate_key: "Generera nytt nyckelpar"
       generate_paper_key:
-        title: "Skapa pappersnyckel"
+        title: "Generera pappersnyckel"
         title_device: "Aktivera en annan enhet"
         instructions: "Här är din unika anteckningsnyckel, som kan användas för att aktivera framtida krypterade enheter. Detta är det enda tillfället då du kommer se denna, så se till att du skriver ner den och sparar den på ett säkert ställe."
         instructions_device: "På din nya enhet går du till inställningar och använder följande lösenordsfras för att aktivera kryptering:"
@@ -70,6 +74,14 @@ sv:
       export:
         title: "Exportera nyckelpar för kryptering"
         instructions: "Att exportera ditt nyckelpar är en annan reservåtgärd. Notera att det exporterade nyckelparet är oskyddat och kan avkryptera alla dina privata samtal."
+      rotate:
+        title: "Rotera nyckelpar för kryptering"
+        instructions: "Är du säker på att du vill rotera din krypteringsnyckel? Detta kommer att generera ett nytt nyckelpar och alla pappersnycklar kommer att förstöras. Du kommer inte att förlora åtkomst till krypterade meddelanden, men du måste återaktivera kryptering på andra enheter."
+        loading: "Laddar gamla ämnesnycklar..."
+        rotating: "Rotera nycklar..."
+        saving: "Sparar nya ämnesnycklar..."
+        updating: "Uppdaterar nyckel..."
+        finished: "Klart!"
       reset:
         title: "Inaktivera krypterade meddelanden"
         instructions: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Den här åtgärden raderar din krypteringsnyckel för alltid och du kommer inte att kunna komma åt några av dina krypterade privata meddelanden längre."
