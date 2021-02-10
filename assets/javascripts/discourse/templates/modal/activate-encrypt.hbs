@@ -4,7 +4,7 @@
   {{/if}}
   <div>
     <p>{{i18n "encrypt.preferences.status_enabled_but_inactive"}}</p>
-    {{{i18n "encrypt.preferences.notice_active"}}}
+    {{html-safe (i18n "encrypt.preferences.notice_active")}}
     <p>
       <label for="passphrase">{{i18n "encrypt.preferences.passphrase_label"}}</label>
       {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
