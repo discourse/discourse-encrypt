@@ -1,7 +1,7 @@
 {{#d-modal-body title="encrypt.manage_paper_keys.title"}}
   <div>
     {{#if keys}}
-      <p>{{i18n 'encrypt.manage_paper_keys.instructions'}}</p>
+      <p>{{i18n "encrypt.manage_paper_keys.instructions"}}</p>
       <table class="paper-keys">
         {{#each keys as |key|}}
           <tr>
@@ -12,8 +12,8 @@
                 ...
               {{else if key.isPassphrase}}
                 <span class="passphrase">
-                  {{i18n 'encrypt.manage_paper_keys.passphrase'}}
-                  <i>{{i18n 'encrypt.manage_paper_keys.not_recommended'}}</i>
+                  {{i18n "encrypt.manage_paper_keys.passphrase"}}
+                  <i>{{i18n "encrypt.manage_paper_keys.not_recommended"}}</i>
                 </span>
               {{/if}}
             </td>
@@ -29,7 +29,7 @@
         {{/each}}
       </table>
     {{else}}
-      <p>{{i18n 'encrypt.manage_paper_keys.no_key'}}</p>
+      <p>{{i18n "encrypt.manage_paper_keys.no_key"}}</p>
     {{/if}}
   </div>
 {{/d-modal-body}}
