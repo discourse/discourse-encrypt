@@ -1,6 +1,6 @@
 {{#d-modal-body title="encrypt.rotate.title"}}
   <p>{{i18n "encrypt.rotate.instructions"}}</p>
-  <p>{{{i18n "encrypt.reset.confirm_instructions" username=currentUser.username}}}</p>
+  <p>{{html-safe (i18n "encrypt.reset.confirm_instructions" username=currentUser.username)}}</p>
   {{input type="text" value=confirmation}}
 {{/d-modal-body}}
 

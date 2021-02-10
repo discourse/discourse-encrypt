@@ -24,10 +24,10 @@
                 <p>{{i18n "encrypt.preferences.status_enabled_but_inactive"}}</p>
 
                 {{#if importIdentity}}
-                  {{{i18n "encrypt.preferences.notice_import"}}}
+                  {{html-safe (i18n "encrypt.preferences.notice_import")}}
                   {{textarea class="imported-key-pair" value=identity}}
                 {{else}}
-                  {{{i18n "encrypt.preferences.notice_active"}}}
+                  {{html-safe (i18n "encrypt.preferences.notice_active")}}
                   <p>
                     <label for="password">{{i18n "encrypt.preferences.passphrase_label"}}</label>
                     {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
@@ -50,7 +50,7 @@
           {{else}}
             <p>{{i18n "encrypt.preferences.status_disabled"}}</p>
             {{#if importIdentity}}
-              {{{i18n "encrypt.preferences.notice_import"}}}
+              {{html-safe (i18n "encrypt.preferences.notice_import")}}
               {{textarea class="imported-key-pair" value=identity}}
             {{/if}}
             {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
@@ -61,7 +61,7 @@
         {{else}}
           {{#if isEncryptEnabled}}
             <p>{{i18n "encrypt.preferences.status_enabled_other"}}</p>
-            <p><a {{action "selectEncryptEnableDropdownAction" "reset"}} class="text-danger">{{i18n "encrypt.reset.title"}}</a></p>
+            <p><a href {{action "selectEncryptEnableDropdownAction" "reset"}} class="text-danger">{{i18n "encrypt.reset.title"}}</a></p>
           {{else}}
             <p>{{i18n "encrypt.preferences.status_disabled_other"}}</p>
           {{/if}}

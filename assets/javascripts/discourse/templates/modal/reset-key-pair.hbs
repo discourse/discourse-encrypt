@@ -3,8 +3,8 @@
     {{#if encryptedPmsCount}}
       <p>{{i18n "encrypt.reset.instructions"}}</p>
       <p>
-        {{{i18n "encrypt.reset.instructions_lost_pms" count=encryptedPmsCount}}}
-        {{{i18n "encrypt.reset.confirm_instructions" username=currentUser.username}}}
+        {{html-safe (i18n "encrypt.reset.instructions_lost_pms" count=encryptedPmsCount)}}
+        {{html-safe (i18n "encrypt.reset.confirm_instructions" username=currentUser.username)}}
       </p>
       {{input type="text" value=confirmation}}
     {{else}}
