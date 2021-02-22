@@ -269,7 +269,7 @@ export function waitForPendingTitles() {
   return Promise.all(
     Object.values(topicTitles)
       .filter((t) => !t.result)
-      .map((t) => t.promise)
+      .map((t) => t.promise.catch(() => null))
   );
 }
 
