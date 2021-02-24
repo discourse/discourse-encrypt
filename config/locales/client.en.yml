@@ -9,7 +9,7 @@ en:
       invalid_topic_key: "The message could not be decrypted because your topic key is invalid."
       invalid_identity: "The message could not be decrypted because the user identity is invalid."
 
-      no_backup_warn: "You enabled encryption, but did not generate any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate one, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
+      no_backup_warn: "You enabled encryption, but have not yet generated any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate a paper key, please navigate to <a href='%{basePath}/my/preferences/account'>user preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
 
       integrity_check_pass: "The integrity check for this post has passed."
       integrity_check_fail: "The integrity check for this post has failed (%{fields} mismatch)."
