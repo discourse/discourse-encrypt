@@ -85,7 +85,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_encrypted_raw?) do
-    object.topic&.is_encrypted?
+    scope&.user.present? && object.topic&.is_encrypted?
   end
 
   add_to_serializer(:post, :delete_at, false) do
@@ -93,7 +93,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_delete_at?) do
-    object.encrypted_post_timer.present?
+    scope&.user.present? && object.topic&.is_encrypted? && object.encrypted_post_timer&.delete_at.present?
   end
 
   # +encrypted_title+
@@ -105,7 +105,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
-    scope&.user.present? && object.topic.private_message?
+    scope&.user.present? && object.topic.is_encrypted?
   end
 
   add_to_serializer(:topic_view, :delete_at, false) do
@@ -113,7 +113,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_delete_at?) do
-    object.topic.posts.first&.encrypted_post_timer
+    scope&.user.present? && object.topic.is_encrypted? && object.topic.posts.first&.encrypted_post_timer&.delete_at.present?
   end
 
   add_to_serializer(:basic_topic, :encrypted_title, false) do
@@ -121,7 +121,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :include_encrypted_title?) do
-    scope&.user.present? && object.private_message?
+    scope&.user.present? && object.is_encrypted?
   end
 
   add_to_serializer(:notification, :encrypted_title, false) do
@@ -129,7 +129,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :include_encrypted_title?) do
-    scope&.user.present? && object&.topic&.private_message?
+    scope&.user.present? && object&.topic&.is_encrypted?
   end
 
   # +topic_key+
@@ -144,7 +144,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_topic_key?) do
-    scope&.user.present? && object.topic.private_message?
+    scope&.user.present? && object.topic.is_encrypted?
   end
 
   add_to_serializer(:basic_topic, :topic_key, false) do
@@ -152,7 +152,7 @@ after_initialize do
   end
 
   add_to_serializer(:basic_topic, :include_topic_key?) do
-    scope&.user.present? && object.private_message?
+    scope&.user.present? && object.is_encrypted?
   end
 
   add_to_serializer(:notification, :topic_key, false) do
@@ -160,7 +160,7 @@ after_initialize do
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
-    scope&.user.present? && object&.topic&.private_message?
+    scope&.user.present? && object&.topic&.is_encrypted?
   end
 
   # +topic_id+ and +raws+
@@ -175,7 +175,7 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_topic_id?) do
-    post.topic&.is_encrypted?
+    scope&.user.present? && post.topic&.is_encrypted?
   end
 
   add_to_serializer(:post_revision, :raws) do
@@ -183,7 +183,7 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_raws?) do
-    post.topic&.is_encrypted?
+    scope&.user.present? && post.topic&.is_encrypted?
   end
 
   add_to_serializer(:current_user, :encrypt_public) do
