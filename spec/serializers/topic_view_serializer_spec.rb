@@ -13,21 +13,21 @@ describe TopicViewSerializer do
   let(:topic_view) { TopicView.new(topic.id, user) }
 
   it 'contains encrypted fields only for encrypted topics' do
+    EncryptedPostTimer.create!(post: encrypt_post, delete_at: 1.hour.from_now)
+
     serialized = described_class.new(encrypt_topic_view, scope: Guardian.new(user), root: false).as_json
     expect(serialized[:encrypted_title]).not_to eq(nil)
     expect(serialized[:topic_key]).not_to eq(nil)
+    expect(serialized[:delete_at]).not_to eq(nil)
 
     serialized = described_class.new(topic_view, scope: Guardian.new(user), root: false).as_json
     expect(serialized[:encrypted_title]).to eq(nil)
     expect(serialized[:topic_key]).to eq(nil)
+    expect(serialized[:delete_at]).to eq(nil)
 
     serialized = described_class.new(encrypt_topic_view, scope: Guardian.new, root: false).as_json
     expect(serialized[:encrypted_title]).to eq(nil)
     expect(serialized[:topic_key]).to eq(nil)
     expect(serialized[:delete_at]).to eq(nil)
-
-    EncryptedPostTimer.create!(post: encrypt_post, delete_at: 1.hour.from_now)
-    serialized = described_class.new(encrypt_topic_view, scope: Guardian.new, root: false).as_json
-    expect(serialized[:delete_at]).not_to eq(nil)
   end
 end
