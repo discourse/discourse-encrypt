@@ -9,7 +9,6 @@ fr:
     encrypt:
       title: "Messages chiffrés"
       decrypting: "Déchiffrement en cours…"
-      no_backup_warn: "Vous avez activé le chiffrement, mais n'avez généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour en générer une, veuillez vous rendre <a href='%{basePath}/my/preferences/account'>sur votre page de préférences</a> , cliquez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."

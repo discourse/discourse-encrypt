@@ -9,7 +9,6 @@ pl_PL:
     encrypt:
       title: "Zaszyfrowane wiadomości"
       decrypting: "Odszyfrowywanie ..."
-      no_backup_warn: "Włączyłeś szyfrowanie, ale nie wygenerowałeś żadnych papierowych kluczy. Bez papierowych kluczy ryzykujesz utratę dostępu do zaszyfrowanych wiadomości. Aby je wygenerować, przejdź do strony <a href='%{basePath}/my/preferences/account'>preferencji użytkownika</a>, naciśnij przycisk <kbd>wygeneruj papierowy klucz</kbd> i postępuj zgodnie z instrukcjami."
       integrity_check_pass: "Sprawdzanie integralności tego postu zakończyło się pomyślnie."
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
       integrity_check_warn_updated_at: "Metadane postu zostały zaktualizowane bez ponownego podpisywania."
