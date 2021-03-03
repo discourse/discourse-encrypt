@@ -2135,3 +2135,15 @@ export function _paperKeyToBuffer(paperKey) {
 export function generatePaperKey() {
   return _bufferToPaperKey(window.crypto.getRandomValues(new Uint8Array(16)));
 }
+
+/**
+ * Try to automatically fix common mistakes of paper keys, such as wrong case
+ * or additional whitespaces.
+ *
+ * @param {String} paperKey
+ *
+ * @return {String}
+ */
+export function fixPaperKey(paperKey) {
+  return paperKey.split(" ").filter(Boolean).join(" ").toUpperCase();
+}

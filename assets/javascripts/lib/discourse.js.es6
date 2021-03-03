@@ -1,4 +1,3 @@
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
@@ -6,7 +5,9 @@ import {
   loadDbIdentity,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
+import { fixPaperKey } from "discourse/plugins/discourse-encrypt/lib/paper_key";
 import {
   decrypt,
   exportIdentity,
@@ -386,10 +387,7 @@ export function activateEncrypt(currentUser, passphrase) {
     const label = "paper_" + passphrase.substr(0, spacePos).toLowerCase();
     if (privateKeys[label]) {
       promise = promise.catch(() =>
-        importIdentity(
-          privateKeys[label],
-          passphrase.split(" ").filter(Boolean).join(" ").toUpperCase()
-        )
+        importIdentity(privateKeys[label], fixPaperKey(passphrase))
       );
     }
   }
@@ -397,7 +395,7 @@ export function activateEncrypt(currentUser, passphrase) {
   // Importing from a device key.
   if (privateKeys["device"]) {
     promise = promise.catch(() =>
-      importIdentity(privateKeys["device"], passphrase)
+      importIdentity(privateKeys["device"], fixPaperKey(passphrase))
     );
   }
 
