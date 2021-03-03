@@ -52,12 +52,13 @@ en:
         status_disabled: "You have not enabled encryption on this account."
         status_disabled_other: "This user did not enable encryption and cannot receive encrypted messages."
 
-        passphrase_label: "Passphrase:"
-        passphrase_invalid: "The passphrase you entered is incorrect."
+        paper_key_label: "Paper key:"
+        paper_key_placeholder: "TWELVE WORDS ..."
+        paper_key_invalid: "The paper key you entered is incorrect."
         key_pair_invalid: "The key pair you entered is incorrect."
 
         notice_active: |
-          <p>Please use another device or a paper key to activate this device. Do not forget about the spaces between words.<p>
+          <p>Type in a paper key or use another device to activate this one. Do not forget about the spaces between words.</p>
         notice_import: |
           <p>Please paste the encryption key you previously exported.</p>
 
@@ -72,7 +73,7 @@ en:
         title: "Generate Paper Key"
         title_device: "Activate Another Device"
         instructions: "Here is your unique paper key, it can allow you to activate future encrypted devices. This is the only time you'll see this so make sure to write it down and store it somewhere safe."
-        instructions_device: "On your new device, go to preferences and use the following passphrase to activate encryption:"
+        instructions_device: "On your other device, go to preferences and use the following paper key to activate encryption:"
 
       manage_paper_keys:
         title: "Manage Paper Keys"

@@ -25,12 +25,18 @@
 
                 {{#if importIdentity}}
                   {{html-safe (i18n "encrypt.preferences.notice_import")}}
-                  {{textarea class="imported-key-pair" value=identity}}
+                  {{textarea class="imported-key-pair" value=identity placeholder=identityPlaceholder}}
                 {{else}}
                   {{html-safe (i18n "encrypt.preferences.notice_active")}}
                   <p>
-                    <label for="password">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-                    {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
+                    <label for="password">{{i18n "encrypt.preferences.paper_key_label"}}</label>
+                    {{input
+                      type="password"
+                      value=passphrase
+                      placeholder=(i18n "encrypt.preferences.paper_key_placeholder")
+                      id="passphrase"
+                      autocomplete="current-password"
+                      disabled=inProgress}}
                   </p>
                 {{/if}}
 
@@ -40,7 +46,8 @@
                              action=(action "activateEncrypt")
                              type="submit"
                              disabled=inProgress
-                             label="encrypt.preferences.activate"}}
+                             label="encrypt.preferences.activate"
+                  }}
                   {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
                                             importIdentity=importIdentity
                                             onChange=(action "selectEncryptEnableDropdownAction")}}
@@ -51,7 +58,7 @@
             <p>{{i18n "encrypt.preferences.status_disabled"}}</p>
             {{#if importIdentity}}
               {{html-safe (i18n "encrypt.preferences.notice_import")}}
-              {{textarea class="imported-key-pair" value=identity}}
+              {{textarea class="imported-key-pair" value=identity placeholder=identityPlaceholder}}
             {{/if}}
             {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
             {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled

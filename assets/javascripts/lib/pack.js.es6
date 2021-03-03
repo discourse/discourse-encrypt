@@ -35,3 +35,12 @@ export function unpackIdentity(identity) {
 
   return ret;
 }
+
+export function getPackedPlaceholder() {
+  return (
+    PACKED_KEY_HEADER +
+    "\n" +
+    (".".repeat(PACKED_KEY_COLUMNS) + "\n").repeat(3) +
+    PACKED_KEY_FOOTER
+  );
+}

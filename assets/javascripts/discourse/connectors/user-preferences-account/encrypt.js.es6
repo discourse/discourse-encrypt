@@ -12,7 +12,10 @@ import {
   enableEncrypt,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
+import {
+  getPackedPlaceholder,
+  unpackIdentity,
+} from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 
@@ -46,6 +49,7 @@ export default {
         importIdentity: false,
         /** Key to be imported .*/
         identity: "",
+        identityPlaceholder: getPackedPlaceholder(),
         /** Whether any operation (AJAX request, key generation, etc.) is
          *  in progress. */
         inProgress: false,
@@ -111,7 +115,7 @@ export default {
           if (this.importIdentity) {
             bootbox.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
           } else {
-            bootbox.alert(I18n.t("encrypt.preferences.passphrase_invalid"));
+            bootbox.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
           }
         })
         .finally(() =>

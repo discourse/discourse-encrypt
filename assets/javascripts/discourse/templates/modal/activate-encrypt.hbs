@@ -6,8 +6,15 @@
     <p>{{i18n "encrypt.preferences.status_enabled_but_inactive"}}</p>
     {{html-safe (i18n "encrypt.preferences.notice_active")}}
     <p>
-      <label for="passphrase">{{i18n "encrypt.preferences.passphrase_label"}}</label>
-      {{input type="password" value=passphrase id="passphrase" autocomplete="current-password" disabled=inProgress}}
+      <label for="passphrase">{{i18n "encrypt.preferences.paper_key_label"}}</label>
+      {{input
+        type="password"
+        value=passphrase
+        placeholder=(i18n "encrypt.preferences.paper_key_placeholder")
+        id="passphrase"
+        autocomplete="current-password"
+        disabled=inProgress
+      }}
     </p>
   </div>
 {{/d-modal-body}}
