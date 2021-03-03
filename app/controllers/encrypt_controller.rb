@@ -21,7 +21,9 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     private_identity = params[:private]
     private_id_label = params[:label]
 
-    # Check if encryption is already enabled (but not changing passphrase).
+    # Allow user to update only their private identity if they have already
+    # generated a key. This ensures the user cannot enable encryption on two
+    # different devices at the same time.
     old_identity = current_user.user_encryption_key&.encrypt_public
     if old_identity && old_identity != public_identity
       return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)

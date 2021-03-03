@@ -20,7 +20,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
       .catch(() => {
         this.setProperties({
           inProgress: false,
-          error: I18n.t("encrypt.preferences.passphrase_invalid"),
+          error: I18n.t("encrypt.preferences.paper_key_invalid"),
         });
       });
   },

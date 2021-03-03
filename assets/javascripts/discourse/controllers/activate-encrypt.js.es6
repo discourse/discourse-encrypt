@@ -42,7 +42,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
           this.send("closeModal");
         })
         .catch(() =>
-          this.set("error", I18n.t("encrypt.preferences.passphrase_invalid"))
+          this.set("error", I18n.t("encrypt.preferences.paper_key_invalid"))
         )
         .finally(() => this.set("inProgress", false));
     },
