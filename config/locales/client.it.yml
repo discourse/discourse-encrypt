@@ -32,15 +32,10 @@ it:
         status_enabled_but_inactive: "Hai abilitato la codifica, ma non l'hai attivata su questo dispositivo."
         status_disabled: "Non hai abilitato la codifica su questo account."
         status_disabled_other: "L'utente non ha abilitato la codifica e non può ricevere messaggi codificati."
-        passphrase_label: "Password:"
-        passphrase_invalid: "La password che hai inserito non è corretta."
-        notice_active: |
-          <p>Usa un'altro dispositivo o una chiave cartacea per attivare questo dispositivo. Non dimenticare gli spazi tra le parole.<p>
         notice_import: |
           <p>Incolla la chiave di codifica che hai precedentemente esportato.</p>
       generate_paper_key:
         instructions: "Ecco la tua chiave cartacea univoca, ti permetterà di attivare altri dispositivi codificati. Questa è l'unica volta in cui ti sarà mostrata, quindi accertati di copiarla e di custodirla in un luogo sicuro.  "
-        instructions_device: "Sul nuovo dispositivo vai sulle preferenze ed usa la seguente password per attivare la codifica:"
       manage_paper_keys:
         instructions: "Da qui puoi cancellare le chiavi cartacee generate in precedenza. Una volta cancellata una chiave cartacea non può più essere ripristinata, perciò assicurati di lasciarne almeno una, oppure di avere altri dispositivi attivi."
         delete: "Elimina"

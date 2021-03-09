@@ -8,6 +8,10 @@ fa_IR:
   js:
     encrypt:
       title: "پیام‌های رمزگذاری شده"
+      preferences:
+        paper_key_label: "کلید مقاله:"
+        paper_key_placeholder: "دوازده کلمه..."
+        paper_key_invalid: "کلید مقاله‌ای که وارد کردید درست نیست."
       manage_paper_keys:
         delete: "حذف"
       time_bomb:

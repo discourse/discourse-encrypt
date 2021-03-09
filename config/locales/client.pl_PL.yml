@@ -39,16 +39,14 @@ pl_PL:
         status_enabled_but_inactive: "Włączyłeś szyfrowanie, ale nie aktywowałeś go na tym urządzeniu."
         status_disabled: "Nie włączyłeś szyfrowania na tym koncie."
         status_disabled_other: "Ten użytkownik nie włączył szyfrowania i nie może odbierać zaszyfrowanych wiadomości."
-        passphrase_label: "Hasło:"
-        passphrase_invalid: "Podane hasło jest nieprawidłowe."
+        paper_key_label: "Klucz papierowy:"
+        paper_key_placeholder: "DWANAŚCIE SŁÓW ..."
+        paper_key_invalid: "Wprowadzony klucz papierowy jest nieprawidłowy."
         key_pair_invalid: "Wprowadzona para kluczy jest nieprawidłowa."
-        notice_active: |
-          <p>Aby aktywować to urządzenie, użyj innego urządzenia lub papierowego klucza. Nie zapomnij o odstępach między słowami.<p>
         notice_import: |
           <p>Wklej wcześniej wyeksportowany klucz szyfrowania.</p>
       generate_paper_key:
         instructions: "Oto Twój unikalny papierowy klucz, który może umożliwić aktywację zaszyfrowanych urządzeń w przyszłości. To jedyny raz, kiedy go zobaczysz, więc zapisz swój klucz i przechowuj w bezpiecznym miejscu."
-        instructions_device: "Na nowym urządzeniu przejdź do ustawień i użyj następującego hasła, aby aktywować szyfrowanie:"
       manage_paper_keys:
         instructions: "Poniżej możesz usunąć dowolny z wcześniej wygenerowanych kluczy papierowych. Po usunięciu klucza papierowego nie można odzyskać, więc upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         delete: "Usuń"
