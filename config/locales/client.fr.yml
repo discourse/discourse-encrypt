@@ -33,16 +33,11 @@ fr:
         status_enabled_but_inactive: "Vous avez activé le chiffrement mais vous devez aussi l'activer sur cet appareil."
         status_disabled: "Vous n'avez pas activé le chiffrement sur ce compte."
         status_disabled_other: "Cet utilisateur n'a pas activé le chiffrement et ne peut pas recevoir de messages chiffrés."
-        passphrase_label: "Phrase secrète :"
-        passphrase_invalid: "La phrase secrète est incorrecte."
         key_pair_invalid: "La paire de clés est incorrecte."
-        notice_active: |
-          <p>Merci d'utiliser un autre appareil déjà actif ou une clé papier pour activer le chiffrement sur cet appareil. Ne pas oublier les espaces entre les mots.<p>
         notice_import: |
           <p>Veuillez coller la clé de chiffrement que vous avez exportée précédemment.</p>
       generate_paper_key:
         instructions: "Voici votre clé papier unique, elle vous permettra d'activer le chiffrement sur d'autres appareils. Ceci est l'unique vue que vous en aurez, aussi assurez-vous de la recopier et la sauvegarder dans un endroit sûr."
-        instructions_device: "Sur votre appareil, allez dans les préférences et utilisez la phrase secrète suivante pour activer le chiffrement :"
       manage_paper_keys:
         instructions: "Vous pouvez supprimer ci-dessous des clés papier existantes. Une fois effacée, une clé papier ne peut pas être récupérée, aussi assurez-vous de conserver toujours au-moins une clé papier ou d'autres appareils actifs."
         delete: "Supprimer"

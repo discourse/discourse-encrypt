@@ -45,11 +45,7 @@ de:
         status_enabled_but_inactive: "Verschlüsselung ist angeschaltet, jedoch nicht für dieses Gerät aktiviert."
         status_disabled: "Verschlüsselung ist für dieses Konto nicht aktiviert."
         status_disabled_other: "Dieser Benutzer hat die Verschlüsselung nicht aktiviert und kann keine verschlüsselten Nachrichten empfangen."
-        passphrase_label: "Passphrase:"
-        passphrase_invalid: "Die eingegebene Passphrase ist falsch."
         key_pair_invalid: "Das eingegebene Schlüsselpaar ist falsch."
-        notice_active: |
-          <p> Bitte verwende ein anderes Gerät oder einen Papierschlüssel, um dieses Gerät zu aktivieren. Vergiss nicht die Zwischenräume zwischen den Wörtern. <p>
         notice_import: |
           <p> Bitte füge den zuvor exportierten Verschlüsselungsschlüssel ein. </p>
         activate: "Verschlüsselte Nachrichten aktivieren"
@@ -62,7 +58,6 @@ de:
         title: "Papierschlüssel generieren"
         title_device: "Ein weiteres Gerät aktivieren"
         instructions: "Hier ist dein eindeutiger Papierschlüssel, mit dem du zukünftige verschlüsselte Geräte aktivieren kanst. Dies ist das einzige Mal, dass du diesen sehen kannst. Schreibe ihn also auf und bewahre ihn an einem sicheren Ort auf."
-        instructions_device: "Gehe bei dem neuen Gerät zu den Einstellungen und verwende die folgende Passphrase, um die Verschlüsselung zu aktivieren:"
       manage_paper_keys:
         title: "Papierschlüssel verwalten"
         instructions: "Unten kannst du alle zuvor generierten Papierschlüssel löschen. Nach dem Löschen kann der Papierschlüssel nicht wiederhergestellt werden. Stelle daher sicher, dass du mindestens einen Papierschlüssel oder ein anderes aktives Geräte hast."

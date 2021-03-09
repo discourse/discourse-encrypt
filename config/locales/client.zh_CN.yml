@@ -32,15 +32,10 @@ zh_CN:
         status_enabled_but_inactive: "你已经启用了加密功能，但没有在此设备上激活它。"
         status_disabled: "你没有对该账户启用加密功能。"
         status_disabled_other: "该用户没有启用加密功能，无法接收加密私信/消息。"
-        passphrase_label: "密码短语："
-        passphrase_invalid: "你输入的密码短语不正确。"
-        notice_active: |
-          <p>请使用其他设备或纸质钥匙来激活这个设备。不要忘记字与字之间的空格。<p>
         notice_import: |
           <p>请粘贴你之前导出的加密密钥。</p>
       generate_paper_key:
         instructions: "这是你唯一的纸质密钥，它允许你激活未来的其它加密设备。这是你唯一一次看到它，请一定要写下来，并把它存放在安全的地方。"
-        instructions_device: "在你的新设备上，进入偏好设置，使用以下密码短语激活加密功能："
       manage_paper_keys:
         instructions: "你可以在下面删除任何一个之前生成的纸质密钥。一旦删除，纸质密钥将无法恢复，所以请确保你至少有一个纸质密钥或其它活动设备。"
         delete: "删除"

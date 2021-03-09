@@ -33,16 +33,11 @@ nl:
         status_enabled_but_inactive: "U hebt op dit apparaat versleuteling ingeschakeld, maar niet geactiveerd."
         status_disabled: "U hebt op deze account geen versleuteling ingeschakeld."
         status_disabled_other: "Deze gebruiker heeft geen versleuteling ingeschakeld en kan geen versleutelde berichten ontvangen."
-        passphrase_label: "Wachtwoordzin:"
-        passphrase_invalid: "De ingevoerde wachtwoordzin is onjuist."
         key_pair_invalid: "Het ingevoerde sleutelpaar is onjuist."
-        notice_active: |
-          <p>Gebruik een ander apparaat of een papieren sleutel om dit apparaat te activeren. Denk aan de spaties tussen woorden.<p>
         notice_import: |
           <p>Plak de coderingssleutel die u eerder hebt geëxporteerd.</p>
       generate_paper_key:
         instructions: "Dit is uw unieke papieren sleutel; hiermee kunt u toekomstige versleutelde apparaten activeren. Dit is de enige keer dat u dit ziet, dus zorg ervoor dat u deze opschrijft en ergens veilig opbergt."
-        instructions_device: "Ga op uw nieuwe apparaat naar de voorkeuren en gebruik de volgende wachtwoordzin om versleuteling te activeren:"
       manage_paper_keys:
         instructions: "Hieronder kunt u eerder aangemaakte papieren sleutels verwijderen. Na verwijdering kan de papieren sleutel niet meer worden hersteld, dus zorg ervoor dat u minstens één papieren sleutel of andere actieve apparaten hebt."
         delete: "Verwijderen"
