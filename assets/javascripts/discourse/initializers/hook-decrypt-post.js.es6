@@ -13,6 +13,7 @@ import { cookAsync } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import lightbox from "discourse/lib/lightbox";
+import { loadOneboxes } from "discourse/lib/load-oneboxes";
 
 import {
   ENCRYPT_DISABLED,
@@ -281,6 +282,16 @@ function postProcessPost(siteSettings, topicId, $post) {
       urls.push(url);
     }
   });
+
+  // Load Oneboxes
+  loadOneboxes(
+    $post[0],
+    ajax,
+    topicId,
+    null, // categoryId
+    siteSettings.max_oneboxes_per_post,
+    false
+  );
 
   const $elements = $("img[data-orig-src], a[data-orig-href]");
   if ($elements.length > 0) {
