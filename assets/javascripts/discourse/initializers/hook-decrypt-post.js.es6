@@ -4,6 +4,10 @@ import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import {
+  fetchUnseenHashtags,
+  linkSeenHashtags,
+} from "discourse/lib/link-hashtags";
+import {
   fetchUnseenMentions,
   linkSeenMentions,
 } from "discourse/lib/link-mentions";
@@ -228,47 +232,12 @@ function postProcessPost(siteSettings, topicId, $post) {
     );
   }
 
-  try {
-    const { linkSeenHashtags, fetchUnseenHashtags } = require.call(
-      null,
-      "discourse/lib/link-hashtags"
-    );
-
-    // Paint category and tag hashtags.
-    const unseenTagHashtags = linkSeenHashtags($post);
-    if (unseenTagHashtags.length > 0) {
-      fetchUnseenHashtags(unseenTagHashtags).then(() => {
-        linkSeenHashtags($post);
-      });
-    }
-  } catch (_) {
-    const {
-      fetchUnseenCategoryHashtags,
-      linkSeenCategoryHashtags,
-    } = require.call(null, "discourse/lib/link-category-hashtags");
-
-    const { fetchUnseenTagHashtags, linkSeenTagHashtags } = require.call(
-      null,
-      "discourse/lib/link-tag-hashtag"
-    );
-
-    // Paint category hashtags.
-    const unseenCategoryHashtags = linkSeenCategoryHashtags($post);
-    if (unseenCategoryHashtags.length > 0) {
-      fetchUnseenCategoryHashtags(unseenCategoryHashtags).then(() => {
-        linkSeenCategoryHashtags($post);
-      });
-    }
-
-    // Paint tag hashtags.
-    if (siteSettings.tagging_enabled) {
-      const unseenTagHashtags = linkSeenTagHashtags($post);
-      if (unseenTagHashtags.length > 0) {
-        fetchUnseenTagHashtags(unseenTagHashtags).then(() => {
-          linkSeenTagHashtags($post);
-        });
-      }
-    }
+  // Paint category and tag hashtags.
+  const unseenTagHashtags = linkSeenHashtags($post);
+  if (unseenTagHashtags.length > 0) {
+    fetchUnseenHashtags(unseenTagHashtags).then(() => {
+      linkSeenHashtags($post);
+    });
   }
 
   // Resolve short URLs (first using cache and then using fresh data)
