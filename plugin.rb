@@ -20,6 +20,7 @@ after_initialize do
   end
 
   load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/encrypted_post_timers_controller.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/encrypted_post_timer_evaluator.rb', __FILE__)
   load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
@@ -46,14 +47,16 @@ after_initialize do
   end
 
   DiscourseEncrypt::Engine.routes.draw do
-    put    '/encrypt/keys'   => 'encrypt#update_keys'
-    delete '/encrypt/keys'   => 'encrypt#delete_key'
-    get    '/encrypt/user'   => 'encrypt#show_user'
-    post   '/encrypt/reset'  => 'encrypt#reset_user'
-    put    '/encrypt/post'   => 'encrypt#update_post'
-    get    '/encrypt/stats'  => 'encrypt#stats'
-    get    '/encrypt/rotate' => 'encrypt#show_all_keys'
-    put    '/encrypt/rotate' => 'encrypt#update_all_keys'
+    put    '/encrypt/keys'           => 'encrypt#update_keys'
+    delete '/encrypt/keys'           => 'encrypt#delete_key'
+    get    '/encrypt/user'           => 'encrypt#show_user'
+    post   '/encrypt/reset'          => 'encrypt#reset_user'
+    put    '/encrypt/post'           => 'encrypt#update_post'
+    get    '/encrypt/stats'          => 'encrypt#stats'
+    get    '/encrypt/rotate'         => 'encrypt#show_all_keys'
+    put    '/encrypt/rotate'         => 'encrypt#update_all_keys'
+    post   '/encrypt/encrypted_post_timers'  => 'encrypted_post_timers#create'
+    delete '/encrypt/encrypted_post_timers'  => 'encrypted_post_timers#destroy'
   end
 
   Discourse::Application.routes.append do
