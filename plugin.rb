@@ -40,6 +40,7 @@ after_initialize do
   load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/upload_validator_extensions.rb', __FILE__)
   load File.expand_path('../lib/user_extensions.rb', __FILE__)
+  load File.expand_path('../lib/user_notification_renderer_extensions.rb', __FILE__)
 
   class DiscourseEncrypt::Engine < Rails::Engine
     engine_name DiscourseEncrypt::PLUGIN_NAME
@@ -76,6 +77,7 @@ after_initialize do
     UserNotifications.class_eval     { prepend UserNotificationsExtensions }
 
     SiteSetting.singleton_class.prepend SiteSettingExtensions
+    UserNotificationRenderer.singleton_class.prepend UserNotificationRendererExtensions
   end
 
   # Send plugin-specific topic data to client via serializers.
