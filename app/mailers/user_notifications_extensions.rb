@@ -8,4 +8,15 @@ module UserNotificationsExtensions
     end
     super
   end
+
+  module ClassMethods
+    def get_context_posts(post, topic_user, user)
+      return [] if post.is_encrypted?
+      super
+    end
+  end
+
+  def self.prepended(mod)
+    mod.singleton_class.prepend(ClassMethods)
+  end
 end
