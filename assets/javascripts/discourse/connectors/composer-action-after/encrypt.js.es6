@@ -43,7 +43,7 @@ export default {
           this.model.setProperties({
             deleteAfterMinutes: (this.timeBombRequired ? timerOptions[this.timeBombLength] : null),
             deleteAfterMinutesLabel: (this.timeBombRequired ? I18n.t("encrypt.time_bomb." + this.timeBombLength) : null),
-          })
+          });
         }
       },
 
