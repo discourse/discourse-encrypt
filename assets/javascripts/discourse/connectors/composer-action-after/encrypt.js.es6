@@ -10,10 +10,21 @@ export default {
   setupComponent(args, component) {
     const currentUser = getOwner(component).lookup("current-user:main");
     const status = getEncryptionStatus(currentUser);
+    const timerOptions = {
+      "3 minutes": "3",
+      "1 hour": "60",
+      "3 hours": "180",
+      "12 hours": "720",
+      "24 hours": "1440",
+      "3 days": "4320",
+      "7 days": "10080",
+    };
 
     component.setProperties({
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
+      timeBombRequired: this.siteSettings.require_time_bombs,
+      timeBombLength: this.siteSettings.required_time_bomb_length.replace,
 
       /** Listens for encryption status updates. */
       listener() {
@@ -27,6 +38,16 @@ export default {
       didInsertElement() {
         this._super(...arguments);
         this.appEvents.on("encrypt:status-changed", this, this.listener);
+        if (this.timeBombRequired) {
+          this.model.setProperties({
+            deleteAfterMinutes: this.timeBombRequired
+              ? timerOptions[this.timeBombLength]
+              : null,
+            deleteAfterMinutesLabel: this.timeBombRequired
+              ? I18n.t("encrypt.time_bomb." + this.timeBombLength)
+              : null,
+          });
+        }
       },
 
       willDestroyElement() {
@@ -40,8 +61,12 @@ export default {
             isEncrypted: !this.model.isEncrypted,
             isEncryptedChanged: true,
             showEncryptError: !this.model.isEncrypted,
-            deleteAfterMinutes: null,
-            deleteAfterMinutesLabel: null,
+            deleteAfterMinutes: this.timeBombRequired
+              ? timerOptions[this.timeBombLength]
+              : null,
+            deleteAfterMinutesLabel: this.timeBombRequired
+              ? I18n.t("encrypt.time_bomb." + this.timeBombLength)
+              : null,
           });
         } else {
           this.model.set("showEncryptError", !this.model.showEncryptError);
