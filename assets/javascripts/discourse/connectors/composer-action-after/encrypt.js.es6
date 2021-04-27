@@ -24,7 +24,7 @@ export default {
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
       timeBombRequired: this.siteSettings.require_time_bombs,
-      timeBombLength: this.siteSettings.required_time_bomb_length.replace,
+      timeBombLength: this.siteSettings.required_time_bomb_length,
 
       /** Listens for encryption status updates. */
       listener() {
