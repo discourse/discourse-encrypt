@@ -244,7 +244,9 @@ acceptance("Encrypt", function (needs) {
     });
 
     const composerActions = selectKit(".composer-actions");
-    const encryptedPostTimerDropdown = selectKit(".encrypted-post-timer-dropdown");
+    const encryptedPostTimerDropdown = selectKit(
+      ".encrypted-post-timer-dropdown"
+    );
 
     await visit("/");
     await click("#create-topic");
@@ -295,7 +297,9 @@ acceptance("Encrypt", function (needs) {
     });
 
     const composerActions = selectKit(".composer-actions");
-    const encryptedPostTimerDropdown = selectKit(".encrypted-post-timer-dropdown");
+    const encryptedPostTimerDropdown = selectKit(
+      ".encrypted-post-timer-dropdown"
+    );
 
     await visit("/");
     await click("#create-topic");
