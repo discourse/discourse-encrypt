@@ -148,6 +148,8 @@ acceptance("Encrypt", function (needs) {
     encrypt_enabled: true,
     encrypt_groups: "",
     encrypt_pms_default: true,
+    require_time_bombs: false,
+    required_time_bomb_length: "3 minutes",
   });
 
   needs.hooks.beforeEach(() => {
@@ -242,6 +244,7 @@ acceptance("Encrypt", function (needs) {
     });
 
     const composerActions = selectKit(".composer-actions");
+    const encryptedPostTimerDropdown = selectKit(".encrypted-post-timer-dropdown");
 
     await visit("/");
     await click("#create-topic");
@@ -256,6 +259,10 @@ acceptance("Encrypt", function (needs) {
     // simulate selecting from autocomplete suggestions
     await fillIn("#private-message-users .filter-input", "evilt");
     await keyEvent("#private-message-users .filter-input", "keydown", 13);
+
+    // can click on timer
+    assert.ok(!encryptedPostTimerDropdown.isHidden());
+    assert.ok(!encryptedPostTimerDropdown.isDisabled());
 
     requests = [];
     await wait(
@@ -276,6 +283,37 @@ acceptance("Encrypt", function (needs) {
     );
 
     globalAssert = null;
+  });
+
+  test("cannot adjust exploding pms when required", async (assert) => {
+    needs.settings({
+      encrypt_enabled: true,
+      encrypt_groups: "",
+      encrypt_pms_default: true,
+      require_time_bombs: true,
+      required_time_bomb_length: "3 minutes",
+    });
+
+    const composerActions = selectKit(".composer-actions");
+    const encryptedPostTimerDropdown = selectKit(".encrypted-post-timer-dropdown");
+
+    await visit("/");
+    await click("#create-topic");
+    await composerActions.expand();
+    await composerActions.selectRowByValue("reply_as_private_message");
+
+    if (find(".users-input").text().trim() !== "") {
+      globalAssert = null;
+      throw new Error("Another test is leaking composer state");
+    }
+
+    // simulate selecting from autocomplete suggestions
+    await fillIn("#private-message-users .filter-input", "evilt");
+    await keyEvent("#private-message-users .filter-input", "keydown", 13);
+
+    // cannot click on timer
+    assert.ok(!encryptedPostTimerDropdown.isHidden());
+    assert.ok(!encryptedPostTimerDropdown.isDisabled());
   });
 
   test("new draft for public topic is not encrypted", async (assert) => {
