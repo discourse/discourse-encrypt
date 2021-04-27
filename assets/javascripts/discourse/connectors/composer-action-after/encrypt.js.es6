@@ -11,23 +11,20 @@ export default {
     const currentUser = getOwner(component).lookup("current-user:main");
     const status = getEncryptionStatus(currentUser);
     const timerOptions = {
-      "3_minutes": "3",
-      "1_hour": "60",
-      "3_hours": "180",
-      "12_hours": "720",
-      "24_hours": "1440",
-      "3_days": "4320",
-      "7_days": "10080",
+      "3 minutes": "3",
+      "1 hour": "60",
+      "3 hours": "180",
+      "12 hours": "720",
+      "24 hours": "1440",
+      "3 days": "4320",
+      "7 days": "10080",
     };
 
     component.setProperties({
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
       timeBombRequired: this.siteSettings.require_time_bombs,
-      timeBombLength: this.siteSettings.required_time_bomb_length.replace(
-        " ",
-        "_"
-      ),
+      timeBombLength: this.siteSettings.required_time_bomb_length.replace,
 
       /** Listens for encryption status updates. */
       listener() {
