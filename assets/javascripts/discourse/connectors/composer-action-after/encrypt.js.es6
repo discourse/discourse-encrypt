@@ -7,7 +7,6 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default {
-
   setupComponent(args, component) {
     const currentUser = getOwner(component).lookup("current-user:main");
     const status = getEncryptionStatus(currentUser);
@@ -25,7 +24,10 @@ export default {
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
       isEncryptActive: status === ENCRYPT_ACTIVE,
       timeBombRequired: this.siteSettings.require_time_bombs,
-      timeBombLength: this.siteSettings.required_time_bomb_length.replace(' ', '_'),
+      timeBombLength: this.siteSettings.required_time_bomb_length.replace(
+        " ",
+        "_"
+      ),
 
       /** Listens for encryption status updates. */
       listener() {
@@ -41,8 +43,12 @@ export default {
         this.appEvents.on("encrypt:status-changed", this, this.listener);
         if (this.timeBombRequired) {
           this.model.setProperties({
-            deleteAfterMinutes: (this.timeBombRequired ? timerOptions[this.timeBombLength] : null),
-            deleteAfterMinutesLabel: (this.timeBombRequired ? I18n.t("encrypt.time_bomb." + this.timeBombLength) : null),
+            deleteAfterMinutes: this.timeBombRequired
+              ? timerOptions[this.timeBombLength]
+              : null,
+            deleteAfterMinutesLabel: this.timeBombRequired
+              ? I18n.t("encrypt.time_bomb." + this.timeBombLength)
+              : null,
           });
         }
       },
@@ -58,8 +64,12 @@ export default {
             isEncrypted: !this.model.isEncrypted,
             isEncryptedChanged: true,
             showEncryptError: !this.model.isEncrypted,
-            deleteAfterMinutes: (this.timeBombRequired ? timerOptions[this.timeBombLength] : null),
-            deleteAfterMinutesLabel: (this.timeBombRequired ? I18n.t("encrypt.time_bomb." + this.timeBombLength) : null),
+            deleteAfterMinutes: this.timeBombRequired
+              ? timerOptions[this.timeBombLength]
+              : null,
+            deleteAfterMinutesLabel: this.timeBombRequired
+              ? I18n.t("encrypt.time_bomb." + this.timeBombLength)
+              : null,
           });
         } else {
           this.model.set("showEncryptError", !this.model.showEncryptError);
