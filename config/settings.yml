@@ -15,18 +15,3 @@ plugins:
   encrypt_pms_default:
     client: true
     default: true
-  require_time_bombs:
-    client: true
-    default: true
-  required_time_bomb_length:
-    client: true
-    default: "3 minutes"
-    type: enum
-    choices:
-      - "3 minutes"
-      - "1 hour"
-      - "3 hours"
-      - "12 hours"
-      - "24 hours"
-      - "3 days"
-      - "7 days"

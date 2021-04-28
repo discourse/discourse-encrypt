@@ -9,5 +9,3 @@ en:
     auto_enable_encrypt: "Automatically enable encrypt for all logged in users"
     encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."
     encrypt_pms_default: "Encrypt all new private messages by default"
-    require_time_bombs: "Require that all encrypted PMs are automatically destroyed"
-    required_time_bomb_length: "The length of time encrypted PMs will live if required_time_bombs is enabled"

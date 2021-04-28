@@ -8,7 +8,7 @@
       {{~#if model.isEncrypted}}
         {{~#unless model.editingPost~}}
           <div class="composer-action-divider"></div>
-          {{~encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at disabled=timeBombRequired onChange=(action "timerClicked")}}
+          {{~encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timerClicked")}}
           <span title={{ i18n "encrypt.time_bomb.title" after=this.model.deleteAfterMinutesLabel}}>{{this.model.deleteAfterMinutesLabel}}</span>
         {{/unless}}
       {{/if}}
