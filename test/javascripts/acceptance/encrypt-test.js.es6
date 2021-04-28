@@ -318,15 +318,6 @@ acceptance("Encrypt", function (needs) {
     // cannot click on timer
     assert.ok(!encryptedPostTimerDropdown.isHidden());
     assert.ok(!encryptedPostTimerDropdown.isDisabled());
-
-    // reset these settings back
-    needs.settings({
-      encrypt_enabled: true,
-      encrypt_groups: "",
-      encrypt_pms_default: true,
-      require_time_bombs: false,
-      required_time_bomb_length: "3 minutes",
-    });
   });
 
   test("new draft for public topic is not encrypted", async (assert) => {
