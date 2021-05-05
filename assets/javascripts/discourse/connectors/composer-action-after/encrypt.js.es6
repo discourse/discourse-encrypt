@@ -1,5 +1,4 @@
 import I18n from "I18n";
-import { getOwner } from "discourse-common/lib/get-owner";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
@@ -8,8 +7,8 @@ import {
 
 export default {
   setupComponent(args, component) {
-    const currentUser = getOwner(component).lookup("current-user:main");
-    const status = getEncryptionStatus(currentUser, component.siteSettings);
+    const { currentUser, siteSettings } = component;
+    const status = getEncryptionStatus(currentUser, siteSettings);
 
     component.setProperties({
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
@@ -17,10 +16,7 @@ export default {
 
       /** Listens for encryption status updates. */
       listener() {
-        const newStatus = getEncryptionStatus(
-          currentUser,
-          component.siteSettings
-        );
+        const newStatus = getEncryptionStatus(currentUser, siteSettings);
         component.setProperties({
           isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
           isEncryptActive: newStatus === ENCRYPT_ACTIVE,
