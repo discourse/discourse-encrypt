@@ -2,7 +2,6 @@ import I18n from "I18n";
 import PostAdapter from "discourse/adapters/post";
 import { ajax } from "discourse/lib/ajax";
 import Topic from "discourse/models/topic";
-import User from "discourse/models/user";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -123,7 +122,7 @@ export default {
         }
 
         if (usernames.length > 0) {
-          usernames.push(User.current().username);
+          usernames.push(currentUser.username);
           const identitiesPromise = getUserIdentities(usernames);
 
           encryptedKeysPromise = Promise.all([

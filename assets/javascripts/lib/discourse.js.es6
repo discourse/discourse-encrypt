@@ -282,6 +282,7 @@ export function waitForPendingTitles() {
  * Gets current encryption status.
  *
  * @param {User} user
+ * @param {Object} siteSettings
  *
  * @return {Number} See `ENCRYPT_DISABLED`, `ENCRYPT_ENABLED` and
  *                  `ENCRYPT_ACTIVE`.

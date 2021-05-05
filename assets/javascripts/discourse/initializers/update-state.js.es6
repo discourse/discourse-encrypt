@@ -14,7 +14,6 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    const messageBus = container.lookup("message-bus:main");
     const siteSettings = container.lookup("site-settings:main");
     const appEvents = container.lookup("service:app-events");
     appEvents.on("encrypt:status-changed", (skipReload) => {
@@ -48,6 +47,7 @@ export default {
       });
     }
 
+    const messageBus = container.lookup("message-bus:main");
     if (messageBus && status !== ENCRYPT_DISABLED) {
       messageBus.subscribe("/plugin/encrypt/keys", function (data) {
         currentUser.setProperties({
