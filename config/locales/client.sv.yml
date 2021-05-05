@@ -13,6 +13,7 @@ sv:
       invalid_ciphertext: "Meddelandet kunde inte avkrypteras eftersom chiffertexten i detta meddelande är ogiltig."
       invalid_topic_key: "Meddelandet kunde inte avkrypteras eftersom din ämnesnyckel är ogiltig."
       invalid_identity: "Meddelandet kunde inte avkrypteras eftersom användaridentiteten är ogiltig."
+      no_backup_warn: "Du har aktiverat kryptering, men har ännu inte genererat några pappersnycklar. Utan några pappersnycklar riskerar du att förlora åtkomst till dina krypterade meddelanden. För att generera en pappersnyckel, vänligen navigera till <a href='%{basePath}/my/preferences/account'>sidan för användarinställningar</a>, klicka på knappen <kbd>Generera pappersnyckel</kbd> och följ instruktionerna."
       integrity_check_pass: "Integritetskontrollen för detta inlägg har godkänts."
       integrity_check_fail: "Integritetskontrollen för detta inlägg har misslyckats (%{fields} är felaktigt)."
       integrity_check_warn_updated_at: "Inläggets metadata uppdaterades utan att signering utfördes igen."
@@ -54,6 +55,8 @@ sv:
         paper_key_placeholder: "TOLV ORD..."
         paper_key_invalid: "Den pappersnyckel som du angav är felaktig."
         key_pair_invalid: "Nyckelparet som du har angett är felaktigt."
+        notice_active: |
+          <p>Skriv in en pappersnyckel eller använd en annan enhet för att aktivera denna. Glöm inte mellanslag mellan ord.</p>
         notice_import: |
           <p>Klistra in krypteringsnyckeln som du tidigare exporterade.</p>
         activate: "Aktivera krypterade meddelanden"
@@ -66,6 +69,7 @@ sv:
         title: "Generera pappersnyckel"
         title_device: "Aktivera en annan enhet"
         instructions: "Här är din unika anteckningsnyckel, som kan användas för att aktivera framtida krypterade enheter. Detta är det enda tillfället då du kommer se denna, så se till att du skriver ner den och sparar den på ett säkert ställe."
+        instructions_device: "På din andra enhet, gå till inställningar och använda följande pappersnyckel för att aktivera kryptering:"
       manage_paper_keys:
         title: "Hantera pappersnycklar"
         instructions: "Nedanför kan du radera vilken som helst av de tidigare genererade anteckningsnycklarna. När den väl raderats kan anteckningsnyckeln inte återställas, så var säker på att du har åtminstone en anteckningsnyckel eller en annan aktiv enhet."
