@@ -284,7 +284,6 @@ export default {
       api.includePostAttributes("encrypted_raw");
 
       api.decorateWidget("post-contents:after-cooked", (dec) => {
-        const siteSettings = dec.widget.siteSettings;
         $(".cooked img")
           .not($(".d-lazyload-hidden"))
           .not($("a.lightbox img"))
