@@ -283,7 +283,7 @@ export default {
 
       api.includePostAttributes("encrypted_raw");
 
-      api.decorateWidget("post-contents:after-cooked", (dec) => {
+      api.decorateWidget("post-contents:after-cooked", () => {
         $(".cooked img")
           .not($(".d-lazyload-hidden"))
           .not($("a.lightbox img"))
