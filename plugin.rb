@@ -5,6 +5,7 @@
 # version: 1.0
 # authors: Dan Ungureanu
 # url: https://github.com/udan11/discourse-encrypt.git
+# transpile_js: true
 
 enabled_site_setting :encrypt_enabled
 
@@ -52,6 +53,7 @@ after_initialize do
     delete '/encrypt/keys'           => 'encrypt#delete_key'
     get    '/encrypt/user'           => 'encrypt#show_user'
     post   '/encrypt/reset'          => 'encrypt#reset_user'
+    get    '/encrypt/posts'          => 'encrypt#posts'
     put    '/encrypt/post'           => 'encrypt#update_post'
     get    '/encrypt/stats'          => 'encrypt#stats'
     get    '/encrypt/rotate'         => 'encrypt#show_all_keys'

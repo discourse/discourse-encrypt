@@ -127,6 +127,28 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
+  # Lists encrypted topics and posts of a user.
+  #
+  # Returns status code 200, topics and posts.
+  def posts
+    posts = Post
+      .joins(:topic, topic: :encrypted_topics_users)
+      .where(encrypted_topics_users: { user_id: current_user.id })
+      .order(created_at: :desc)
+      .limit(1000)
+
+    topics = posts.map(&:topic)
+
+    render json: success_json.merge(
+      ActiveModel::ArraySerializer.new(
+        posts,
+        scope: current_user.guardian,
+        each_serializer: SearchPostSerializer,
+        root: :posts
+      ).as_json
+    )
+  end
+
   # Updates an encrypted post, used immediately after creating one to
   # update signature.
   #
