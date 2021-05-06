@@ -180,6 +180,10 @@ acceptance("Encrypt", function (needs) {
       return helper.response(response);
     });
 
+    server.get("/encrypt/posts", () => {
+      return helper.response({ posts: [], topics: [] });
+    });
+
     server.put("/encrypt/post", () => {
       return helper.response({});
     });

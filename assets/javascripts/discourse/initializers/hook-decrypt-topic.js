@@ -58,9 +58,6 @@ function decryptElements(containerSelector, elementSelector, opts) {
 
     // TODO: Hide quick-edit button for the time being.
     $(this).find(".edit-topic").hide();
-
-    // Hide excerpt in search
-    $(this).parents(".search-link").find(".blurb").hide();
   });
 }
 
@@ -160,7 +157,6 @@ export default {
     decryptElements("a.topic-link[data-topic-id]", "span");
     decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
     decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
-    decryptElements(".search-result-topic span[data-topic-id]");
   },
 
   decryptDocTitle(data) {
