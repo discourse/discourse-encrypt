@@ -19,7 +19,7 @@ export default {
     if (currentUser) {
       if (
         !window.localStorage.getItem(AUTO_ENABLE_KEY) &&
-        getEncryptionStatus(currentUser) === ENCRYPT_DISABLED
+        getEncryptionStatus(currentUser, siteSettings) === ENCRYPT_DISABLED
       ) {
         window.localStorage.setItem(AUTO_ENABLE_KEY, true);
         enableEncrypt(currentUser).then(() => {

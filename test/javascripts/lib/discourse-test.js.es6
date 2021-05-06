@@ -9,5 +9,5 @@ test("canEnableEncrypt", async (assert) => {
 
   const user = User.create({ groups: [{ name: "GrOuP" }] });
 
-  assert.ok(canEnableEncrypt(user));
+  assert.ok(canEnableEncrypt(user, Discourse.SiteSettings));
 });

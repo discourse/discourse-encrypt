@@ -273,7 +273,8 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (getEncryptionStatus(currentUser, siteSettings) === ENCRYPT_DISABLED) {
       return;
     }
 

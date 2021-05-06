@@ -9,7 +9,7 @@ import {
 export default {
   setupComponent(args, component) {
     const currentUser = getOwner(component).lookup("current-user:main");
-    const status = getEncryptionStatus(currentUser);
+    const status = getEncryptionStatus(currentUser, component.siteSettings);
 
     component.setProperties({
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
@@ -17,7 +17,10 @@ export default {
 
       /** Listens for encryption status updates. */
       listener() {
-        const newStatus = getEncryptionStatus(currentUser);
+        const newStatus = getEncryptionStatus(
+          currentUser,
+          component.siteSettings
+        );
         component.setProperties({
           isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
           isEncryptActive: newStatus === ENCRYPT_ACTIVE,

@@ -15,7 +15,7 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     const messageBus = container.lookup("message-bus:main");
-
+    const siteSettings = container.lookup("site-settings:main");
     const appEvents = container.lookup("service:app-events");
     appEvents.on("encrypt:status-changed", (skipReload) => {
       if (!skipReload) {
@@ -23,7 +23,7 @@ export default {
       }
     });
 
-    const status = getEncryptionStatus(currentUser);
+    const status = getEncryptionStatus(currentUser, siteSettings);
     if (!currentUser || status !== ENCRYPT_ACTIVE) {
       deleteDb();
     }
