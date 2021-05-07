@@ -286,12 +286,8 @@ export function waitForPendingTitles() {
  * @return {Number} See `ENCRYPT_DISABLED`, `ENCRYPT_ENABLED` and
  *                  `ENCRYPT_ACTIVE`.
  */
-export function getEncryptionStatus(user) {
-  if (
-    !Discourse.SiteSettings.encrypt_enabled ||
-    !user ||
-    !user.encrypt_public
-  ) {
+export function getEncryptionStatus(user, siteSettings) {
+  if (!siteSettings.encrypt_enabled || !user || !user.encrypt_public) {
     return ENCRYPT_DISABLED;
   }
 
@@ -317,17 +313,17 @@ export function getEncryptionStatus(user) {
  *
  * @return {Boolean}
  */
-export function canEnableEncrypt(user) {
-  if (getEncryptionStatus(user) !== ENCRYPT_DISABLED) {
+export function canEnableEncrypt(user, siteSettings) {
+  if (getEncryptionStatus(user, siteSettings) !== ENCRYPT_DISABLED) {
     return true;
   }
 
-  if (Discourse.SiteSettings.encrypt_enabled) {
-    if (Discourse.SiteSettings.encrypt_groups.length === 0) {
+  if (siteSettings.encrypt_enabled) {
+    if (siteSettings.encrypt_groups.length === 0) {
       return true;
     }
 
-    const encryptGroups = Discourse.SiteSettings.encrypt_groups
+    const encryptGroups = siteSettings.encrypt_groups
       .split("|")
       .map((groupName) => groupName.toLowerCase());
     const groups = (user.groups || []).map((group) => group.name.toLowerCase());

@@ -273,7 +273,8 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (getEncryptionStatus(currentUser, siteSettings) === ENCRYPT_DISABLED) {
       return;
     }
 
@@ -282,8 +283,7 @@ export default {
 
       api.includePostAttributes("encrypted_raw");
 
-      api.decorateWidget("post-contents:after-cooked", (dec) => {
-        const siteSettings = dec.widget.siteSettings;
+      api.decorateWidget("post-contents:after-cooked", () => {
         $(".cooked img")
           .not($(".d-lazyload-hidden"))
           .not($("a.lightbox img"))

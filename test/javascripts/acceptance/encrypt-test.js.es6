@@ -129,7 +129,9 @@ async function wait(statusOrWaiter, func) {
   const waiter =
     typeof statusOrWaiter === "function"
       ? statusOrWaiter
-      : () => getEncryptionStatus(User.current()) === statusOrWaiter;
+      : () =>
+          getEncryptionStatus(User.current(), Discourse.SiteSettings) ===
+          statusOrWaiter;
 
   try {
     Ember.Test.registerWaiter(waiter);
