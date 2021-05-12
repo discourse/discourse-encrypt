@@ -316,7 +316,7 @@ acceptance("Encrypt", function (needs) {
       return [200, { "Content-Type": "application/json" }, { success: "OK" }];
     });
 
-    await visit("/u/eviltrout/preferences");
+    await visit("/u/eviltrout/preferences/security");
     await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
     assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
@@ -330,7 +330,7 @@ acceptance("Encrypt", function (needs) {
   test("activation works", async (assert) => {
     await setEncryptionStatus(ENCRYPT_ENABLED);
 
-    await visit("/u/eviltrout/preferences");
+    await visit("/u/eviltrout/preferences/security");
     await fillIn(".encrypt #passphrase", PASSPHRASE);
     await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
 
@@ -344,7 +344,7 @@ acceptance("Encrypt", function (needs) {
   test("deactivation works", async (assert) => {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
-    await visit("/u/eviltrout/preferences");
+    await visit("/u/eviltrout/preferences/security");
     await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
 
     const identity = await loadDbIdentity();
@@ -354,7 +354,7 @@ acceptance("Encrypt", function (needs) {
   test("encrypt settings visible only to allowed groups", async (assert) => {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
-    await visit("/u/eviltrout/preferences");
+    await visit("/u/eviltrout/preferences/security");
     assert.ok(
       find(".encrypt").text().length > 0,
       "encrypt settings are visible"
@@ -371,6 +371,7 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/u/eviltrout/preferences");
+    await click(".nav-security a");
     assert.ok(
       find(".encrypt").text().length === 0,
       "encrypt settings are not visible"
@@ -390,6 +391,7 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/u/eviltrout/preferences");
+    await click(".nav-security a");
     assert.ok(
       find(".encrypt").text().length > 0,
       "encrypt settings are visible"
@@ -408,10 +410,10 @@ acceptance("Encrypt", function (needs) {
       return [200, { "Content-Type": "application/json" }, json];
     });
 
-    await visit("/u/eviltrout2/preferences");
+    await visit("/u/eviltrout2/preferences/security");
 
     assert.ok(
-      find(".user-preferences-account-outlet.encrypt")
+      find(".user-preferences-security-outlet.encrypt")
         .text()
         .trim()
         .indexOf(I18n.t("encrypt.preferences.status_enabled_other")) !== -1
