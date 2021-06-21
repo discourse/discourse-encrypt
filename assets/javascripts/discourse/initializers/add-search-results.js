@@ -16,30 +16,32 @@ import I18n from "I18n";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
-function getCache() {
-  const cache = window.sessionStorage.getItem(CACHE_KEY);
-  return cache ? JSON.parse(cache) : {};
-}
+function addCacheItem(session, type, item) {
+  let cache = session.get(CACHE_KEY);
+  if (!cache) {
+    session.set(CACHE_KEY, (cache = {}));
+  }
 
-function addCacheItem(type, item) {
-  const cache = getCache();
   if (!cache[type]) {
     cache[type] = [];
   } else if (item.id) {
     cache[type] = cache[type].filter((i) => i.id !== item.id);
   }
   cache[type].push(item);
-  window.sessionStorage.setItem(CACHE_KEY, JSON.stringify(cache));
 }
 
-function getOrFetchCache() {
-  let promise = Promise.resolve();
-  if (!window.sessionStorage.getItem(CACHE_KEY)) {
-    promise = ajax("/encrypt/posts").then((result) => {
+function getOrFetchCache(session) {
+  const cache = session.get(CACHE_KEY);
+  if (cache) {
+    return Promise.resolve(cache);
+  }
+
+  return ajax("/encrypt/posts")
+    .then((result) => {
       const promises = [];
 
       result.posts.forEach((post) => {
-        addCacheItem("posts", post);
+        addCacheItem(session, "posts", post);
       });
 
       result.topics.forEach((topic) => {
@@ -49,15 +51,14 @@ function getOrFetchCache() {
             .then((key) => decrypt(key, topic.encrypted_title))
             .then((decrypted) => {
               topic.title = topic.fancy_title = decrypted.raw;
-              addCacheItem("topics", topic);
+              addCacheItem(session, "topics", topic);
             })
         );
       });
 
       return Promise.all(promises);
-    });
-  }
-  return promise.then(() => getCache());
+    })
+    .then(() => session.get(CACHE_KEY));
 }
 
 export default {
@@ -70,6 +71,7 @@ export default {
       return;
     }
 
+    const session = container.lookup("session:main");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
         const term = results.grouped_search_result.term;
@@ -79,7 +81,7 @@ export default {
           return Promise.resolve(results);
         }
 
-        return getOrFetchCache().then((cache) => {
+        return getOrFetchCache(session).then((cache) => {
           const topics = {};
           if (cache.topics) {
             cache.topics.forEach((topic) => {
