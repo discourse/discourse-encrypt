@@ -53,6 +53,7 @@ function getOrFetchCache(session) {
               topic.title = topic.fancy_title = decrypted.raw;
               addCacheItem(session, "topics", topic);
             })
+            .catch(() => {})
         );
       });
 

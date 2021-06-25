@@ -110,6 +110,35 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
+  context '#posts' do
+    let!(:topic) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
+    let!(:post) { Fabricate(:post, topic: topic) }
+
+    it 'does not work when not logged in' do
+      get '/encrypt/posts'
+      expect(response.status).to eq(404)
+    end
+
+    it 'fetches posts' do
+      sign_in(user)
+
+      get '/encrypt/posts'
+      expect(response.status).to eq(200)
+      expect(response.parsed_body['topics'].size).to eq(1)
+      expect(response.parsed_body['posts'].size).to eq(1)
+    end
+
+    it 'fetches posts when use_pg_headlines_for_excerpt is enabled' do
+      SiteSetting.use_pg_headlines_for_excerpt = true
+      sign_in(user)
+
+      get '/encrypt/posts'
+      expect(response.status).to eq(200)
+      expect(response.parsed_body['topics'].size).to eq(1)
+      expect(response.parsed_body['posts'].size).to eq(1)
+    end
+  end
+
   context '#update_post' do
     let!(:post) { Fabricate(:encrypt_post) }
 

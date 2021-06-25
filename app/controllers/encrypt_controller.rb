@@ -137,6 +137,10 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       .order(created_at: :desc)
       .limit(1000)
 
+    if SiteSetting.use_pg_headlines_for_excerpt
+      posts = posts.select("'' AS topic_title_headline", posts.arel.projections)
+    end
+
     topics = posts.map(&:topic)
 
     render json: success_json.merge(
