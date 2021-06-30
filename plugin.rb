@@ -31,6 +31,7 @@ after_initialize do
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
+  load File.expand_path('../lib/grouped_search_result_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
   load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
   load File.expand_path('../lib/post_extensions.rb', __FILE__)
@@ -67,16 +68,17 @@ after_initialize do
   end
 
   reloadable_patch do |plugin|
-    Email::Sender.class_eval         { prepend EmailSenderExtensions }
-    Post.class_eval                  { prepend PostExtensions }
-    PostActionsController.class_eval { prepend PostActionsControllerExtensions }
-    Topic.class_eval                 { prepend TopicExtensions }
-    TopicGuardian.class_eval         { prepend TopicGuardianExtension }
-    TopicsController.class_eval      { prepend TopicsControllerExtensions }
-    TopicViewSerializer.class_eval   { prepend TopicViewSerializerExtension }
-    UploadValidator.class_eval       { prepend UploadValidatorExtensions }
-    User.class_eval                  { prepend UserExtensions }
-    UserNotifications.class_eval     { prepend UserNotificationsExtensions }
+    Email::Sender.class_eval                 { prepend EmailSenderExtensions }
+    GroupedSearchResultSerializer.class_eval { prepend GroupedSearchResultSerializerExtension }
+    Post.class_eval                          { prepend PostExtensions }
+    PostActionsController.class_eval         { prepend PostActionsControllerExtensions }
+    Topic.class_eval                         { prepend TopicExtensions }
+    TopicGuardian.class_eval                 { prepend TopicGuardianExtension }
+    TopicsController.class_eval              { prepend TopicsControllerExtensions }
+    TopicViewSerializer.class_eval           { prepend TopicViewSerializerExtension }
+    UploadValidator.class_eval               { prepend UploadValidatorExtensions }
+    User.class_eval                          { prepend UserExtensions }
+    UserNotifications.class_eval             { prepend UserNotificationsExtensions }
 
     SiteSetting.singleton_class.prepend SiteSettingExtensions
     UserNotificationRenderer.singleton_class.prepend UserNotificationRendererExtensions
