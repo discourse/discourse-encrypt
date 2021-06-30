@@ -1,4 +1,3 @@
-import I18n from "I18n";
 import User from "discourse/models/user";
 import {
   deleteDb,
@@ -24,9 +23,12 @@ import { default as userFixtures } from "discourse/tests/fixtures/user-fixtures"
 import { parsePostData } from "discourse/tests/helpers/create-pretender";
 import {
   acceptance,
+  count,
+  queryAll,
   updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
+import I18n from "I18n";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 
@@ -463,7 +465,7 @@ acceptance("Encrypt", function (needs) {
         ],
         total_rows_notifications: 1,
         seen_notification_id: 5,
-        load_more_notifications: "/notifications?offset=60&username=dan",
+        load_more_notifications: "/notifications?offset=60&username=foo",
       },
     ]);
 
@@ -484,5 +486,173 @@ acceptance("Encrypt", function (needs) {
       "Top Secret "
     );
     assert.equal(find(".quick-access-panel span[data-topic-id] img").length, 1);
+  });
+
+  test("searching in encrypted topic titles", async (assert) => {
+    await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+    const identity = await getIdentity();
+    const topicKey = await generateKey();
+    const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+    const title = "Top Secret :male_detective:";
+    const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+    /* global server */
+    server.get("/search", (request) => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          posts: [],
+          topics: [],
+          grouped_search_result: {
+            term: request.queryParams.q,
+            type_filter: "private_messages",
+            post_ids: [],
+          },
+        },
+      ];
+    });
+
+    /* global server */
+    server.get("/encrypt/posts", () => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          success: "OK",
+          topics: [
+            {
+              id: 42,
+              title: "A secret message",
+              fancy_title: "A secret message",
+              slug: "a-secret-message",
+              posts_count: 1,
+              reply_count: 0,
+              highest_post_number: 1,
+              created_at: "2021-01-01T12:00:00.000Z",
+              last_posted_at: "2021-01-01T12:00:00.000Z",
+              bumped: true,
+              bumped_at: "2021-01-01T12:00:00.000Z",
+              archetype: "private_message",
+              unseen: false,
+              pinned: false,
+              unpinned: null,
+              visible: true,
+              closed: false,
+              archived: false,
+              bookmarked: null,
+              liked: null,
+              category_id: null,
+              encrypted_title: encryptedTitle,
+              topic_key: exportedKey,
+            },
+          ],
+          posts: [
+            {
+              id: 42,
+              username: "foo",
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+              created_at: "2021-01-01T12:00:00.000Z",
+              like_count: 0,
+              post_number: 1,
+              topic_id: 42,
+            },
+          ],
+        },
+      ];
+    });
+
+    await visit("/search?q=secret+in:personal");
+    assert.equal(count(".fps-result"), 1);
+    assert.equal(
+      queryAll(".fps-result .topic-title").text().trim(),
+      "Top Secret"
+    );
+
+    /* global server */
+    server.get("/search", (request) => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          posts: [
+            {
+              id: 42,
+              username: "foo",
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+              created_at: "2021-01-01T12:00:00.000Z",
+              like_count: 0,
+              blurb:
+                'This is a <span class="search-highlight">secret</span> message with end to end encryption. To view it, you must be invited to this topic...',
+              post_number: 1,
+              topic_title_headline:
+                'A <span class="search-highlight">secret</span> message',
+              topic_id: 42,
+            },
+          ],
+          topics: [
+            {
+              id: 42,
+              title: "A secret message",
+              fancy_title: "A secret message",
+              slug: "a-secret-message",
+              posts_count: 1,
+              reply_count: 0,
+              highest_post_number: 1,
+              created_at: "2021-01-01T12:00:00.000Z",
+              last_posted_at: "2021-01-01T12:00:00.000Z",
+              bumped: true,
+              bumped_at: "2021-01-01T12:00:00.000Z",
+              archetype: "private_message",
+              unseen: false,
+              last_read_post_number: 1,
+              unread: 0,
+              new_posts: 0,
+              pinned: false,
+              unpinned: null,
+              visible: true,
+              closed: false,
+              archived: false,
+              notification_level: 3,
+              bookmarked: false,
+              liked: false,
+              category_id: null,
+              encrypted_title: encryptedTitle,
+              topic_key: exportedKey,
+            },
+          ],
+          users: [],
+          categories: [],
+          tags: [],
+          groups: [],
+          grouped_search_result: {
+            more_posts: null,
+            more_users: null,
+            more_categories: null,
+            term: request.queryParams.q,
+            search_log_id: 42,
+            more_full_page_results: null,
+            can_create_topic: true,
+            error: null,
+            type_filter: "private_messages",
+            post_ids: [42],
+            user_ids: [],
+            category_ids: [],
+            tag_ids: [],
+            group_ids: [],
+          },
+        },
+      ];
+    });
+
+    await visit("/search?q=secret+in:personal");
+    assert.equal(count(".fps-result"), 1);
+    assert.equal(
+      queryAll(".fps-result .topic-title").text().trim(),
+      "Top Secret"
+    );
   });
 });
