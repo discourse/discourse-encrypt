@@ -1,4 +1,4 @@
-import { Promise } from "rsvp";
+import { iconHTML } from "discourse-common/lib/icon-library";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import Post from "discourse/models/post";
@@ -13,6 +13,7 @@ import {
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
+import { Promise } from "rsvp";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
@@ -50,7 +51,8 @@ function getOrFetchCache(session) {
             .then((id) => importKey(topic.topic_key, id.encryptPrivate))
             .then((key) => decrypt(key, topic.encrypted_title))
             .then((decrypted) => {
-              topic.title = topic.fancy_title = decrypted.raw;
+              topic.title = decrypted.raw;
+              topic.fancy_title = `${iconHTML("user-secret")} ${decrypted.raw}`;
               addCacheItem(session, "topics", topic);
             })
             .catch(() => {})
@@ -75,32 +77,39 @@ export default {
     const session = container.lookup("session:main");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
-        const term = results.grouped_search_result.term;
-        const words = term.split(/\s+/);
-
-        if (!words.some((w) => w === "in:personal")) {
+        if (results.grouped_search_result.type_filter !== "private_messages") {
           return Promise.resolve(results);
         }
 
         return getOrFetchCache(session).then((cache) => {
           const topics = {};
           if (cache.topics) {
-            cache.topics.forEach((topic) => {
-              if (!words.some((word) => topic.title.indexOf(word) !== -1)) {
-                return;
-              }
+            const words = results.grouped_search_result.term
+              .toLowerCase()
+              .split(/\s+/);
 
+            cache.topics.forEach((topic) => {
               const topicObj = results.topics.find((t) => topic.id === t.id);
               if (topicObj) {
                 topicObj.setProperties(topic);
-              } else {
+              } else if (
+                words.some((word) => topic.title.toLowerCase().includes(word))
+              ) {
                 topic = Topic.create(topic);
+                results.topics.unshift(topic);
                 topics[topic.id] = topic;
+              }
+            });
+
+            // Reset topic_title_headline
+            const encryptedTopicIds = new Set(cache.topics.map((t) => t.id));
+            results.posts.map((post) => {
+              if (encryptedTopicIds.has(post.topic_id)) {
+                post.set("topic_title_headline", "");
               }
             });
           }
 
-          const posts = {};
           if (cache.posts) {
             cache.posts.forEach((post) => {
               if (!topics[post.topic_id]) {
@@ -112,18 +121,11 @@ export default {
                 topic: topics[post.topic_id],
                 blurb: I18n.t("encrypt.encrypted_post"),
               });
-              posts[post.topic_id] = post;
+
+              results.posts.unshift(post);
+              results.grouped_search_result.post_ids.unshift(post.id);
             });
           }
-
-          Object.values(topics).forEach((topic) => {
-            results.topics.unshift(topic);
-          });
-
-          Object.values(posts).forEach((p) => {
-            results.posts.unshift(p);
-            results.grouped_search_result.post_ids.unshift(p.id);
-          });
 
           return results;
         });
