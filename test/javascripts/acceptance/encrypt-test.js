@@ -559,6 +559,16 @@ acceptance("Encrypt", function (needs) {
               post_number: 1,
               topic_id: 42,
             },
+            {
+              id: 43,
+              username: "foo",
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+              created_at: "2021-01-01T12:00:00.000Z",
+              like_count: 0,
+              post_number: 2,
+              topic_id: 42,
+            },
           ],
         },
       ];
@@ -648,7 +658,7 @@ acceptance("Encrypt", function (needs) {
       ];
     });
 
-    await visit("/search?q=secret+in:personal");
+    await visit("/search?q=secret++in:personal");
     assert.equal(count(".fps-result"), 1);
     assert.equal(
       queryAll(".fps-result .topic-title").text().trim(),

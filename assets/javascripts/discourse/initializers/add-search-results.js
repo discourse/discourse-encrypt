@@ -112,7 +112,7 @@ export default {
 
           if (cache.posts) {
             cache.posts.forEach((post) => {
-              if (!topics[post.topic_id]) {
+              if (post.post_number !== 1 || !topics[post.topic_id]) {
                 return;
               }
 
