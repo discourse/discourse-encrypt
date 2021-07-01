@@ -133,6 +133,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def posts
     posts = Post
       .joins(:topic, topic: :encrypted_topics_users)
+      .where(post_number: 1)
       .where(encrypted_topics_users: { user_id: current_user.id })
       .order(created_at: :desc)
       .limit(1000)
