@@ -77,7 +77,9 @@ export default {
     const session = container.lookup("session:main");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
-        if (results.grouped_search_result.type_filter !== "private_messages") {
+        if (
+          results?.grouped_search_result?.type_filter !== "private_messages"
+        ) {
           return Promise.resolve(results);
         }
 
