@@ -132,7 +132,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   # Returns status code 200, topics and posts.
   def posts
     posts = Post
-      .joins(:topic, topic: :encrypted_topics_users)
+      .includes(:topic, topic: [:encrypted_topics_users, :encrypted_topics_data])
       .where(post_number: 1)
       .where(encrypted_topics_users: { user_id: current_user.id })
       .order(created_at: :desc)
