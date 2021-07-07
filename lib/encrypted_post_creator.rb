@@ -54,7 +54,10 @@ class EncryptedPostCreator < PostCreator
   private
 
   def users
-    @users ||= User.where(username_lower: @opts[:target_usernames].split(',').map(&:downcase)).to_a << @user
+    @users ||= User
+      .includes(:user_encryption_key)
+      .where(username_lower: (@opts[:target_usernames].split(',') << @user.username).map(&:downcase))
+      .to_a
   end
 
   def self.encrypt(raw, key)
