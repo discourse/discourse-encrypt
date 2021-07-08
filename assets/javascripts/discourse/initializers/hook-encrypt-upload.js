@@ -2,15 +2,15 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
-  generateUploadKey,
-  getMetadata,
-  readFile,
-} from "discourse/plugins/discourse-encrypt/lib/uploads";
-import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
   hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import {
+  generateUploadKey,
+  getMetadata,
+  readFile,
+} from "discourse/plugins/discourse-encrypt/lib/uploads";
 import { DEFAULT_LIST } from "pretty-text/white-lister";
 import { Promise } from "rsvp";
 
@@ -30,10 +30,7 @@ export default {
       DEFAULT_LIST.push("img[data-key]");
       DEFAULT_LIST.push("img[data-type]");
 
-      const uploadsKeys = {};
-      const uploadsType = {};
-      const uploadsData = {};
-      const uploadsUrl = {};
+      const uploads = {};
 
       api.addComposerUploadHandler([".*"], (file, editor) => {
         const controller = container.lookup("controller:composer");
@@ -42,7 +39,7 @@ export default {
           return true;
         }
 
-        const metadataPromise = getMetadata(file, uploadsUrl);
+        const metadataPromise = getMetadata(file, siteSettings);
         const plaintextPromise = readFile(file);
         const keyPromise = generateUploadKey();
         const exportedKeyPromise = keyPromise.then((key) => {
@@ -68,46 +65,43 @@ export default {
           ciphertextPromise,
           exportedKeyPromise,
           metadataPromise,
-        ]).then(([ciphertext, exportedKey, data]) => {
-          uploadsKeys[file.name] = exportedKey;
-          uploadsType[file.name] = file.type;
-          uploadsData[file.name] = data;
-
+        ]).then(([ciphertext, exportedKey, metadata]) => {
           const blob = new Blob([iv, ciphertext], {
             type: "application/x-binary",
           });
-          const f = new File([blob], `${file.name}.encrypted`);
+          const encryptedFile = new File([blob], `${file.name}.encrypted`);
           editor.$().fileupload("send", {
-            files: [f],
-            originalFiles: [f],
+            files: [encryptedFile],
+            originalFiles: [encryptedFile],
             formData: { type: "composer" },
           });
+
+          uploads[file.name] = {
+            key: exportedKey,
+            metadata,
+            type: file.type,
+            filesize: encryptedFile.size,
+          };
         });
+
         return false;
       });
 
       api.addComposerUploadMarkdownResolver((upload) => {
-        const filename = upload.original_filename.replace(/\.encrypted$/, "");
-        if (!uploadsKeys[filename]) {
+        const encryptedUpload =
+          uploads[upload.original_filename.replace(/\.encrypted$/, "")] ||
+          Object.values(uploads).find((u) => u.filesize === upload.filesize);
+        if (!encryptedUpload) {
           return;
         }
 
-        const realUpload = {};
-        Object.assign(realUpload, upload);
-        Object.assign(realUpload, uploadsData[filename]);
-        const key = uploadsKeys[filename];
-        const type = uploadsType[filename];
-        upload.url = uploadsUrl[filename];
-
-        delete uploadsData[filename];
-        delete uploadsKeys[filename];
-        delete uploadsType[filename];
-        delete uploadsUrl[filename];
-
-        return getUploadMarkdown(realUpload).replace(
+        const uploadData = Object.assign({}, upload, encryptedUpload.metadata);
+        const markdown = getUploadMarkdown(uploadData).replace(
           "](",
-          `|type=${type}|key=${key}](`
+          `|type=${encryptedUpload.type}|key=${encryptedUpload.key}](`
         );
+        delete uploads[encryptedUpload.original_filename];
+        return markdown;
       });
     });
   },

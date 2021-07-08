@@ -1,30 +1,24 @@
+import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { getMetadata } from "discourse/plugins/discourse-encrypt/lib/uploads";
 
 QUnit.module("discourse-encrypt:lib:uploadHander");
 
-let testImageBase64 =
+const TEST_IMG_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 
-test("getMetadata - image file", async (assert) => {
-  let uploadsUrl = {};
-  let file = new File([window.atob(testImageBase64)], "test.png", {
-    type: "image/png",
-    encoding: "utf-8",
-  });
+const SITE_SETTINGS = { max_image_width: 100, max_image_height: 100 };
 
-  // suppress the image onerror, it is not important
-  getMetadata(file, uploadsUrl).catch(() => null);
-  assert.ok(
-    uploadsUrl[file.name],
-    "it loads the image and adds it to uploadsUrl"
-  );
+test("getMetadata - image file", async (assert) => {
+  const file = new File([base64ToBuffer(TEST_IMG_BASE64)], "test.png", {
+    type: "image/png",
+  });
+  const data = await getMetadata(file, SITE_SETTINGS);
+  assert.equal(data.original_filename, "test.png");
+  assert.ok(data.url);
 });
 
 test("getMetadata - other file", async (assert) => {
-  let uploadsUrl = {};
-  let file = new File(["test"], "test.txt", { type: "text/plain" });
-
-  getMetadata(file, uploadsUrl).then((result) => {
-    assert.equal(result.original_filename, "test.txt");
-  });
+  const file = new File(["test"], "test.txt", { type: "text/plain" });
+  const data = await getMetadata(file, SITE_SETTINGS);
+  assert.equal(data.original_filename, "test.txt");
 });
