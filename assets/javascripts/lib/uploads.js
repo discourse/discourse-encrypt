@@ -1,7 +1,7 @@
 import { isImage } from "discourse/lib/uploads";
 import { Promise } from "rsvp";
 
-export function getMetadata(file, uploadsUrl) {
+export function getMetadata(file, siteSettings) {
   if (!isImage(file.name)) {
     return Promise.resolve({ original_filename: file.name });
   }
@@ -11,15 +11,15 @@ export function getMetadata(file, uploadsUrl) {
     img.onload = () => resolve(img);
     img.onerror = (err) => reject(err);
     img.src = window.URL.createObjectURL(file);
-    uploadsUrl[file.name] = img.src;
   }).then((img) => {
     const ratio = Math.min(
-      Discourse.SiteSettings.max_image_width / img.width,
-      Discourse.SiteSettings.max_image_height / img.height
+      siteSettings.max_image_width / img.width,
+      siteSettings.max_image_height / img.height
     );
 
     return {
       original_filename: file.name,
+      url: img.src,
       width: img.width,
       height: img.height,
       thumbnail_width: Math.floor(img.width * ratio),
