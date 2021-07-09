@@ -132,7 +132,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   # Returns status code 200, topics and posts.
   def posts
     posts = Post
-      .includes(:topic, topic: [:encrypted_topics_users, :encrypted_topics_data])
+      .includes(topic: [:encrypted_topics_users, :encrypted_topics_data])
       .where(post_number: 1)
       .where(encrypted_topics_users: { user_id: current_user.id })
       .order(created_at: :desc)
@@ -142,7 +142,9 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       posts = posts.select("'' AS topic_title_headline", posts.arel.projections)
     end
 
-    topics = posts.map(&:topic)
+    if SiteSetting.tagging_enabled && SiteSetting.allow_staff_to_tag_pms
+      posts = posts.includes(topic: :tags)
+    end
 
     render json: success_json.merge(
       ActiveModel::ArraySerializer.new(
