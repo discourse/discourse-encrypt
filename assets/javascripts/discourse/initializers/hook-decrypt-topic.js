@@ -91,7 +91,12 @@ export default {
       api.reopenWidget("quick-access-panel", {
         setItems() {
           // Artificially delay loading until all titles are decrypted
-          return waitForPendingTitles().then(() => this._super(...arguments));
+          return waitForPendingTitles()
+            .catch(() => {
+              // eslint-disable-next-line no-console
+              console.warn("Not all encrypted titles could be decrypted");
+            })
+            .finally(() => this._super(...arguments));
         },
       });
 
