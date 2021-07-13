@@ -114,7 +114,7 @@ function loadIdentityFromLocalStorage() {
   const exported = window.localStorage.getItem(DB_NAME);
   return exported && exported !== "true"
     ? importIdentity(exported)
-    : Promise.resolve(null);
+    : Promise.reject();
 }
 
 /**
@@ -148,7 +148,7 @@ export function loadDbIdentity() {
           const identity = identities[identities.length - 1];
           resolve(identity);
         } else {
-          resolve(null);
+          reject();
         }
       };
       // eslint-disable-next-line no-unused-vars

@@ -353,8 +353,7 @@ acceptance("Encrypt", function (needs) {
     await visit("/u/eviltrout/preferences/security");
     await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
 
-    const identity = await loadDbIdentity();
-    assert.equal(identity, null);
+    assert.rejects(loadDbIdentity());
   });
 
   test("encrypt settings visible only to allowed groups", async (assert) => {

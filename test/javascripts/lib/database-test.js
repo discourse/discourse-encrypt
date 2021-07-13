@@ -13,13 +13,12 @@ test("IndexedDB backend", async (assert) => {
   setUseLocalStorage(false);
   await deleteDb();
 
-  let identity = await loadDbIdentity();
-  assert.equal(identity, null);
+  assert.rejects(loadDbIdentity());
 
   await generateIdentity().then((id) => saveDbIdentity(id));
   assert.ok(window.localStorage.getItem(DB_NAME));
 
-  identity = await loadDbIdentity();
+  const identity = await loadDbIdentity();
   assert.ok(identity.encryptPublic instanceof CryptoKey);
   assert.ok(identity.encryptPrivate instanceof CryptoKey);
   assert.ok(identity.signPublic instanceof CryptoKey);
@@ -27,8 +26,7 @@ test("IndexedDB backend", async (assert) => {
 
   await deleteDb();
 
-  identity = await loadDbIdentity();
-  assert.equal(identity, null);
+  assert.rejects(loadDbIdentity());
   assert.equal(window.localStorage.getItem(DB_NAME), null);
 });
 
@@ -36,13 +34,12 @@ test("Web Storage (localStorage) backend", async (assert) => {
   setUseLocalStorage(true);
   await deleteDb();
 
-  let identity = await loadDbIdentity();
-  assert.equal(identity, null);
+  assert.rejects(loadDbIdentity());
 
   await generateIdentity().then((id) => saveDbIdentity(id));
   assert.ok(window.localStorage.getItem(DB_NAME));
 
-  identity = await loadDbIdentity();
+  const identity = await loadDbIdentity();
   assert.ok(identity.encryptPublic instanceof CryptoKey);
   assert.ok(identity.encryptPrivate instanceof CryptoKey);
   assert.ok(identity.signPublic instanceof CryptoKey);
@@ -50,7 +47,6 @@ test("Web Storage (localStorage) backend", async (assert) => {
 
   await deleteDb();
 
-  identity = await loadDbIdentity();
-  assert.equal(identity, null);
+  assert.rejects(loadDbIdentity());
   assert.equal(window.localStorage.getItem(DB_NAME), null);
 });
