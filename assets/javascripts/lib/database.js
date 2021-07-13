@@ -21,10 +21,72 @@ export let useLocalStorage = false;
 /**
  * Force usage of local storage instead of IndexedDb.
  *
+ * Used in tests
+ *
  * @param {Boolean} value Whether to use local storage.
  */
-export function setUseLocalStorage(value) {
+export function _setUseLocalStorage(value) {
   useLocalStorage = value;
+}
+
+/**
+ * IndexedDb API used to store CryptoKey objects securely
+ */
+export let indexedDb = window.indexedDB;
+
+/**
+ * Sets IndexedDb backend
+ *
+ * Used in tests
+ *
+ * @param {Object} value
+ */
+export function _setIndexedDb(value) {
+  indexedDb = value;
+}
+
+/**
+ * Browser's user agent string
+ */
+export let userAgent = window.navigator.userAgent;
+
+/**
+ * Sets browser's user agent string
+ *
+ * Used in tests
+ *
+ * @param {String} value
+ */
+export function _setUserAgent(value) {
+  userAgent = value;
+}
+
+/**
+ * Warm up IndexedDB to ensure it works normally
+ *
+ * Used in Safari to workaround a bug. indexedDB.open hangs in Safari
+ * if used immediately after page was loaded:
+ * https://bugs.webkit.org/show_bug.cgi?id=226547
+ *
+ * @return {Promise<void>}
+ */
+function initIndexedDb() {
+  const isSafari =
+    !!userAgent.match(/Version\/(\d+).+?Safari/) ||
+    !!userAgent.match(/(iPad|iPhone|iPod)/);
+
+  if (!isSafari) {
+    return Promise.resolve();
+  }
+
+  let interval;
+  return new Promise((resolve, reject) => {
+    const tryIndexedDb = () => indexedDb.databases().then(resolve, reject);
+    interval = setInterval(tryIndexedDb, 100);
+    tryIndexedDb();
+  }).finally(() => {
+    clearInterval(interval);
+  });
 }
 
 /**
@@ -35,7 +97,7 @@ export function setUseLocalStorage(value) {
  * @return {IDBOpenDBRequest}
  */
 function openDb(create) {
-  const req = window.indexedDB.open(DB_NAME, 1);
+  const req = indexedDb.open(DB_NAME, 1);
 
   req.onupgradeneeded = (evt) => {
     if (!create) {
@@ -67,18 +129,6 @@ function saveIdentityToLocalStorage(identity) {
  * @return {Promise}
  */
 export function saveDbIdentity(identity) {
-  /*
-  if (
-    !useLocalStorage &&
-    Object.values(identity).any(
-      key => key instanceof CryptoKey && key.extractable
-    )
-  ) {
-    // eslint-disable-next-line no-console
-    console.warn("Saving an extractable key into the database.", identity);
-  }
-  */
-
   if (useLocalStorage) {
     return saveIdentityToLocalStorage(identity);
   }
@@ -127,48 +177,37 @@ export function loadDbIdentity() {
     return loadIdentityFromLocalStorage();
   }
 
-  return new Promise((resolve, reject) => {
-    const req = openDb(false);
-    // eslint-disable-next-line no-unused-vars
-    req.onerror = (evt) => {
-      loadIdentityFromLocalStorage().then(resolve, reject);
-    };
-
-    req.onsuccess = (evt) => {
-      const db = evt.target.result;
-      const tx = db.transaction("keys", "readonly");
-      const st = tx.objectStore("keys");
-
-      const dataReq = st.getAll();
-      dataReq.onsuccess = (dataEvt) => {
-        const identities = dataEvt.target.result;
-        db.close();
-
-        if (identities && identities.length > 0) {
-          const identity = identities[identities.length - 1];
-          resolve(identity);
-        } else {
-          reject();
-        }
-      };
+  return initIndexedDb().then(() => {
+    return new Promise((resolve, reject) => {
+      const req = openDb(false);
       // eslint-disable-next-line no-unused-vars
-      dataReq.onerror = (dataEvt) => {
+      req.onerror = (evt) => {
         loadIdentityFromLocalStorage().then(resolve, reject);
       };
-    };
-  }).then((identity) => {
-    /*
-    if (
-      !useLocalStorage &&
-      Object.values(identity).any(
-        key => key instanceof CryptoKey && key.extractable
-      )
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn("Loaded an extractable key from the database.", identity);
-    }
-    */
-    return identity;
+
+      req.onsuccess = (evt) => {
+        const db = evt.target.result;
+        const tx = db.transaction("keys", "readonly");
+        const st = tx.objectStore("keys");
+
+        const dataReq = st.getAll();
+        dataReq.onsuccess = (dataEvt) => {
+          const identities = dataEvt.target.result;
+          db.close();
+
+          if (identities && identities.length > 0) {
+            const identity = identities[identities.length - 1];
+            resolve(identity);
+          } else {
+            reject();
+          }
+        };
+        // eslint-disable-next-line no-unused-vars
+        dataReq.onerror = (dataEvt) => {
+          loadIdentityFromLocalStorage().then(resolve, reject);
+        };
+      };
+    });
   });
 }
 
@@ -181,11 +220,13 @@ export function deleteDb() {
   window.localStorage.removeItem(DB_NAME);
   window.localStorage.removeItem(DB_VERSION);
 
-  return new Promise((resolve) => {
-    const req = window.indexedDB.deleteDatabase(DB_NAME);
+  return initIndexedDb().then(() => {
+    return new Promise((resolve) => {
+      const req = indexedDb.deleteDatabase(DB_NAME);
 
-    req.onsuccess = (evt) => resolve(evt);
-    req.onerror = (evt) => resolve(evt);
-    req.onblocked = (evt) => resolve(evt);
+      req.onsuccess = (evt) => resolve(evt);
+      req.onerror = (evt) => resolve(evt);
+      req.onblocked = (evt) => resolve(evt);
+    });
   });
 }
