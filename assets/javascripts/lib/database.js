@@ -64,18 +64,14 @@ export function _setUserAgent(value) {
 /**
  * Warm up IndexedDB to ensure it works normally
  *
- * Used in Safari to workaround a bug. indexedDB.open hangs in Safari
- * if used immediately after page was loaded:
+ * Used in Safari 14 to work around a bug. indexedDB.open hangs in
+ * Safari if used immediately after page was loaded:
  * https://bugs.webkit.org/show_bug.cgi?id=226547
  *
  * @return {Promise<void>}
  */
 function initIndexedDb() {
-  const isSafari =
-    !!userAgent.match(/Version\/(\d+).+?Safari/) ||
-    !!userAgent.match(/(iPad|iPhone|iPod)/);
-
-  if (!isSafari) {
+  if (!userAgent.match(/Version\/14.+?Safari/)) {
     return Promise.resolve();
   }
 
