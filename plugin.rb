@@ -31,6 +31,7 @@ after_initialize do
   load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
   load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
   load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
+  load File.expand_path('../lib/encrypted_search.rb', __FILE__)
   load File.expand_path('../lib/grouped_search_result_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/openssl.rb', __FILE__)
   load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
@@ -54,9 +55,9 @@ after_initialize do
     delete '/encrypt/keys'           => 'encrypt#delete_key'
     get    '/encrypt/user'           => 'encrypt#show_user'
     post   '/encrypt/reset'          => 'encrypt#reset_user'
-    get    '/encrypt/posts'          => 'encrypt#posts'
     put    '/encrypt/post'           => 'encrypt#update_post'
     get    '/encrypt/stats'          => 'encrypt#stats'
+    get    '/encrypt/posts'          => 'encrypt#posts'
     get    '/encrypt/rotate'         => 'encrypt#show_all_keys'
     put    '/encrypt/rotate'         => 'encrypt#update_all_keys'
     post   '/encrypt/encrypted_post_timers'  => 'encrypted_post_timers#create'
@@ -82,6 +83,12 @@ after_initialize do
 
     SiteSetting.singleton_class.prepend SiteSettingExtensions
     UserNotificationRenderer.singleton_class.prepend UserNotificationRendererExtensions
+  end
+
+  register_search_topic_eager_load do |opts|
+    if SiteSetting.encrypt_enabled? && opts[:search_pms]
+      %i(encrypted_topics_users encrypted_topics_data)
+    end
   end
 
   # Send plugin-specific topic data to client via serializers.
@@ -259,13 +266,6 @@ after_initialize do
   add_permitted_post_create_param(:encrypted_raw)
   add_permitted_post_create_param(:encrypted_keys)
   add_permitted_post_create_param(:delete_after_minutes)
-
-  # TODO: Remove if check once Discourse 2.6 is stable
-  if respond_to?(:register_search_topic_eager_load)
-    register_search_topic_eager_load do |opts|
-      %i(encrypted_topics_users encrypted_topics_data) if opts[:search_pms] && SiteSetting.encrypt_enabled?
-    end
-  end
 
   NewPostManager.add_handler do |manager|
     next if !manager.args[:encrypted_raw]

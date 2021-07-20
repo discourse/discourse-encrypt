@@ -127,35 +127,6 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
-  # Lists encrypted topics and posts of a user.
-  #
-  # Returns status code 200, topics and posts.
-  def posts
-    posts = Post
-      .includes(topic: [:encrypted_topics_users, :encrypted_topics_data])
-      .where(post_number: 1)
-      .where(encrypted_topics_users: { user_id: current_user.id })
-      .order(created_at: :desc)
-      .limit(1000)
-
-    if SiteSetting.use_pg_headlines_for_excerpt
-      posts = posts.select("'' AS topic_title_headline", posts.arel.projections)
-    end
-
-    if SiteSetting.tagging_enabled && SiteSetting.allow_staff_to_tag_pms
-      posts = posts.includes(topic: :tags)
-    end
-
-    render json: success_json.merge(
-      ActiveModel::ArraySerializer.new(
-        posts,
-        scope: current_user.guardian,
-        each_serializer: SearchPostSerializer,
-        root: :posts
-      ).as_json
-    )
-  end
-
   # Updates an encrypted post, used immediately after creating one to
   # update signature.
   #
@@ -207,6 +178,23 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       .count
 
     render json: success_json.merge(encrypted_pms_count: [pms_count, keys_count].max)
+  end
+
+  # Lists encrypted topics and posts of a user to perform client-sided search
+  # in encrypted content.
+  #
+  # Returns status code 200, topics and posts.
+  def posts
+    search = EncryptedSearch.new(
+      'in:first',
+      guardian: guardian,
+      type_filter: 'private_messages',
+      limit: 250,
+    )
+    result = search.execute
+    result.find_user_data(guardian) if result
+
+    render_serialized(result, GroupedSearchResultSerializer, result: result)
   end
 
   # Get all topic keys for current user.
