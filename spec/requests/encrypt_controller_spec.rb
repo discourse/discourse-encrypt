@@ -110,9 +110,34 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
+  context '#update_post' do
+    let!(:post) { Fabricate(:encrypt_post) }
+
+    before do
+      SiteSetting.min_trust_to_edit_post = 2
+    end
+
+    it 'is not raising error when user cannot edit because min trust level' do
+      sign_in(post.user)
+      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      expect(response.status).to eq(200)
+    end
+
+    it 'does not work if user is not author of post' do
+      sign_in(user)
+      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      expect(response.status).to eq(403)
+    end
+  end
+
   context '#posts' do
     let!(:topic) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:post) { Fabricate(:post, topic: topic) }
+
+    before do
+      SearchIndexer.enable
+      SearchIndexer.index(topic, force: true)
+    end
 
     it 'does not work when not logged in' do
       get '/encrypt/posts'
@@ -136,26 +161,6 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(200)
       expect(response.parsed_body['topics'].size).to eq(1)
       expect(response.parsed_body['posts'].size).to eq(1)
-    end
-  end
-
-  context '#update_post' do
-    let!(:post) { Fabricate(:encrypt_post) }
-
-    before do
-      SiteSetting.min_trust_to_edit_post = 2
-    end
-
-    it 'is not raising error when user cannot edit because min trust level' do
-      sign_in(post.user)
-      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
-      expect(response.status).to eq(200)
-    end
-
-    it 'does not work if user is not author of post' do
-      sign_in(user)
-      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
-      expect(response.status).to eq(403)
     end
   end
 
