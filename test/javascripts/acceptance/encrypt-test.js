@@ -605,6 +605,7 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/t/a-secret-message/42");
+    await visit("/t/a-secret-message/42"); // wait for re-render
     assert.equal(query(".fancy-title").innerText.trim(), "Top Secret Title");
     assert.equal(query(".cooked").innerText.trim(), "Top Secret Post");
     assert.equal(document.title, "Top Secret Title - QUnit Discourse Tests");
