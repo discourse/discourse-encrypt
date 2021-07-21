@@ -1,10 +1,10 @@
-import I18n from "I18n";
+import Component from "@ember/component";
 import { scheduleOnce } from "@ember/runloop";
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -13,6 +13,7 @@ import {
   syncGetTopicTitle,
   waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import I18n from "I18n";
 
 /**
  * Decrypts all elements described by a selector.
@@ -63,6 +64,7 @@ function decryptElements(containerSelector, elementSelector, opts) {
 
 export default {
   name: "hook-decrypt-topic",
+  container: null,
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
@@ -71,13 +73,16 @@ export default {
       return;
     }
 
+    // Save a reference to container to be used by `decryptDocTitle`.
+    this.container = container;
+
     const appEvents = container.lookup("service:app-events");
     appEvents.on("encrypt:status-changed", this, this.decryptTitles);
     appEvents.on("page:changed", this, this.decryptDocTitle);
 
     // Try to decrypt new titles that may appear after rendering a component.
-    let self = this;
-    Ember.Component.reopen({
+    const self = this;
+    Component.reopen({
       didRender() {
         scheduleOnce("afterRender", self, () => {
           debounce(self, self.decryptTitles, 500);
@@ -165,19 +170,18 @@ export default {
   },
 
   decryptDocTitle(data) {
-    if (data.currentRouteName.startsWith("topic.")) {
-      const topicId = Discourse.__container__
-        .lookup("controller:topic")
-        .get("model.id");
-      getTopicTitle(topicId).then((topicTitle) =>
-        Discourse.set(
-          "_docTitle",
-          data.title.replace(
-            I18n.t("encrypt.encrypted_topic_title"),
-            topicTitle
-          )
-        )
-      );
+    if (!data.currentRouteName.startsWith("topic.")) {
+      return;
     }
+
+    const topicId = this.container.lookup("controller:topic").get("model.id");
+    getTopicTitle(topicId).then((topicTitle) => {
+      const documentTitle = this.container.lookup("service:document-title");
+      documentTitle.setTitle(
+        documentTitle
+          .getTitle()
+          .replace(I18n.t("encrypt.encrypted_topic_title"), topicTitle)
+      );
+    });
   },
 };
