@@ -9,6 +9,7 @@ import {
   _stringToBuffer,
   generateIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol_v0";
+import { test } from "qunit";
 
 QUnit.module("discourse-encrypt:lib:protocol_v0");
 

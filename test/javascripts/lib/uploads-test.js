@@ -1,5 +1,6 @@
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { getMetadata } from "discourse/plugins/discourse-encrypt/lib/uploads";
+import { test } from "qunit";
 
 QUnit.module("discourse-encrypt:lib:uploadHander");
 

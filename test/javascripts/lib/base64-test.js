@@ -2,6 +2,7 @@ import {
   base64ToBuffer,
   bufferToBase64,
 } from "discourse/plugins/discourse-encrypt/lib/base64";
+import { test } from "qunit";
 
 /*
  * Checks if two array-like objects are equal.

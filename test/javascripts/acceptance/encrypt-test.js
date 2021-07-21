@@ -1,3 +1,4 @@
+import { visit } from "@ember/test-helpers";
 import User from "discourse/models/user";
 import {
   deleteDb,
@@ -30,6 +31,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
+import { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 
@@ -174,6 +176,8 @@ acceptance("Encrypt", function (needs) {
     // Restore `XMLHttpRequest`.
     XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.send_;
     delete XMLHttpRequest.prototype.send_;
+
+    globalAssert = null;
   });
 
   needs.pretender((server, helper) => {
@@ -205,8 +209,6 @@ acceptance("Encrypt", function (needs) {
       () => requests.includes("/posts"),
       () => click("button.create")
     );
-
-    globalAssert = null;
   });
 
   test("posting does not leak plaintext", async (assert) => {
@@ -257,11 +259,6 @@ acceptance("Encrypt", function (needs) {
     await composerActions.expand();
     await composerActions.selectRowByValue("reply_as_private_message");
 
-    if (find(".users-input").text().trim() !== "") {
-      globalAssert = null;
-      throw new Error("Another test is leaking composer state");
-    }
-
     // simulate selecting from autocomplete suggestions
     await fillIn("#private-message-users .filter-input", "evilt");
     await keyEvent("#private-message-users .filter-input", "keydown", 13);
@@ -283,8 +280,6 @@ acceptance("Encrypt", function (needs) {
       () => requests.includes("/posts") && requests.includes("/encrypt/post"),
       () => click("button.create")
     );
-
-    globalAssert = null;
   });
 
   test("new draft for public topic is not encrypted", async (assert) => {
@@ -605,6 +600,7 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/t/a-secret-message/42");
+    await visit("/t/a-secret-message/42"); // wait for re-render
     assert.equal(query(".fancy-title").innerText.trim(), "Top Secret Title");
     assert.equal(query(".cooked").innerText.trim(), "Top Secret Post");
     assert.equal(document.title, "Top Secret Title - QUnit Discourse Tests");
@@ -658,6 +654,8 @@ acceptance("Encrypt", function (needs) {
   });
 
   test("user preferences connector works for other users", async (assert) => {
+    await setEncryptionStatus(ENCRYPT_DISABLED);
+
     /* global server */
     server.get("/u/eviltrout2.json", () => {
       const json = JSON.parse(
