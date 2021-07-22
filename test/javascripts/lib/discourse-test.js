@@ -1,5 +1,6 @@
 import User from "discourse/models/user";
 import { canEnableEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { test } from "qunit";
 
 QUnit.module("discourse-encrypt:lib:discourse");
 

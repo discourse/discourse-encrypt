@@ -6,6 +6,7 @@ import {
   generateKey,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { test } from "qunit";
 
 QUnit.module("discourse-encrypt:lib:protocol");
 
