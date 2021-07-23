@@ -1,8 +1,7 @@
-import I18n from "I18n";
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
+import lightbox from "discourse/lib/lightbox";
 import {
   fetchUnseenHashtags,
   linkSeenHashtags,
@@ -11,14 +10,13 @@ import {
   fetchUnseenMentions,
   linkSeenMentions,
 } from "discourse/lib/link-mentions";
+import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
-import lightbox from "discourse/lib/lightbox";
-import { loadOneboxes } from "discourse/lib/load-oneboxes";
-
+import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import {
   ENCRYPT_DISABLED,
   getDebouncedUserIdentity,
@@ -32,6 +30,7 @@ import {
   decrypt,
   verify,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import I18n from "I18n";
 import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
   MISSING,
@@ -203,52 +202,97 @@ function resolveShortUrlElement($el) {
       return;
     }
 
-    return downloadEncryptedFile(url, keyPromise, {
+    data.promise ||= downloadEncryptedFile(url, keyPromise, {
       type: $el.data("type"),
     }).then((file) => {
+      file.blob_url = window.URL.createObjectURL(file.blob);
+      return file;
+    });
+
+    return data.promise.then((file) => {
       const imageName = file.name
         ? markdownNameFromFileName(file.name)
         : $el.attr("alt").replace(/\.encrypted$/, "");
       $el.attr("alt", imageName);
-      data.url = window.URL.createObjectURL(file.blob);
-      $el.attr("src", data.url);
+      $el.attr("src", file.blob_url);
     });
   }
 }
 
-function lookupAndResolveShortUrlElement(urls, $elements) {
-  urls = Array.from(new Set(urls));
-  return lookupUncachedUploadUrls(urls, ajax).then(() => {
-    $elements.each((_, el) => resolveShortUrlElement($(el)));
-  });
+class DebouncedQueue {
+  constructor(wait, handler) {
+    this.wait = wait;
+    this.handler = handler;
+    this.queue = null;
+    this.promise = null;
+    this.resolve = null;
+  }
+
+  push(...items) {
+    if (!this.queue) {
+      this.queue = [];
+      this.promise = new Promise((resolve) => {
+        this.resolve = resolve;
+      });
+      debounce(this, this.pop, this.wait);
+    }
+
+    this.queue.push(...items);
+    return this.promise;
+  }
+
+  pop() {
+    let items = Array.from(new Set(this.queue));
+    this.handler(items).then(this.resolve);
+
+    this.queue = null;
+    this.promise = null;
+    this.resolve = null;
+  }
 }
+
+let mentionsQueues = [];
+let hashtagsQueue;
+let shortUrlsQueue;
 
 function postProcessPost(siteSettings, topicId, $post) {
   // Paint mentions.
   const unseenMentions = linkSeenMentions($post, siteSettings);
   if (unseenMentions.length > 0) {
-    fetchUnseenMentions(unseenMentions, topicId).then(() =>
-      linkSeenMentions($post, siteSettings)
+    mentionsQueues[topicId] ||= new DebouncedQueue(500, (items) =>
+      fetchUnseenMentions(items, topicId)
     );
+
+    mentionsQueues[topicId]
+      .push(...unseenMentions)
+      .then(() => linkSeenMentions($post, siteSettings));
   }
 
   // Paint category and tag hashtags.
   const unseenTagHashtags = linkSeenHashtags($post);
   if (unseenTagHashtags.length > 0) {
-    fetchUnseenHashtags(unseenTagHashtags).then(() => {
+    hashtagsQueue ||= new DebouncedQueue(500, (items) =>
+      fetchUnseenHashtags(items)
+    );
+
+    hashtagsQueue.push(...unseenTagHashtags).then(() => {
       linkSeenHashtags($post);
     });
   }
 
   // Resolve short URLs (first using cache and then using fresh data)
-  const urls = [];
-  $("img[data-orig-src], a[data-orig-href]").each((_, el) => {
+  $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
     const $el = $(el);
     const url = $el.data("orig-src") || $el.data("orig-href");
+
     if (lookupCachedUploadUrl(url).url) {
       resolveShortUrlElement($el);
     } else {
-      urls.push(url);
+      shortUrlsQueue ||= new DebouncedQueue(500, (items) =>
+        lookupUncachedUploadUrls(items, ajax)
+      );
+
+      shortUrlsQueue.push(url).then(() => resolveShortUrlElement($el));
     }
   });
 
@@ -261,11 +305,6 @@ function postProcessPost(siteSettings, topicId, $post) {
     siteSettings.max_oneboxes_per_post,
     false
   );
-
-  const $elements = $("img[data-orig-src], a[data-orig-href]");
-  if ($elements.length > 0) {
-    debounce(this, lookupAndResolveShortUrlElement, urls, $elements, 450, true);
-  }
 }
 
 export default {
