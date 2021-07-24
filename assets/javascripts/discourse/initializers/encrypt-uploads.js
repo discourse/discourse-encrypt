@@ -95,8 +95,8 @@ export default {
           return;
         }
 
-        const uploadData = Object.assign({}, upload, encryptedUpload.metadata);
-        const markdown = getUploadMarkdown(uploadData).replace(
+        Object.assign(upload, encryptedUpload.metadata);
+        const markdown = getUploadMarkdown(upload).replace(
           "](",
           `|type=${encryptedUpload.type}|key=${encryptedUpload.key}](`
         );

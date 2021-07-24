@@ -12,10 +12,17 @@ export function getMetadata(file, siteSettings) {
     img.onerror = (err) => reject(err);
     img.src = window.URL.createObjectURL(file);
   }).then((img) => {
-    const ratio = Math.min(
-      siteSettings.max_image_width / img.width,
-      siteSettings.max_image_height / img.height
-    );
+    let ratio = 1;
+
+    if (
+      img.width > siteSettings.max_image_width ||
+      img.height > siteSettings.max_image_height
+    ) {
+      ratio = Math.min(
+        siteSettings.max_image_width / img.width,
+        siteSettings.max_image_height / img.height
+      );
+    }
 
     return {
       original_filename: file.name,
