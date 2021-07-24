@@ -15,6 +15,10 @@ test("getMetadata - image file", async (assert) => {
   });
   const data = await getMetadata(file, SITE_SETTINGS);
   assert.equal(data.original_filename, "test.png");
+  assert.equal(data.width, 1);
+  assert.equal(data.height, 1);
+  assert.equal(data.thumbnail_width, 1);
+  assert.equal(data.thumbnail_height, 1);
   assert.ok(data.url);
 });
 
