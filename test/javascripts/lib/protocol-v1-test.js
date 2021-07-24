@@ -2,7 +2,7 @@ import {
   exportIdentity,
   generateIdentity,
   importIdentity,
-} from "discourse/plugins/discourse-encrypt/lib/protocol_v1";
+} from "discourse/plugins/discourse-encrypt/lib/protocol-v1";
 import { test } from "qunit";
 
 QUnit.module("discourse-encrypt:lib:protocol_v1");

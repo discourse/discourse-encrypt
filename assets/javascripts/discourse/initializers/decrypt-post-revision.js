@@ -10,7 +10,7 @@ import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
 
 export default {
-  name: "hook-decrypt-revision",
+  name: "decrypt-post-revisions",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

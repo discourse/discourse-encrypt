@@ -5,9 +5,8 @@ import {
   loadDbIdentity,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import { unpackIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
-import { fixPaperKey } from "discourse/plugins/discourse-encrypt/lib/paper_key";
+import { fixPaperKey } from "discourse/plugins/discourse-encrypt/lib/paper-key";
 import {
   decrypt,
   exportIdentity,
@@ -89,7 +88,14 @@ export function getIdentity() {
   return userIdentity;
 }
 
+/**
+ * Gets users' identities from the server and caches them for future usage
+ *
+ * @return {Promise}
+ */
 export function getUserIdentities(usernames) {
+  // If some of the user identities are msising, then try to refresh all of
+  // the newly requested ones.
   if (usernames.some((username) => !userIdentities[username])) {
     const promise = ajax("/encrypt/user", {
       type: "GET",
@@ -113,45 +119,6 @@ export function getUserIdentities(usernames) {
       imported[usernames[i]] = identities[i];
     }
     return getCaseInsensitiveObj(imported);
-  });
-}
-
-const queuedUsernames = getCaseInsensitiveObj();
-
-function _getDebouncedUserIdentity() {
-  const usernames = Object.keys(queuedUsernames);
-  getUserIdentities(usernames)
-    .then((identities) => {
-      Object.keys(identities).forEach((username) => {
-        if (queuedUsernames[username]) {
-          const identity = identities[username];
-          queuedUsernames[username].forEach(({ resolve }) => resolve(identity));
-          delete queuedUsernames[username];
-        }
-      });
-    })
-    .catch(() => {
-      usernames.forEach((username) => {
-        if (queuedUsernames[username]) {
-          queuedUsernames[username].forEach(({ reject }) => reject());
-          delete queuedUsernames[username];
-        }
-      });
-    });
-}
-
-export function getDebouncedUserIdentity(username) {
-  if (userIdentities[username]) {
-    return userIdentities[username];
-  }
-
-  return new Promise((resolve, reject) => {
-    if (!queuedUsernames[username]) {
-      queuedUsernames[username] = [];
-    }
-    queuedUsernames[username].push({ resolve, reject });
-
-    debounce(queuedUsernames, _getDebouncedUserIdentity, 500);
   });
 }
 

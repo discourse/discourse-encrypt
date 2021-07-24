@@ -16,13 +16,13 @@ import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
+import DebouncedQueue from "discourse/plugins/discourse-encrypt/lib/debounced-queue";
 import {
   ENCRYPT_DISABLED,
-  getDebouncedUserIdentity,
   getEncryptionStatus,
   getIdentity,
   getTopicKey,
+  getUserIdentities,
   hasTopicKey,
   hasTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
@@ -30,6 +30,7 @@ import {
   decrypt,
   verify,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { downloadEncryptedFile } from "discourse/plugins/discourse-encrypt/lib/uploads";
 import I18n from "I18n";
 import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
@@ -38,6 +39,16 @@ import {
   lookupUncachedUploadUrls,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
+
+/*
+ * Debounced queues for fetching information about user identities, mentions,
+ * hashtags and short upload URLs from the server.
+ */
+
+let userIdentitiesQueues;
+let mentionsQueues = [];
+let hashtagsQueue;
+let shortUrlsQueue;
 
 function checkMetadata(attrs, expected) {
   const actual = {
@@ -100,40 +111,6 @@ function checkMetadata(attrs, expected) {
   }
 
   return diff;
-}
-
-function downloadEncryptedFile(url, keyPromise, opts) {
-  opts = opts || {};
-
-  const downloadPromise = new Promise((resolve, reject) => {
-    let req = new XMLHttpRequest();
-    req.open("GET", url, true);
-    req.responseType = "arraybuffer";
-    req.onload = function () {
-      let filename = req.getResponseHeader("Content-Disposition");
-      if (filename) {
-        // Requires Access-Control-Expose-Headers: Content-Disposition.
-        filename = filename.match(/filename="(.*?)"/)[1];
-      }
-      resolve({ buffer: req.response, filename });
-    };
-    req.onerror = reject;
-    req.send(null);
-  });
-
-  return Promise.all([keyPromise, downloadPromise]).then(([key, download]) => {
-    const iv = download.buffer.slice(0, 12);
-    const content = download.buffer.slice(12);
-
-    return new Promise((resolve, reject) => {
-      window.crypto.subtle
-        .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, content)
-        .then(resolve, reject);
-    }).then((buffer) => ({
-      blob: new Blob([buffer], { type: opts.type || "application/x-binary" }),
-      name: download.filename,
-    }));
-  });
 }
 
 function resolveShortUrlElement($el) {
@@ -205,7 +182,7 @@ function resolveShortUrlElement($el) {
     data.promise ||= downloadEncryptedFile(url, keyPromise, {
       type: $el.data("type"),
     }).then((file) => {
-      file.blob_url = window.URL.createObjectURL(file.blob);
+      data.url = file.blob_url = window.URL.createObjectURL(file.blob);
       return file;
     });
 
@@ -219,68 +196,28 @@ function resolveShortUrlElement($el) {
   }
 }
 
-class DebouncedQueue {
-  constructor(wait, handler) {
-    this.wait = wait;
-    this.handler = handler;
-    this.queue = null;
-    this.promise = null;
-    this.resolve = null;
-  }
-
-  push(...items) {
-    if (!this.queue) {
-      this.queue = [];
-      this.promise = new Promise((resolve) => {
-        this.resolve = resolve;
-      });
-      debounce(this, this.pop, this.wait);
-    }
-
-    this.queue.push(...items);
-    return this.promise;
-  }
-
-  pop() {
-    let items = Array.from(new Set(this.queue));
-    this.handler(items).then(this.resolve);
-
-    this.queue = null;
-    this.promise = null;
-    this.resolve = null;
-  }
-}
-
-let mentionsQueues = [];
-let hashtagsQueue;
-let shortUrlsQueue;
-
 function postProcessPost(siteSettings, topicId, $post) {
-  // Paint mentions.
+  // Paint mentions
   const unseenMentions = linkSeenMentions($post, siteSettings);
   if (unseenMentions.length > 0) {
     mentionsQueues[topicId] ||= new DebouncedQueue(500, (items) =>
       fetchUnseenMentions(items, topicId)
     );
-
     mentionsQueues[topicId]
       .push(...unseenMentions)
       .then(() => linkSeenMentions($post, siteSettings));
   }
 
-  // Paint category and tag hashtags.
+  // Paint category and tag hashtags
   const unseenTagHashtags = linkSeenHashtags($post);
   if (unseenTagHashtags.length > 0) {
-    hashtagsQueue ||= new DebouncedQueue(500, (items) =>
-      fetchUnseenHashtags(items)
-    );
-
+    hashtagsQueue ||= new DebouncedQueue(500, fetchUnseenHashtags);
     hashtagsQueue.push(...unseenTagHashtags).then(() => {
       linkSeenHashtags($post);
     });
   }
 
-  // Resolve short URLs (first using cache and then using fresh data)
+  // Resolve short URLs
   $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
     const $el = $(el);
     const url = $el.data("orig-src") || $el.data("orig-href");
@@ -308,7 +245,7 @@ function postProcessPost(siteSettings, topicId, $post) {
 }
 
 export default {
-  name: "hook-decrypt-post",
+  name: "decrypt-posts",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
@@ -442,7 +379,13 @@ export default {
                 decrypt(key, ciphertext)
                   .then((plaintext) => {
                     if (plaintext.signature) {
-                      getDebouncedUserIdentity(plaintext.signed_by_name)
+                      userIdentitiesQueues ||= new DebouncedQueue(
+                        500,
+                        getUserIdentities
+                      );
+                      userIdentitiesQueues
+                        .push(plaintext.signed_by_name)
+                        .then((ids) => ids[plaintext.signed_by_name])
                         .then((userIdentity) => {
                           return verify(
                             userIdentity.signPublic,

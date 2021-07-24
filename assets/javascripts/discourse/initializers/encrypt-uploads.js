@@ -15,7 +15,7 @@ import { DEFAULT_LIST } from "pretty-text/white-lister";
 import { Promise } from "rsvp";
 
 export default {
-  name: "hook-encrypt-upload",
+  name: "encrypt-uploads",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

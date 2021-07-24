@@ -30,7 +30,7 @@ const ALLOWED_DRAFT_FIELDS = [
 let globalContainer;
 
 export default {
-  name: "hook-draft",
+  name: "encrypt-drafts",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

@@ -5,16 +5,20 @@ import {
 import { Promise } from "rsvp";
 
 /**
- * @var {String} DB_NAME Name of IndexedDb used for storing key pairs.
+ * @var {String} DB_NAME Name of IndexedDb used for storing key pairs
  */
 export const DB_NAME = "discourse-encrypt";
+
+/**
+ * @var {String} DB_VERSION Version of IndexedDb schema user for storing key pairs
+ */
 export const DB_VERSION = "discourse-encrypt-version";
 
 /**
  * When truthy, it uses local storage instead of IndexedDb to store user
  * identities.
  *
- * @type {Boolean}
+ * @var {Boolean}
  */
 export let useLocalStorage = false;
 
