@@ -47,3 +47,37 @@ export function generateUploadKey() {
       .then(resolve, reject);
   });
 }
+
+export function downloadEncryptedFile(url, keyPromise, opts) {
+  opts = opts || {};
+
+  const downloadPromise = new Promise((resolve, reject) => {
+    let req = new XMLHttpRequest();
+    req.open("GET", url, true);
+    req.responseType = "arraybuffer";
+    req.onload = function () {
+      let filename = req.getResponseHeader("Content-Disposition");
+      if (filename) {
+        // Requires Access-Control-Expose-Headers: Content-Disposition.
+        filename = filename.match(/filename="(.*?)"/)[1];
+      }
+      resolve({ buffer: req.response, filename });
+    };
+    req.onerror = reject;
+    req.send();
+  });
+
+  return Promise.all([keyPromise, downloadPromise]).then(([key, download]) => {
+    const iv = download.buffer.slice(0, 12);
+    const content = download.buffer.slice(12);
+
+    return new Promise((resolve, reject) => {
+      window.crypto.subtle
+        .decrypt({ name: "AES-GCM", iv, tagLength: 128 }, key, content)
+        .then(resolve, reject);
+    }).then((buffer) => ({
+      blob: new Blob([buffer], { type: opts.type || "application/x-binary" }),
+      name: download.filename,
+    }));
+  });
+}

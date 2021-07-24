@@ -53,7 +53,7 @@ function addMetadata(metadata) {
 }
 
 export default {
-  name: "hook-save",
+  name: "encrypt-posts",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

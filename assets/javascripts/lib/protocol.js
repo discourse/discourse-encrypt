@@ -9,7 +9,7 @@ import {
   exportIdentity as exportIdentityV0,
   generateIdentity as generateIdentityV0,
   importIdentity as importIdentityV0,
-} from "discourse/plugins/discourse-encrypt/lib/protocol_v0";
+} from "discourse/plugins/discourse-encrypt/lib/protocol-v0";
 import {
   decrypt as decryptV1,
   encrypt as encryptV1,
@@ -17,7 +17,7 @@ import {
   generateIdentity as generateIdentityV1,
   importIdentity as importIdentityV1,
   verify as verifyV1,
-} from "discourse/plugins/discourse-encrypt/lib/protocol_v1";
+} from "discourse/plugins/discourse-encrypt/lib/protocol-v1";
 import { Promise } from "rsvp";
 
 /**

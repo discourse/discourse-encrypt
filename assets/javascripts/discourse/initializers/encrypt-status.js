@@ -10,7 +10,7 @@ import {
 import getURL from "discourse-common/lib/get-url";
 
 export default {
-  name: "update-state",
+  name: "encrypt-status",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

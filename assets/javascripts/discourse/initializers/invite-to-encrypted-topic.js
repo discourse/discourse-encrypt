@@ -12,7 +12,7 @@ import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
 
 export default {
-  name: "hook-invite",
+  name: "invite-to-encrypted-topic",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

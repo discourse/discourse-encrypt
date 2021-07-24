@@ -9,7 +9,7 @@ import {
 import PreloadStore from "discourse/lib/preload-store";
 
 export default {
-  name: "hook-gather-keys",
+  name: "fetch-encrypt-keys",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");

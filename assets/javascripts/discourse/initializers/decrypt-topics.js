@@ -1,10 +1,10 @@
 import Component from "@ember/component";
 import { scheduleOnce } from "@ember/runloop";
+import discourseDebounce from "discourse-common/lib/debounce";
 import { iconHTML } from "discourse-common/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
-import debounce from "discourse/plugins/discourse-encrypt/lib/debounce";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -63,7 +63,7 @@ function decryptElements(containerSelector, elementSelector, opts) {
 }
 
 export default {
-  name: "hook-decrypt-topic",
+  name: "decrypt-topics",
   container: null,
 
   initialize(container) {
@@ -85,7 +85,7 @@ export default {
     Component.reopen({
       didRender() {
         scheduleOnce("afterRender", self, () => {
-          debounce(self, self.decryptTitles, 500);
+          discourseDebounce(self, self.decryptTitles, 500);
         });
         return this._super(...arguments);
       },
@@ -150,7 +150,7 @@ export default {
           helper.widget.state.userVisible ||
           helper.widget.state.searchVisible
         ) {
-          debounce(self, self.decryptTitles, 500);
+          discourseDebounce(self, self.decryptTitles, 500);
         }
       });
     });

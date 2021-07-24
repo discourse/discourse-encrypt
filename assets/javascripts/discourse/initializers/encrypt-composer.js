@@ -20,7 +20,7 @@ import {
 import { Promise } from "rsvp";
 
 export default {
-  name: "hook-composer",
+  name: "encrypt-composer",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
