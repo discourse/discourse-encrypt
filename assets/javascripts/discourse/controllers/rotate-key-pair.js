@@ -1,5 +1,7 @@
+import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
+import { extractError } from "discourse/lib/ajax-error";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { saveDbIdentity } from "discourse/plugins/discourse-encrypt/lib/database";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
@@ -10,9 +12,8 @@ import {
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
-import { extractError } from "discourse/lib/ajax-error";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   onShow() {
     this.setProperties({
       confirmation: "",

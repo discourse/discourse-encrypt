@@ -1,11 +1,13 @@
-import I18n from "I18n";
+import Controller from "@ember/controller";
+import { later } from "@ember/runloop";
 import copyText from "discourse/lib/copy-text";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { packIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import I18n from "I18n";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   onShow() {
     this.setProperties({ inProgress: true, exported: "" });
 
@@ -31,10 +33,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   actions: {
     copy() {
-      const $copyRange = $("pre.exported-key-pair");
-      if (copyText("", $copyRange[0])) {
+      const copyRange = document.querySelector("pre.exported-key-pair");
+      if (copyText("", copyRange)) {
         this.set("copied", true);
-        Ember.run.later(() => this.set("copied", false), 2000);
+        later(() => this.set("copied", false), 2000);
       }
     },
   },

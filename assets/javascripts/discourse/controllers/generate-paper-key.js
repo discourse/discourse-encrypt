@@ -1,10 +1,11 @@
+import Controller from "@ember/controller";
 import { ajax } from "discourse/lib/ajax";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { generatePaperKey } from "discourse/plugins/discourse-encrypt/lib/paper-key";
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   onShow() {
     this.set("inProgress", true);
     const paperKey = generatePaperKey();

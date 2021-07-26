@@ -1,3 +1,4 @@
+import EmberObject from "@ember/object";
 import { visit } from "@ember/test-helpers";
 import User from "discourse/models/user";
 import {
@@ -618,7 +619,7 @@ acceptance("Encrypt", function (needs) {
     Discourse.SiteSettings.encrypt_groups = "allowed_group";
     updateCurrentUser({
       groups: [
-        Ember.Object.create({
+        EmberObject.create({
           id: 1,
           name: "not_allowed_group",
         }),
@@ -634,11 +635,11 @@ acceptance("Encrypt", function (needs) {
 
     updateCurrentUser({
       groups: [
-        Ember.Object.create({
+        EmberObject.create({
           id: 1,
           name: "not_allowed_group",
         }),
-        Ember.Object.create({
+        EmberObject.create({
           id: 2,
           name: "allowed_group",
         }),

@@ -1,3 +1,4 @@
+import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -5,7 +6,7 @@ import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 import { Promise } from "rsvp";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   onShow() {
     this.setProperties({
       isLoadingStats: true,
