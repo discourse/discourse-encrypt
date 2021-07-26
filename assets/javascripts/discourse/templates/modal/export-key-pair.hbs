@@ -6,6 +6,12 @@
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{d-button class="btn btn-primary" icon="far-clipboard" action=(action "copy") disabled=inProgress label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard")}}
+  {{d-button
+    class=(if copied "btn btn-primary ok" "btn btn-primary")
+    icon="far-clipboard"
+    label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard")
+    disabled=inProgress
+    action=(action "copy")
+  }}
   {{d-modal-cancel close=(action "closeModal")}}
 </div>
