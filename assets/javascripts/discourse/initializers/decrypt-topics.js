@@ -28,10 +28,16 @@ import I18n from "I18n";
 function decryptElements(containerSelector, elementSelector, opts) {
   opts = opts || {};
 
-  $(containerSelector).each(function () {
-    const topicId = $(this).data("topic-id");
-    const $el = elementSelector ? $(this).find(elementSelector) : $(this);
-    if (!topicId || !hasTopicTitle(topicId) || !$el.length) {
+  document.querySelectorAll(containerSelector).forEach((element) => {
+    const titleElement = elementSelector
+      ? element.querySelector(elementSelector)
+      : element;
+    if (!titleElement) {
+      return;
+    }
+
+    const topicId = element.dataset.topicId || titleElement.dataset.topicId;
+    if (!topicId || !hasTopicTitle(topicId)) {
       return;
     }
 
@@ -44,21 +50,26 @@ function decryptElements(containerSelector, elementSelector, opts) {
         });
 
         if (opts.replaceIcon) {
-          const $glyph = $(`h1 .private-message-glyph-wrapper`);
-          if ($glyph.length) {
-            $glyph.html(icon);
-            $el.html(title);
+          const iconElement = element.querySelector(
+            ".private-message-glyph-wrapper"
+          );
+          if (iconElement) {
+            iconElement.innerHTML = icon;
+            titleElement.innerHTML = title;
           }
         } else if (opts.addIcon) {
-          $el.html(icon + " " + title);
+          titleElement.innerHTML = icon + " " + title;
         } else {
-          $el.html(title);
+          titleElement.innerHTML = title;
         }
       })
-      .catch(() => $(this).data("decrypted", null));
+      .catch(() => {});
 
-    // TODO: Hide quick-edit button for the time being.
-    $(this).find(".edit-topic").hide();
+    // Hide quick-edit button for the time being
+    const quickEditBtn = element.querySelector(".edit-topic");
+    if (quickEditBtn) {
+      quickEditBtn.style.display = "none";
+    }
   });
 }
 
@@ -157,16 +168,22 @@ export default {
   },
 
   decryptTitles() {
+    // Title in site header
+    decryptElements("h1.header-title", ".topic-link", { replaceIcon: true });
+
+    // Title in topic header
     decryptElements("h1[data-topic-id]", ".fancy-title", { replaceIcon: true });
-    decryptElements("h1 .topic-link", "span", { replaceIcon: true });
+
+    // Title in topic lists
     decryptElements(
       ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
       ".title",
       { addIcon: true }
     );
+
     decryptElements("a.topic-link[data-topic-id]", "span");
-    decryptElements("a.topic-link[data-topic-id]", { addIcon: true });
-    decryptElements("a.raw-topic-link[data-topic-id]", { addIcon: true });
+    decryptElements("a.topic-link[data-topic-id]", null, { addIcon: true });
+    decryptElements("a.raw-topic-link[data-topic-id]", null, { addIcon: true });
   },
 
   decryptDocTitle(data) {
