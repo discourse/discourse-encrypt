@@ -1,3 +1,4 @@
+import { next } from "@ember/runloop";
 import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
@@ -450,7 +451,7 @@ export default {
             "</div>";
         } else if (state.encryptState === "decrypted") {
           attrs.cooked = state.plaintext;
-          Ember.run.next(() => {
+          next(() => {
             let $post = $(`article[data-post-id='${attrs.id}']`);
             if ($post.length === 0) {
               $post = $(`#post_${attrs.post_number}.small-action`);

@@ -1,9 +1,10 @@
-import I18n from "I18n";
+import { computed, defineProperty } from "@ember/object";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {
@@ -48,10 +49,10 @@ export default {
       },
     });
 
-    Ember.defineProperty(
+    defineProperty(
       component,
       "showEncryptControls",
-      Ember.computed(
+      computed(
         "model.isNew",
         "model.creatingPrivateMessage",
         "model.topic.encrypted_title",
@@ -70,10 +71,10 @@ export default {
     //  - the user does not have a key for the current topic
     //  - one of the recipients is a group
     //  - one of the recipients did not enable encrypt
-    Ember.defineProperty(
+    defineProperty(
       component,
       "canEncrypt",
-      Ember.computed("model.encryptError", () => {
+      computed("model.encryptError", () => {
         return !this.model.encryptError;
       })
     );
@@ -82,34 +83,29 @@ export default {
     //
     // A user cannot disable encryption when replying to an already encrypted
     // private message.
-    Ember.defineProperty(
+    defineProperty(
       component,
       "canDisableEncrypt",
-      Ember.computed("model.topic.encrypted_title", () => {
+      computed("model.topic.encrypted_title", () => {
         return !(this.model.topic && this.model.topic.encrypted_title);
       })
     );
 
     // Whether the encryption checkbox is disabled or not.
-    Ember.defineProperty(
+    defineProperty(
       component,
       "disabled",
-      Ember.computed(
-        "model.isEncrypted",
-        "canEncrypt",
-        "canDisableEncrypt",
-        () => {
-          return this.model.isEncrypted
-            ? !this.canDisableEncrypt
-            : !this.canEncrypt;
-        }
-      )
+      computed("model.isEncrypted", "canEncrypt", "canDisableEncrypt", () => {
+        return this.model.isEncrypted
+          ? !this.canDisableEncrypt
+          : !this.canEncrypt;
+      })
     );
 
-    Ember.defineProperty(
+    defineProperty(
       component,
       "title",
-      Ember.computed("model.isEncrypted", "model.encryptError", () => {
+      computed("model.isEncrypted", "model.encryptError", () => {
         if (this.model.encryptError) {
           return this.model.encryptError;
         } else if (this.model.isEncrypted) {

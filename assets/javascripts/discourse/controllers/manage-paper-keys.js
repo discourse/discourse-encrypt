@@ -1,9 +1,10 @@
+import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   @discourseComputed("model.encrypt_private")
   keys() {
     const keys = [];

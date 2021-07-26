@@ -1,8 +1,9 @@
-import I18n from "I18n";
+import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { activateEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import I18n from "I18n";
 
-export default Ember.Controller.extend(ModalFunctionality, {
+export default Controller.extend(ModalFunctionality, {
   onShow() {
     const models = this.models || [];
     models.push(this.model);
