@@ -42,6 +42,12 @@ pre.exported-key-pair {
   word-break: break-all;
 }
 
+.modal.activate-encrypt-modal {
+  input#passphrase {
+    width: 100%;
+  }
+}
+
 .modal .modal-body .paper-key {
   font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
     "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace,

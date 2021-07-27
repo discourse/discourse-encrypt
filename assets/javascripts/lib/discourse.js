@@ -44,17 +44,17 @@ let userIdentity;
 /**
  * @var {Object} userIdentities Cached user identities.
  */
-const userIdentities = getCaseInsensitiveObj();
+let userIdentities = getCaseInsensitiveObj();
 
 /**
  * @var {Object} topicKeys Dictionary of all topic keys (topic_id => key).
  */
-const topicKeys = {};
+let topicKeys = {};
 
 /**
  * @var {Object} topicTitles Dictionary of all topic title objects (topic_id => TopicTitle).
  */
-const topicTitles = {};
+let topicTitles = {};
 
 class TopicTitle {
   constructor(topicId, encrypted) {
@@ -72,6 +72,15 @@ class TopicTitle {
 
     return this._promise;
   }
+}
+
+/**
+ * Resets plugin state
+ *
+ * Used in tests.
+ */
+export function _reset() {
+  userIdentity = null;
 }
 
 /**
