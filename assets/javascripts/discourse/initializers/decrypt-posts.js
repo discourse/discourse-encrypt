@@ -429,7 +429,7 @@ export default {
               });
           })
           .catch(() => {
-            showModal("activate-encrypt", { model: this });
+            showModal("activate-encrypt", { model: { widget: this } });
           });
       }
 

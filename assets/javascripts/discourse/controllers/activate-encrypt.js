@@ -5,26 +5,28 @@ import I18n from "I18n";
 
 export default Controller.extend(ModalFunctionality, {
   onShow() {
-    const models = this.models || [];
-    models.push(this.model);
+    const widgets = this.widgets || [];
+    widgets.push(this.model.widget);
 
     this.setProperties({
-      models: models,
+      widgets,
       passphrase: "",
       error: "",
     });
   },
 
   onClose() {
-    const models = this.models || [];
-    models.forEach((model) => {
-      model.state.encryptState = "error";
-      model.state.error = I18n.t(
+    if (!this.widgets) {
+      return;
+    }
+
+    this.widgets.forEach((widget) => {
+      widget.state.encryptState = "error";
+      widget.state.error = I18n.t(
         "encrypt.preferences.status_enabled_but_inactive"
       );
-      model.scheduleRerender();
+      widget.scheduleRerender();
     });
-    this.set("models", null);
   },
 
   actions: {
@@ -34,12 +36,11 @@ export default Controller.extend(ModalFunctionality, {
       return activateEncrypt(this.currentUser, this.passphrase)
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
-          this.models.forEach((model) => {
-            model.state.decrypting = true;
-            model.state.decrypted = false;
-            model.scheduleRerender();
+          this.widgets.forEach((widget) => {
+            widget.state.encryptState = "decrypting";
+            widget.scheduleRerender();
           });
-          this.set("models", null);
+          this.set("widgets", null);
           this.send("closeModal");
         })
         .catch(() =>
