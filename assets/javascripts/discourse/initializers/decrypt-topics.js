@@ -168,6 +168,10 @@ export default {
   },
 
   decryptTitles() {
+    decryptElements("a.topic-link[data-topic-id]", "span");
+    decryptElements("a.topic-link[data-topic-id]", null, { addIcon: true });
+    decryptElements("a.raw-topic-link[data-topic-id]", null, { addIcon: true });
+
     // Title in site header
     decryptElements("h1.header-title", ".topic-link", { replaceIcon: true });
 
@@ -180,10 +184,6 @@ export default {
       ".title",
       { addIcon: true }
     );
-
-    decryptElements("a.topic-link[data-topic-id]", "span");
-    decryptElements("a.topic-link[data-topic-id]", null, { addIcon: true });
-    decryptElements("a.raw-topic-link[data-topic-id]", null, { addIcon: true });
   },
 
   decryptDocTitle(data) {
