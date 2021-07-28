@@ -1,3 +1,4 @@
+import { isTesting } from "discourse-common/config/environment";
 import { ajax } from "discourse/lib/ajax";
 import {
   DB_NAME,
@@ -79,7 +80,11 @@ class TopicTitle {
  *
  * Used in tests.
  */
-export function _reset() {
+export function resetUserIdentity() {
+  if (!isTesting()) {
+    throw new Error("`resetUserIdentity` can be called from tests only");
+  }
+
   userIdentity = null;
 }
 

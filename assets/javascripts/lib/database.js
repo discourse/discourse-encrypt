@@ -1,3 +1,4 @@
+import { isTesting } from "discourse-common/config/environment";
 import {
   exportIdentity,
   importIdentity,
@@ -25,11 +26,13 @@ export let useLocalStorage = false;
 /**
  * Force usage of local storage instead of IndexedDb.
  *
- * Used in tests
- *
  * @param {Boolean} value Whether to use local storage.
  */
-export function _setUseLocalStorage(value) {
+export function setUseLocalStorage(value) {
+  if (!isTesting()) {
+    throw new Error("`setUseLocalStorage` can be called from tests only");
+  }
+
   useLocalStorage = value;
 }
 
@@ -41,11 +44,13 @@ export let indexedDb = window.indexedDB;
 /**
  * Sets IndexedDb backend
  *
- * Used in tests
- *
  * @param {Object} value
  */
-export function _setIndexedDb(value) {
+export function setIndexedDb(value) {
+  if (!isTesting()) {
+    throw new Error("`setIndexedDb` can be called from tests only");
+  }
+
   indexedDb = value;
 }
 
@@ -57,11 +62,13 @@ export let userAgent = window.navigator.userAgent;
 /**
  * Sets browser's user agent string
  *
- * Used in tests
- *
  * @param {String} value
  */
-export function _setUserAgent(value) {
+export function setUserAgent(value) {
+  if (!isTesting()) {
+    throw new Error("`setUserAgent` can be called from tests only");
+  }
+
   userAgent = value;
 }
 

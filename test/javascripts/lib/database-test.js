@@ -1,9 +1,9 @@
 import {
   DB_NAME,
-  _setUseLocalStorage,
   deleteDb,
   loadDbIdentity,
   saveDbIdentity,
+  setUseLocalStorage,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import { generateIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { test } from "qunit";
@@ -11,7 +11,7 @@ import { test } from "qunit";
 QUnit.module("discourse-encrypt:lib:database");
 
 test("IndexedDB backend", async (assert) => {
-  _setUseLocalStorage(false);
+  setUseLocalStorage(false);
   await deleteDb();
 
   assert.rejects(loadDbIdentity());
@@ -32,7 +32,7 @@ test("IndexedDB backend", async (assert) => {
 });
 
 test("Web Storage (localStorage) backend", async (assert) => {
-  _setUseLocalStorage(true);
+  setUseLocalStorage(true);
   await deleteDb();
 
   assert.rejects(loadDbIdentity());
