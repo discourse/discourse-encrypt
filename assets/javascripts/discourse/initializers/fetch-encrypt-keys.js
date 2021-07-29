@@ -1,12 +1,60 @@
+import { iconHTML } from "discourse-common/lib/icon-library";
 import NotificationAdapter from "discourse/adapters/notification";
+import { ajax } from "discourse/lib/ajax";
+import PreloadStore from "discourse/lib/preload-store";
+import Bookmark from "discourse/models/bookmark";
 import Topic from "discourse/models/topic";
 import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
+  getTopicTitle,
   putTopicKey,
   putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import PreloadStore from "discourse/lib/preload-store";
+import { Promise } from "rsvp";
+
+const CACHE_KEY = "discourse-encrypt-bookmark-cache";
+
+function saveBookmarksResponse(session, response) {
+  if (!response?.user_bookmark_list?.bookmarks) {
+    return Promise.resolve();
+  }
+
+  const cacheObj = {};
+
+  // Keep current cache values
+  let cache = session.get(CACHE_KEY);
+  if (cache) {
+    cache.forEach((bookmark) => {
+      cacheObj[bookmark.id] = bookmark;
+    });
+  }
+
+  const promises = [];
+  response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
+    if (!bookmark.topic_key) {
+      return;
+    }
+
+    putTopicKey(bookmark.topic_id, bookmark.topic_key);
+    putTopicTitle(bookmark.topic_id, bookmark.encrypted_title);
+
+    promises.push(
+      getTopicTitle(bookmark.topic_id)
+        .then((title) => {
+          bookmark.title = title;
+          bookmark.fancy_title = `${iconHTML("user-secret")} ${title}`;
+          bookmark.excerpt = null;
+          cacheObj[bookmark.id] = bookmark;
+        })
+        .catch(() => {})
+    );
+  });
+
+  return Promise.all(promises).then(() => {
+    session.set(CACHE_KEY, Object.values(cacheObj));
+  });
+}
 
 export default {
   name: "fetch-encrypt-keys",
@@ -18,7 +66,9 @@ export default {
       return;
     }
 
-    // Go through the `PreloadStore` and look for any preloaded topic keys.
+    const session = container.lookup("session:main");
+
+    // Go through the `PreloadStore` and look for preloaded topic keys
     for (let storeKey in PreloadStore.data) {
       if (storeKey.includes("topic_")) {
         const topic = PreloadStore.data[storeKey];
@@ -36,7 +86,6 @@ export default {
       }
     }
 
-    // Hook `Notification` adapter to gather encrypted topic keys.
     NotificationAdapter.reopen({
       find() {
         return this._super(...arguments).then((result) => {
@@ -54,7 +103,6 @@ export default {
       },
     });
 
-    // Hook `Topic` model to gather encrypted topic keys.
     Topic.reopenClass({
       create(args) {
         if (args && args.topic_key) {
@@ -72,6 +120,41 @@ export default {
           putTopicTitle(json.id, json.encrypted_title);
         }
         return this._super(...arguments);
+      },
+    });
+
+    Bookmark.reopen({
+      loadItems(params) {
+        return this._super(...arguments).then((response) => {
+          if (!params.q) {
+            saveBookmarksResponse(session, response);
+            return response;
+          }
+
+          let cachePromise = Promise.resolve();
+          if (!session.get(CACHE_KEY)) {
+            const url = `/u/${currentUser.username}/bookmarks.json`;
+            cachePromise = ajax(url).then((resp) =>
+              saveBookmarksResponse(session, resp)
+            );
+          }
+
+          return cachePromise.then(() => {
+            const cache = session.get(CACHE_KEY);
+            cache.forEach((bookmark) => {
+              if (
+                bookmark.title.toLowerCase().includes(params.q.toLowerCase())
+              ) {
+                if (!response?.user_bookmark_list?.bookmarks) {
+                  response = { user_bookmark_list: { bookmarks: [] } };
+                }
+
+                response.user_bookmark_list.bookmarks.push(bookmark);
+              }
+            });
+            return response;
+          });
+        });
       },
     });
   },
