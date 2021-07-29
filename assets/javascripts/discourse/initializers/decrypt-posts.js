@@ -368,13 +368,7 @@ export default {
         state.ciphertext = ciphertext;
 
         getIdentity()
-          .then((identity) => {
-            if (!identity) {
-              // Absence of private key means user did not activate encryption.
-              showModal("activate-encrypt", { model: this });
-              return;
-            }
-
+          .then(() => {
             getTopicKey(topicId)
               .then((key) => {
                 decrypt(key, ciphertext)
@@ -435,9 +429,7 @@ export default {
               });
           })
           .catch(() => {
-            state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_identity");
-            this.scheduleRerender();
+            showModal("activate-encrypt", { model: { widget: this } });
           });
       }
 

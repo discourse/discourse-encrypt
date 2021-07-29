@@ -1,8 +1,8 @@
 import {
-  _setIndexedDb,
-  _setUserAgent,
   deleteDb,
   loadDbIdentity,
+  setIndexedDb,
+  setUserAgent,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import { test } from "qunit";
 import { Promise } from "rsvp";
@@ -13,7 +13,7 @@ QUnit.module("discourse-encrypt:lib:database-safari", {
   beforeEach() {
     indexedDbCalls = 0;
 
-    _setIndexedDb({
+    setIndexedDb({
       open(name, version) {
         return window.indexedDB.open(name, version);
       },
@@ -30,12 +30,12 @@ QUnit.module("discourse-encrypt:lib:database-safari", {
       },
     });
 
-    _setUserAgent("iPhone");
+    setUserAgent("iPhone");
   },
 
   afterEach() {
-    _setIndexedDb(window.indexedDB);
-    _setUserAgent(window.navigator.userAgent);
+    setIndexedDb(window.indexedDB);
+    setUserAgent(window.navigator.userAgent);
   },
 });
 
