@@ -140,6 +140,11 @@ export default {
           }
 
           return cachePromise.then(() => {
+            const bookmarkIds = new Set();
+            response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
+              bookmarkIds.add(bookmark.id);
+            });
+
             const cache = session.get(CACHE_KEY);
             cache.forEach((bookmark) => {
               if (
@@ -149,7 +154,10 @@ export default {
                   response = { user_bookmark_list: { bookmarks: [] } };
                 }
 
-                response.user_bookmark_list.bookmarks.push(bookmark);
+                if (!bookmarkIds.has(bookmark.id)) {
+                  bookmarkIds.add(bookmark.id);
+                  response.user_bookmark_list.bookmarks.push(bookmark);
+                }
               }
             });
             return response;
