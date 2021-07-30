@@ -168,22 +168,20 @@ export default {
   },
 
   decryptTitles() {
-    decryptElements("a.topic-link[data-topic-id]", "span");
-    decryptElements("a.topic-link[data-topic-id]", null, { addIcon: true });
-    decryptElements("a.raw-topic-link[data-topic-id]", null, { addIcon: true });
+    decryptElements("a.raw-topic-link", null, { addIcon: true });
+    decryptElements("a.topic-link", "span");
+    decryptElements("a.topic-link", null, { addIcon: true });
 
     // Title in site header
     decryptElements("h1.header-title", ".topic-link", { replaceIcon: true });
 
     // Title in topic header
-    decryptElements("h1[data-topic-id]", ".fancy-title", { replaceIcon: true });
+    decryptElements("h1", ".fancy-title", { replaceIcon: true });
 
     // Title in topic lists
-    decryptElements(
-      ".topic-list-item[data-topic-id], .latest-topic-list-item[data-topic-id]",
-      ".title",
-      { addIcon: true }
-    );
+    decryptElements(".topic-list-item, .latest-topic-list-item", ".title", {
+      addIcon: true,
+    });
   },
 
   decryptDocTitle(data) {

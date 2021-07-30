@@ -1175,4 +1175,127 @@ acceptance("Encrypt", function (needs) {
       "Top Secret"
     );
   });
+
+  test("searching in bookmarks", async (assert) => {
+    await setEncryptionStatus(ENCRYPT_ACTIVE);
+
+    const identity = await getIdentity();
+
+    const topicKey = await generateKey();
+    const exportedTopicKey = await exportKey(topicKey, identity.encryptPublic);
+    const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
+
+    const topicKey2 = await generateKey();
+    const exportedTopicKey2 = await exportKey(
+      topicKey2,
+      identity.encryptPublic
+    );
+    const encryptedTitle2 = await encrypt(topicKey2, { raw: "Not a Secret" });
+
+    server.get("/u/eviltrout/bookmarks.json", (request) => {
+      if (request.queryParams.q) {
+        return [
+          200,
+          { "Content-Type": "application/json" },
+          {
+            bookmarks: [],
+            no_results_help:
+              "No bookmarks found with the provided search query.",
+          },
+        ];
+      }
+
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          user_bookmark_list: {
+            more_bookmarks_url: "/u/eviltrout/bookmarks.json?page=1",
+            bookmarks: [
+              {
+                excerpt: "",
+                id: 42,
+                created_at: "2020-01-01T12:00:00.000Z",
+                updated_at: "2020-01-01T12:00:00.000Z",
+                topic_id: 42,
+                linked_post_number: 1,
+                post_id: 42,
+                name: null,
+                reminder_at: null,
+                pinned: false,
+                title: "A secret message",
+                fancy_title: "A secret message",
+                deleted: false,
+                hidden: false,
+                category_id: null,
+                closed: false,
+                archived: false,
+                archetype: "private_message",
+                highest_post_number: 1,
+                bumped_at: "2020-01-01T12:00:00.000Z",
+                slug: "a-secret-message",
+                post_user_username: "foo",
+                post_user_avatar_template:
+                  "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+                post_user_name: null,
+                encrypted_title: encryptedTitle,
+                topic_key: exportedTopicKey,
+              },
+              {
+                excerpt: "",
+                id: 43,
+                created_at: "2020-01-01T12:00:00.000Z",
+                updated_at: "2020-01-01T12:00:00.000Z",
+                topic_id: 43,
+                linked_post_number: 1,
+                post_id: 43,
+                name: null,
+                reminder_at: null,
+                pinned: false,
+                title: "A secret message",
+                fancy_title: "A secret message",
+                deleted: false,
+                hidden: false,
+                category_id: null,
+                closed: false,
+                archived: false,
+                archetype: "private_message",
+                highest_post_number: 1,
+                bumped_at: "2020-01-01T12:00:00.000Z",
+                slug: "a-secret-message",
+                post_user_username: "foo",
+                post_user_avatar_template:
+                  "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+                post_user_name: null,
+                encrypted_title: encryptedTitle2,
+                topic_key: exportedTopicKey2,
+              },
+            ],
+          },
+        },
+      ];
+    });
+
+    await visit("/u/eviltrout/activity/bookmarks");
+    await visit("/u/eviltrout/activity/bookmarks"); // wait for re-render
+
+    assert.equal(count(".bookmark-list-item"), 2);
+    assert.equal(
+      queryAll(".bookmark-list-item .title")[0].innerText.trim(),
+      "Top Secret Title"
+    );
+    assert.equal(
+      queryAll(".bookmark-list-item .title")[1].innerText.trim(),
+      "Not a Secret"
+    );
+
+    await visit("/");
+    await visit("/u/eviltrout/activity/bookmarks?q=Top");
+
+    assert.equal(count(".bookmark-list-item"), 1);
+    assert.equal(
+      queryAll(".bookmark-list-item .title")[0].innerText.trim(),
+      "Top Secret Title"
+    );
+  });
 });

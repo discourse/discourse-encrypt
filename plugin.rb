@@ -91,10 +91,22 @@ after_initialize do
     end
   end
 
+  BookmarkQuery.on_preload do |bookmarks, query|
+    if SiteSetting.encrypt_enabled? && bookmarks.size > 0
+      user_id = bookmarks.first.user_id
+      topic_ids = bookmarks.map(&:topic_id)
+
+      encrypted_topics_data = EncryptedTopicsData.where(topic_id: topic_ids).index_by(&:topic_id)
+      encrypted_topics_users = EncryptedTopicsUser.where(user_id: user_id, topic_id: topic_ids).index_by(&:topic_id)
+
+      bookmarks.each do |bookmark|
+        bookmark.topic.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.topic_id]
+        bookmark.topic.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.topic_id]].compact
+      end
+    end
+  end
+
   # Send plugin-specific topic data to client via serializers.
-  #
-  # +TopicViewSerializer+ and +BasicTopicSerializer+ should cover all topics
-  # that are serialized over to the client.
 
   add_to_serializer(:post, :encrypted_raw, false) do
     object.raw
@@ -112,15 +124,19 @@ after_initialize do
     scope&.user.present? && object.topic&.is_encrypted? && object.encrypted_post_timer&.delete_at.present?
   end
 
-  # +encrypted_title+
-  #
-  # Topic title encrypted with topic key.
-
   add_to_serializer(:topic_view, :encrypted_title, false) do
     object.topic.encrypted_topics_data&.title
   end
 
   add_to_serializer(:topic_view, :include_encrypted_title?) do
+    scope&.user.present? && object.topic.is_encrypted?
+  end
+
+  add_to_serializer(:topic_view, :topic_key, false) do
+    object.topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
+  end
+
+  add_to_serializer(:topic_view, :include_topic_key?) do
     scope&.user.present? && object.topic.is_encrypted?
   end
 
@@ -140,29 +156,6 @@ after_initialize do
     scope&.user.present? && object.is_encrypted?
   end
 
-  add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.encrypted_topics_data&.title
-  end
-
-  add_to_serializer(:notification, :include_encrypted_title?) do
-    scope&.user.present? && object&.topic&.is_encrypted?
-  end
-
-  # +topic_key+
-  #
-  # Topic's key encrypted with user's public key.
-  #
-  # This value is different for every user and can be decrypted only by the
-  # paired private key.
-
-  add_to_serializer(:topic_view, :topic_key, false) do
-    object.topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
-  end
-
-  add_to_serializer(:topic_view, :include_topic_key?) do
-    scope&.user.present? && object.topic.is_encrypted?
-  end
-
   add_to_serializer(:basic_topic, :topic_key, false) do
     object.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
   end
@@ -171,12 +164,36 @@ after_initialize do
     scope&.user.present? && object.is_encrypted?
   end
 
+  add_to_serializer(:notification, :encrypted_title, false) do
+    object.topic.encrypted_topics_data&.title
+  end
+
+  add_to_serializer(:notification, :include_encrypted_title?) do
+    scope&.user.present? && object&.topic&.is_encrypted?
+  end
+
   add_to_serializer(:notification, :topic_key, false) do
     object.topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
   end
 
   add_to_serializer(:notification, :include_topic_key?) do
     scope&.user.present? && object&.topic&.is_encrypted?
+  end
+
+  add_to_serializer(:user_bookmark, :encrypted_title, false) do
+    topic.encrypted_topics_data&.title
+  end
+
+  add_to_serializer(:user_bookmark, :include_encrypted_title?) do
+    scope&.user.present? && topic&.is_encrypted?
+  end
+
+  add_to_serializer(:user_bookmark, :topic_key, false) do
+    topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
+  end
+
+  add_to_serializer(:user_bookmark, :include_topic_key?) do
+    scope&.user.present? && topic&.is_encrypted?
   end
 
   # +topic_id+ and +raws+

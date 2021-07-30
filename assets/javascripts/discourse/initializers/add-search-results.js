@@ -6,12 +6,10 @@ import Topic from "discourse/models/topic";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
-  getIdentity,
+  getTopicTitle,
+  putTopicKey,
+  putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import {
-  decrypt,
-  importKey,
-} from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
 
@@ -46,13 +44,15 @@ function getOrFetchCache(session) {
       });
 
       result.topics.forEach((topic) => {
+        putTopicKey(topic.id, topic.topic_key);
+        putTopicTitle(topic.id, topic.encrypted_title);
+
         promises.push(
-          getIdentity()
-            .then((id) => importKey(topic.topic_key, id.encryptPrivate))
-            .then((key) => decrypt(key, topic.encrypted_title))
-            .then((decrypted) => {
-              topic.title = decrypted.raw;
-              topic.fancy_title = `${iconHTML("user-secret")} ${decrypted.raw}`;
+          getTopicTitle(topic.id)
+            .then((title) => {
+              topic.title = title;
+              topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
+              topic.excerpt = null;
               addCacheItem(session, "topics", topic);
             })
             .catch(() => {})
