@@ -266,8 +266,10 @@ acceptance("Encrypt", function (needs) {
     await composerActions.selectRowByValue("reply_as_private_message");
 
     // simulate selecting from autocomplete suggestions
-    await fillIn("#private-message-users .filter-input", "evilt");
-    await keyEvent("#private-message-users .filter-input", "keydown", 13);
+    const usersSelector = selectKit("#private-message-users");
+    await usersSelector.expand();
+    await usersSelector.fillInFilter("evilt");
+    await usersSelector.selectRowByValue("eviltrout");
 
     requests = [];
     await wait(
