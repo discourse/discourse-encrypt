@@ -180,9 +180,12 @@ function resolveShortUrlElement($el) {
       return;
     }
 
-    data.promise ||= downloadEncryptedFile(url, keyPromise, {
-      type: $el.data("type"),
-    }).then((file) => {
+    if (!data.promise) {
+      data.promise = downloadEncryptedFile(url, keyPromise, {
+        type: $el.data("type"),
+      });
+    }
+    data.promise.then((file) => {
       data.url = file.blob_url = window.URL.createObjectURL(file.blob);
       return file;
     });
@@ -201,9 +204,11 @@ function postProcessPost(siteSettings, topicId, $post) {
   // Paint mentions
   const unseenMentions = linkSeenMentions($post, siteSettings);
   if (unseenMentions.length > 0) {
-    mentionsQueues[topicId] ||= new DebouncedQueue(500, (items) =>
-      fetchUnseenMentions(items, topicId)
-    );
+    if (!mentionsQueues[topicId]) {
+      mentionsQueues[topicId] = new DebouncedQueue(500, (items) =>
+        fetchUnseenMentions(items, topicId)
+      );
+    }
     mentionsQueues[topicId]
       .push(...unseenMentions)
       .then(() => linkSeenMentions($post, siteSettings));
@@ -212,7 +217,9 @@ function postProcessPost(siteSettings, topicId, $post) {
   // Paint category and tag hashtags
   const unseenTagHashtags = linkSeenHashtags($post);
   if (unseenTagHashtags.length > 0) {
-    hashtagsQueue ||= new DebouncedQueue(500, fetchUnseenHashtags);
+    if (!hashtagsQueue) {
+      hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
+    }
     hashtagsQueue.push(...unseenTagHashtags).then(() => {
       linkSeenHashtags($post);
     });
@@ -226,9 +233,11 @@ function postProcessPost(siteSettings, topicId, $post) {
     if (lookupCachedUploadUrl(url).url) {
       resolveShortUrlElement($el);
     } else {
-      shortUrlsQueue ||= new DebouncedQueue(500, (items) =>
-        lookupUncachedUploadUrls(items, ajax)
-      );
+      if (!shortUrlsQueue) {
+        shortUrlsQueue = new DebouncedQueue(500, (items) =>
+          lookupUncachedUploadUrls(items, ajax)
+        );
+      }
 
       shortUrlsQueue.push(url).then(() => resolveShortUrlElement($el));
     }
@@ -374,10 +383,12 @@ export default {
                 decrypt(key, ciphertext)
                   .then((plaintext) => {
                     if (plaintext.signature) {
-                      userIdentitiesQueues ||= new DebouncedQueue(
-                        500,
-                        getUserIdentities
-                      );
+                      if (!userIdentitiesQueues) {
+                        userIdentitiesQueues = new DebouncedQueue(
+                          500,
+                          getUserIdentities
+                        );
+                      }
                       userIdentitiesQueues
                         .push(plaintext.signed_by_name)
                         .then((ids) => ids[plaintext.signed_by_name])
