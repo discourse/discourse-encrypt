@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EmailSenderExtensions
+module DiscourseEncrypt::EmailSenderExtensions
   def add_attachments(post)
     return if post.is_encrypted?
     super

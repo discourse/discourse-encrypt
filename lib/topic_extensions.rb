@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module TopicExtensions
+module DiscourseEncrypt::TopicExtensions
   def self.prepended(base)
     base.has_one :encrypted_topics_data, dependent: :destroy
     base.has_many :encrypted_topics_users, dependent: :destroy

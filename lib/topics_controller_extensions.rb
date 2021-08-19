@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module TopicsControllerExtensions
+module DiscourseEncrypt::TopicsControllerExtensions
   def show
     if SiteSetting.encrypt_enabled?
       topic = Topic.find_by(id: (params[:topic_id] || params[:id]))

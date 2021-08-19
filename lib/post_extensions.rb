@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module PostExtensions
+module DiscourseEncrypt::PostExtensions
   def self.prepended(base)
     base.has_one :encrypted_post_timer
   end

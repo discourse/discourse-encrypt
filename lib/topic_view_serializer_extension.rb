@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module TopicViewSerializerExtension
+module DiscourseEncrypt::TopicViewSerializerExtension
   def posts
     if SiteSetting.encrypt_enabled? && object.topic.is_encrypted?
       posts = object.posts.includes(:encrypted_post_timer)

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class DiscourseEncrypt::EncryptedPostTimersController < ApplicationController
+  requires_plugin DiscourseEncrypt::PLUGIN_NAME
+
+  before_action :ensure_logged_in
+  before_action :ensure_can_encrypt
+
   def create
     delete_at = 1.minutes.from_now
     Array.wrap(params[:post_id]).each do |post_id|
@@ -30,5 +35,9 @@ class DiscourseEncrypt::EncryptedPostTimersController < ApplicationController
     guardian.ensure_can_delete!(post.is_first_post? ? post.topic : post)
 
     EncryptedPostTimer.create!(post: post, delete_at: delete_at)
+  end
+
+  def ensure_can_encrypt
+    current_user.guardian.ensure_can_encrypt!
   end
 end

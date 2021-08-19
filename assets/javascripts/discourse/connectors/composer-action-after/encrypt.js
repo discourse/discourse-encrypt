@@ -8,8 +8,8 @@ import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {
-    const { currentUser, siteSettings } = component;
-    const status = getEncryptionStatus(currentUser, siteSettings);
+    const { currentUser } = component;
+    const status = getEncryptionStatus(currentUser);
 
     component.setProperties({
       isEncryptEnabled: status !== ENCRYPT_DISABLED,
@@ -17,7 +17,7 @@ export default {
 
       /** Listens for encryption status updates. */
       listener() {
-        const newStatus = getEncryptionStatus(currentUser, siteSettings);
+        const newStatus = getEncryptionStatus(currentUser);
         component.setProperties({
           isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
           isEncryptActive: newStatus === ENCRYPT_ACTIVE,

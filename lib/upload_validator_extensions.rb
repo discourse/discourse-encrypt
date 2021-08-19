@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UploadValidatorExtensions
+module DiscourseEncrypt::UploadValidatorExtensions
   def validate(upload)
     extension = File.extname(upload.original_filename)[1..-1] || ""
 

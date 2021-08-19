@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module PostActionsControllerExtensions
+module DiscourseEncrypt::PostActionsControllerExtensions
   def create
     if SiteSetting.encrypt_enabled?
       raise Discourse::NotFound if @post.blank?

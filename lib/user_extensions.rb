@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UserExtensions
+module DiscourseEncrypt::UserExtensions
   def self.prepended(base)
     base.has_one :user_encryption_key
   end

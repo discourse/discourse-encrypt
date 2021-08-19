@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe UploadValidatorExtensions do
+describe DiscourseEncrypt::UploadValidatorExtensions do
   it "removes '.encrypted' extension and validates the real extension" do
     SiteSetting.authorized_extensions = "foo"
 

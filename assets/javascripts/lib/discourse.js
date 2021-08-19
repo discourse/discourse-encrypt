@@ -261,13 +261,12 @@ export function waitForPendingTitles() {
  * Gets current encryption status.
  *
  * @param {User} user
- * @param {Object} siteSettings
  *
  * @return {Number} See `ENCRYPT_DISABLED`, `ENCRYPT_ENABLED` and
  *                  `ENCRYPT_ACTIVE`.
  */
-export function getEncryptionStatus(user, siteSettings) {
-  if (!siteSettings.encrypt_enabled || !user || !user.encrypt_public) {
+export function getEncryptionStatus(user) {
+  if (!user || !user.can_encrypt || !user.encrypt_public) {
     return ENCRYPT_DISABLED;
   }
 
@@ -279,41 +278,6 @@ export function getEncryptionStatus(user, siteSettings) {
   }
 
   return ENCRYPT_ACTIVE;
-}
-
-/**
- * Checks if a specific user can enable encryption.
- *
- * This check ensures that:
- *    - user already has encryption enabled OR
- *    - encryption plug-in is enabled AND
- *    - there is no group restriction or user is in one of the allowed groups.
- *
- * @param {User} user
- *
- * @return {Boolean}
- */
-export function canEnableEncrypt(user, siteSettings) {
-  if (getEncryptionStatus(user, siteSettings) !== ENCRYPT_DISABLED) {
-    return true;
-  }
-
-  if (siteSettings.encrypt_enabled) {
-    if (siteSettings.encrypt_groups.length === 0) {
-      return true;
-    }
-
-    const encryptGroups = siteSettings.encrypt_groups
-      .split("|")
-      .map((groupName) => groupName.toLowerCase());
-    const groups = (user.groups || []).map((group) => group.name.toLowerCase());
-
-    if (groups.some((group) => encryptGroups.includes(group))) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 export function enableEncrypt(model, exportedIdentity) {

@@ -20,30 +20,30 @@ after_initialize do
     PLUGIN_NAME = 'discourse-encrypt'
   end
 
-  load File.expand_path('../app/controllers/encrypt_controller.rb', __FILE__)
-  load File.expand_path('../app/controllers/encrypted_post_timers_controller.rb', __FILE__)
-  load File.expand_path('../app/jobs/scheduled/encrypt_consistency.rb', __FILE__)
-  load File.expand_path('../app/jobs/scheduled/encrypted_post_timer_evaluator.rb', __FILE__)
-  load File.expand_path('../app/mailers/user_notifications_extensions.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_post_timer.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_topics_data.rb', __FILE__)
-  load File.expand_path('../app/models/encrypted_topics_user.rb', __FILE__)
-  load File.expand_path('../app/models/user_encryption_key.rb', __FILE__)
-  load File.expand_path('../lib/email_sender_extensions.rb', __FILE__)
-  load File.expand_path('../lib/encrypted_post_creator.rb', __FILE__)
-  load File.expand_path('../lib/encrypted_search.rb', __FILE__)
-  load File.expand_path('../lib/grouped_search_result_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/openssl.rb', __FILE__)
-  load File.expand_path('../lib/post_actions_controller_extensions.rb', __FILE__)
-  load File.expand_path('../lib/post_extensions.rb', __FILE__)
-  load File.expand_path('../lib/site_setting_extensions.rb', __FILE__)
-  load File.expand_path('../lib/topic_extensions.rb', __FILE__)
-  load File.expand_path('../lib/topic_guardian_extensions.rb', __FILE__)
-  load File.expand_path('../lib/topic_view_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/topics_controller_extensions.rb', __FILE__)
-  load File.expand_path('../lib/upload_validator_extensions.rb', __FILE__)
-  load File.expand_path('../lib/user_extensions.rb', __FILE__)
-  load File.expand_path('../lib/user_notification_renderer_extensions.rb', __FILE__)
+  require_relative 'app/controllers/encrypt_controller.rb'
+  require_relative 'app/controllers/encrypted_post_timers_controller.rb'
+  require_relative 'app/jobs/scheduled/encrypt_consistency.rb'
+  require_relative 'app/jobs/scheduled/encrypted_post_timer_evaluator.rb'
+  require_relative 'app/mailers/user_notifications_extensions.rb'
+  require_relative 'app/models/encrypted_post_timer.rb'
+  require_relative 'app/models/encrypted_topics_data.rb'
+  require_relative 'app/models/encrypted_topics_user.rb'
+  require_relative 'app/models/user_encryption_key.rb'
+  require_relative 'lib/email_sender_extensions.rb'
+  require_relative 'lib/encrypted_post_creator.rb'
+  require_relative 'lib/encrypted_search.rb'
+  require_relative 'lib/grouped_search_result_serializer_extension.rb'
+  require_relative 'lib/openssl.rb'
+  require_relative 'lib/post_actions_controller_extensions.rb'
+  require_relative 'lib/post_extensions.rb'
+  require_relative 'lib/site_setting_extensions.rb'
+  require_relative 'lib/topic_extensions.rb'
+  require_relative 'lib/topic_guardian_extensions.rb'
+  require_relative 'lib/topic_view_serializer_extension.rb'
+  require_relative 'lib/topics_controller_extensions.rb'
+  require_relative 'lib/upload_validator_extensions.rb'
+  require_relative 'lib/user_extensions.rb'
+  require_relative 'lib/user_notification_renderer_extensions.rb'
 
   class DiscourseEncrypt::Engine < Rails::Engine
     engine_name DiscourseEncrypt::PLUGIN_NAME
@@ -51,38 +51,38 @@ after_initialize do
   end
 
   DiscourseEncrypt::Engine.routes.draw do
-    put    '/encrypt/keys'           => 'encrypt#update_keys'
-    delete '/encrypt/keys'           => 'encrypt#delete_key'
-    get    '/encrypt/user'           => 'encrypt#show_user'
-    post   '/encrypt/reset'          => 'encrypt#reset_user'
-    put    '/encrypt/post'           => 'encrypt#update_post'
-    get    '/encrypt/stats'          => 'encrypt#stats'
-    get    '/encrypt/posts'          => 'encrypt#posts'
-    get    '/encrypt/rotate'         => 'encrypt#show_all_keys'
-    put    '/encrypt/rotate'         => 'encrypt#update_all_keys'
-    post   '/encrypt/encrypted_post_timers'  => 'encrypted_post_timers#create'
-    delete '/encrypt/encrypted_post_timers'  => 'encrypted_post_timers#destroy'
+    put    '/encrypt/keys'                  => 'encrypt#update_keys'
+    delete '/encrypt/keys'                  => 'encrypt#delete_key'
+    get    '/encrypt/user'                  => 'encrypt#show_user'
+    post   '/encrypt/reset'                 => 'encrypt#reset_user'
+    put    '/encrypt/post'                  => 'encrypt#update_post'
+    get    '/encrypt/stats'                 => 'encrypt#stats'
+    get    '/encrypt/posts'                 => 'encrypt#posts'
+    get    '/encrypt/rotate'                => 'encrypt#show_all_keys'
+    put    '/encrypt/rotate'                => 'encrypt#update_all_keys'
+    post   '/encrypt/encrypted_post_timers' => 'encrypted_post_timers#create'
+    delete '/encrypt/encrypted_post_timers' => 'encrypted_post_timers#destroy'
   end
 
-  Discourse::Application.routes.append do
+  Discourse::Application.routes.prepend do
     mount DiscourseEncrypt::Engine, at: '/'
   end
 
   reloadable_patch do |plugin|
-    Email::Sender.class_eval                 { prepend EmailSenderExtensions }
-    GroupedSearchResultSerializer.class_eval { prepend GroupedSearchResultSerializerExtension }
-    Post.class_eval                          { prepend PostExtensions }
-    PostActionsController.class_eval         { prepend PostActionsControllerExtensions }
-    Topic.class_eval                         { prepend TopicExtensions }
-    TopicGuardian.class_eval                 { prepend TopicGuardianExtension }
-    TopicsController.class_eval              { prepend TopicsControllerExtensions }
-    TopicViewSerializer.class_eval           { prepend TopicViewSerializerExtension }
-    UploadValidator.class_eval               { prepend UploadValidatorExtensions }
-    User.class_eval                          { prepend UserExtensions }
-    UserNotifications.class_eval             { prepend UserNotificationsExtensions }
+    Email::Sender.class_eval                 { prepend DiscourseEncrypt::EmailSenderExtensions }
+    GroupedSearchResultSerializer.class_eval { prepend DiscourseEncrypt::GroupedSearchResultSerializerExtension }
+    Post.class_eval                          { prepend DiscourseEncrypt::PostExtensions }
+    PostActionsController.class_eval         { prepend DiscourseEncrypt::PostActionsControllerExtensions }
+    Topic.class_eval                         { prepend DiscourseEncrypt::TopicExtensions }
+    TopicGuardian.class_eval                 { prepend DiscourseEncrypt::TopicGuardianExtension }
+    TopicsController.class_eval              { prepend DiscourseEncrypt::TopicsControllerExtensions }
+    TopicViewSerializer.class_eval           { prepend DiscourseEncrypt::TopicViewSerializerExtension }
+    UploadValidator.class_eval               { prepend DiscourseEncrypt::UploadValidatorExtensions }
+    User.class_eval                          { prepend DiscourseEncrypt::UserExtensions }
+    UserNotifications.class_eval             { prepend DiscourseEncrypt::UserNotificationsExtensions }
 
-    SiteSetting.singleton_class.prepend SiteSettingExtensions
-    UserNotificationRenderer.singleton_class.prepend UserNotificationRendererExtensions
+    SiteSetting.singleton_class.prepend                DiscourseEncrypt::SiteSettingExtensions
+    UserNotificationRenderer.singleton_class.prepend   DiscourseEncrypt::UserNotificationRendererExtensions
   end
 
   register_search_topic_eager_load do |opts|
@@ -106,7 +106,29 @@ after_initialize do
     end
   end
 
-  # Send plugin-specific topic data to client via serializers.
+  add_to_class(:guardian, :is_user_a_member_of_encrypted_conversation?) do |topic|
+    if SiteSetting.encrypt_enabled? && topic && topic.is_encrypted?
+      authenticated? && topic.all_allowed_users.where(id: @user.id).exists?
+    else
+      true
+    end
+  end
+
+  add_to_class(:guardian, :can_encrypt_post?) do |post|
+    SiteSetting.encrypt_enabled? && post.topic.is_encrypted? && post.user == @user
+  end
+
+  add_to_class(:guardian, :can_encrypt?) do
+    return false if !SiteSetting.encrypt_enabled?
+    return true if SiteSetting.encrypt_groups.empty?
+
+    encrypt_groups = SiteSetting.encrypt_groups.split('|').map(&:downcase)
+    groups = user.groups.pluck(:name).map(&:downcase)
+
+    (groups & encrypt_groups).present?
+  end
+
+  # Send plugin-specific data to client via serializers.
 
   add_to_serializer(:post, :encrypted_raw, false) do
     object.raw
@@ -219,24 +241,36 @@ after_initialize do
     scope&.user.present? && post.topic&.is_encrypted?
   end
 
-  add_to_serializer(:current_user, :encrypt_public) do
+  add_to_serializer(:current_user, :encrypt_public, false) do
     object.user_encryption_key&.encrypt_public
   end
 
-  add_to_serializer(:current_user, :encrypt_private) do
+  add_to_serializer(:current_user, :include_encrypt_public?) do
+    scope.can_encrypt?
+  end
+
+  add_to_serializer(:current_user, :encrypt_private, false) do
     object.user_encryption_key&.encrypt_private
   end
 
-  add_to_class(:guardian, :is_user_a_member_of_encrypted_conversation?) do |topic|
-    if SiteSetting.encrypt_enabled? && topic && topic.is_encrypted?
-      authenticated? && topic.all_allowed_users.where(id: @user.id).exists?
-    else
-      true
-    end
+  add_to_serializer(:current_user, :include_encrypt_private?) do
+    scope.can_encrypt?
   end
 
-  add_to_class(:guardian, :can_encrypt_post?) do |post|
-    SiteSetting.encrypt_enabled? && post.topic.is_encrypted? && post.user == @user
+  add_to_serializer(:current_user, :can_encrypt, false) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_can_encrypt?) do
+    scope.can_encrypt?
+  end
+
+  add_to_serializer(:user, :can_encrypt, false) do
+    true
+  end
+
+  add_to_serializer(:user, :include_can_encrypt?) do
+    scope.can_encrypt?
   end
 
   #

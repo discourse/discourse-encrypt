@@ -1,4 +1,3 @@
-import EmberObject from "@ember/object";
 import { visit } from "@ember/test-helpers";
 import User from "discourse/models/user";
 import {
@@ -138,9 +137,7 @@ async function wait(statusOrWaiter, func) {
   const waiter =
     typeof statusOrWaiter === "function"
       ? statusOrWaiter
-      : () =>
-          getEncryptionStatus(User.current(), Discourse.SiteSettings) ===
-          statusOrWaiter;
+      : () => getEncryptionStatus(User.current()) === statusOrWaiter;
 
   try {
     Ember.Test.registerWaiter(waiter);
@@ -154,12 +151,8 @@ async function wait(statusOrWaiter, func) {
 }
 
 acceptance("Encrypt", function (needs) {
-  needs.user();
-  needs.settings({
-    encrypt_enabled: true,
-    encrypt_groups: "",
-    encrypt_pms_default: true,
-  });
+  needs.user({ can_encrypt: true });
+  needs.settings({ encrypt_pms_default: true });
 
   needs.hooks.beforeEach(() => {
     sinon.stub(EncryptLibDiscourse, "reload");
@@ -867,7 +860,7 @@ acceptance("Encrypt", function (needs) {
     assert.equal(document.title, "Top Secret Title - QUnit Discourse Tests");
   });
 
-  test("encrypt settings visible only to allowed groups", async (assert) => {
+  test("encrypt settings visible only if user can encrypt", async (assert) => {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
     await visit("/u/eviltrout/preferences/security");
@@ -876,15 +869,7 @@ acceptance("Encrypt", function (needs) {
       "encrypt settings are visible"
     );
 
-    Discourse.SiteSettings.encrypt_groups = "allowed_group";
-    updateCurrentUser({
-      groups: [
-        EmberObject.create({
-          id: 1,
-          name: "not_allowed_group",
-        }),
-      ],
-    });
+    updateCurrentUser({ can_encrypt: false });
 
     await visit("/u/eviltrout/preferences");
     await click(".nav-security a");
@@ -893,18 +878,7 @@ acceptance("Encrypt", function (needs) {
       "encrypt settings are not visible"
     );
 
-    updateCurrentUser({
-      groups: [
-        EmberObject.create({
-          id: 1,
-          name: "not_allowed_group",
-        }),
-        EmberObject.create({
-          id: 2,
-          name: "allowed_group",
-        }),
-      ],
-    });
+    updateCurrentUser({ can_encrypt: true });
 
     await visit("/u/eviltrout/preferences");
     await click(".nav-security a");
@@ -924,6 +898,7 @@ acceptance("Encrypt", function (needs) {
       );
       json.user.id += 1;
       json.user.can_edit = true;
+      json.user.can_encrypt = true;
       json.user.encrypt_public = "encrypted public identity";
       return [200, { "Content-Type": "application/json" }, json];
     });
