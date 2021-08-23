@@ -201,7 +201,9 @@ function resolveShortUrlElement($el) {
   }
 }
 
-function postProcessPost(siteSettings, topicId, $post) {
+function postProcessPost(siteSettings, topicId, post) {
+  const $post = $(post);
+
   // Paint mentions
   const unseenMentions = linkSeenMentions($post, siteSettings);
   if (unseenMentions.length > 0) {
@@ -227,26 +229,27 @@ function postProcessPost(siteSettings, topicId, $post) {
   }
 
   // Resolve short URLs
-  $post.find("img[data-orig-src], a[data-orig-href]").each((_, el) => {
-    const $el = $(el);
-    const url = $el.data("orig-src") || $el.data("orig-href");
+  post
+    .querySelectorAll("img[data-orig-src], a[data-orig-href]")
+    .forEach((el) => {
+      const url = el.dataset.origSrc || el.dataset.origHref;
 
-    if (lookupCachedUploadUrl(url).url) {
-      resolveShortUrlElement($el);
-    } else {
-      if (!shortUrlsQueue) {
-        shortUrlsQueue = new DebouncedQueue(500, (items) =>
-          lookupUncachedUploadUrls(items, ajax)
-        );
+      if (lookupCachedUploadUrl(url).url) {
+        resolveShortUrlElement($(el));
+      } else {
+        if (!shortUrlsQueue) {
+          shortUrlsQueue = new DebouncedQueue(500, (items) =>
+            lookupUncachedUploadUrls(items, ajax)
+          );
+        }
+
+        shortUrlsQueue.push(url).then(() => resolveShortUrlElement($(el)));
       }
-
-      shortUrlsQueue.push(url).then(() => resolveShortUrlElement($el));
-    }
-  });
+    });
 
   // Load Oneboxes
   loadOneboxes(
-    $post[0],
+    post,
     ajax,
     topicId,
     null, // categoryId
@@ -456,12 +459,10 @@ export default {
         } else if (state.encryptState === "decrypted") {
           attrs.cooked = state.plaintext;
           next(() => {
-            let $post = $(`article[data-post-id='${attrs.id}']`);
-            if ($post.length === 0) {
-              $post = $(`#post_${attrs.post_number}.small-action`);
-            }
-
-            postProcessPost(this.siteSettings, topicId, $post);
+            const post =
+              document.querySelector(`article[data-post-id='${attrs.id}']`) ||
+              document.querySelector(`#post_${attrs.post_number}.small-action`);
+            postProcessPost(this.siteSettings, topicId, post);
           });
         } else if (state.encryptState === "error") {
           attrs.cooked =
