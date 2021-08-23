@@ -150,7 +150,8 @@ function resolveShortUrlElement($el) {
       return;
     }
 
-    $el.on("click", () => {
+    $el.off("click.discourse-encrypt");
+    $el.on("click.discourse-encrypt", () => {
       downloadEncryptedFile(url, keyPromise, { type: $el.data("type") }).then(
         (file) => {
           const a = document.createElement("a");
