@@ -7,7 +7,6 @@ import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   activateEncrypt,
-  canEnableEncrypt,
   enableEncrypt,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
@@ -20,7 +19,7 @@ import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {
-    const { currentUser, siteSettings } = component;
+    const { currentUser } = component;
     const isCurrentUser = args.model.id === currentUser.id;
 
     component.setProperties({
@@ -31,13 +30,13 @@ export default {
       /** Whether current user is the same as model user. */
       isCurrentUser,
       /** Whether plugin is enabled for current user. */
-      canEnableEncrypt: canEnableEncrypt(args.model, siteSettings),
+      canEnableEncrypt: args.model.can_encrypt,
       /** Whether the encryption is enabled or not. */
       isEncryptEnabled: !!args.model.encrypt_public,
     });
 
     if (isCurrentUser) {
-      const status = getEncryptionStatus(args.model, siteSettings);
+      const status = getEncryptionStatus(args.model);
       component.setProperties({
         /** Value of passphrase input.
          *  It should stay in memory for as little time as possible.
@@ -58,7 +57,7 @@ export default {
         isEncryptActive: status === ENCRYPT_ACTIVE,
         /** Listens for encryption status updates. */
         listener() {
-          const newStatus = getEncryptionStatus(args.model, siteSettings);
+          const newStatus = getEncryptionStatus(args.model);
           component.setProperties({
             isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
             isEncryptActive: newStatus === ENCRYPT_ACTIVE,

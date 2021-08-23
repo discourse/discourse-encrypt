@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe SiteSettingExtensions do
+describe DiscourseEncrypt::SiteSettingExtensions do
   let!(:default_extensions) { SiteSetting.authorized_extensions.split("|").reject { |x| x == "encrypted" } }
 
   it "adds 'encrypted' extensions to authorized_extensions" do

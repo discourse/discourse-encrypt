@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UserNotificationsExtensions
+module DiscourseEncrypt::UserNotificationsExtensions
   def notification_email(user, opts)
     if opts[:post] && opts[:post].is_encrypted?
       opts[:allow_reply_by_email] = false

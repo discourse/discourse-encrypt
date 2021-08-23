@@ -16,8 +16,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    const siteSettings = container.lookup("site-settings:main");
-    if (getEncryptionStatus(currentUser, siteSettings) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SiteSettingExtensions
+module DiscourseEncrypt::SiteSettingExtensions
   def authorized_extensions
     original_extensions = super
 

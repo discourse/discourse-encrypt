@@ -4,8 +4,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   requires_plugin DiscourseEncrypt::PLUGIN_NAME
 
   before_action :ensure_logged_in
-  before_action :ensure_encrypt_enabled
-  skip_before_action :check_xhr
+  before_action :ensure_can_encrypt
 
   # Saves a user's identity in their custom fields.
   #
@@ -236,12 +235,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
   private
 
-  def ensure_encrypt_enabled
-    groups = current_user.groups.pluck(:name).map(&:downcase)
-    encrypt_groups = SiteSetting.encrypt_groups.split('|').map(&:downcase)
-
-    if !SiteSetting.encrypt_groups.empty? && (groups & encrypt_groups).empty?
-      raise Discourse::InvalidAccess
-    end
+  def ensure_can_encrypt
+    current_user.guardian.ensure_can_encrypt!
   end
 end

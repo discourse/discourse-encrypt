@@ -9,7 +9,7 @@ describe DiscourseEncrypt::EncryptController do
 
   context '#update_keys' do
     it 'does not work when not logged in' do
-      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
+      put '/encrypt/keys.json', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(403)
     end
 
@@ -18,19 +18,19 @@ describe DiscourseEncrypt::EncryptController do
       SiteSetting.encrypt_groups = 'gRoUp'
       sign_in(user3)
 
-      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
+      put '/encrypt/keys.json', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(403)
 
       group.add(user3)
 
-      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
+      put '/encrypt/keys.json', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(200)
     end
 
     it 'saves user keys' do
       sign_in(user3)
 
-      put '/encrypt/keys', params: { public: '0$publicKey', private: '0$privateKey' }
+      put '/encrypt/keys.json', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(200)
       expect(user3.user_encryption_key.encrypt_public).to eq('0$publicKey')
       expect(user3.user_encryption_key.encrypt_private).to eq('0$privateKey')
@@ -41,7 +41,7 @@ describe DiscourseEncrypt::EncryptController do
 
       sign_in(user)
 
-      put '/encrypt/keys', params: { public: old_public_key, private: '0$newPrivateKey' }
+      put '/encrypt/keys.json', params: { public: old_public_key, private: '0$newPrivateKey' }
       expect(response.status).to eq(200)
       user.reload
       expect(user.user_encryption_key.encrypt_public).to eq(old_public_key)
@@ -53,7 +53,7 @@ describe DiscourseEncrypt::EncryptController do
       old_private_key = user.user_encryption_key.encrypt_private
       sign_in(user)
 
-      put '/encrypt/keys', params: { public: '0$wrongPublicKey', private: '0$newPrivateKey' }
+      put '/encrypt/keys.json', params: { public: '0$wrongPublicKey', private: '0$newPrivateKey' }
       expect(response.status).to eq(409)
       expect(user.user_encryption_key.encrypt_public).to eq(old_public_key)
       expect(user.user_encryption_key.encrypt_private).to eq(old_private_key)
@@ -62,14 +62,14 @@ describe DiscourseEncrypt::EncryptController do
 
   context '#show_user' do
     it 'does not work when not logged in' do
-      get '/encrypt/user', params: { usernames: [ user.username, user2.username, user3.username ] }
-      expect(response.status).to eq(404)
+      get '/encrypt/user.json', params: { usernames: [ user.username, user2.username, user3.username ] }
+      expect(response.status).to eq(403)
     end
 
     it 'gets the right user keys' do
       sign_in(user)
 
-      get '/encrypt/user', params: { usernames: [ user.username, user2.username, user3.username ] }
+      get '/encrypt/user.json', params: { usernames: [ user.username, user2.username, user3.username ] }
       expect(response.status).to eq(200)
       json = ::JSON.parse(response.body)
       expect(json.size).to eq(3)
@@ -92,7 +92,7 @@ describe DiscourseEncrypt::EncryptController do
     end
 
     it 'resets everything' do
-      expect { post '/encrypt/reset', params: { user_id: user.id, everything: true } }
+      expect { post '/encrypt/reset.json', params: { user_id: user.id, everything: true } }
         .to change { TopicAllowedUser.count }.by(-1)
         .and change { EncryptedTopicsUser.count }.by(-1)
         .and change { UserEncryptionKey.count }.by(-1)
@@ -101,7 +101,7 @@ describe DiscourseEncrypt::EncryptController do
     end
 
     it 'resets only keys' do
-      expect { post '/encrypt/reset', params: { user_id: user.id } }
+      expect { post '/encrypt/reset.json', params: { user_id: user.id } }
         .to change { TopicAllowedUser.count }.by(0)
         .and change { EncryptedTopicsUser.count }.by(0)
         .and change { UserEncryptionKey.count }.by(-1)
@@ -119,13 +119,13 @@ describe DiscourseEncrypt::EncryptController do
 
     it 'is not raising error when user cannot edit because min trust level' do
       sign_in(post.user)
-      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      put '/encrypt/post.json', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
       expect(response.status).to eq(200)
     end
 
     it 'does not work if user is not author of post' do
       sign_in(user)
-      put '/encrypt/post', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
+      put '/encrypt/post.json', params: { post_id: post.id, encrypted_raw: 'some encrypted raw' }
       expect(response.status).to eq(403)
     end
   end
@@ -140,14 +140,14 @@ describe DiscourseEncrypt::EncryptController do
     end
 
     it 'does not work when not logged in' do
-      get '/encrypt/posts'
-      expect(response.status).to eq(404)
+      get '/encrypt/posts.json'
+      expect(response.status).to eq(403)
     end
 
     it 'fetches posts' do
       sign_in(user)
 
-      get '/encrypt/posts'
+      get '/encrypt/posts.json'
       expect(response.status).to eq(200)
       expect(response.parsed_body['topics'].size).to eq(1)
       expect(response.parsed_body['posts'].size).to eq(1)
@@ -157,7 +157,7 @@ describe DiscourseEncrypt::EncryptController do
       SiteSetting.use_pg_headlines_for_excerpt = true
       sign_in(user)
 
-      get '/encrypt/posts'
+      get '/encrypt/posts.json'
       expect(response.status).to eq(200)
       expect(response.parsed_body['topics'].size).to eq(1)
       expect(response.parsed_body['posts'].size).to eq(1)
@@ -172,7 +172,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'returns all topic keys' do
       sign_in(user)
 
-      get '/encrypt/rotate'
+      get '/encrypt/rotate.json'
 
       expect(response.parsed_body['keys']).to eq(nil)
     end
@@ -186,7 +186,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'updates only if public keys is present' do
       sign_in(user)
 
-      put '/encrypt/rotate', params: {
+      put '/encrypt/rotate.json', params: {
         keys: {
           topic1.id => 'first key',
           topic2.id => 'second key'
@@ -199,7 +199,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'updates only if all topic keys are present' do
       sign_in(user)
 
-      put '/encrypt/rotate', params: {
+      put '/encrypt/rotate.json', params: {
         public: 'public key'
       }
 
@@ -209,7 +209,7 @@ describe DiscourseEncrypt::EncryptController do
     it 'updates all keys' do
       sign_in(user)
 
-      put '/encrypt/rotate', params: {
+      put '/encrypt/rotate.json', params: {
         public: 'public key',
         keys: {
           topic1.id => 'first key',

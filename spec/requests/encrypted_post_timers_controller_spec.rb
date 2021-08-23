@@ -13,7 +13,7 @@ describe DiscourseEncrypt::EncryptedPostTimersController do
     post '/encrypt/encrypted_post_timers.json', params: {
       post_id: topic.posts.first.id
     }
-    expect(response.code).to eq("403")
+    expect(response.status).to eq(403)
     expect(EncryptedPostTimer.count).to eq(0)
 
     sign_in(user)
@@ -28,7 +28,7 @@ describe DiscourseEncrypt::EncryptedPostTimersController do
     delete '/encrypt/encrypted_post_timers.json', params: {
       post_id: topic.posts.first.id
     }
-    expect(response.code).to eq("403")
+    expect(response.status).to eq(403)
     expect(EncryptedPostTimer.count).to eq(1)
 
     sign_in(user)

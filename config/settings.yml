@@ -1,6 +1,5 @@
 plugins:
   encrypt_enabled:
-    client: true
     default: true
     refresh: true
   auto_enable_encrypt:
@@ -9,7 +8,6 @@ plugins:
     refresh: true
   encrypt_groups:
     default: ""
-    client: true
     type: list
     list_type: simple
   encrypt_pms_default:
