@@ -144,6 +144,19 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(403)
     end
 
+    it 'does not fetch posts user cannot read' do
+      admin = Fabricate(:admin)
+      sign_in(admin)
+
+      topic = Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: admin) ])
+      Fabricate(:post, topic: topic)
+
+      get '/encrypt/posts.json'
+      expect(response.status).to eq(200)
+      expect(response.parsed_body['topics'].size).to eq(1)
+      expect(response.parsed_body['posts'].size).to eq(1)
+    end
+
     it 'fetches posts' do
       sign_in(user)
 
