@@ -12,6 +12,7 @@ class EncryptedSearch < Search
       .where.not(encrypted_topics_data: { title: nil })
       .joins(topic: :encrypted_topics_users)
       .where(encrypted_topics_users: { user_id: @guardian.user&.id })
+      .where(post_number: 1)
       .where(post_type: Topic.visible_post_types(@guardian.user))
       .where('post_search_data.private_message')
       .limit(limit)
