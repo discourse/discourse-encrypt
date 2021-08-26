@@ -40,6 +40,7 @@ function getOrFetchCache(session) {
       const promises = [];
 
       result.posts.forEach((post) => {
+        post.topic_title_headline = null;
         addCacheItem(session, "posts", post);
       });
 
