@@ -150,6 +150,7 @@ describe DiscourseEncrypt::EncryptController do
 
       topic = Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: admin) ])
       Fabricate(:post, topic: topic)
+      Fabricate(:post, topic: topic)
 
       get '/encrypt/posts.json'
       expect(response.status).to eq(200)
