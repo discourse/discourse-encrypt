@@ -120,6 +120,7 @@ after_initialize do
 
   add_to_class(:guardian, :can_encrypt?) do
     return false if !SiteSetting.encrypt_enabled?
+    return false if !authenticated?
     return true if SiteSetting.encrypt_groups.empty?
 
     encrypt_groups = SiteSetting.encrypt_groups.split('|').map(&:downcase)
