@@ -9,6 +9,8 @@ export default {
   initialize() {
     withPluginApi("0.8.32", (api) => {
       api.modifyClass("controller:topic", {
+        pluginId: "discourse-encrypt",
+
         permanentDeleteConfirmation(callback) {
           bootbox.confirm(
             I18n.t("encrypt.post.delete.confirm"),
