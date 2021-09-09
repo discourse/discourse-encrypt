@@ -1,7 +1,7 @@
-import { BasePlugin } from "@uppy/core";
 import { Promise } from "rsvp";
 import { hasTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
+import { UploadPreProcessorPlugin } from "discourse/lib/uppy-plugin-base";
 
 import {
   generateUploadKey,
@@ -9,22 +9,19 @@ import {
   readFile,
 } from "discourse/plugins/discourse-encrypt/lib/uploads";
 
-export default class UppyUploadEncrypt extends BasePlugin {
+export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
+  static pluginId = "uppy-upload-encrypt";
+
   constructor(uppy, opts) {
     super(uppy, opts);
-    this.id = opts.id || "uppy-upload-encrypt";
-
-    this.type = "preprocessor";
-    this.pluginClass = this.constructor.name;
-
     this.composerModel = opts.composerModel;
     this.storeEncryptedUpload = opts.storeEncryptedUpload;
     this.siteSettings = opts.siteSettings;
   }
 
   async _encryptFile(fileId) {
-    let file = this.uppy.getFile(fileId);
-    this.uppy.emit("preprocess-progress", this.pluginClass, file);
+    let file = this._getFile(fileId);
+    this._emitProgress(file);
 
     const key = await generateUploadKey();
     let exportedKey = await window.crypto.subtle.exportKey("raw", key);
@@ -45,7 +42,7 @@ export default class UppyUploadEncrypt extends BasePlugin {
       type: "application/x-binary",
     });
 
-    this.uppy.setFileState(fileId, {
+    this._setFileState(fileId, {
       data: blob,
       size: blob.size,
       name: `${file.name}.encrypted`,
@@ -57,7 +54,7 @@ export default class UppyUploadEncrypt extends BasePlugin {
       type: file.type,
       filesize: blob.size,
     });
-    this.uppy.emit("preprocess-complete", this.pluginClass, file);
+    this._emitComplete(file);
   }
 
   async _encryptFiles(fileIds) {
@@ -78,10 +75,10 @@ export default class UppyUploadEncrypt extends BasePlugin {
   }
 
   install() {
-    this.uppy.addPreProcessor(this._encryptFiles.bind(this));
+    this._install(this._encryptFiles.bind(this));
   }
 
   uninstall() {
-    this.uppy.removePreProcessor(this._encryptFiles.bind(this));
+    this._uninstall(this._encryptFiles.bind(this));
   }
 }
