@@ -65,11 +65,11 @@ describe EncryptedPostCreator do
       post = creator.create
 
       expect(creator.errors.count).to eq(0)
-      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_topic_title'))
+      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_title'))
       expect(creator.opts[:raw]).not_to eq('Hello world!')
 
       expect(post.topic.is_encrypted?).to eq(true)
-      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_topic_title'))
+      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_title'))
       expect(post.topic.encrypted_topics_data.title).not_to eq(nil)
       expect(post.is_encrypted?).to eq(true)
       expect(post.raw).not_to eq('Hello world!')
