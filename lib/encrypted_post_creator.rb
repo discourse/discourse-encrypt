@@ -12,7 +12,9 @@ class EncryptedPostCreator < PostCreator
       # Encrypt title and post contents
       @opts[:raw] = EncryptedPostCreator.encrypt(@opts[:raw], topic_key)
       if title = @opts[:title]
-        @opts[:title] = I18n.t('js.encrypt.encrypted_topic_title')
+        @opts[:title] = I18n.with_locale(SiteSetting.default_locale) do
+          I18n.t('js.encrypt.encrypted_title')
+        end
       end
 
       ret = super

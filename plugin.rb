@@ -334,25 +334,35 @@ after_initialize do
         result.errors.add(:base, I18n.t('encrypt.no_encrypt_keys'))
         next result
       end
+
+      manager.args[:title] = I18n.with_locale(SiteSetting.default_locale) do
+        I18n.t('js.encrypt.encrypted_title')
+      end
     end
 
     manager.args[:raw] = manager.args[:encrypted_raw]
 
     result = manager.perform_create_post
-    if result.success? && encrypted_keys = manager.args[:encrypted_keys]
-      topic_id = result.post.topic_id
-      keys = JSON.parse(encrypted_keys).map { |u, k| [u.downcase, k] }.to_h
-      user_ids = User.where(username_lower: keys.keys).pluck(:username_lower, :id).to_h
-      keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_ids[u], key: k) }
-    end
+    if result.success?
+      if encrypted_keys = manager.args[:encrypted_keys]
+        topic_id = result.post.topic_id
+        keys = JSON.parse(encrypted_keys).map { |u, k| [u.downcase, k] }.to_h
+        user_ids = User.where(username_lower: keys.keys).pluck(:username_lower, :id).to_h
+        keys.each { |u, k| EncryptedTopicsUser.create!(topic_id: topic_id, user_id: user_ids[u], key: k) }
+      end
 
-    if result.success? && encrypted_title = manager.args[:encrypted_title]
-      encrypt_topic_title = EncryptedTopicsData.find_or_initialize_by(topic_id: result.post.topic_id)
-      encrypt_topic_title.update!(title: encrypted_title)
-    end
+      if encrypted_title = manager.args[:encrypted_title]
+        EncryptedTopicsData
+          .find_or_initialize_by(topic_id: result.post.topic_id)
+          .update!(title: encrypted_title)
+      end
 
-    if result.success? && manager.args[:delete_after_minutes].present?
-      EncryptedPostTimer.create!(post: result.post, delete_at: result.post.created_at + manager.args[:delete_after_minutes].to_i.minutes)
+      if manager.args[:delete_after_minutes].present?
+        EncryptedPostTimer.create!(
+          post: result.post,
+          delete_at: result.post.created_at + manager.args[:delete_after_minutes].to_i.minutes
+        )
+      end
     end
 
     result

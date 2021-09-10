@@ -15,7 +15,7 @@ describe PostsController do
     it 'works' do
       post '/posts.json', params: {
         raw: I18n.t('js.encrypt.encrypted_post'),
-        title: I18n.t('js.encrypt.encrypted_topic_title'),
+        title: I18n.t('js.encrypt.encrypted_title'),
         archetype: Archetype.private_message,
         target_recipients: user.username,
         draft_key: Draft::NEW_TOPIC,
@@ -31,7 +31,7 @@ describe PostsController do
     it 'raises an error' do
       post '/posts.json', params: {
         raw: I18n.t('js.encrypt.encrypted_post'),
-        title: I18n.t('js.encrypt.encrypted_topic_title'),
+        title: I18n.t('js.encrypt.encrypted_title'),
         archetype: Archetype.private_message,
         target_recipients: user.username,
         draft_key: Draft::NEW_TOPIC,

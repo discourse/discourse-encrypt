@@ -235,7 +235,7 @@ acceptance("Encrypt", function (needs) {
       const body = parsePostData(request.requestBody);
 
       assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
-      assert.equal(body.title, I18n.t("encrypt.encrypted_topic_title"));
+      assert.equal(body.title, I18n.t("encrypt.encrypted_title"));
       assert.equal(body.archetype, "private_message");
       assert.equal(body.target_recipients, "eviltrout");
       assert.equal(body.draft_key, "new_topic");

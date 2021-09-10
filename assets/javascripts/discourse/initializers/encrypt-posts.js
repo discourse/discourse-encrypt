@@ -64,7 +64,7 @@ export default {
     Topic.reopenClass({
       update(topic, props) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
-        let { _super } = this;
+        const { _super } = this;
         if (!hasTopicKey(topic.id)) {
           return _super.call(this, ...arguments);
         }
@@ -72,7 +72,7 @@ export default {
         return getTopicKey(topic.id)
           .then((key) => encrypt(key, { raw: props.title }))
           .then((encryptedTitle) => {
-            props.title = I18n.t("encrypt.encrypted_topic_title");
+            props.title = I18n.t("encrypt.encrypted_title");
             props.encrypted_title = encryptedTitle;
           })
           .then(() => _super.call(this, ...arguments));
@@ -82,58 +82,46 @@ export default {
     PostAdapter.reopen({
       createRecord(store, type, args) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
-        let { _super } = this;
+        const { _super } = this;
         if (!args.is_encrypted) {
           return _super.call(this, ...arguments);
         }
 
-        const { title, raw } = args;
-
-        let identityPromise = getIdentity();
-
-        let topicKeyPromise = args.topic_id
+        const identityPromise = getIdentity();
+        const topicKeyPromise = args.topic_id
           ? getTopicKey(args.topic_id)
           : generateKey();
 
-        let titlePromise = title
+        const { title, raw } = args;
+        const titlePromise = title
           ? topicKeyPromise
               .then((key) => encrypt(key, { raw: title }))
               .then((encryptedTitle) => (args.encrypted_title = encryptedTitle))
-              .finally(() => {
-                args.title = I18n.t("encrypt.encrypted_topic_title");
-              })
+              .finally(() => (args.title = I18n.t("encrypt.encrypted_title")))
           : Promise.resolve();
-
-        let replyPromise = raw
+        const replyPromise = raw
           ? topicKeyPromise
               .then((key) => encrypt(key, { raw }, { includeUploads: true }))
               .then((encryptedRaw) => (args.encrypted_raw = encryptedRaw))
-              .finally(() => {
-                args.raw = I18n.t("encrypt.encrypted_post");
-              })
+              .finally(() => (args.raw = I18n.t("encrypt.encrypted_post")))
           : Promise.resolve();
 
         let encryptedKeysPromise = Promise.resolve();
-
         let usernames = [];
         if (args.target_recipients) {
           usernames = args.target_recipients.split(",");
         }
-
         if (usernames.length > 0) {
           usernames.push(currentUser.username);
-          const identitiesPromise = getUserIdentities(usernames);
-
           encryptedKeysPromise = Promise.all([
             topicKeyPromise,
-            identitiesPromise,
+            getUserIdentities(usernames),
           ])
             .then(([key, identities]) => {
               const promises = [];
               for (let i = 0; i < usernames.length; ++i) {
-                const username = usernames[i];
                 promises.push(
-                  exportKey(key, identities[username].encryptPublic)
+                  exportKey(key, identities[usernames[i]].encryptPublic)
                 );
               }
               return Promise.all(promises);
@@ -165,9 +153,6 @@ export default {
               .then(([key, encTitle, identity]) => {
                 putTopicKey(result.payload.topic_id, key);
                 putTopicTitle(result.payload.topic_id, encTitle);
-                if (!identity.signPrivate) {
-                  return;
-                }
 
                 return encrypt(
                   key,
@@ -204,7 +189,7 @@ export default {
 
       update(store, type, id, attrs) {
         // TODO: https://github.com/emberjs/ember.js/issues/15291
-        let { _super } = this;
+        const { _super } = this;
         if (!hasTopicKey(attrs.topic_id)) {
           return _super.call(this, ...arguments);
         }

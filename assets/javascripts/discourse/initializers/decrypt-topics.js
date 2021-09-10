@@ -194,7 +194,7 @@ export default {
       documentTitle.setTitle(
         documentTitle
           .getTitle()
-          .replace(I18n.t("encrypt.encrypted_topic_title"), topicTitle)
+          .replace(I18n.t("encrypt.encrypted_title"), topicTitle)
       );
     });
   },

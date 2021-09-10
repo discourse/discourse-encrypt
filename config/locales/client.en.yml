@@ -16,7 +16,7 @@ en:
       integrity_check_warn_updated_at: "Post metadata was updated without being signed again."
       integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}."
 
-      encrypted_topic_title: "A secret message"
+      encrypted_title: "A secret message"
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
       encrypted_post_email: "This is a secret message with end to end encryption. You must visit the topic to view it."
       encrypted_post_email_timer_annotation: "This message will be permanently deleted at %{delete_at}"

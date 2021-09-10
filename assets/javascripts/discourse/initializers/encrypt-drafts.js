@@ -118,7 +118,7 @@ export default {
         return this._super(site).then(() => {
           this.content.forEach((draft) => {
             if (draft.data.encrypted) {
-              draft.title = ":lock: " + I18n.t("encrypt.encrypted_topic_title");
+              draft.title = ":lock: " + I18n.t("encrypt.encrypted_title");
               draft.title = emojiUnescape(escapeExpression(draft.title));
               draft.excerpt = I18n.t("encrypt.encrypted_post");
             }
