@@ -127,7 +127,7 @@ export default {
             if (decrypted) {
               return `<span data-topic-id="${
                 this.attrs.topic_id
-              }">${escapeExpression(decrypted)}</span>`;
+              }">${emojiUnescape(escapeExpression(decrypted))}</span>`;
             }
           }
           return this._super(...arguments);
@@ -144,7 +144,7 @@ export default {
               topicId = parseInt(topicId[1], 10);
               const decrypted = syncGetTopicTitle(topicId);
               if (decrypted) {
-                return escapeExpression(decrypted);
+                return emojiUnescape(escapeExpression(decrypted));
               }
             }
           }
