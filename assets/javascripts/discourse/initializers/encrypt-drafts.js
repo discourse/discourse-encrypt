@@ -1,4 +1,7 @@
+import { emojiUnescape } from "discourse/lib/text";
+import { escapeExpression } from "discourse/lib/utilities";
 import Draft from "discourse/models/draft";
+import UserDraftsStream from "discourse/models/user-drafts-stream";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -11,6 +14,7 @@ import {
   generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
+import I18n from "I18n";
 import { Promise } from "rsvp";
 
 const ALLOWED_DRAFT_FIELDS = [
@@ -99,12 +103,27 @@ export default {
             ([title, reply, key]) => {
               data.title = title;
               data.reply = key + "\n" + reply;
+              data.encrypted = true;
               return _super.call(this, draftKey, sequence, data, clientId);
             }
           );
         }
 
         return _super.call(this, ...arguments);
+      },
+    });
+
+    UserDraftsStream.reopen({
+      findItems(site) {
+        return this._super(site).then(() => {
+          this.content.forEach((draft) => {
+            if (draft.data.encrypted) {
+              draft.title = ":lock: " + I18n.t("encrypt.encrypted_topic_title");
+              draft.title = emojiUnescape(escapeExpression(draft.title));
+              draft.excerpt = I18n.t("encrypt.encrypted_post");
+            }
+          });
+        });
       },
     });
   },
