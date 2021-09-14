@@ -266,7 +266,7 @@ acceptance("Encrypt", function (needs) {
 
     requests = [];
     await wait(
-      () => requests.includes("/draft.json"),
+      () => requests.includes("/draft.json") || requests.includes("/drafts.json"),
       async () => {
         await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
         await fillIn(
@@ -286,7 +286,7 @@ acceptance("Encrypt", function (needs) {
   test("new draft for public topic is not encrypted", async (assert) => {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
-    server.post("/draft.json", (request) => {
+    const requestHandler = (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
         assert.equal(data.title, `Some public message ${PLAINTEXT}`);
@@ -295,7 +295,9 @@ acceptance("Encrypt", function (needs) {
         assert.equal(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
       }
       return [200, { "Content-Type": "application/json" }, {}];
-    });
+    };
+    server.post("/draft.json", requestHandler);
+    server.post("/drafts.json", requestHandler);
 
     await visit("/");
     await click("#create-topic");
@@ -304,7 +306,8 @@ acceptance("Encrypt", function (needs) {
 
     requests = [];
     await wait(
-      () => requests.includes("/draft.json"),
+      () =>
+        requests.includes("/draft.json") || requests.includes("/drafts.json"),
       () => click(".toggler")
     );
   });
