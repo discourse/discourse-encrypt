@@ -1,9 +1,7 @@
 import { iconHTML } from "discourse-common/lib/icon-library";
-import NotificationAdapter from "discourse/adapters/notification";
 import { ajax } from "discourse/lib/ajax";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import PreloadStore from "discourse/lib/preload-store";
-import Bookmark from "discourse/models/bookmark";
-import Topic from "discourse/models/topic";
 import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
@@ -85,84 +83,94 @@ export default {
       }
     }
 
-    NotificationAdapter.reopen({
-      find() {
-        return this._super(...arguments).then((result) => {
-          result.notifications.forEach((notification) => {
-            if (notification.topic_key) {
-              putTopicKey(notification.topic_id, notification.topic_key);
-              putTopicTitle(
-                notification.topic_id,
-                notification.encrypted_title
-              );
-            }
-          });
-          return result;
-        });
-      },
-    });
+    withPluginApi("0.11.3", (api) => {
+      api.modifyClass("adapter:notification", {
+        pluginId: "discourse-encrypt",
 
-    Topic.reopenClass({
-      create(args) {
-        if (args && args.topic_key) {
-          putTopicKey(args.id, args.topic_key);
-          putTopicTitle(args.id, args.encrypted_title);
-        }
-        return this._super(...arguments);
-      },
-    });
-
-    Topic.reopen({
-      updateFromJson(json) {
-        if (json.topic_key) {
-          putTopicKey(json.id, json.topic_key);
-          putTopicTitle(json.id, json.encrypted_title);
-        }
-        return this._super(...arguments);
-      },
-    });
-
-    Bookmark.reopen({
-      loadItems(params) {
-        return this._super(...arguments).then((response) => {
-          if (!params.q) {
-            saveBookmarksResponse(session, response);
-            return response;
-          }
-
-          let cachePromise = Promise.resolve();
-          if (!session.get(CACHE_KEY)) {
-            const url = `/u/${currentUser.username}/bookmarks.json`;
-            cachePromise = ajax(url).then((resp) =>
-              saveBookmarksResponse(session, resp)
-            );
-          }
-
-          return cachePromise.then(() => {
-            const bookmarkIds = new Set();
-            response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
-              bookmarkIds.add(bookmark.id);
-            });
-
-            const cache = session.get(CACHE_KEY);
-            cache.forEach((bookmark) => {
-              if (
-                bookmark.title.toLowerCase().includes(params.q.toLowerCase())
-              ) {
-                if (!response?.user_bookmark_list?.bookmarks) {
-                  response = { user_bookmark_list: { bookmarks: [] } };
-                }
-
-                if (!bookmarkIds.has(bookmark.id)) {
-                  bookmarkIds.add(bookmark.id);
-                  response.user_bookmark_list.bookmarks.push(bookmark);
-                }
+        find() {
+          return this._super(...arguments).then((result) => {
+            result.notifications.forEach((notification) => {
+              if (notification.topic_key) {
+                putTopicKey(notification.topic_id, notification.topic_key);
+                putTopicTitle(
+                  notification.topic_id,
+                  notification.encrypted_title
+                );
               }
             });
-            return response;
+            return result;
           });
-        });
-      },
+        },
+      });
+
+      api.modifyClassStatic("model:topic", {
+        pluginId: "discourse-encrypt",
+
+        create(args) {
+          if (args && args.topic_key) {
+            putTopicKey(args.id, args.topic_key);
+            putTopicTitle(args.id, args.encrypted_title);
+          }
+          return this._super(...arguments);
+        },
+      });
+
+      api.modifyClass("model:topic", {
+        pluginId: "discourse-encrypt",
+
+        updateFromJson(json) {
+          if (json.topic_key) {
+            putTopicKey(json.id, json.topic_key);
+            putTopicTitle(json.id, json.encrypted_title);
+          }
+          return this._super(...arguments);
+        },
+      });
+
+      api.modifyClass("model:bookmark", {
+        pluginId: "discourse-encrypt",
+
+        loadItems(params) {
+          return this._super(...arguments).then((response) => {
+            if (!params.q) {
+              saveBookmarksResponse(session, response);
+              return response;
+            }
+
+            let cachePromise = Promise.resolve();
+            if (!session.get(CACHE_KEY)) {
+              const url = `/u/${currentUser.username}/bookmarks.json`;
+              cachePromise = ajax(url).then((resp) =>
+                saveBookmarksResponse(session, resp)
+              );
+            }
+
+            return cachePromise.then(() => {
+              const bookmarkIds = new Set();
+              response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
+                bookmarkIds.add(bookmark.id);
+              });
+
+              const cache = session.get(CACHE_KEY);
+              cache.forEach((bookmark) => {
+                if (
+                  bookmark.title.toLowerCase().includes(params.q.toLowerCase())
+                ) {
+                  if (!response?.user_bookmark_list?.bookmarks) {
+                    response = { user_bookmark_list: { bookmarks: [] } };
+                  }
+
+                  if (!bookmarkIds.has(bookmark.id)) {
+                    bookmarkIds.add(bookmark.id);
+                    response.user_bookmark_list.bookmarks.push(bookmark);
+                  }
+                }
+              });
+              return response;
+            });
+          });
+        },
+      });
     });
   },
 };

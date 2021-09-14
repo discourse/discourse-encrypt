@@ -1,13 +1,13 @@
-import I18n from "I18n";
-import { withPluginApi } from "discourse/lib/plugin-api";
 import { ajax } from "discourse/lib/ajax";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import Post from "discourse/models/post";
+import I18n from "I18n";
 
 export default {
   name: "hook-topic-controller",
 
   initialize() {
-    withPluginApi("0.8.32", (api) => {
+    withPluginApi("0.11.3", (api) => {
       api.modifyClass("controller:topic", {
         pluginId: "discourse-encrypt",
 
