@@ -1,4 +1,4 @@
-import I18n from "I18n";
+import getURL from "discourse-common/lib/get-url";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
@@ -7,7 +7,7 @@ import {
   getEncryptionStatus,
   reload,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import getURL from "discourse-common/lib/get-url";
+import I18n from "I18n";
 
 export default {
   name: "encrypt-status",
@@ -32,7 +32,7 @@ export default {
       (!currentUser.encrypt_private ||
         Object.keys(JSON.parse(currentUser.encrypt_private)).length === 0)
     ) {
-      withPluginApi("0.8.37", (api) => {
+      withPluginApi("0.11.3", (api) => {
         let basePath = getURL("/").replace(/\/$/, "");
         api.addGlobalNotice(
           I18n.t("encrypt.no_backup_warn", { basePath }),

@@ -1,8 +1,8 @@
-import I18n from "I18n";
 import discourseComputed, {
   observes,
   on,
 } from "discourse-common/utils/decorators";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import Composer from "discourse/models/composer";
 import {
   ENCRYPT_ACTIVE,
@@ -17,6 +17,7 @@ import {
   decrypt,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import I18n from "I18n";
 import { Promise } from "rsvp";
 
 export default {
@@ -32,131 +33,135 @@ export default {
     Composer.serializeOnCreate("is_encrypted", "isEncrypted");
     Composer.serializeOnCreate("delete_after_minutes", "deleteAfterMinutes");
 
-    // Check recipients and show encryption status in composer.
-    Composer.reopen({
-      @on("init")
-      @observes("creatingPrivateMessage", "topic")
-      updateEncryptProperties() {
-        let isEncrypted = this.isEncrypted;
+    withPluginApi("0.11.3", (api) => {
+      // Check recipients and show encryption status in composer.
+      api.modifyClass("model:composer", {
+        pluginId: "discourse-encrypt",
 
-        if (
-          this.topic &&
-          this.topic.encrypted_title &&
-          hasTopicKey(this.topic.id)
-        ) {
-          // Force encryption for existing encrypted topics.
-          isEncrypted = true;
-        } else if (this.isNew && this.creatingPrivateMessage) {
-          // `isEncryptedChanged` is set true only when the value of
-          // `isEncrypted` is changed. This is needed because during save
-          // (serialization), this method is called and `isEncrypted` is
-          // reset.
-          if (!this.isEncryptedChanged) {
-            isEncrypted = this.siteSettings.encrypt_pms_default;
+        @on("init")
+        @observes("creatingPrivateMessage", "topic")
+        updateEncryptProperties() {
+          let isEncrypted = this.isEncrypted;
+
+          if (
+            this.topic &&
+            this.topic.encrypted_title &&
+            hasTopicKey(this.topic.id)
+          ) {
+            // Force encryption for existing encrypted topics.
+            isEncrypted = true;
+          } else if (this.isNew && this.creatingPrivateMessage) {
+            // `isEncryptedChanged` is set true only when the value of
+            // `isEncrypted` is changed. This is needed because during save
+            // (serialization), this method is called and `isEncrypted` is
+            // reset.
+            if (!this.isEncryptedChanged) {
+              isEncrypted = this.siteSettings.encrypt_pms_default;
+            }
           }
-        }
 
-        this.setProperties({
-          /** @var Whether the current message is going to be encrypted. */
-          isEncrypted,
-
-          /** @var Whether current error is shown or not. In most cases, it
-           *       is equal to `isEncrypted` except when `isEncrypted` is
-           *       forcibly set to false (i.e. when an error occurs).
-           */
-          showEncryptError: isEncrypted,
-        });
-      },
-
-      @observes("targetRecipients")
-      checkEncryptRecipients() {
-        if (!this.targetRecipients) {
           this.setProperties({
-            isEncrypted: this.siteSettings.encrypt_pms_default,
-            isEncryptedChanged: true,
-            showEncryptError: true,
-            encryptErrorUser: false,
-            encryptErrorGroup: false,
+            /** @var Whether the current message is going to be encrypted. */
+            isEncrypted,
+
+            /** @var Whether current error is shown or not. In most cases, it
+             *       is equal to `isEncrypted` except when `isEncrypted` is
+             *       forcibly set to false (i.e. when an error occurs).
+             */
+            showEncryptError: isEncrypted,
           });
-          return;
-        }
+        },
 
-        const recipients = this.targetRecipients.split(",");
-        recipients.push(this.user.username);
+        @observes("targetRecipients")
+        checkEncryptRecipients() {
+          if (!this.targetRecipients) {
+            this.setProperties({
+              isEncrypted: this.siteSettings.encrypt_pms_default,
+              isEncryptedChanged: true,
+              showEncryptError: true,
+              encryptErrorUser: false,
+              encryptErrorGroup: false,
+            });
+            return;
+          }
 
-        const allGroupNames = new Set(
-          this.site.groups.map((g) => g.name.toLowerCase())
-        );
+          const recipients = this.targetRecipients.split(",");
+          recipients.push(this.user.username);
 
-        const groups = recipients.filter((r) =>
-          allGroupNames.has(r.toLowerCase())
-        );
+          const allGroupNames = new Set(
+            this.site.groups.map((g) => g.name.toLowerCase())
+          );
 
-        if (groups.length > 0) {
-          this.setProperties({
-            isEncrypted: false,
-            isEncryptedChanged: true,
-            showEncryptError: this.showEncryptError || this.isEncrypted,
-            encryptErrorGroup: true,
-          });
-        } else {
-          this.setProperties({ encryptErrorGroup: false });
-        }
+          const groups = recipients.filter((r) =>
+            allGroupNames.has(r.toLowerCase())
+          );
 
-        const usernames = recipients.filter(
-          (r) => !allGroupNames.has(r.toLowerCase())
-        );
-
-        getUserIdentities(usernames)
-          .then(() => {
-            this.setProperties({ encryptErrorUser: false });
-          })
-          .catch((username) => {
+          if (groups.length > 0) {
             this.setProperties({
               isEncrypted: false,
               isEncryptedChanged: true,
               showEncryptError: this.showEncryptError || this.isEncrypted,
-              encryptErrorUser: username,
+              encryptErrorGroup: true,
             });
-          });
-      },
+          } else {
+            this.setProperties({ encryptErrorGroup: false });
+          }
 
-      @discourseComputed("topic.encrypted_title", "topic.id")
-      encryptErrorMissingKey(encryptedTitle, topicId) {
-        return encryptedTitle && !hasTopicKey(topicId);
-      },
-
-      @discourseComputed(
-        "encryptErrorMissingKey",
-        "encryptErrorUser",
-        "encryptErrorGroup"
-      )
-      encryptError(missingKey, username, group) {
-        if (missingKey) {
-          return I18n.t("encrypt.composer.no_topic_key");
-        } else if (username) {
-          return I18n.t("encrypt.composer.user_has_no_key", { username });
-        } else if (group) {
-          return I18n.t("encrypt.composer.group_not_allowed");
-        }
-      },
-
-      beforeSave() {
-        if (!this.showEncryptError || !this.encryptError) {
-          return Promise.resolve();
-        }
-
-        return new Promise((resolve, reject) => {
-          bootbox.confirm(
-            I18n.t("encrypt.composer.confirm.message", {
-              error: this.encryptError,
-            }),
-            I18n.t("encrypt.composer.confirm.no_value"),
-            I18n.t("encrypt.composer.confirm.yes_value"),
-            (result) => (result ? resolve() : reject())
+          const usernames = recipients.filter(
+            (r) => !allGroupNames.has(r.toLowerCase())
           );
-        });
-      },
+
+          getUserIdentities(usernames)
+            .then(() => {
+              this.setProperties({ encryptErrorUser: false });
+            })
+            .catch((username) => {
+              this.setProperties({
+                isEncrypted: false,
+                isEncryptedChanged: true,
+                showEncryptError: this.showEncryptError || this.isEncrypted,
+                encryptErrorUser: username,
+              });
+            });
+        },
+
+        @discourseComputed("topic.encrypted_title", "topic.id")
+        encryptErrorMissingKey(encryptedTitle, topicId) {
+          return encryptedTitle && !hasTopicKey(topicId);
+        },
+
+        @discourseComputed(
+          "encryptErrorMissingKey",
+          "encryptErrorUser",
+          "encryptErrorGroup"
+        )
+        encryptError(missingKey, username, group) {
+          if (missingKey) {
+            return I18n.t("encrypt.composer.no_topic_key");
+          } else if (username) {
+            return I18n.t("encrypt.composer.user_has_no_key", { username });
+          } else if (group) {
+            return I18n.t("encrypt.composer.group_not_allowed");
+          }
+        },
+
+        beforeSave() {
+          if (!this.showEncryptError || !this.encryptError) {
+            return Promise.resolve();
+          }
+
+          return new Promise((resolve, reject) => {
+            bootbox.confirm(
+              I18n.t("encrypt.composer.confirm.message", {
+                error: this.encryptError,
+              }),
+              I18n.t("encrypt.composer.confirm.no_value"),
+              I18n.t("encrypt.composer.confirm.yes_value"),
+              (result) => (result ? resolve() : reject())
+            );
+          });
+        },
+      });
     });
 
     // Decode composer on reply reload. This usually occurs when a post is

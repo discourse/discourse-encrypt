@@ -92,6 +92,7 @@ export default {
 
     // Try to decrypt new titles that may appear after rendering a component.
     const self = this;
+
     Component.reopen({
       didRender() {
         scheduleOnce("afterRender", self, () => {
@@ -101,7 +102,7 @@ export default {
       },
     });
 
-    withPluginApi("0.8.31", (api) => {
+    withPluginApi("0.11.3", (api) => {
       // All quick-access panels
       api.reopenWidget("quick-access-panel", {
         setItems() {
@@ -154,7 +155,7 @@ export default {
       });
     });
 
-    withPluginApi("0.8.31", (api) => {
+    withPluginApi("0.11.3", (api) => {
       api.decorateWidget("header:after", (helper) => {
         if (
           helper.widget.state.userVisible ||

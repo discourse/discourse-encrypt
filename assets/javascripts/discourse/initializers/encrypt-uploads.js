@@ -1,5 +1,4 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import UppyUploadEncrypt from "discourse/plugins/discourse-encrypt/lib/uppy-upload-encrypt-plugin";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import {
@@ -12,6 +11,7 @@ import {
   getMetadata,
   readFile,
 } from "discourse/plugins/discourse-encrypt/lib/uploads";
+import UppyUploadEncrypt from "discourse/plugins/discourse-encrypt/lib/uppy-upload-encrypt-plugin";
 import { DEFAULT_LIST } from "pretty-text/white-lister";
 import { Promise } from "rsvp";
 
@@ -25,7 +25,7 @@ export default {
       return;
     }
 
-    withPluginApi("0.8.31", (api) => {
+    withPluginApi("0.11.3", (api) => {
       DEFAULT_LIST.push("a[data-key]");
       DEFAULT_LIST.push("a[data-type]");
       DEFAULT_LIST.push("img[data-key]");

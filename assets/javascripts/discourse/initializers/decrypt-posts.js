@@ -268,7 +268,7 @@ export default {
       return;
     }
 
-    withPluginApi("0.8.25", (api) => {
+    withPluginApi("0.11.3", (api) => {
       const verified = {};
 
       api.includePostAttributes("encrypted_raw");
