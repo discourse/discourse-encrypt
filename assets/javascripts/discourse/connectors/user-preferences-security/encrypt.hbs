@@ -1,7 +1,7 @@
 {{#if canEnableEncrypt}}
   <div class="control-group pref-title">
     <label class="control-label">{{i18n "encrypt.title"}}</label>
-    {{#if isIE11}}
+    {{#if capabilities.isIE11}}
       <div class="alert alert-error">
         <p>{{i18n "encrypt.preferences.ie11"}}</p>
       </div>
