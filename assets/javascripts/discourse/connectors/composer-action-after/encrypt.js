@@ -9,19 +9,12 @@ import I18n from "I18n";
 export default {
   setupComponent(args, component) {
     const { currentUser } = component;
-    const status = getEncryptionStatus(currentUser);
 
     component.setProperties({
-      isEncryptEnabled: status !== ENCRYPT_DISABLED,
-      isEncryptActive: status === ENCRYPT_ACTIVE,
+      encryptStatus: getEncryptionStatus(currentUser),
 
-      /** Listens for encryption status updates. */
       listener() {
-        const newStatus = getEncryptionStatus(currentUser);
-        component.setProperties({
-          isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-          isEncryptActive: newStatus === ENCRYPT_ACTIVE,
-        });
+        component.set("encryptStatus", getEncryptionStatus(currentUser));
       },
 
       didInsertElement() {
@@ -33,22 +26,23 @@ export default {
         this._super(...arguments);
         this.appEvents.off("encrypt:status-changed", this, this.listener);
       },
-
-      clicked() {
-        if (!this.disabled) {
-          this.model.setProperties({
-            isEncrypted: !this.model.isEncrypted,
-            isEncryptedChanged: true,
-            showEncryptError: !this.model.isEncrypted,
-            deleteAfterMinutes: null,
-            deleteAfterMinutesLabel: null,
-          });
-        } else {
-          this.model.set("showEncryptError", !this.model.showEncryptError);
-        }
-      },
     });
 
+    defineProperty(
+      component,
+      "isEncryptEnabled",
+      computed("encryptStatus", () => this.encryptStatus !== ENCRYPT_DISABLED)
+    );
+
+    defineProperty(
+      component,
+      "isEncryptActive",
+      computed("encryptStatus", () => this.encryptStatus === ENCRYPT_ACTIVE)
+    );
+
+    // Whether the encrypt controls should be displayed or not
+    //
+    // These are displayed only for new topics or already encrypted topics.
     defineProperty(
       component,
       "showEncryptControls",
@@ -118,6 +112,20 @@ export default {
   },
 
   actions: {
+    clicked() {
+      if (!this.disabled) {
+        this.model.setProperties({
+          isEncrypted: !this.model.isEncrypted,
+          isEncryptedChanged: true,
+          showEncryptError: !this.model.isEncrypted,
+          deleteAfterMinutes: null,
+          deleteAfterMinutesLabel: null,
+        });
+      } else {
+        this.model.set("showEncryptError", !this.model.showEncryptError);
+      }
+    },
+
     timerClicked(actionId, { name }) {
       if (actionId) {
         this.model.setProperties({

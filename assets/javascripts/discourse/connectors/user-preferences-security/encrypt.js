@@ -1,3 +1,4 @@
+import { computed, defineProperty } from "@ember/object";
 import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
@@ -19,59 +20,77 @@ import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {
-    const { currentUser } = component;
-    const isCurrentUser = args.model.id === currentUser.id;
+    component.set("isInsecureContext", !window.isSecureContext);
 
-    component.setProperties({
-      /** crypto.subtle is only available in secure contexts. */
-      isInsecureContext: !window.isSecureContext,
-      /** Not all algorithms are available in IE11. */
-      isIE11: this.capabilities.isIE11,
-      /** Whether current user is the same as model user. */
-      isCurrentUser,
-      /** Whether plugin is enabled for current user. */
-      canEnableEncrypt: args.model.can_encrypt,
-      /** Whether the encryption is enabled or not. */
-      isEncryptEnabled: !!args.model.encrypt_public,
-    });
+    // Whether plugin is enabled for current user
+    defineProperty(
+      component,
+      "canEnableEncrypt",
+      computed("model.can_encrypt", () => this.model.can_encrypt)
+    );
 
-    if (isCurrentUser) {
-      const status = getEncryptionStatus(args.model);
+    // Only current user can enable encryption for themselves
+    defineProperty(
+      component,
+      "isCurrentUser",
+      computed(
+        "currentUser.id",
+        "model.id",
+        () => this.currentUser.id === this.model.id
+      )
+    );
+
+    if (component.isCurrentUser) {
       component.setProperties({
-        /** Value of passphrase input.
-         *  It should stay in memory for as little time as possible.
-         *  Clear it often.
-         */
+        encryptStatus: getEncryptionStatus(args.model),
+
+        /** Value of passphrase input. */
         passphrase: "",
+
         /** Whether it is an import operation. */
         importIdentity: false,
+
         /** Key to be imported .*/
         identity: "",
         identityPlaceholder: getPackedPlaceholder(),
-        /** Whether any operation (AJAX request, key generation, etc.) is
-         *  in progress. */
+
+        /** Whether any operation (AJAX request, key generation, etc) is
+         *  in progress.
+         */
         inProgress: false,
-        /** Whether the encryption is enabled or not. */
-        isEncryptEnabled: status !== ENCRYPT_DISABLED,
-        /** Whether the encryption is active on this device. */
-        isEncryptActive: status === ENCRYPT_ACTIVE,
-        /** Listens for encryption status updates. */
+
         listener() {
-          const newStatus = getEncryptionStatus(args.model);
-          component.setProperties({
-            isEncryptEnabled: newStatus !== ENCRYPT_DISABLED,
-            isEncryptActive: newStatus === ENCRYPT_ACTIVE,
-          });
+          component.set("encryptStatus", getEncryptionStatus(args.model));
         },
+
         didInsertElement() {
           this._super(...arguments);
           this.appEvents.on("encrypt:status-changed", this, this.listener);
         },
+
         willDestroyElement() {
           this._super(...arguments);
           this.appEvents.off("encrypt:status-changed", this, this.listener);
         },
       });
+
+      defineProperty(
+        component,
+        "isEncryptEnabled",
+        computed("encryptStatus", () => this.encryptStatus !== ENCRYPT_DISABLED)
+      );
+
+      defineProperty(
+        component,
+        "isEncryptActive",
+        computed("encryptStatus", () => this.encryptStatus === ENCRYPT_ACTIVE)
+      );
+    } else {
+      defineProperty(
+        component,
+        "isEncryptEnabled",
+        computed("model.encrypt_public", () => !!this.model.encrypt_public)
+      );
     }
   },
 
