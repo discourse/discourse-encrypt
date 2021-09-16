@@ -91,6 +91,19 @@ after_initialize do
     end
   end
 
+  TopicList.on_preload do |topics, topic_list|
+    if SiteSetting.encrypt_enabled? && topics.size > 0 && topic_list.current_user
+      topic_ids = topics.map(&:id)
+      encrypted_topics_data = EncryptedTopicsData.where(topic_id: topic_ids).index_by(&:topic_id)
+      encrypted_topics_users = EncryptedTopicsUser.where(user_id: topic_list.current_user.id, topic_id: topic_ids).index_by(&:topic_id)
+
+      topics.each do |topic|
+        topic.association(:encrypted_topics_data).target = encrypted_topics_data[topic.id]
+        topic.association(:encrypted_topics_users).target = [encrypted_topics_users[topic.id]].compact
+      end
+    end
+  end
+
   BookmarkQuery.on_preload do |bookmarks, query|
     if SiteSetting.encrypt_enabled? && bookmarks.size > 0
       user_id = bookmarks.first.user_id
