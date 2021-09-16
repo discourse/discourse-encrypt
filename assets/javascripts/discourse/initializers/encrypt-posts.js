@@ -62,7 +62,7 @@ export default {
 
     withPluginApi("0.11.3", (api) => {
       api.modifyClassStatic("model:topic", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-posts",
 
         update(topic, props) {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
@@ -82,7 +82,7 @@ export default {
       });
 
       api.modifyClass("adapter:post", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-posts",
 
         createRecord(store, type, args) {
           // TODO: https://github.com/emberjs/ember.js/issues/15291

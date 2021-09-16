@@ -55,7 +55,7 @@ export default {
 
     withPluginApi("0.11.3", (api) => {
       api.modifyClassStatic("model:draft", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-drafts",
 
         save(draftKey, sequence, data, clientId) {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
@@ -118,7 +118,7 @@ export default {
       });
 
       api.modifyClass("model:user-drafts-stream", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-drafts",
 
         findItems(site) {
           return this._super(site).then(() => {

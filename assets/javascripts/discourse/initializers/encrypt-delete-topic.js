@@ -4,12 +4,12 @@ import Post from "discourse/models/post";
 import I18n from "I18n";
 
 export default {
-  name: "hook-topic-controller",
+  name: "encrypt-delete-topic",
 
   initialize() {
     withPluginApi("0.11.3", (api) => {
       api.modifyClass("controller:topic", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-delete-topic",
 
         permanentDeleteConfirmation(callback) {
           bootbox.confirm(

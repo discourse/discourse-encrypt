@@ -36,7 +36,7 @@ export default {
     withPluginApi("0.11.3", (api) => {
       // Check recipients and show encryption status in composer.
       api.modifyClass("model:composer", {
-        pluginId: "discourse-encrypt",
+        pluginId: "encrypt-composer",
 
         @on("init")
         @observes("creatingPrivateMessage", "topic")

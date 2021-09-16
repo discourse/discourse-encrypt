@@ -85,7 +85,7 @@ export default {
 
     withPluginApi("0.11.3", (api) => {
       api.modifyClass("adapter:notification", {
-        pluginId: "discourse-encrypt",
+        pluginId: "fetch-encrypt-keys",
 
         find() {
           return this._super(...arguments).then((result) => {
@@ -104,7 +104,7 @@ export default {
       });
 
       api.modifyClassStatic("model:topic", {
-        pluginId: "discourse-encrypt",
+        pluginId: "fetch-encrypt-keys",
 
         create(args) {
           if (args && args.topic_key) {
@@ -116,7 +116,7 @@ export default {
       });
 
       api.modifyClass("model:topic", {
-        pluginId: "discourse-encrypt",
+        pluginId: "fetch-encrypt-keys",
 
         updateFromJson(json) {
           if (json.topic_key) {
@@ -128,7 +128,7 @@ export default {
       });
 
       api.modifyClass("model:bookmark", {
-        pluginId: "discourse-encrypt",
+        pluginId: "fetch-encrypt-keys",
 
         loadItems(params) {
           return this._super(...arguments).then((response) => {
