@@ -20,7 +20,7 @@ export default {
 
     withPluginApi("0.11.3", (api) => {
       api.modifyClassStatic("model:post", {
-        pluginId: "discourse-encrypt",
+        pluginId: "decrypt-post-revisions",
 
         loadRevision() {
           return this._super(...arguments).then((result) => {

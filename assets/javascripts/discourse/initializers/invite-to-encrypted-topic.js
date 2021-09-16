@@ -22,9 +22,9 @@ export default {
 
     withPluginApi("0.11.3", (api) => {
       api.modifyClass("model:topic", {
-        pluginId: "discourse-encrypt",
+        pluginId: "invite-to-encrypted-topic",
 
-        createInvite(user, group_names, custom_message) {
+        createInvite(user, group_ids, custom_message) {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
           let { _super } = this;
           if (!hasTopicKey(this.id)) {
@@ -36,9 +36,9 @@ export default {
               exportKey(key, identities[user].encryptPublic)
             )
             .then((key) => {
-              ajax(`/t/${this.get("id")}/invite`, {
+              ajax(`/t/${this.id}/invite`, {
                 type: "POST",
-                data: { user, key, group_names, custom_message },
+                data: { user, key, group_ids, custom_message },
               });
             })
             .catch((username) => {
