@@ -34,8 +34,7 @@ export default {
       const uploads = {};
 
       if (!siteSettings.enable_experimental_composer_uploader) {
-        const controller = container.lookup("controller:composer");
-        this._useStableUploadProcessor(api, siteSettings, uploads, controller);
+        this._useStableUploadProcessor(api, siteSettings, uploads);
       } else {
         this._useExperimentalComposerUploadProcessor(
           api,
@@ -63,8 +62,9 @@ export default {
     });
   },
 
-  _useStableUploadProcessor(api, siteSettings, uploads, controller) {
+  _useStableUploadProcessor(api, siteSettings, uploads) {
     api.addComposerUploadHandler([".*"], (file, editor) => {
+      const controller = api.container.lookup("controller:composer");
       const topicId = controller.get("model.topic.id");
       if (!controller.get("model.isEncrypted") && !hasTopicKey(topicId)) {
         return true;
