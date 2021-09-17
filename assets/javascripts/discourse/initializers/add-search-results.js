@@ -15,54 +15,106 @@ import { Promise } from "rsvp";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
-function addCacheItem(session, type, item) {
+function getCache(session) {
   let cache = session.get(CACHE_KEY);
   if (!cache) {
     session.set(CACHE_KEY, (cache = {}));
   }
-
-  if (!cache[type]) {
-    cache[type] = [];
-  } else if (item.id) {
-    cache[type] = cache[type].filter((i) => i.id !== item.id);
-  }
-  cache[type].push(item);
+  return cache;
 }
 
-function getOrFetchCache(session) {
-  const cache = session.get(CACHE_KEY);
-  if (cache) {
-    return Promise.resolve(cache);
+function addObjectToCache(cache, type, object) {
+  if (!cache[type]) {
+    cache[type] = [];
   }
+  cache[type][object.id] = object;
+}
 
-  return ajax("/encrypt/posts")
-    .then((result) => {
-      const promises = [];
+function addPostToCache(cache, post) {
+  post.topic_title_headline = null;
+  addObjectToCache(cache, "posts", post);
+}
 
-      result.posts.forEach((post) => {
-        post.topic_title_headline = null;
-        addCacheItem(session, "posts", post);
-      });
+function addTopicToCache(cache, topic) {
+  putTopicKey(topic.id, topic.topic_key);
+  putTopicTitle(topic.id, topic.encrypted_title);
+  return getTopicTitle(topic.id).then((title) => {
+    topic.title = title;
+    topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
+    topic.excerpt = null;
+    addObjectToCache(cache, "topics", topic);
+    return topic;
+  });
+}
 
-      result.topics.forEach((topic) => {
-        putTopicKey(topic.id, topic.topic_key);
-        putTopicTitle(topic.id, topic.encrypted_title);
+function loadCache(cache) {
+  return ajax("/encrypt/posts").then((result) => {
+    result.posts.forEach((post) => addPostToCache(cache, post));
+    const promises = result.topics.map((topic) =>
+      addTopicToCache(cache, topic).catch(() => {})
+    );
+    return Promise.all(promises);
+  });
+}
 
-        promises.push(
-          getTopicTitle(topic.id)
-            .then((title) => {
-              topic.title = title;
-              topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
-              topic.excerpt = null;
-              addCacheItem(session, "topics", topic);
-            })
-            .catch(() => {})
-        );
-      });
+function addEncryptedSearchResultsFromCache(cache, results) {
+  const terms = results.grouped_search_result.term
+    .toLowerCase()
+    .trim()
+    .split(/\s+/);
 
-      return Promise.all(promises);
-    })
-    .then(() => session.get(CACHE_KEY));
+  // Add to results encrypted topics that have matching titles
+  const existentTopicIds = new Set(results.topics.map((topic) => topic.id));
+  const topics = {};
+  Object.values(cache.topics || {}).forEach((topic) => {
+    if (existentTopicIds.has(topic.id)) {
+      return;
+    }
+
+    const matchedWordsCount = terms.filter((term) =>
+      topic.title.toLowerCase().includes(term)
+    ).length;
+    if (matchedWordsCount === 0) {
+      return;
+    }
+
+    topics[topic.id] = topic = Topic.create(topic);
+    results.topics.unshift(topic);
+
+    topic.set(
+      "searchPriority",
+      matchedWordsCount +
+        matchedWordsCount / topic.title.trim().split(/\s+/).length
+    );
+  });
+
+  // Add associated posts for each new topic
+  Object.values(cache.posts || {}).forEach((post) => {
+    if (post.post_number !== 1 || !topics[post.topic_id]) {
+      return;
+    }
+
+    post = Post.create(post);
+    post.setProperties({
+      topic: topics[post.topic_id],
+      blurb: I18n.t("encrypt.encrypted_post"),
+    });
+
+    results.posts.unshift(post);
+    results.grouped_search_result.post_ids.unshift(post.id);
+  });
+
+  // Move new encrypted results to top because they might be more relevant
+  results.posts.sort(
+    (a, b) => (b.topic.searchPriority || 0) - (a.topic.searchPriority || 0)
+  );
+
+  // Reset topic_title_headline for encrypted results
+  results.posts.map((post) => {
+    if (cache.topics[post.topic_id]) {
+      post.set("topic_title_headline", "");
+    }
+  });
 }
 
 export default {
@@ -77,60 +129,34 @@ export default {
     const session = container.lookup("session:main");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
+        const cache = getCache(session);
+        const promises = [];
+
+        // Decrypt existing topics and cache them
+        results.topics.forEach((topic) => {
+          if (topic.topic_key) {
+            promises.push(addTopicToCache(cache, topic).catch(() => {}));
+          }
+        });
+
+        // Search for more encrypted topics
         if (
-          results?.grouped_search_result?.type_filter !== "private_messages"
+          results?.grouped_search_result?.type_filter === "private_messages"
         ) {
-          return Promise.resolve(results);
+          let cachePromise = Promise.resolve();
+          if (!cache.loaded) {
+            cachePromise = loadCache(cache);
+            cache.loaded = true;
+          }
+
+          promises.push(
+            cachePromise.then(() =>
+              addEncryptedSearchResultsFromCache(cache, results)
+            )
+          );
         }
 
-        return getOrFetchCache(session).then((cache) => {
-          const topics = {};
-          if (cache.topics) {
-            const words = results.grouped_search_result.term
-              .toLowerCase()
-              .split(/\s+/);
-
-            cache.topics.forEach((topic) => {
-              const topicObj = results.topics.find((t) => topic.id === t.id);
-              if (topicObj) {
-                topicObj.setProperties(topic);
-              } else if (
-                words.some((word) => topic.title.toLowerCase().includes(word))
-              ) {
-                topic = Topic.create(topic);
-                results.topics.unshift(topic);
-                topics[topic.id] = topic;
-              }
-            });
-
-            // Reset topic_title_headline
-            const encryptedTopicIds = new Set(cache.topics.map((t) => t.id));
-            results.posts.map((post) => {
-              if (encryptedTopicIds.has(post.topic_id)) {
-                post.set("topic_title_headline", "");
-              }
-            });
-          }
-
-          if (cache.posts) {
-            cache.posts.forEach((post) => {
-              if (post.post_number !== 1 || !topics[post.topic_id]) {
-                return;
-              }
-
-              post = Post.create(post);
-              post.setProperties({
-                topic: topics[post.topic_id],
-                blurb: I18n.t("encrypt.encrypted_post"),
-              });
-
-              results.posts.unshift(post);
-              results.grouped_search_result.post_ids.unshift(post.id);
-            });
-          }
-
-          return results;
-        });
+        return Promise.all(promises).then(() => results);
       });
     });
   },
