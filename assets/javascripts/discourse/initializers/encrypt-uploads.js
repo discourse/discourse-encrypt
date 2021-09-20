@@ -73,24 +73,24 @@ export default {
       const metadataPromise = getMetadata(file, siteSettings);
       const plaintextPromise = readFile(file);
       const keyPromise = generateUploadKey();
-      const exportedKeyPromise = keyPromise.then((key) => {
-        return window.crypto.subtle
+      const exportedKeyPromise = keyPromise.then((key) =>
+        window.crypto.subtle
           .exportKey("raw", key)
-          .then((wrapped) => bufferToBase64(wrapped));
-      });
+          .then((wrapped) => bufferToBase64(wrapped))
+      );
 
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
 
       const ciphertextPromise = Promise.all([
         plaintextPromise,
         keyPromise,
-      ]).then(([plaintext, key]) => {
-        return window.crypto.subtle.encrypt(
+      ]).then(([plaintext, key]) =>
+        window.crypto.subtle.encrypt(
           { name: "AES-GCM", iv, tagLength: 128 },
           key,
           plaintext
-        );
-      });
+        )
+      );
 
       Promise.all([
         ciphertextPromise,

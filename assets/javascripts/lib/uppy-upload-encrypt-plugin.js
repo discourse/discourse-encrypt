@@ -2,7 +2,6 @@ import { hasTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { UploadPreProcessorPlugin } from "discourse/lib/uppy-plugin-base";
 import { HUGE_FILE_THRESHOLD_BYTES } from "discourse/mixins/uppy-upload";
-
 import {
   generateUploadKey,
   getMetadata,
@@ -20,7 +19,7 @@ export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
   }
 
   async _encryptFile(fileId) {
-    let file = this._getFile(fileId);
+    const file = this._getFile(fileId);
 
     if (file.size > HUGE_FILE_THRESHOLD_BYTES) {
       return this._emitError(
@@ -76,13 +75,8 @@ export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
       return this._skipAll(fileIds, true);
     }
 
-    let encryptTasks = fileIds.map((fileId) => () =>
-      this._encryptFile.call(this, fileId)
-    );
-
-    for (const task of encryptTasks) {
-      await task();
-    }
+    const encryptPromises = fileIds.map((fileId) => this._encryptFile(fileId));
+    return Promise.all(encryptPromises);
   }
 
   install() {
