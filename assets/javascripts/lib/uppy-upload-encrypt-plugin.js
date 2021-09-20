@@ -1,7 +1,7 @@
-import { Promise } from "rsvp";
 import { hasTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { bufferToBase64 } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { UploadPreProcessorPlugin } from "discourse/lib/uppy-plugin-base";
+import { HUGE_FILE_THRESHOLD_BYTES } from "discourse/mixins/uppy-upload";
 
 import {
   generateUploadKey,
@@ -21,6 +21,14 @@ export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
 
   async _encryptFile(fileId) {
     let file = this._getFile(fileId);
+
+    if (file.size > HUGE_FILE_THRESHOLD_BYTES) {
+      return this._emitError(
+        file,
+        "The provided file is too large to upload to an encrypted message."
+      );
+    }
+
     this._emitProgress(file);
 
     const key = await generateUploadKey();
@@ -62,7 +70,10 @@ export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
       !this.composerModel.isEncrypted &&
       !hasTopicKey(this.composerModel.get("topic.id"))
     ) {
-      return Promise.resolve();
+      this._consoleDebug(
+        "Composer is not being used in an encrypted context, skipping all files."
+      );
+      return this._skipAll(fileIds, true);
     }
 
     let encryptTasks = fileIds.map((fileId) => () =>
