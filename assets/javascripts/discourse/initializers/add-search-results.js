@@ -25,7 +25,7 @@ function getCache(session) {
 
 function addObjectToCache(cache, type, object) {
   if (!cache[type]) {
-    cache[type] = [];
+    cache[type] = {};
   }
   cache[type][object.id] = object;
 }

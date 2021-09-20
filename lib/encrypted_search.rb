@@ -15,6 +15,7 @@ class EncryptedSearch < Search
       .where(post_number: 1)
       .where(post_type: Topic.visible_post_types(@guardian.user))
       .where('post_search_data.private_message')
+      .order('posts.created_at DESC')
       .limit(limit)
   end
 
@@ -25,7 +26,7 @@ class EncryptedSearch < Search
 
     @search_pms = true # needed by posts_eager_loads
     posts = posts_scope(posts_eager_loads(posts_query(@opts[:limit], type_filter: @opts[:type_filter])))
-    posts.each { |post| @results.add(post) }
+    posts.each { |post| @results.posts << post }
   end
 
   def posts_scope(default_scope = Post.all)
