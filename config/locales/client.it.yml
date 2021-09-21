@@ -13,7 +13,6 @@ it:
       integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito(%{fields}mancata corrispondenza)."
       integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."
       integrity_check_warn_signed_by: "Questo messaggio è stato firmato l'ultima volta da %{actual}, non da %{expected}."
-      encrypted_topic_title: "Un messaggio segreto"
       encrypted_post: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi essere invitato a questo argomento."
       encrypted_post_email: "Questo è un messaggio segreto con codifica punto-punto. Per poterlo vedere devi visitare questo argomento."
       encrypted_icon_title: "Questo è un messaggio ha una codifica punto-punto.  "

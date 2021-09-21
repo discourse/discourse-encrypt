@@ -17,7 +17,6 @@ de:
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurden aktualisiert ohne erneut signiert zu werden."
       integrity_check_warn_signed_by: "Dieser Beitrag wurde von %{actual} signiert, nicht von %{expected}."
-      encrypted_topic_title: "Eine sichere Nachricht"
       encrypted_post: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Um sie anzuzeigen, musst du zu diesem Thema eingeladen sein."
       encrypted_post_email: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Du musst dieses Thema besuchen, um sie anzuzeigen."
       encrypted_post_email_timer_annotation: "Diese Nachricht wird dauerhaft gelöscht am %{delete_at}"

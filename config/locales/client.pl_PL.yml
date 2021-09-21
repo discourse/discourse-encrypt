@@ -13,7 +13,6 @@ pl_PL:
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
       integrity_check_warn_updated_at: "Metadane postu zostały zaktualizowane bez ponownego podpisywania."
       integrity_check_warn_signed_by: "Ten post został ostatnio podpisany przez %{actual}, a nie %{expected}."
-      encrypted_topic_title: "Tajna wiadomość"
       encrypted_post: "To jest tajna wiadomość z szyfrowaniem end-to-end. Aby ją zobaczyć, musisz zostać zaproszony do tego tematu."
       encrypted_post_email: "To jest tajna wiadomość z szyfrowaniem end-to-end. Musisz odwiedzić temat, aby go wyświetlić."
       encrypted_post_email_timer_annotation: "Ta wiadomość zostanie trwale usunięta o %{delete_at}"

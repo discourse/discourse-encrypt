@@ -13,7 +13,6 @@ fr:
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (%{fields} ne correspond pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
       integrity_check_warn_signed_by: "Ce message a été signé la dernière fois par %{actual}, et non %{expected}."
-      encrypted_topic_title: "Un message secret"
       encrypted_post: "Ceci est un message secret avec un chiffrement de bout en bout. Pour le visualiser, vous devez être invité sur ce sujet."
       encrypted_post_email: "Ceci est un message secret avec un chiffrement de bout en bout. Vous devez visité le sujet pour le voir."
       encrypted_post_email_timer_annotation: "Ce message sera définitivement supprimé le %{delete_at}"
