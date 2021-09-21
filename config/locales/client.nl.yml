@@ -13,7 +13,6 @@ nl:
       integrity_check_fail: "De integriteitscontrole voor dit bericht is mislukt (geen overeenkomst voor %{fields})."
       integrity_check_warn_updated_at: "Metagegevens van zijn bericht bijgewerkt zonder opnieuw te worden ondertekend."
       integrity_check_warn_signed_by: "Dit bericht is het laatst ondertekend door %{actual}, niet %{expected}."
-      encrypted_topic_title: "Een geheim bericht"
       encrypted_post: "Dit is een geheim bericht met end-to-endversleuteling. U moet voor dit topic zijn uitgenodigd om het te bekijken."
       encrypted_post_email: "Dit is een geheim bericht met end-to-endversleuteling. U moet het topic bezoeken om het te bekijken."
       encrypted_post_email_timer_annotation: "Dit bericht wordt op %{delete_at} definitief verwijderd"

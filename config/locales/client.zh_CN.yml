@@ -13,7 +13,6 @@ zh_CN:
       integrity_check_fail: "这个帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据更新，但没有再次签名。"
       integrity_check_warn_signed_by: "这个帖子最后被%{actual}签名，不是%{expected}。"
-      encrypted_topic_title: "一条安全私信/消息"
       encrypted_post: "这是一条端到端加密的私信/消息。你必须受到邀请才能查看这个主题。"
       encrypted_post_email: "这是一条端到端加密的私信/消息。你必须访问该主题才能查看。"
       encrypted_icon_title: "这个私信/消息是端到端加密的。"

@@ -18,7 +18,7 @@ he:
       integrity_check_fail: "בדיקת הרציפות לפוסט הזה נכשלה (חוסר התאמה של %{fields})."
       integrity_check_warn_updated_at: "נתוני העל של הפוסט עודכנו מבלי שנחתמו שוב."
       integrity_check_warn_signed_by: "פוסט זה נחתם לאחרונה על ידי %{actual}, לא על ידי %{expected}."
-      encrypted_topic_title: "הודעה סודית"
+      encrypted_title: "הודעה סודית"
       encrypted_post: "זו הודעה סודית עם הצפנה מקצה לקצה. כדי לצפות בה, עליך לקבל הזמנה לנושא הזה."
       encrypted_post_email: "זו הודעה פרטית עם הצפנה מקצה לקצה. עליך לבקר בנושא כדי לצפות בו."
       encrypted_post_email_timer_annotation: "הודעה זו תימחק לצמיתות ב־%{delete_at}"

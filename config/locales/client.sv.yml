@@ -18,7 +18,7 @@ sv:
       integrity_check_fail: "Integritetskontrollen för detta inlägg har misslyckats (%{fields} är felaktigt)."
       integrity_check_warn_updated_at: "Inläggets metadata uppdaterades utan att signering utfördes igen."
       integrity_check_warn_signed_by: "Detta inlägg signerades senast av %{actual}, inte %{expected}."
-      encrypted_topic_title: "Ett hemligt meddelande"
+      encrypted_title: "Ett hemligt meddelande"
       encrypted_post: "Detta är ett hemligt meddelande som krypterats från början till slut. För att visa det måste du vara inbjuden till detta ämne."
       encrypted_post_email: "Detta är ett hemligt meddelande som krypterats från början till slut. Du måste gå till ämnet för att visa det."
       encrypted_post_email_timer_annotation: "Detta meddelande raderas permanent efter %{delete_at}"

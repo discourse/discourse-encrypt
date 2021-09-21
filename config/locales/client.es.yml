@@ -8,7 +8,6 @@ es:
   js:
     encrypt:
       decrypting: "Descodificación"
-      encrypted_topic_title: "Un mensaje codificado"
       cannot_invite: "No puedes invitar a esta conversación"
       manage_paper_keys:
         delete: "Eliminar"
