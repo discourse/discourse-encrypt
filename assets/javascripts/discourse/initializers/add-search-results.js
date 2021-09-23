@@ -61,7 +61,8 @@ function addEncryptedSearchResultsFromCache(cache, results) {
   const terms = results.grouped_search_result.term
     .toLowerCase()
     .trim()
-    .split(/\s+/);
+    .split(/\s+/)
+    .filter((term) => !term.startsWith("@") && !term.includes(":"));
 
   // Add to results encrypted topics that have matching titles
   const existentTopicIds = new Set(results.topics.map((topic) => topic.id));
@@ -71,21 +72,10 @@ function addEncryptedSearchResultsFromCache(cache, results) {
       return;
     }
 
-    const matchedWordsCount = terms.filter((term) =>
-      topic.title.toLowerCase().includes(term)
-    ).length;
-    if (matchedWordsCount === 0) {
-      return;
+    if (terms.every((term) => topic.title.toLowerCase().includes(term))) {
+      topics[topic.id] = topic = Topic.create(topic);
+      results.topics.unshift(topic);
     }
-
-    topics[topic.id] = topic = Topic.create(topic);
-    results.topics.unshift(topic);
-
-    topic.set(
-      "searchPriority",
-      matchedWordsCount +
-        matchedWordsCount / topic.title.trim().split(/\s+/).length
-    );
   });
 
   // Add associated posts for each new topic
@@ -103,11 +93,6 @@ function addEncryptedSearchResultsFromCache(cache, results) {
     results.posts.unshift(post);
     results.grouped_search_result.post_ids.unshift(post.id);
   });
-
-  // Move new encrypted results to top because they might be more relevant
-  results.posts.sort(
-    (a, b) => (b.topic.searchPriority || 0) - (a.topic.searchPriority || 0)
-  );
 
   // Reset topic_title_headline for encrypted results
   results.posts.map((post) => {
