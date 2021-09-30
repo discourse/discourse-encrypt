@@ -166,10 +166,21 @@ export default {
         },
       });
 
+      // this can be removed in v2.8.0.beta7
       api.modifyClass("model:bookmark", {
         pluginId: "fetch-encrypt-keys",
 
         loadItems(params) {
+          return this._super(...arguments).then((response) => {
+            return decryptBookmarks(session, response, params.q, currentUser.username);
+          });
+        },
+      });
+
+      api.modifyClass("route:user-activity-bookmarks", {
+        pluginId: "fetch-encrypt-keys",
+
+        _loadBookmarks(params) {
           return this._super(...arguments).then((response) => {
             return decryptBookmarks(session, response, params.q, currentUser.username);
           });
