@@ -13,6 +13,43 @@ import { Promise } from "rsvp";
 
 const CACHE_KEY = "discourse-encrypt-bookmark-cache";
 
+function addEncryptedBookmarksFromCache(session, response, query, username) {
+  if (!query) {
+    saveBookmarksResponse(session, response);
+    return response;
+  }
+
+  let cachePromise = Promise.resolve();
+  if (!session.get(CACHE_KEY)) {
+    const url = `/u/${username}/bookmarks.json`;
+    cachePromise = ajax(url).then((resp) =>
+      saveBookmarksResponse(session, resp)
+    );
+  }
+
+  return cachePromise.then(() => {
+    const bookmarkIds = new Set();
+    response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
+      bookmarkIds.add(bookmark.id);
+    });
+
+    const cache = session.get(CACHE_KEY);
+    cache.forEach((bookmark) => {
+      if (bookmark.title.toLowerCase().includes(query.toLowerCase())) {
+        if (!response?.user_bookmark_list?.bookmarks) {
+          response = { user_bookmark_list: { bookmarks: [] } };
+        }
+
+        if (!bookmarkIds.has(bookmark.id)) {
+          bookmarkIds.add(bookmark.id);
+          response.user_bookmark_list.bookmarks.push(bookmark);
+        }
+      }
+    });
+    return response;
+  });
+}
+
 function saveBookmarksResponse(session, response) {
   if (!response?.user_bookmark_list?.bookmarks) {
     return Promise.resolve();
@@ -127,47 +164,33 @@ export default {
         },
       });
 
+      // this can be removed in v2.8.0.beta7
       api.modifyClass("model:bookmark", {
         pluginId: "fetch-encrypt-keys",
 
         loadItems(params) {
           return this._super(...arguments).then((response) => {
-            if (!params.q) {
-              saveBookmarksResponse(session, response);
-              return response;
-            }
+            return addEncryptedBookmarksFromCache(
+              session,
+              response,
+              params.q,
+              currentUser.username
+            );
+          });
+        },
+      });
 
-            let cachePromise = Promise.resolve();
-            if (!session.get(CACHE_KEY)) {
-              const url = `/u/${currentUser.username}/bookmarks.json`;
-              cachePromise = ajax(url).then((resp) =>
-                saveBookmarksResponse(session, resp)
-              );
-            }
+      api.modifyClass("route:user-activity-bookmarks", {
+        pluginId: "fetch-encrypt-keys",
 
-            return cachePromise.then(() => {
-              const bookmarkIds = new Set();
-              response?.user_bookmark_list?.bookmarks?.forEach((bookmark) => {
-                bookmarkIds.add(bookmark.id);
-              });
-
-              const cache = session.get(CACHE_KEY);
-              cache.forEach((bookmark) => {
-                if (
-                  bookmark.title.toLowerCase().includes(params.q.toLowerCase())
-                ) {
-                  if (!response?.user_bookmark_list?.bookmarks) {
-                    response = { user_bookmark_list: { bookmarks: [] } };
-                  }
-
-                  if (!bookmarkIds.has(bookmark.id)) {
-                    bookmarkIds.add(bookmark.id);
-                    response.user_bookmark_list.bookmarks.push(bookmark);
-                  }
-                }
-              });
-              return response;
-            });
+        _loadBookmarks(params) {
+          return this._super(...arguments).then((response) => {
+            return addEncryptedBookmarksFromCache(
+              session,
+              response,
+              params.q,
+              currentUser.username
+            );
           });
         },
       });
