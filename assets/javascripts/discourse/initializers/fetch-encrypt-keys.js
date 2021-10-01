@@ -35,9 +35,7 @@ function decryptBookmarks(session, response, query, username) {
 
     const cache = session.get(CACHE_KEY);
     cache.forEach((bookmark) => {
-      if (
-        bookmark.title.toLowerCase().includes(query.toLowerCase())
-      ) {
+      if (bookmark.title.toLowerCase().includes(query.toLowerCase())) {
         if (!response?.user_bookmark_list?.bookmarks) {
           response = { user_bookmark_list: { bookmarks: [] } };
         }
@@ -172,7 +170,12 @@ export default {
 
         loadItems(params) {
           return this._super(...arguments).then((response) => {
-            return decryptBookmarks(session, response, params.q, currentUser.username);
+            return decryptBookmarks(
+              session,
+              response,
+              params.q,
+              currentUser.username
+            );
           });
         },
       });
@@ -182,7 +185,12 @@ export default {
 
         _loadBookmarks(params) {
           return this._super(...arguments).then((response) => {
-            return decryptBookmarks(session, response, params.q, currentUser.username);
+            return decryptBookmarks(
+              session,
+              response,
+              params.q,
+              currentUser.username
+            );
           });
         },
       });
