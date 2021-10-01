@@ -13,7 +13,7 @@ import { Promise } from "rsvp";
 
 const CACHE_KEY = "discourse-encrypt-bookmark-cache";
 
-function decryptBookmarks(session, response, query, username) {
+function addEncryptedBookmarksFromCache(session, response, query, username) {
   if (!query) {
     saveBookmarksResponse(session, response);
     return response;
@@ -170,7 +170,7 @@ export default {
 
         loadItems(params) {
           return this._super(...arguments).then((response) => {
-            return decryptBookmarks(
+            return addEncryptedBookmarksFromCache(
               session,
               response,
               params.q,
@@ -185,7 +185,7 @@ export default {
 
         _loadBookmarks(params) {
           return this._super(...arguments).then((response) => {
-            return decryptBookmarks(
+            return addEncryptedBookmarksFromCache(
               session,
               response,
               params.q,
