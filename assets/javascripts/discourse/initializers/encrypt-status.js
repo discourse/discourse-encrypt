@@ -8,6 +8,7 @@ import {
   reload,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import I18n from "I18n";
+import { htmlSafe } from "@ember/template";
 
 export default {
   name: "encrypt-status",
@@ -34,15 +35,13 @@ export default {
     ) {
       withPluginApi("0.11.3", (api) => {
         let basePath = getURL("/").replace(/\/$/, "");
-        api.addGlobalNotice(
-          I18n.t("encrypt.no_backup_warn", { basePath }),
-          "key-backup-notice",
-          {
-            level: "warn",
-            dismissable: true,
-            dismissDuration: moment.duration(1, "day"),
-          }
-        );
+        const warning = I18n.t("encrypt.no_backup_warn", { basePath });
+
+        api.addGlobalNotice(htmlSafe(warning), "key-backup-notice", {
+          level: "warn",
+          dismissable: true,
+          dismissDuration: moment.duration(1, "day"),
+        });
       });
     }
 
