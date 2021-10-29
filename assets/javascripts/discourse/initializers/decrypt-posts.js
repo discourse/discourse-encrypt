@@ -205,7 +205,7 @@ function postProcessPost(siteSettings, topicId, post) {
   const $post = $(post);
 
   // Paint mentions
-  const unseenMentions = linkSeenMentions($post, siteSettings);
+  const unseenMentions = linkSeenMentions(post, siteSettings);
   if (unseenMentions.length > 0) {
     if (!mentionsQueues[topicId]) {
       mentionsQueues[topicId] = new DebouncedQueue(500, (items) =>
@@ -214,7 +214,7 @@ function postProcessPost(siteSettings, topicId, post) {
     }
     mentionsQueues[topicId]
       .push(...unseenMentions)
-      .then(() => linkSeenMentions($post, siteSettings));
+      .then(() => linkSeenMentions(post, siteSettings));
   }
 
   // Paint category and tag hashtags
