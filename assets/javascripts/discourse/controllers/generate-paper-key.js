@@ -23,7 +23,7 @@ export default Controller.extend(ModalFunctionality, {
           data: {
             public: exported.public,
             private: exported.private,
-            label: label,
+            label,
           },
         });
       })
