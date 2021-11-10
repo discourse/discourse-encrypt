@@ -40,8 +40,8 @@ QUnit.assert.arrayEqual = function (actual, expected) {
   if (result) {
     this.pushResult({
       result,
-      actual: actual,
-      expected: expected,
+      actual,
+      expected,
       message: "arrays match",
     });
   }
