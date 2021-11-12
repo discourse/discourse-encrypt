@@ -13,21 +13,20 @@ import {
   syncGetTopicTitle,
   waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import I18n from "I18n";
 
 /**
- * Decrypts all elements described by a selector.
+ * Decrypts elements that contain topic titles
  *
  * @param {String} containerSelector Item list (container) selector
- * @param {String} elementSelector   Encrypted element selector
- *                                   If not present, the container element is
- *                                   used
- * @param {{ addIcon: Boolean,
- *           replaceIcon: Boolean }} opts
+ * @param {String} elementSelector   Encrypted title element selector
+ *                                   If not present, the container is used
+ * @param {Boolean} addIcon          Adds "user-secret" icon before title
  */
-function decryptElements(containerSelector, elementSelector, opts) {
-  opts = opts || {};
-
+function decryptTopicTitles(
+  containerSelector,
+  elementSelector,
+  addIcon = false
+) {
   document.querySelectorAll(containerSelector).forEach((element) => {
     const titleElement = elementSelector
       ? element.querySelector(elementSelector)
@@ -44,20 +43,13 @@ function decryptElements(containerSelector, elementSelector, opts) {
     getTopicTitle(topicId)
       .then((title) => {
         title = emojiUnescape(escapeExpression(title));
-        const icon = iconHTML("user-secret", {
-          title: "encrypt.encrypted_icon_title",
-          class: "private-message-glyph",
-        });
 
-        if (opts.replaceIcon) {
-          const iconElement = element.querySelector(
-            ".private-message-glyph-wrapper"
-          );
-          if (iconElement) {
-            iconElement.innerHTML = icon;
-            titleElement.innerHTML = title;
-          }
-        } else if (opts.addIcon) {
+        if (addIcon) {
+          const icon = iconHTML("user-secret", {
+            title: "encrypt.encrypted_icon_title",
+            class: "private-message-glyph",
+          });
+
           titleElement.innerHTML = icon + " " + title;
         } else {
           titleElement.innerHTML = title;
@@ -65,10 +57,42 @@ function decryptElements(containerSelector, elementSelector, opts) {
       })
       .catch(() => {});
 
-    // Hide quick-edit button for the time being
+    // HACK: Hide quick-edit button for the time being
     const quickEditBtn = element.querySelector(".edit-topic");
     if (quickEditBtn) {
       quickEditBtn.style.display = "none";
+    }
+  });
+}
+
+/**
+ * Replaces PM icon with "user-secret" icon
+ *
+ * @param {String} containerSelector Item list (container) selector
+ * @param {String} elementSelector   Encrypted title element selector
+ *                                   If not present, the container is used
+ * @param {Boolean} iconSelector     Icon container selector
+ */
+function replaceIcons(containerSelector, elementSelector, iconSelector) {
+  document.querySelectorAll(containerSelector).forEach((element) => {
+    const titleElement = elementSelector
+      ? element.querySelector(elementSelector)
+      : element;
+    if (!titleElement) {
+      return;
+    }
+
+    const topicId = element.dataset.topicId || titleElement.dataset.topicId;
+    if (!topicId || !hasTopicTitle(topicId)) {
+      return;
+    }
+
+    const iconElement = element.querySelector(iconSelector);
+    if (iconElement) {
+      iconElement.innerHTML = iconHTML("user-secret", {
+        title: "encrypt.encrypted_icon_title",
+        class: "private-message-glyph",
+      });
     }
   });
 }
@@ -83,20 +107,19 @@ export default {
       return;
     }
 
-    // Save a reference to container to be used by `decryptDocTitle`.
+    // Save a reference to container to be used by `decryptTopicPage`
     this.container = container;
 
     const appEvents = container.lookup("service:app-events");
-    appEvents.on("encrypt:status-changed", this, this.decryptTitles);
-    appEvents.on("page:changed", this, this.decryptDocTitle);
+    appEvents.on("encrypt:status-changed", this, this.decryptTopicTitles);
+    appEvents.on("page:changed", this, this.decryptTopicPage);
 
-    // Try to decrypt new titles that may appear after rendering a component.
+    // Try to decrypt new titles that may appear after rendering a component
     const self = this;
-
     Component.reopen({
       didRender() {
         scheduleOnce("afterRender", self, () => {
-          discourseDebounce(self, self.decryptTitles, 500);
+          discourseDebounce(self, self.decryptTopicTitles, 500);
         });
         return this._super(...arguments);
       },
@@ -161,41 +184,73 @@ export default {
           helper.widget.state.userVisible ||
           helper.widget.state.searchVisible
         ) {
-          discourseDebounce(self, self.decryptTitles, 500);
+          discourseDebounce(self, self.decryptTopicTitles, 500);
         }
       });
     });
   },
 
-  decryptTitles() {
-    decryptElements("a.raw-topic-link", null, { addIcon: true });
-    decryptElements("a.topic-link", "span");
-    decryptElements("a.topic-link", null, { addIcon: true });
+  decryptTopicTitles() {
+    // Title in miscellaneous
+    decryptTopicTitles("a.raw-topic-link", null, true);
+    decryptTopicTitles("a.topic-link", "span");
+    decryptTopicTitles("a.topic-link", null, true);
 
     // Title in site header
-    decryptElements("h1.header-title", ".topic-link", { replaceIcon: true });
-
-    // Title in topic header
-    decryptElements("h1", ".fancy-title", { replaceIcon: true });
+    decryptTopicTitles("h1.header-title", ".topic-link");
 
     // Title in topic lists
-    decryptElements(".topic-list-item, .latest-topic-list-item", ".title", {
-      addIcon: true,
-    });
+    decryptTopicTitles(
+      ".topic-list-item, .latest-topic-list-item",
+      ".title",
+      true
+    );
+
+    // Replace PM icons
+    replaceIcons("h1", null, ".private-message-glyph-wrapper");
+    replaceIcons("h1", ".topic-link", ".private-message-glyph-wrapper");
+
+    // Decrypt topic controller
+    // This is necessary because sometimes the model is loaded after
+    // page:changed event was triggered.
+    if (
+      !this.container ||
+      this.container.isDestroyed ||
+      this.container.isDestroying
+    ) {
+      return;
+    }
+
+    const router = this.container.lookup("router:main");
+    this.decryptTopicPage({ currentRouteName: router.currentRouteName });
   },
 
-  decryptDocTitle(data) {
+  decryptTopicPage(data) {
     if (!data.currentRouteName.startsWith("topic.")) {
       return;
     }
 
-    const topicId = this.container.lookup("controller:topic").get("model.id");
+    if (
+      !this.container ||
+      this.container.isDestroyed ||
+      this.container.isDestroying
+    ) {
+      return;
+    }
+
+    const topicController = this.container.lookup("controller:topic");
+    const topicId = topicController.get("model.id");
+
     getTopicTitle(topicId).then((topicTitle) => {
+      // Update fancy title stored in model
+      topicController.model.set("fancy_title", topicTitle);
+
+      // Update document title
       const documentTitle = this.container.lookup("service:document-title");
       documentTitle.setTitle(
         documentTitle
           .getTitle()
-          .replace(I18n.t("encrypt.encrypted_title"), topicTitle)
+          .replace(topicController.model.title, topicTitle)
       );
     });
   },
