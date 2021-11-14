@@ -202,8 +202,6 @@ function resolveShortUrlElement($el) {
 }
 
 function postProcessPost(siteSettings, topicId, post) {
-  const $post = $(post);
-
   // Paint mentions
   const unseenMentions = linkSeenMentions(post, siteSettings);
   if (unseenMentions.length > 0) {
@@ -218,13 +216,13 @@ function postProcessPost(siteSettings, topicId, post) {
   }
 
   // Paint category and tag hashtags
-  const unseenTagHashtags = linkSeenHashtags($post);
+  const unseenTagHashtags = linkSeenHashtags(post);
   if (unseenTagHashtags.length > 0) {
     if (!hashtagsQueue) {
       hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
     }
     hashtagsQueue.push(...unseenTagHashtags).then(() => {
-      linkSeenHashtags($post);
+      linkSeenHashtags(post);
     });
   }
 
