@@ -76,14 +76,26 @@ class TopicTitle {
 }
 
 /**
- * Resets loaded user identity
+ * Resets loaded keys
  */
-export function resetUserIdentity() {
+export function resetEncrypt() {
   if (!isTesting()) {
-    throw new Error("`resetUserIdentity` can be called from tests only");
+    throw new Error("`resetEncrypt` can be called from tests only");
   }
 
   userIdentity = null;
+
+  for (const key in topicKeys) {
+    if (topicKeys.hasOwnProperty(key)) {
+      delete topicKeys[key];
+    }
+  }
+
+  for (const key in topicTitles) {
+    if (topicTitles.hasOwnProperty(key)) {
+      delete topicTitles[key];
+    }
+  }
 }
 
 /**

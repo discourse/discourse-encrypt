@@ -11,7 +11,7 @@ import EncryptLibDiscourse, {
   ENCRYPT_ENABLED,
   getEncryptionStatus,
   getIdentity,
-  resetUserIdentity,
+  resetEncrypt,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   encrypt,
@@ -170,7 +170,7 @@ acceptance("Encrypt", function (needs) {
       return this.send_(...arguments);
     };
 
-    resetUserIdentity();
+    resetEncrypt();
   });
 
   needs.hooks.afterEach(() => {
