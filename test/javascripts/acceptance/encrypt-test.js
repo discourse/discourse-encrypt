@@ -1,4 +1,4 @@
-import { visit } from "@ember/test-helpers";
+import { click, fillIn, visit } from "@ember/test-helpers";
 import User from "discourse/models/user";
 import {
   deleteDb,
@@ -22,8 +22,10 @@ import {
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
-import { default as userFixtures } from "discourse/tests/fixtures/user-fixtures";
-import { parsePostData } from "discourse/tests/helpers/create-pretender";
+import userFixtures from "discourse/tests/fixtures/user-fixtures";
+import pretender, {
+  parsePostData,
+} from "discourse/tests/helpers/create-pretender";
 import {
   acceptance,
   count,
@@ -34,9 +36,10 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
-import { test } from "qunit";
+import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
+import { cloneJSON } from "discourse-common/lib/object";
 
 /*
  * Checks if a string is not contained in a string.
@@ -108,9 +111,8 @@ async function setEncryptionStatus(status) {
 
   // Setting the appropriate custom fields is not always enough (i.e. if user
   // navigates to preferences).
-  /* global server */
-  server.get("/u/eviltrout.json", () => {
-    const json = userFixtures["/u/eviltrout.json"];
+  pretender.get("/u/eviltrout.json", () => {
+    const json = cloneJSON(userFixtures["/u/eviltrout.json"]);
     json.user.can_edit = true;
     json.user.encrypt_public = exported.public;
     json.user.encrypt_private = exportedPrivate;
@@ -180,17 +182,17 @@ acceptance("Encrypt", function (needs) {
   });
 
   needs.pretender((server, helper) => {
-    server.get("/encrypt/user", (request) => {
+    pretender.get("/encrypt/user", (request) => {
       const response = {};
       request.queryParams["usernames"].forEach((u) => (response[u] = keys[u]));
       return helper.response(response);
     });
 
-    server.get("/encrypt/posts", () => {
+    pretender.get("/encrypt/posts", () => {
       return helper.response({ posts: [], topics: [] });
     });
 
-    server.put("/encrypt/post", () => {
+    pretender.put("/encrypt/post", () => {
       return helper.response({});
     });
   });
@@ -214,8 +216,7 @@ acceptance("Encrypt", function (needs) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
     globalAssert = assert;
 
-    /* global server */
-    server.get("/u/search/users", () => {
+    pretender.get("/u/search/users", () => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -231,15 +232,15 @@ acceptance("Encrypt", function (needs) {
       ];
     });
 
-    server.post("/posts", (request) => {
+    pretender.post("/posts", (request) => {
       const body = parsePostData(request.requestBody);
 
-      assert.equal(body.raw, I18n.t("encrypt.encrypted_post"));
-      assert.equal(body.title, I18n.t("encrypt.encrypted_title"));
-      assert.equal(body.archetype, "private_message");
-      assert.equal(body.target_recipients, "eviltrout");
-      assert.equal(body.draft_key, "new_topic");
-      assert.equal(body.is_encrypted, "true");
+      assert.strictEqual(body.raw, I18n.t("encrypt.encrypted_post"));
+      assert.strictEqual(body.title, I18n.t("encrypt.encrypted_title"));
+      assert.strictEqual(body.archetype, "private_message");
+      assert.strictEqual(body.target_recipients, "eviltrout");
+      assert.strictEqual(body.draft_key, "new_topic");
+      assert.strictEqual(body.is_encrypted, "true");
       assert.ok(body.encrypted_title.startsWith("1$"));
       assert.ok(body.encrypted_raw.startsWith("1$"));
       assert.ok(JSON.parse(body.encrypted_keys).eviltrout);
@@ -286,13 +287,13 @@ acceptance("Encrypt", function (needs) {
   test("new draft for public topic is not encrypted", async (assert) => {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
-    server.post("/drafts.json", (request) => {
+    pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
-        assert.equal(data.title, `Some public message ${PLAINTEXT}`);
+        assert.strictEqual(data.title, `Some public message ${PLAINTEXT}`);
       }
       if (data.reply) {
-        assert.equal(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
+        assert.strictEqual(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
       }
       return [200, { "Content-Type": "application/json" }, {}];
     });
@@ -313,8 +314,7 @@ acceptance("Encrypt", function (needs) {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
     let ajaxRequested = false;
-    /* global server */
-    server.put("/encrypt/keys", () => {
+    pretender.put("/encrypt/keys", () => {
       ajaxRequested = true;
       return [200, { "Content-Type": "application/json" }, { success: "OK" }];
     });
@@ -364,7 +364,7 @@ acceptance("Encrypt", function (needs) {
     const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
     const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
 
-    server.get("/t/42.json", () => {
+    pretender.get("/t/42.json", () => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -616,7 +616,7 @@ acceptance("Encrypt", function (needs) {
     const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
     const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
 
-    server.get("/t/42.json", () => {
+    pretender.get("/t/42.json", () => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -855,9 +855,16 @@ acceptance("Encrypt", function (needs) {
 
     await visit("/t/a-secret-message/42");
     await visit("/t/a-secret-message/42"); // wait for re-render
-    assert.equal(query(".fancy-title").innerText.trim(), "Top Secret Title");
-    assert.equal(query(".cooked").innerText.trim(), "Top Secret Post");
-    assert.equal(document.title, "Top Secret Title - QUnit Discourse Tests");
+
+    assert.strictEqual(
+      query(".fancy-title").innerText.trim(),
+      "Top Secret Title"
+    );
+    assert.strictEqual(query(".cooked").innerText.trim(), "Top Secret Post");
+    assert.strictEqual(
+      document.title,
+      "Top Secret Title - QUnit Discourse Tests"
+    );
   });
 
   test("encrypt settings visible only if user can encrypt", async (assert) => {
@@ -865,7 +872,7 @@ acceptance("Encrypt", function (needs) {
 
     await visit("/u/eviltrout/preferences/security");
     assert.ok(
-      find(".encrypt").text().length > 0,
+      query(".encrypt").innerText.trim().length > 0,
       "encrypt settings are visible"
     );
 
@@ -873,8 +880,9 @@ acceptance("Encrypt", function (needs) {
 
     await visit("/u/eviltrout/preferences");
     await click(".nav-security a");
-    assert.ok(
-      find(".encrypt").text().length === 0,
+    assert.strictEqual(
+      query(".encrypt").innerText.trim().length,
+      0,
       "encrypt settings are not visible"
     );
 
@@ -883,7 +891,7 @@ acceptance("Encrypt", function (needs) {
     await visit("/u/eviltrout/preferences");
     await click(".nav-security a");
     assert.ok(
-      find(".encrypt").text().length > 0,
+      query(".encrypt").innerText.trim().length > 0,
       "encrypt settings are visible"
     );
   });
@@ -891,11 +899,8 @@ acceptance("Encrypt", function (needs) {
   test("user preferences connector works for other users", async (assert) => {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
-    /* global server */
-    server.get("/u/eviltrout2.json", () => {
-      const json = JSON.parse(
-        JSON.stringify(userFixtures["/u/eviltrout.json"])
-      );
+    pretender.get("/u/eviltrout2.json", () => {
+      const json = cloneJSON(userFixtures["/u/eviltrout.json"]);
       json.user.id += 1;
       json.user.can_edit = true;
       json.user.can_encrypt = true;
@@ -906,10 +911,9 @@ acceptance("Encrypt", function (needs) {
     await visit("/u/eviltrout2/preferences/security");
 
     assert.ok(
-      find(".user-preferences-security-outlet.encrypt")
-        .text()
-        .trim()
-        .indexOf(I18n.t("encrypt.preferences.status_enabled_other")) !== -1
+      query(".user-preferences-security-outlet.encrypt")
+        .innerText.trim()
+        .includes(I18n.t("encrypt.preferences.status_enabled_other"))
     );
   });
 
@@ -922,8 +926,7 @@ acceptance("Encrypt", function (needs) {
     const title = "Top Secret :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
 
-    /* global server */
-    server.get("/notifications", () => [
+    pretender.get("/notifications", () => [
       200,
       { "Content-Type": "application/json" },
       {
@@ -968,11 +971,11 @@ acceptance("Encrypt", function (needs) {
     await visit("/");
     await click(".header-dropdown-toggle.current-user");
 
-    assert.equal(
-      find(".quick-access-panel span[data-topic-id]").text(),
+    assert.strictEqual(
+      query(".quick-access-panel span[data-topic-id]").innerText,
       "Top Secret "
     );
-    assert.equal(find(".quick-access-panel span[data-topic-id] img").length, 1);
+    assert.strictEqual(count(".quick-access-panel span[data-topic-id] img"), 1);
   });
 
   test("searching in encrypted topic titles", async (assert) => {
@@ -984,8 +987,7 @@ acceptance("Encrypt", function (needs) {
     const title = "Top Secret :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
 
-    /* global server */
-    server.get("/search", (request) => {
+    pretender.get("/search", (request) => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -1001,8 +1003,7 @@ acceptance("Encrypt", function (needs) {
       ];
     });
 
-    /* global server */
-    server.get("/encrypt/posts", () => {
+    pretender.get("/encrypt/posts", () => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -1062,14 +1063,13 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/search?q=secret+in:personal");
-    assert.equal(count(".fps-result"), 1);
-    assert.equal(
-      queryAll(".fps-result .topic-title").text().trim(),
+    assert.strictEqual(count(".fps-result"), 1);
+    assert.strictEqual(
+      query(".fps-result .topic-title").innerText.trim(),
       "Top Secret"
     );
 
-    /* global server */
-    server.get("/search", (request) => {
+    pretender.get("/search", (request) => {
       return [
         200,
         { "Content-Type": "application/json" },
@@ -1146,9 +1146,9 @@ acceptance("Encrypt", function (needs) {
     });
 
     await visit("/search?q=secret++in:personal");
-    assert.equal(count(".fps-result"), 1);
-    assert.equal(
-      queryAll(".fps-result .topic-title").text().trim(),
+    assert.strictEqual(count(".fps-result"), 1);
+    assert.strictEqual(
+      query(".fps-result .topic-title").innerText.trim(),
       "Top Secret"
     );
   });
@@ -1169,7 +1169,7 @@ acceptance("Encrypt", function (needs) {
     );
     const encryptedTitle2 = await encrypt(topicKey2, { raw: "Not a Secret" });
 
-    server.get("/u/eviltrout/bookmarks.json", (request) => {
+    pretender.get("/u/eviltrout/bookmarks.json", (request) => {
       if (request.queryParams.q) {
         return [
           200,
@@ -1256,12 +1256,12 @@ acceptance("Encrypt", function (needs) {
     await visit("/u/eviltrout/activity/bookmarks");
     await visit("/u/eviltrout/activity/bookmarks"); // wait for re-render
 
-    assert.equal(count(".bookmark-list-item"), 2);
-    assert.equal(
+    assert.strictEqual(count(".bookmark-list-item"), 2);
+    assert.strictEqual(
       queryAll(".bookmark-list-item .title")[0].innerText.trim(),
       "Top Secret Title"
     );
-    assert.equal(
+    assert.strictEqual(
       queryAll(".bookmark-list-item .title")[1].innerText.trim(),
       "Not a Secret"
     );
@@ -1269,8 +1269,8 @@ acceptance("Encrypt", function (needs) {
     await visit("/");
     await visit("/u/eviltrout/activity/bookmarks?q=Top");
 
-    assert.equal(count(".bookmark-list-item"), 1);
-    assert.equal(
+    assert.strictEqual(count(".bookmark-list-item"), 1);
+    assert.strictEqual(
       queryAll(".bookmark-list-item .title")[0].innerText.trim(),
       "Top Secret Title"
     );
