@@ -99,6 +99,12 @@ after_initialize do
     end
   end
 
+  AdminDashboardData.add_problem_check do
+    if SiteSetting.content_security_policy? && !DiscourseEncrypt.safe_csp_src?(SiteSetting.content_security_policy_script_src) && SiteSetting.encrypt_enabled?
+      I18n.t('site_settings.errors.encrypt_unsafe_csp')
+    end
+  end
+
   TopicList.on_preload do |topics, topic_list|
     if SiteSetting.encrypt_enabled? && topics.size > 0 && topic_list.current_user
       topic_ids = topics.map(&:id)

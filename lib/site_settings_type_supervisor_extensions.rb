@@ -12,7 +12,7 @@ module DiscourseEncrypt::SiteSettingsTypeSupervisorExtensions
   def validate_content_security_policy_script_src(value)
     super if defined?(super)
 
-    if SiteSetting.content_security_policy && !DiscourseEncrypt.safe_csp_src?(value) && SiteSetting.encrypt_enabled
+    if SiteSetting.content_security_policy? && !DiscourseEncrypt.safe_csp_src?(value) && SiteSetting.encrypt_enabled
       raise Discourse::InvalidParameters.new(I18n.t('site_settings.errors.encrypt_unsafe_csp'))
     end
   end
