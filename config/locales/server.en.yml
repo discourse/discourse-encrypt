@@ -4,8 +4,12 @@ en:
     enabled_already: "You have already enabled encrypted messages."
     only_pms: "Only private messages can be encrypted."
     no_encrypt_keys: "Something went wrong. No encryption keys were included in the payload."
+
   site_settings:
     encrypt_enabled: "Enable encrypted private messages."
-    auto_enable_encrypt: "Automatically enable encrypt for all logged in users"
+    auto_enable_encrypt: "Automatically enable encrypt for all logged in users."
     encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."
-    encrypt_pms_default: "Encrypt all new private messages by default"
+    encrypt_pms_default: "Encrypt all new private messages by default."
+
+    errors:
+      encrypt_unsafe_csp: "Unsafe values for Content-Security-Policy and discourse-encrypt are incompatible."

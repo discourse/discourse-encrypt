@@ -15,9 +15,15 @@ register_asset "stylesheets/colors.scss", :color_definitions
 
 Rails.configuration.filter_parameters << :encrypt_private
 
+require_relative 'lib/validators/encrypt_enabled_validator.rb'
+
 after_initialize do
   module ::DiscourseEncrypt
     PLUGIN_NAME = 'discourse-encrypt'
+
+    def self.safe_csp_src?(value)
+      !value.include?("'unsafe-inline'") && !value.include?("'unsafe-eval'")
+    end
   end
 
   require_relative 'app/controllers/encrypt_controller.rb'
@@ -37,6 +43,7 @@ after_initialize do
   require_relative 'lib/post_actions_controller_extensions.rb'
   require_relative 'lib/post_extensions.rb'
   require_relative 'lib/site_setting_extensions.rb'
+  require_relative 'lib/site_settings_type_supervisor_extensions.rb'
   require_relative 'lib/topic_extensions.rb'
   require_relative 'lib/topic_guardian_extensions.rb'
   require_relative 'lib/topic_view_serializer_extension.rb'
@@ -73,6 +80,7 @@ after_initialize do
     GroupedSearchResultSerializer.class_eval { prepend DiscourseEncrypt::GroupedSearchResultSerializerExtension }
     Post.class_eval                          { prepend DiscourseEncrypt::PostExtensions }
     PostActionsController.class_eval         { prepend DiscourseEncrypt::PostActionsControllerExtensions }
+    SiteSettings::TypeSupervisor.class_eval  { prepend DiscourseEncrypt::SiteSettingsTypeSupervisorExtensions }
     Topic.class_eval                         { prepend DiscourseEncrypt::TopicExtensions }
     TopicGuardian.class_eval                 { prepend DiscourseEncrypt::TopicGuardianExtension }
     TopicsController.class_eval              { prepend DiscourseEncrypt::TopicsControllerExtensions }
