@@ -16,6 +16,12 @@ describe ::DiscourseEncrypt do
     expect(post.post_uploads.first.upload).to eq(upload)
   end
 
+  it 'can enable encrypt if safe CSP' do
+    SiteSetting.encrypt_enabled = false # plugin is enabled by default
+    SiteSetting.content_security_policy_script_src = "default-src 'self' cdn.example.com|script-src 'self' js.example.com|style-src 'self' css.example.com"
+    expect { SiteSetting.encrypt_enabled = true }.not_to raise_error(Discourse::InvalidParameters)
+  end
+
   it 'cannot enable encrypt if unsafe CSP' do
     SiteSetting.encrypt_enabled = false # plugin is enabled by default
     SiteSetting.content_security_policy_script_src = "'unsafe-eval'|'unsafe-inline'"
