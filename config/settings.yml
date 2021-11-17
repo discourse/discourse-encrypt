@@ -2,6 +2,7 @@ plugins:
   encrypt_enabled:
     default: true
     refresh: true
+    validator: "EncryptEnabledValidator"
   auto_enable_encrypt:
     client: true
     default: false
