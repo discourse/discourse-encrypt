@@ -22,6 +22,8 @@ describe EncryptedPostCreator do
     EOS
   end
 
+  let(:bot) { Fabricate(:user, id: -42) }
+
   let(:user) do
     Fabricate(:user).tap do |user|
       UserEncryptionKey.create!(user: user, encrypt_public: public_key)
@@ -56,9 +58,11 @@ describe EncryptedPostCreator do
     end
 
     it 'encrypts title and raw' do
+      raw = 'Hello world!'
+
       creator = described_class.new(user,
-        title: 'Hello world!',
-        raw: 'Hello world!',
+        title: raw,
+        raw: raw,
         target_usernames: destination_user.username,
         archetype: Archetype.private_message
       )
@@ -66,13 +70,13 @@ describe EncryptedPostCreator do
 
       expect(creator.errors.count).to eq(0)
       expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_title'))
-      expect(creator.opts[:raw]).not_to eq('Hello world!')
+      expect(creator.opts[:raw]).not_to eq(raw)
 
       expect(post.topic.is_encrypted?).to eq(true)
       expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_title'))
       expect(post.topic.encrypted_topics_data.title).not_to eq(nil)
       expect(post.is_encrypted?).to eq(true)
-      expect(post.raw).not_to eq('Hello world!')
+      expect(post.raw).not_to eq(raw)
     end
 
     it 'creates topic keys for all allowed users' do
@@ -87,6 +91,28 @@ describe EncryptedPostCreator do
       expect(post.topic.topic_allowed_users.map(&:user)).to contain_exactly(user, destination_user)
       expect(EncryptedTopicsUser.find_by(user: user, topic: post.topic)).to be_present
       expect(EncryptedTopicsUser.find_by(user: destination_user, topic: post.topic)).to be_present
+    end
+
+    it 'allows bots to send encrypted messages' do
+      raw = 'Hello world from a bot'
+
+      creator = described_class.new(bot,
+        title: raw,
+        raw: raw,
+        target_usernames: destination_user.username,
+        archetype: Archetype.private_message
+      )
+      post = creator.create
+
+      expect(creator.errors.count).to eq(0)
+      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(creator.opts[:raw]).not_to eq(raw)
+
+      expect(post.topic.is_encrypted?).to eq(true)
+      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(post.topic.encrypted_topics_data.title).not_to eq(nil)
+      expect(post.is_encrypted?).to eq(true)
+      expect(post.raw).not_to eq(raw)
     end
   end
 end
