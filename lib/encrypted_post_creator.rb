@@ -57,6 +57,7 @@ class EncryptedPostCreator < PostCreator
 
   def users
     @users ||= User
+      .human_users
       .includes(:user_encryption_key)
       .where(username_lower: (@opts[:target_usernames].split(',') << @user.username).map(&:downcase))
       .to_a
