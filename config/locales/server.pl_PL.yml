@@ -12,6 +12,4 @@ pl_PL:
     no_encrypt_keys: "Coś poszło nie tak. W zapytaniu nie uwzględniono kluczy szyfrowania."
   site_settings:
     encrypt_enabled: "Włącz zaszyfrowane wiadomości prywatne."
-    auto_enable_encrypt: "Automatycznie włącz szyfrowanie dla wszystkich zalogowanych użytkowników"
     encrypt_groups: "Nazwy grup, które mogą używać szyfrowania (puste oznacza wszystkich)."
-    encrypt_pms_default: "Domyślnie szyfruj wszystkie nowe wiadomości prywatne"

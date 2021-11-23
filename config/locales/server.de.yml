@@ -12,6 +12,4 @@ de:
     no_encrypt_keys: "Etwas ist schief gelaufen. Es ist kein Schlüssel zur Entschlüsselung in den Nutzdaten enthalten."
   site_settings:
     encrypt_enabled: "Aktiviere verschlüsselte private Nachrichten."
-    auto_enable_encrypt: "Verschlüsselung für alle angemeldeten Benutzer automatisch aktivieren"
     encrypt_groups: "Namen von Gruppen, die verschlüsselte Nachrichten nutzen dürfen (leer bedeutet jeder)."
-    encrypt_pms_default: "Neue private Nachrichten standardmäßig verschlüsseln"

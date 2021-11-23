@@ -12,5 +12,4 @@ fr:
     no_encrypt_keys: "Un problème est survenu. Aucune clé de chiffrement n'était incluse dans les données reçues."
   site_settings:
     encrypt_enabled: "Activer les messages directs chiffrés."
-    auto_enable_encrypt: "Activer automatiquement le chiffrement pour tous les utilisateurs connectés"
     encrypt_groups: "Le nom des groupes qui peuvent utiliser le chiffrement (laissez vide pour permettre tout le monde)."

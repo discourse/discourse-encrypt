@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  site_settings:
+    auto_enable_encrypt: "به طور خودکار رمزگذاری را برای همه کاربران وارد شده در سیستم فعال کنید."
+    encrypt_pms_default: "تمام پیام‌های خصوصی جدید را به طور پیش‌فرض رمزگذاری کنید."
