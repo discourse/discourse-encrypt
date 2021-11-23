@@ -12,5 +12,4 @@ nl:
     no_encrypt_keys: "Er is iets misgegaan. Er waren geen coderingssleutels in de nettolading opgenomen."
   site_settings:
     encrypt_enabled: "Versleutelde privéberichten inschakelen."
-    auto_enable_encrypt: "Automatisch versleuteling inschakelen voor alle aangemelde gebruikers"
     encrypt_groups: "De naam van groepen die versleuteling kunnen gebruiken (leeg betekent iedereen)."
