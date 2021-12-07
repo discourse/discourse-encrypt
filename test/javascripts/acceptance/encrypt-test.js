@@ -1176,8 +1176,6 @@ acceptance("Encrypt", function (needs) {
           { "Content-Type": "application/json" },
           {
             bookmarks: [],
-            no_results_help:
-              "No bookmarks found with the provided search query.",
           },
         ];
       }
