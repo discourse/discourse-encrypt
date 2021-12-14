@@ -13,10 +13,12 @@ de:
       invalid_ciphertext: "Die Nachricht konnte nicht entschlüsselt werden, da der Verschlüsselungstext dieser Nachricht ungültig ist."
       invalid_topic_key: "Die Nachricht konnte nicht entschlüsselt werden, da dein Themenschlüssel ungültig ist."
       invalid_identity: "Die Nachricht konnte nicht entschlüsselt werden, da die Benutzeridentität ungültig ist."
+      no_backup_warn: "Du hast die Verschlüsselung aktiviert, aber noch keinen Papierschlüssel erzeugt. Ohne Papierschlüssel läufst du Gefahr, den Zugriff auf deine verschlüsselten Nachrichten zu verlieren. Um einen Papierschlüssel zu erzeugen, öffne bitte deine <a href='%{basePath}/my/preferences/account'>Benutzereinstellungen</a>, drücke die <kbd>Papierschlüssel erzeugen</kbd> Schaltfläche und folge den Anweisungen."
       integrity_check_pass: "Die Integritätsprüfung für diesen Beitrag war gültig."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurden aktualisiert ohne erneut signiert zu werden."
       integrity_check_warn_signed_by: "Dieser Beitrag wurde von %{actual} signiert, nicht von %{expected}."
+      encrypted_title: "Eine verschlüsselte Nachricht"
       encrypted_post: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Um sie anzuzeigen, musst du zu diesem Thema eingeladen sein."
       encrypted_post_email: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Du musst dieses Thema besuchen, um sie anzuzeigen."
       encrypted_post_email_timer_annotation: "Diese Nachricht wird dauerhaft gelöscht am %{delete_at}"
@@ -49,7 +51,12 @@ de:
         status_enabled_but_inactive: "Verschlüsselung ist angeschaltet, jedoch nicht für dieses Gerät aktiviert."
         status_disabled: "Verschlüsselung ist für dieses Konto nicht aktiviert."
         status_disabled_other: "Dieser Benutzer hat die Verschlüsselung nicht aktiviert und kann keine verschlüsselten Nachrichten empfangen."
+        paper_key_label: "Papierschlüssel:"
+        paper_key_placeholder: "ZWÖLF WORTE ..."
+        paper_key_invalid: "Der eingegebene Papierschlüssel passt nicht."
         key_pair_invalid: "Das eingegebene Schlüsselpaar ist falsch."
+        notice_active: |
+          <p>Gebe einen Papierschlüssel ein oder verwende ein anderes Gerät, um dieses zu aktivieren. Vergiss nicht die Leerzeichen zwischen Wörtern.</p>
         notice_import: |
           <p> Bitte füge den zuvor exportierten Verschlüsselungsschlüssel ein. </p>
         activate: "Verschlüsselte Nachrichten aktivieren"
@@ -62,6 +69,7 @@ de:
         title: "Papierschlüssel generieren"
         title_device: "Ein weiteres Gerät aktivieren"
         instructions: "Hier ist dein eindeutiger Papierschlüssel, mit dem du zukünftige verschlüsselte Geräte aktivieren kanst. Dies ist das einzige Mal, dass du diesen sehen kannst. Schreibe ihn also auf und bewahre ihn an einem sicheren Ort auf."
+        instructions_device: "Gehe bei dem neuen Gerät zu den Einstellungen und verwende folgenden Papierschlüssel, um die Verschlüsselung zu aktivieren:"
       manage_paper_keys:
         title: "Papierschlüssel verwalten"
         instructions: "Unten kannst du alle zuvor generierten Papierschlüssel löschen. Nach dem Löschen kann der Papierschlüssel nicht wiederhergestellt werden. Stelle daher sicher, dass du mindestens einen Papierschlüssel oder ein anderes aktives Geräte hast."
