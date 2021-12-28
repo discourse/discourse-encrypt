@@ -126,11 +126,11 @@ export default {
       }
     },
 
-    timerClicked(actionId, { name }) {
+    timerClicked(actionId, args) {
       if (actionId) {
         this.model.setProperties({
           deleteAfterMinutes: actionId,
-          deleteAfterMinutesLabel: name,
+          deleteAfterMinutesLabel: args?.name,
         });
       } else {
         this.model.setProperties({
