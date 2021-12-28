@@ -7,7 +7,102 @@
 es:
   js:
     encrypt:
-      decrypting: "Descodificación"
+      title: "Mensajes cifrados"
+      decrypting: "Descifrando..."
+      missing_topic_key: "Este mensaje no pudo ser descifrado porque no tienes ninguna clave de tema para este mensaje. ¿Has sido invitado a este tema?"
+      invalid_ciphertext: "No se ha podido descifrar el mensaje porque el texto cifrado de este mensaje no es válido."
+      invalid_topic_key: "No se pudo descifrar el mensaje porque la clave del tema no es válida."
+      invalid_identity: "No se pudo descifrar el mensaje porque la identidad del usuario no es válida."
+      no_backup_warn: "Has activado el cifrado, pero aún no has generado ninguna clave en papel. Sin ninguna clave en papel, corres el riesgo de perder el acceso a tus mensajes cifrados. Para generar una clave de papel, ve a la <a href='%{basePath}/my/preferences/account'>página de preferencias de usuario</a>, pulsa el botón <kbd>Generar clave de papel</kbd> y sigue las instrucciones."
+      integrity_check_pass: "La comprobación de la integridad de este puesto ha sido superada."
+      integrity_check_fail: "La comprobación de integridad de esta publicación ha fallado (%{fields} no coinciden)."
+      integrity_check_warn_updated_at: "Los metadatos de la publicación se actualizaron sin volver a firmarse."
+      integrity_check_warn_signed_by: "Esta publicación fue firmada por última vez por %{actual}, no por %{expected}."
+      encrypted_title: "Un mensaje secreto"
+      encrypted_post: "Este es un mensaje secreto con cifrado de extremo a extremo. Para verlo, debes estar invitado a este tema."
+      encrypted_post_email: "Este es un mensaje secreto con cifrado de extremo a extremo. Debes visitar el tema para verlo."
+      encrypted_post_email_timer_annotation: "Este mensaje se eliminará de forma permanente a las %{delete_at}"
+      encrypted_icon_title: "Este mensaje está cifrado de extremo a extremo."
+      encrypted_uploads: "Las cargas no se pueden cifrar en este momento."
+      cannot_encrypt: "No puedes cifrar los mensajes en esta conversación."
       cannot_invite: "No puedes invitar a esta conversación"
+      cannot_invite_group: "No puedes invitar a grupos a mensajes cifrados."
+      checkbox:
+        checked: "Este mensaje se cifrará de extremo a extremo."
+        unchecked: "Pulsa el símbolo del candado para cifrar este mensaje."
+      post:
+        delete:
+          confirm: "El contenido se eliminará completamente, no habrá forma de restaurarlo"
+          yes_value: "Eliminar contenido"
+          no_value: "Cancelar"
+      composer:
+        no_topic_key: "No puedes cifrar mensajes en este tema."
+        user_has_no_key: "%{username} no habilitó los mensajes cifrados."
+        group_not_allowed: "No puedes enviar mensajes cifrados a grupos."
+        confirm:
+          message: "%{error} ¿Quieres continuar?"
+          no_value: "No, volver"
+          yes_value: "Sí, enviar sin cifrar"
+      preferences:
+        ie11: "El conjunto de cifrado necesario no está disponible en Internet Explorer 11."
+        insecure_context: "El cifrado no se puede utilizar en un contexto inseguro (no HTTPS)."
+        status_enabled: "Has habilitado el cifrado y lo has activado en este dispositivo."
+        status_enabled_other: "Este usuario ha habilitado el cifrado y puede recibir mensajes cifrados."
+        status_enabled_but_inactive: "Has habilitado el cifrado, pero no lo has activado en este dispositivo."
+        status_disabled: "No has habilitado el cifrado en esta cuenta."
+        status_disabled_other: "Este usuario no habilitó el cifrado y no puede recibir mensajes cifrados."
+        paper_key_label: "Clave de papel:"
+        paper_key_placeholder: "DOCE PALABRAS..."
+        paper_key_invalid: "La clave de papel que has introducido es incorrecta."
+        key_pair_invalid: "El par de claves que has introducido es incorrecto."
+        notice_active: |
+          <p>Escribe una clave de papel o utiliza otro dispositivo para activar esta. No te olvides de los espacios entre palabras.</p>
+        notice_import: |
+          <p>Pega la clave de cifrado que has exportado previamente.</p>
+        activate: "Activar mensajes cifrados"
+        deactivate: "Desactivar este dispositivo"
+        enable: "Habilitar mensajes cifrados"
+        import: "Importar par de claves de cifrado"
+        use_paper_key: "Usar clave de papel"
+        generate_key: "Generar un nuevo par de claves"
+      generate_paper_key:
+        title: "Generar clave de papel"
+        title_device: "Activar otro dispositivo"
+        instructions: "Aquí está tu clave de papel única, que puede permitirte activar futuros dispositivos cifrados. Esta es la única vez que la verás, así que asegúrate de anotarla y guardarla en un lugar seguro."
+        instructions_device: "En tu otro dispositivo, ve a las preferencias y utiliza la siguiente clave de papel para activar el cifrado:"
       manage_paper_keys:
+        title: "Administrar claves de papel"
+        instructions: "A continuación, puedes borrar cualquiera de las claves de papel generadas anteriormente. Una vez eliminada, la clave de papel no se puede recuperar, así que asegúrate de que tienes al menos una clave de papel u otros dispositivos activos."
         delete: "Eliminar"
+        no_key: "No tienes claves de papel. Asegúrate de que tienes al menos una clave de papel u otros dispositivos activos."
+        passphrase: "basado en frase de contraseña"
+        not_recommended: "(no se recomienda)"
+      export:
+        title: "Exportar par de claves de cifrado"
+        instructions: "Exportar tu par de claves es otro mecanismo de copia de seguridad. Ten en cuenta que el par de claves exportado está desprotegido y puede descifrar todas tus conversaciones privadas."
+      rotate:
+        title: "Rotar el par de claves de cifrado"
+        instructions: "¿Estás seguro de que quieres rotar tu clave de cifrado? Esto generará un nuevo par de claves y se destruirán todas las claves en papel. No perderás el acceso a ningún mensaje cifrado, pero tendrás que reactivar el cifrado en otros dispositivos."
+        loading: "Cargando claves de temas antiguos..."
+        rotating: "Rotando claves..."
+        saving: "Guardando las claves del nuevo tema..."
+        updating: "Actualizando clave..."
+        finished: "¡Hecho!"
+      reset:
+        title: "Deshabilitar mensajes cifrados"
+        instructions: "¿Seguro que quieres deshabilitar los mensajes cifrados y restablecer tu clave de cifrado? Esta operación elimina tu clave de cifrado para siempre y ya no podrás acceder a ninguno de tus mensajes privados cifrados."
+        instructions_lost_pms:
+          one: "Perderás <strong>permanentemente</strong> el acceso a %{count} mensaje cifrado."
+          other: "Perderás <strong>permanentemente</strong> el acceso a %{count} mensajes cifrados."
+        instructions_safe: "¿Seguro que quieres deshabilitar los mensajes cifrados y restablecer tu clave de cifrado? Puedes volver a habilitar los mensajes cifrados generando un nuevo par de claves."
+        confirm_instructions: "Escribe <code>%{username}</code> para confirmar:"
+      time_bomb:
+        title: "Este mensaje se eliminará de forma permanente después de %{after}"
+        never: "Nunca"
+        3_minutes: "3 minutos"
+        1_hour: "1 hora"
+        3_hours: "3 horas"
+        12_hours: "12 horas"
+        24_hours: "24 horas"
+        3_days: "3 días"
+        7_days: "7 días"

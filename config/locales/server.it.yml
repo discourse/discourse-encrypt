@@ -12,4 +12,8 @@ it:
     no_encrypt_keys: "Qualcosa è andato storto. Nessuna chiave di crittografia è stata inclusa nel payload."
   site_settings:
     encrypt_enabled: "Abilita messaggi privati crittografati."
+    auto_enable_encrypt: "Abilita automaticamente la crittografia per tutti gli utenti che hanno effettuato l'accesso."
     encrypt_groups: "Nome dei gruppi che possono utilizzare la crittografia (vuoto significa tutti)."
+    encrypt_pms_default: "Applica crittografia a tutti i nuovi messaggi privati per impostazione predefinita."
+    errors:
+      encrypt_unsafe_csp: "Le direttive CSP non sicure come \"unsafe-eval\" e \"unsafe-inline\" non possono essere utilizzate quando il plug-in Discourse Encrypt è abilitato. "
