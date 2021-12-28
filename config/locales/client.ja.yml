@@ -7,5 +7,101 @@
 ja:
   js:
     encrypt:
+      title: "暗号化メッセージ"
+      decrypting: "復号中..."
+      missing_topic_key: "このメッセージにはトピックキーがないため復号化できませんでした。このトピックに招待されましたか？"
+      invalid_ciphertext: "このメッセージの暗号文が無効であるため、メッセージを復号化できませんでした。"
+      invalid_topic_key: "トピックキーが無効であるため、メッセージを復号化できませんでした。"
+      invalid_identity: "ユーザー ID が無効であるため、メッセージを復号化できませんでした。"
+      no_backup_warn: "暗号化を有効にしましたが、ペーパーキーをまだ生成していません。ペーパーキーがない場合、暗号化されたメッセージにアクセスできなくなる可能性があります。ペーパーキーを生成するには、<a href='%{basePath}/my/preferences/account'>ユーザー設定ページ</a>に移動し、<kbd>ペーパーキーを生成</kbd>ボタンを押して指示に従ってください。"
+      integrity_check_pass: "この投稿の整合性チェックに合格しました。"
+      integrity_check_fail: "この投稿の整合性チェックに失敗しました（不一致 %{fields}）。"
+      integrity_check_warn_updated_at: "投稿メタデータは再度署名されずに更新されました。"
+      integrity_check_warn_signed_by: "この投稿は最後に %{expected} ではなく %{actual} で署名されました。"
+      encrypted_title: "シークレットメッセージ"
+      encrypted_post: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、このトピックに招待されている必要があります。"
+      encrypted_post_email: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、トピックにアクセスする必要があります。"
+      encrypted_post_email_timer_annotation: "このメッセージは %{delete_at} で完全に削除されます"
+      encrypted_icon_title: "このメッセージはエンドツーエンドで暗号化されています。"
+      encrypted_uploads: "現在、アップロードを暗号化できません。"
+      cannot_encrypt: "この会話のメッセージを暗号化できません。"
+      cannot_invite: "この会話に招待できません。"
+      cannot_invite_group: "暗号化メッセージにグループを招待することはできません。"
+      checkbox:
+        checked: "このメッセージはエンドツーエンドで暗号化されます。"
+        unchecked: "このメッセージを暗号化するには、ロック記号をクリックします。"
+      post:
+        delete:
+          confirm: "コンテンツは完全に削除され、復元することはできません。"
+          yes_value: "コンテンツを削除"
+          no_value: "キャンセル"
+      composer:
+        no_topic_key: "このトピックのメッセージを暗号化できません。"
+        user_has_no_key: "%{username} は暗号化メッセージを有効にしませんでした。"
+        group_not_allowed: "暗号化メッセージをグループに送信することはできません。"
+        confirm:
+          message: "%{error} 続行しますか？"
+          no_value: "いいえ、戻ります"
+          yes_value: "はい、暗号化せずに送信します"
+      preferences:
+        ie11: "必要な暗号スイートは、Internet Explorer 11 では使用できません。"
+        insecure_context: "安全でない（HTTPS ではない）コンテキストでは暗号化を使用できません。"
+        status_enabled: "暗号化を有効にし、このデバイスでアクティブにしました。"
+        status_enabled_other: "このユーザーは暗号化を有効にしているため、暗号化メッセージを受信できます。"
+        status_enabled_but_inactive: "暗号化を有効にしていますが、このデバイスではアクティブにしていません。"
+        status_disabled: "このアカウントで暗号化を有効にしていません。"
+        status_disabled_other: "このユーザーは暗号化を有効にしていないため、暗号化メッセージを受信できません。"
+        paper_key_label: "ペーパーキー:"
+        paper_key_placeholder: "単語 12 語..."
+        paper_key_invalid: "入力したペーパーキーは誤っています。"
+        key_pair_invalid: "入力したキーのペアは誤っています。"
+        notice_active: |
+          <p>ペーパーキーを入力するか、別のデバイスを使用してこのデバイスをアクティブにします。単語と単語の間のスペースを忘れないでください。</p>
+        notice_import: |
+          <p>以前にエクスポートした暗号化キーを貼り付けてください。</p>
+        activate: "暗号化メッセージをアクティブ化"
+        deactivate: "このデバイスを非アクティブ化"
+        enable: "暗号化メッセージを有効化"
+        import: "暗号化キーペアをインポート"
+        use_paper_key: "ペーパーキーを使用"
+        generate_key: "新しいキーペアを生成"
+      generate_paper_key:
+        title: "ペーパーキーの生成"
+        title_device: "別のデバイスのアクティブ化"
+        instructions: "これがあなたの一意のペーパーキーです。今後、暗号化デバイスをアクティブ化する際に使用できます。これを閲覧できるのは今だけであるため、必ず書き留めて、安全な場所に保管してください。"
+        instructions_device: "別のデバイスで設定に移動し、次のペーパーキーを使用して暗号化をアクティブ化します。"
       manage_paper_keys:
+        title: "ペーパーキーの管理"
+        instructions: "以下では、以前に生成されたペーパーキーをすべて削除できます。ペーパーキーは、一旦削除されると復元することは不可能であるため、少なくとも 1 つペーパーキーか別のアクティブなデバイスがあることを確認してください。"
         delete: "削除する"
+        no_key: "ペーパーキーはありません。少なくとも 1 つのペーパーキーか別のアクティブなデバイスがあることを確認してください。"
+        passphrase: "パスフレーズを使用"
+        not_recommended: "（推奨されません）"
+      export:
+        title: "暗号化キーペアのエクスポート"
+        instructions: "キーペアのエクスポートはバックアップ方法の 1 つです。エクスポートされたキーペアは保護されていないため、非公開会話がすべて復号化される可能性があります。"
+      rotate:
+        title: "暗号化キーペアのローテーション"
+        instructions: "暗号化キーをローテーションしてもよろしいですか？これにより、新しいキーペアが生成され、すべてのペーパーキーは破棄されます。暗号化メッセージへのアクセスは失われませんが、別のデバイスで暗号化を再度アクティブ化する必要があります。"
+        loading: "古いトピックキーを読み込み中…"
+        rotating: "キーをローテーション中…"
+        saving: "新しいトピックキーを保存中…"
+        updating: "キーを更新中…"
+        finished: "完了！"
+      reset:
+        title: "暗号化メッセージの無効化"
+        instructions: "暗号化メッセージを無効化し、暗号化キーをリセットしてもよろしいですか？この操作により、暗号化キーは永久に削除されるため、今後、暗号化された非公開メッセージにアクセスできなくなります。"
+        instructions_lost_pms:
+          other: "%{count} 件の暗号化メッセージに<strong>永久に</strong>アクセスできなくなります。"
+        instructions_safe: "暗号化メッセージを無効化して暗号化キーをリセットしてもよろしいですか？新しいキーペアを生成すると、暗号化メッセージをもう一度有効化することができます。"
+        confirm_instructions: "確認のために、<code>%{username}</code> を入力してください。"
+      time_bomb:
+        title: "このメッセージは、%{after}後に完全に削除されます"
+        never: "なし"
+        3_minutes: "3 分"
+        1_hour: "1 時間"
+        3_hours: "3 時間"
+        12_hours: "12 時間"
+        24_hours: "24 時間"
+        3_days: "3 日"
+        7_days: "7 日"

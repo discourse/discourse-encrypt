@@ -5,3 +5,15 @@
 # https://translate.discourse.org/
 
 es:
+  encrypt:
+    encrypted_excerpt: "Este mensaje está cifrado, léelo en el navegador."
+    enabled_already: "Ya has habilitado los mensajes cifrados."
+    only_pms: "Solo se pueden cifrar los mensajes privados."
+    no_encrypt_keys: "Algo salió mal. No se incluyeron claves de cifrado en la carga útil."
+  site_settings:
+    encrypt_enabled: "Habilitar los mensajes privados cifrados."
+    auto_enable_encrypt: "Habilitar automáticamente el cifrado para todos los usuarios que hayan iniciado sesión."
+    encrypt_groups: "El nombre de los grupos que pueden usar cifrado (vacío significa todos)."
+    encrypt_pms_default: "Cifrar todos los mensajes privados nuevos por defecto."
+    errors:
+      encrypt_unsafe_csp: "Las directivas CSP inseguras, como 'unsafe-eval' y 'unsafe-inline', no pueden utilizarse cuando el complemento Discourse Encrypt está activado. "

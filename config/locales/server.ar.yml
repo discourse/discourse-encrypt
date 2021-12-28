@@ -5,3 +5,15 @@
 # https://translate.discourse.org/
 
 ar:
+  encrypt:
+    encrypted_excerpt: "هذه الرسالة مشفرة، يُرجى قراءتها في المتصفح."
+    enabled_already: "لقد فعَّلت الرسائل المشفرة بالفعل."
+    only_pms: "يمكن تشفير الرسائل الخاصة فقط."
+    no_encrypt_keys: "حدث خطأ ما. لم يتم تضمين أي مفاتيح تشفير في الحمولة."
+  site_settings:
+    encrypt_enabled: "تفعيل الرسائل الخاصة المشفرة"
+    auto_enable_encrypt: "تمكين التشفير تلقائيًا لجميع المستخدمين الذين سجَّلوا الدخول."
+    encrypt_groups: "اسم المجموعات التي يمكنها استخدام التشفير (ترك الاسم فارغًا يعني أن الجميع يمكنهم استخدام التشفير)"
+    encrypt_pms_default: "تشفير جميع الرسائل الخاصة الجديدة افتراضيًا"
+    errors:
+      encrypt_unsafe_csp: "لا يمكن استخدام توجيهات CSP غير الآمنة مثل 'unsafe-eval' و'unsafe-inline' عند تفعيل المكوِّن الإضافي للتشفير في Discourse. "
