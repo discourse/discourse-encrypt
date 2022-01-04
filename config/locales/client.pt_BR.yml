@@ -30,5 +30,79 @@ pt_BR:
       checkbox:
         checked: "Esta mensagem usará criptografia ponta a ponta."
         unchecked: "Clique no símbolo de cadeado para criptografar esta mensagem."
+      post:
+        delete:
+          confirm: "O conteúdo será excluído completamente, não terá como restaurá-lo"
+          yes_value: "Excluir conteúdo"
+          no_value: "Cancelar"
+      composer:
+        no_topic_key: "Não é possível criptografar mensagens neste tópico."
+        user_has_no_key: "%{username} não ativou mensagens criptografadas."
+        group_not_allowed: "Você não tem permissão para enviar mensagens criptografadas a grupos."
+        confirm:
+          message: "%{error} Quer continuar?"
+          no_value: "Não, voltar"
+          yes_value: "Sim, enviar em criptografia"
+      preferences:
+        ie11: "O pacote de codificação necessário não está disponível no Internet Explorer 11."
+        insecure_context: "A criptografia não pode ser usada em um contexto de insegurança (não HTTPS)."
+        status_enabled: "Você ativou a criptografia neste dispositivo."
+        status_enabled_other: "Este(a) usuário(a) ativou criptografia e pode receber mensagens criptografadas."
+        status_enabled_but_inactive: "Você ativou a criptografia, mas não neste dispositivo."
+        status_disabled: "Você não ativou criptografia nesta conta."
+        status_disabled_other: "Este(a) usuário(a) não ativou criptografia e não pode receber mensagens criptografadas."
+        paper_key_label: "Chave de papel:"
+        paper_key_placeholder: "DOZE PALAVRAS..."
+        paper_key_invalid: "A chave de papel inserida está incorreta."
+        key_pair_invalid: "O par de chaves inserido não está correto."
+        notice_active: |
+          <p>Insira uma chave de papel ou use outro dispositivo para ativar esta chave. Não se esqueça dos espaços entre as palavras.</p>
+        notice_import: |
+          <p>Cole a chave de criptografia exportada anteriormente.</p>
+        activate: "Ativar mensagens criptografadas"
+        deactivate: "Desativar este dispositivo"
+        enable: "Ativar mensagens criptografadas"
+        import: "Importar par de chaves de criptografia"
+        use_paper_key: "Usar chave de papel"
+        generate_key: "Gerar novo par de chaves"
+      generate_paper_key:
+        title: "Gerar chave de papel"
+        title_device: "Ativar outro dispositivo"
+        instructions: "Esta é a sua chave de papel exclusiva, que permite ativar dispositivos criptografados futuros. Esta é a única vez que você verá isto para garantir que anote e armazene em um local seguro."
+        instructions_device: "Em seu outro dispositivo, vá para preferências e use a seguinte chave de papel para ativar a criptografia:"
       manage_paper_keys:
+        title: "Gerenciar chaves de papel"
+        instructions: "Abaixo você pode excluir chaves de papel geradas. Após excluir, a chave de papel não pode ser recuperada, então não se esqueça de ter pelo menos uma chave de papel ou outros dispositivos ativados."
         delete: "Excluir"
+        no_key: "Você não tem chaves de papel. Verifique se você tem pelo menos uma chave de papel ou outros dispositivos ativados."
+        passphrase: "com base em frase secreta"
+        not_recommended: "(não recomendado)"
+      export:
+        title: "Exportar par de chaves de criptografia"
+        instructions: "Exportar seu par de chaves é outro mecanismo de backup. Observe que o par de chaves exportadas não está protegido e pode descriptografar todas as suas conversas privadas."
+      rotate:
+        title: "Girar par de chaves de criptografia"
+        instructions: "Tem certeza de que deseja girar sua chave de criptografia? Isso irá gerar um novo par de chaves e todas as chaves de papel serão destruídas. Você não perderá acesso às mensagens criptografadas, mas precisará reativar a criptografia em outros dispositivos."
+        loading: "Carregando chaves de tópico antigas"
+        rotating: "Girando chaves..."
+        saving: "Salvando novas chaves de tópico..."
+        updating: "Atualizando chave..."
+        finished: "Pronto!"
+      reset:
+        title: "Desativar mensagens criptografadas"
+        instructions: "Tem certeza de que desativar as mensagens criptografadas e redefinir sua chave de criptografia? Esta operação exclui sua chave de criptografia para sempre e não poderá acessar mais mensagens privadas."
+        instructions_lost_pms:
+          one: "Você perderá <strong>permanentemente</strong> acesso a %{count} mensagem criptografada."
+          other: "Você perderá <strong>permanentemente</strong> acesso a %{count} mensagens criptografadas."
+        instructions_safe: "Tem certeza de que deseja desativar mensagens criptografadas e redefinir sua chave de criptografia? Você pode ativar mensagens criptografadas novamente ao gerar um novo par de chaves."
+        confirm_instructions: "Insira <code>%{username}</code> para confirmar:"
+      time_bomb:
+        title: "Esta mensagem será excluída permanentemente após %{after}"
+        never: "Nunca"
+        3_minutes: "3 minutos"
+        1_hour: "1 hora"
+        3_hours: "3 horas"
+        12_hours: "12 horas"
+        24_hours: "24 horas"
+        3_days: "3 dias"
+        7_days: "7 dias"
