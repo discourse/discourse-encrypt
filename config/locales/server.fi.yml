@@ -5,3 +5,15 @@
 # https://translate.discourse.org/
 
 fi:
+  encrypt:
+    encrypted_excerpt: "Tämä viesti on salattu, lue se selaimessa."
+    enabled_already: "Olet jo ottanut salatut viestit käyttöön."
+    only_pms: "Vain yksityisiä viestejä voi salata."
+    no_encrypt_keys: "Jokin meni vikaan. Salausavaimia ei sisällytetty tietoihin."
+  site_settings:
+    encrypt_enabled: "Ota salatut yksityisviestit käyttöön."
+    auto_enable_encrypt: "Ota salaus käyttöön automaattisesti kaikille kirjautuneille käyttäjille."
+    encrypt_groups: "Niiden ryhmien nimet, jotka voivat käyttää salausta (tyhjä tarkoittaa kaikkia)."
+    encrypt_pms_default: "Salaa kaikki uudet yksityisviestit oletuksena."
+    errors:
+      encrypt_unsafe_csp: "Turvattomia CSP-komentoja, kuten \"unsafe-eval\" ja \"unsafe-inline\", ei voida käyttää, kun Discoursen salauslisäosa on käytössä. "
