@@ -7,5 +7,102 @@
 fi:
   js:
     encrypt:
+      title: "Salatut viestit"
+      decrypting: "Puretaan salausta..."
+      missing_topic_key: "Tämän viestin salausta ei voitu purkaa, koska sinulla ei ole tämän viestin ketjuavainta. Onko sinut kutsuttu tähän aiheeseen?"
+      invalid_ciphertext: "Viestin salausta ei voitu purkaa, koska tämän viestin salausteksti on virheellinen."
+      invalid_topic_key: "Viestin salausta ei voitu purkaa, koska ketjuavaimesi on virheellinen."
+      invalid_identity: "Viestin salausta ei voitu purkaa, koska käyttäjän identiteetti on virheellinen."
+      no_backup_warn: "Otit salauksen käyttöön, mutta et ole vielä luonut paperiavaimia. Ilman paperiavaimia saatat menettää pääsyn salattuihin viesteihisi. Luo paperiavain siirtymällä <a href='%{basePath}/my/preferences/account'>käyttäjäasetussivulle</a>, painamalla <kbd>Luo paperiavain</kbd> -painiketta ja noudattamalla ohjeita."
+      integrity_check_pass: "Tämän viestin eheystarkastus on läpäisty."
+      integrity_check_fail: "Tämän viestin eheystarkastus epäonnistui (%{fields} ei täsmää)."
+      integrity_check_warn_updated_at: "Viestin metatiedot päivitettiin ilman allekirjoittamista."
+      integrity_check_warn_signed_by: "Tämän viestin on allekirjoittanut viimeksi %{actual}, ei %{expected}."
+      encrypted_title: "Salainen viesti"
+      encrypted_post: "Tämä on salainen viesti päästä päähän -salauksella. Sinut täytyy kutsua tähän ketjuun, jotta voit katsoa sen."
+      encrypted_post_email: "Tämä on salainen viesti päästä päähän -salauksella. Sinun täytyy vierailla ketjussa, jotta voit katsoa sen."
+      encrypted_post_email_timer_annotation: "Tämä viesti poistetaan pysyvästi %{delete_at}"
+      encrypted_icon_title: "Tämä viesti on salattu päästä päähän."
+      encrypted_uploads: "Latauksia ei voi tällä hetkellä salata."
+      cannot_encrypt: "Et voi salata tämän keskustelun viestejä."
+      cannot_invite: "Et voi kutsua tähän keskusteluun."
+      cannot_invite_group: "Et voi kutsua ryhmiä salattuihin viesteihin."
+      checkbox:
+        checked: "Tämä viesti salataan päästä päähän."
+        unchecked: "Salaa tämä viesti napsauttamalla lukkokuvaketta."
+      post:
+        delete:
+          confirm: "Sisältö poistetaan kokonaan, eikä sitä voi palauttaa"
+          yes_value: "Poista sisältö"
+          no_value: "Peruuta"
+      composer:
+        no_topic_key: "Et voi salata tämän ketjun viestejä."
+        user_has_no_key: "%{username} ei ottanut salattuja viestejä käyttöön."
+        group_not_allowed: "Et voi lähettää salattuja viestejä ryhmille."
+        confirm:
+          message: "%{error} Haluatko jatkaa?"
+          no_value: "Ei, palaa takaisin"
+          yes_value: "Kyllä, lähetä salaamattomana"
+      preferences:
+        ie11: "Vaadittu salauspaketti ei ole saatavilla Internet Explorer 11:ssä."
+        insecure_context: "Salausta ei voi käyttää suojaamattomassa kontekstissa (ei HTTPS)."
+        status_enabled: "Olet ottanut salauksen käyttöön ja aktivoinut sen tällä laitteella."
+        status_enabled_other: "Tämä käyttäjä on ottanut salauksen käyttöön ja voi vastaanottaa salattuja viestejä."
+        status_enabled_but_inactive: "Olet ottanut salauksen käyttöön, mutta et ole aktivoinut sitä tällä laitteella."
+        status_disabled: "Et ole ottanut salausta käyttöön tällä tilillä."
+        status_disabled_other: "Tämä käyttäjä ei ole ottanut salausta käyttöön eikä voi vastaanottaa salattuja viestejä."
+        paper_key_label: "Paperiavain:"
+        paper_key_placeholder: "KAKSITOISTA SANAA..."
+        paper_key_invalid: "Antamasi paperiavain on väärä."
+        key_pair_invalid: "Antamasi avainpari on väärä."
+        notice_active: |
+          <p>Kirjoita paperiavain tai aktivoi tämä toisella laitteella. Älä unohda sanojen välisiä välilyöntejä.</p>
+        notice_import: |
+          <p>Liitä aikaisemmin viemäsi salausavain.</p>
+        activate: "Aktivoi salatut viestit"
+        deactivate: "Poista tämän laitteen aktivointi"
+        enable: "Ota salatut viestit käyttöön"
+        import: "Tuo salausavainpari"
+        use_paper_key: "Käytä paperiavainta"
+        generate_key: "Luo uusi avainpari"
+      generate_paper_key:
+        title: "Luo paperiavain"
+        title_device: "Aktivoi toinen laite"
+        instructions: "Tässä on yksilöllinen paperiavaimesi, jonka avulla voit aktivoida tulevia salattuja laitteita. Tämä on ainoa kerta, kun näet tämän, joten kirjoita se ylös ja säilytä turvallisessa paikassa."
+        instructions_device: "Siirry toisella laitteellasi asetuksiin ja aktivoi salaus seuraavalla paperiavaimella:"
       manage_paper_keys:
+        title: "Hallitse paperiavaimia"
+        instructions: "Alla voit poistaa aiemmin luotuja paperiavaimia. Kun paperiavain poistetaan, sitä ei voi palauttaa, joten varmista, että sinulla on vähintään yksi paperiavain tai muita aktiivisia laitteita."
         delete: "Poista"
+        no_key: "Sinulla ei ole paperiavaimia. Varmista, että sinulla on vähintään yksi paperiavain tai muita aktiivisia laitteita."
+        passphrase: "tunnuslausepohjainen"
+        not_recommended: "(ei suositeltu)"
+      export:
+        title: "Vie salausavainpari"
+        instructions: "Avainparin vieminen on toinen varamekanismi. Huomaa, että viety avainpari on suojaamaton, ja se voi purkaa kaikkien yksityisten keskustelujesi salauksen."
+      rotate:
+        title: "Kierrätä salausavainpari"
+        instructions: "Oletko varma, että haluat kierrättää salausavaimesi? Tämä luo uuden avainparin, ja kaikki paperiavaimet tuhoutuvat. Et menetä pääsyä salattuihin viesteihin, mutta sinun täytyy aktivoida salaus uudelleen muissa laitteissa."
+        loading: "Ladataan vanhoja ketjuavaimia..."
+        rotating: "Kierrätetään avaimia..."
+        saving: "Tallennetaan uusia ketjuavaimia..."
+        updating: "Päivitetään avainta..."
+        finished: "Valmis!"
+      reset:
+        title: "Poista salatut viestit käytöstä"
+        instructions: "Haluatko varmasti poistaa salatut viestit käytöstä ja palauttaa salausavaimesi? Tämä toiminto poistaa salausavaimesi pysyvästi, eikä sinulla ole enää pääsyä salattuihin yksityisviesteihisi."
+        instructions_lost_pms:
+          one: "Menetät <strong>pysyvästi</strong> pääsyn %{count} salattuun viestiin."
+          other: "Menetät <strong>pysyvästi</strong> pääsyn %{count} salattuun viestiin."
+        instructions_safe: "Haluatko varmasti poistaa salatut viestit käytöstä ja palauttaa salausavaimesi? Voit ottaa salatut viestit uudelleen käyttöön luomalla uuden avainparin."
+        confirm_instructions: "Vahvista kirjoittamalla <code>%{username}</code>:"
+      time_bomb:
+        title: "Tämä viesti poistetaan pysyvästi %{after} jälkeen"
+        never: "Ei koskaan"
+        3_minutes: "3 minuutin"
+        1_hour: "1 tunnin"
+        3_hours: "3 tunnin"
+        12_hours: "12 tunnin"
+        24_hours: "24 tunnin"
+        3_days: "3 päivän"
+        7_days: "7 päivän"
