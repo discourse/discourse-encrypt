@@ -865,6 +865,7 @@ acceptance("Encrypt", function (needs) {
       document.title,
       "Top Secret Title - QUnit Discourse Tests"
     );
+    assert.ok(exists(".private_message.encrypted"), "encrypted class is added");
   });
 
   test("encrypt settings visible only if user can encrypt", async (assert) => {

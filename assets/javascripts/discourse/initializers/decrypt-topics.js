@@ -118,6 +118,10 @@ export default {
     const self = this;
     Component.reopen({
       didRender() {
+        const topic = self.container.lookup("controller:topic").model;
+        if (topic?.encrypted_title) {
+          document.querySelector(".private_message").classList.add("encrypted");
+        }
         scheduleOnce("afterRender", self, () => {
           discourseDebounce(self, self.decryptTopicTitles, 500);
         });
