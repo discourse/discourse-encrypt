@@ -118,10 +118,6 @@ export default {
     const self = this;
     Component.reopen({
       didRender() {
-        const topic = self.container.lookup("controller:topic").model;
-        if (topic?.encrypted_title) {
-          document.querySelector(".private_message").classList.add("encrypted");
-        }
         scheduleOnce("afterRender", self, () => {
           discourseDebounce(self, self.decryptTopicTitles, 500);
         });
@@ -243,7 +239,12 @@ export default {
     }
 
     const topicController = this.container.lookup("controller:topic");
-    const topicId = topicController.get("model.id");
+    const topic = topicController.get("model");
+    const topicId = topic.id;
+
+    if (topic?.encrypted_title) {
+      document.querySelector(".private_message").classList.add("encrypted");
+    }
 
     getTopicTitle(topicId).then((topicTitle) => {
       // Update fancy title stored in model
