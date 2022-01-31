@@ -239,7 +239,12 @@ export default {
     }
 
     const topicController = this.container.lookup("controller:topic");
-    const topicId = topicController.get("model.id");
+    const topic = topicController.get("model");
+    const topicId = topic.id;
+
+    if (topic?.encrypted_title) {
+      document.querySelector(".private_message").classList.add("encrypted");
+    }
 
     getTopicTitle(topicId).then((topicTitle) => {
       // Update fancy title stored in model
