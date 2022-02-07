@@ -56,6 +56,10 @@ export default class UppyUploadEncrypt extends UploadPreProcessorPlugin {
       name: `${file.name}.encrypted`,
     });
 
+    this._setFileMeta(fileId, {
+      name: `${file.name}.encrypted`,
+    });
+
     this.storeEncryptedUpload(file.name, {
       key: exportedKey,
       metadata,
