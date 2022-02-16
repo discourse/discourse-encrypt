@@ -123,17 +123,18 @@ pre.exported-key-pair {
 
 .encrypt-toggle,
 .encrypted-post-timer-dropdown .btn {
-  padding: 0.4em 0.5em;
+  padding: 0.3em 0.4em;
   box-sizing: border-box;
   background: transparent;
   min-height: unset;
   vertical-align: middle;
   .discourse-no-touch & {
     &:hover {
-      .d-icon {
-        color: var(--primary-low);
-      }
+      background: transparent;
     }
+  }
+  &:focus {
+    background: var(--primary-low);
   }
 }
 
@@ -162,7 +163,7 @@ pre.exported-key-pair {
   .encrypted-post-timer-dropdown {
     .discourse-no-touch & {
       .btn:hover .d-icon {
-        color: var(--primary-very-low);
+        color: var(--primary);
       }
     }
   }
