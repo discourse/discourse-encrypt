@@ -19,7 +19,7 @@ describe ::DiscourseEncrypt do
   it 'can enable encrypt if safe CSP' do
     SiteSetting.encrypt_enabled = false # plugin is enabled by default
     SiteSetting.content_security_policy_script_src = "default-src 'self' cdn.example.com|script-src 'self' js.example.com|style-src 'self' css.example.com"
-    expect { SiteSetting.encrypt_enabled = true }.not_to raise_error(Discourse::InvalidParameters)
+    expect { SiteSetting.encrypt_enabled = true }.not_to raise_error
   end
 
   it 'cannot enable encrypt if unsafe CSP' do
