@@ -4,13 +4,13 @@ import {
   setIndexedDb,
   setUserAgent,
 } from "discourse/plugins/discourse-encrypt/lib/database";
-import { test } from "qunit";
+import { module, test } from "qunit";
 import { Promise } from "rsvp";
 
 let indexedDbCalls = 0;
 
-QUnit.module("discourse-encrypt:lib:database-safari", {
-  beforeEach() {
+module("discourse-encrypt:lib:database-safari", function (hooks) {
+  hooks.beforeEach(function () {
     indexedDbCalls = 0;
 
     setIndexedDb({
@@ -31,16 +31,16 @@ QUnit.module("discourse-encrypt:lib:database-safari", {
     });
 
     setUserAgent("iPhone");
-  },
+  });
 
-  afterEach() {
+  hooks.afterEach(function () {
     setIndexedDb(window.indexedDB);
     setUserAgent(window.navigator.userAgent);
-  },
-});
+  });
 
-test("IndexedDB is initialized in Safari", async (assert) => {
-  await deleteDb();
-  assert.rejects(loadDbIdentity());
-  assert.ok(indexedDbCalls > 0);
+  test("IndexedDB is initialized in Safari", async function (assert) {
+    await deleteDb();
+    assert.rejects(loadDbIdentity());
+    assert.ok(indexedDbCalls > 0);
+  });
 });

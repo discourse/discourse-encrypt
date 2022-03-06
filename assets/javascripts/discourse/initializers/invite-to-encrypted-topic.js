@@ -10,6 +10,7 @@ import {
 import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import bootbox from "bootbox";
 
 export default {
   name: "invite-to-encrypted-topic",
