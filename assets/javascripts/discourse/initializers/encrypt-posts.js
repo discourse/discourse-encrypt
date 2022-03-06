@@ -26,11 +26,10 @@ import bootbox from "bootbox";
  *
  * @return {Object}
  */
-function addMetadata(metadata) {
-  const controller = Discourse.__container__.lookup("controller:composer");
-  const model = controller.model;
+function addMetadata(composer, metadata) {
+  const model = composer.model;
 
-  const currentUser = controller.currentUser;
+  const currentUser = composer.currentUser;
   const now = new Date().toISOString();
 
   metadata.signed_by_id = currentUser.id;
@@ -202,12 +201,19 @@ export default {
           }
 
           return Promise.all([getTopicKey(attrs.topic_id), getIdentity()])
-            .then(([key, identity]) =>
-              encrypt(key, addMetadata({ raw: attrs.raw }), {
+            .then(([key, identity]) => {
+              const metadata = addMetadata(
+                container.lookup("controller:composer"),
+                {
+                  raw: attrs.raw,
+                }
+              );
+
+              return encrypt(key, metadata, {
                 signKey: identity.signPrivate,
                 includeUploads: true,
-              })
-            )
+              });
+            })
             .then((encryptedRaw) => {
               delete attrs.cooked;
               delete attrs.raw_old;
