@@ -17,6 +17,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
+import bootbox from "bootbox";
 
 export default {
   setupComponent(args, component) {

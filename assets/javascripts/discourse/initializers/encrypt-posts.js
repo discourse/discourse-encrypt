@@ -17,6 +17,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import bootbox from "bootbox";
 
 /**
  * Adds metadata extracted from the composer.

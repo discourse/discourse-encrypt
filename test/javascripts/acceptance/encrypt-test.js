@@ -197,7 +197,7 @@ acceptance("Encrypt", function (needs) {
     });
   });
 
-  test("meta: leak checker works", async (assert) => {
+  test("meta: leak checker works", async function (assert) {
     globalAssert = { notContains: () => assert.ok(true) };
 
     await visit("/");
@@ -212,7 +212,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("posting does not leak plaintext", async (assert) => {
+  test("posting does not leak plaintext", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
     globalAssert = assert;
 
@@ -284,7 +284,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("new draft for public topic is not encrypted", async (assert) => {
+  test("new draft for public topic is not encrypted", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
     pretender.post("/drafts.json", (request) => {
@@ -310,7 +310,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("enabling works", async (assert) => {
+  test("enabling works", async function (assert) {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
     let ajaxRequested = false;
@@ -330,7 +330,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(identity.signPrivate instanceof CryptoKey);
   });
 
-  test("activation works", async (assert) => {
+  test("activation works", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ENABLED);
 
     await visit("/u/eviltrout/preferences/security");
@@ -344,7 +344,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(identity.signPrivate instanceof CryptoKey);
   });
 
-  test("deactivation works", async (assert) => {
+  test("deactivation works", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
     await visit("/u/eviltrout/preferences/security");
@@ -353,7 +353,7 @@ acceptance("Encrypt", function (needs) {
     assert.rejects(loadDbIdentity());
   });
 
-  test("viewing encrypted topic works when just enabled", async (assert) => {
+  test("viewing encrypted topic works when just enabled", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ENABLED);
     globalAssert = assert;
 
@@ -606,7 +606,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(exists(".modal.activate-encrypt-modal"));
   });
 
-  test("viewing encrypted topic works when active", async (assert) => {
+  test("viewing encrypted topic works when active", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
     globalAssert = assert;
 
@@ -868,7 +868,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(exists(".private_message.encrypted"), "encrypted class is added");
   });
 
-  test("encrypt settings visible only if user can encrypt", async (assert) => {
+  test("encrypt settings visible only if user can encrypt", async function (assert) {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
     await visit("/u/eviltrout/preferences/security");
@@ -897,7 +897,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("user preferences connector works for other users", async (assert) => {
+  test("user preferences connector works for other users", async function (assert) {
     await setEncryptionStatus(ENCRYPT_DISABLED);
 
     pretender.get("/u/eviltrout2.json", () => {
@@ -918,7 +918,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("topic titles in notification panel are decrypted", async (assert) => {
+  test("topic titles in notification panel are decrypted", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
     const identity = await getIdentity();
@@ -979,7 +979,7 @@ acceptance("Encrypt", function (needs) {
     assert.strictEqual(count(".quick-access-panel span[data-topic-id] img"), 1);
   });
 
-  test("searching in encrypted topic titles", async (assert) => {
+  test("searching in encrypted topic titles", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
     const identity = await getIdentity();
@@ -1154,7 +1154,7 @@ acceptance("Encrypt", function (needs) {
     );
   });
 
-  test("searching in bookmarks", async (assert) => {
+  test("searching in bookmarks", async function (assert) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
 
     const identity = await getIdentity();
