@@ -13,7 +13,7 @@ fi:
       invalid_ciphertext: "Viestin salausta ei voitu purkaa, koska tämän viestin salausteksti on virheellinen."
       invalid_topic_key: "Viestin salausta ei voitu purkaa, koska ketjuavaimesi on virheellinen."
       invalid_identity: "Viestin salausta ei voitu purkaa, koska käyttäjän identiteetti on virheellinen."
-      no_backup_warn: "Otit salauksen käyttöön, mutta et ole vielä luonut paperiavaimia. Ilman paperiavaimia saatat menettää pääsyn salattuihin viesteihisi. Luo paperiavain siirtymällä <a href='%{basePath}/my/preferences/account'>käyttäjäasetussivulle</a>, painamalla <kbd>Luo paperiavain</kbd> -painiketta ja noudattamalla ohjeita."
+      no_backup_warn: "Otit salauksen käyttöön, mutta et ole vielä luonut paperiavaimia. Ilman paperiavaimia saatat menettää pääsyn salattuihin viesteihisi. Luo paperiavain siirtymällä <a href='%{basePath}/my/preferences/security'>käyttäjäasetussivulle</a>, painamalla <kbd>Luo paperiavain</kbd> -painiketta ja noudattamalla ohjeita."
       integrity_check_pass: "Tämän viestin eheystarkastus on läpäisty."
       integrity_check_fail: "Tämän viestin eheystarkastus epäonnistui (%{fields} ei täsmää)."
       integrity_check_warn_updated_at: "Viestin metatiedot päivitettiin ilman allekirjoittamista."

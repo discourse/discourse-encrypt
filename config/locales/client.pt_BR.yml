@@ -13,7 +13,7 @@ pt_BR:
       invalid_ciphertext: "Não foi possível descriptografar esta mensagem porque o texto cifrado desta mensagem é inválido."
       invalid_topic_key: "Não foi possível descriptografar esta mensagem porque sua chave de tópico é inválida."
       invalid_identity: "A mensagem não pode ser descriptografada porque sua identidade de usuário(a) é inválida."
-      no_backup_warn: "Você ativou a criptografia, mas ainda não gerou nenhuma chave de papel. Sem chaves de papel, você corre o risco de perder o acesso às suas mensagens criptografadas. Para gerar uma chave de papel, acesse a <a href='%{basePath}/my/preferences/account'>página de preferências de usuário(a)</a>, pressione o botão <kbd>Gerar chave de papel</kbd> e siga as instruções."
+      no_backup_warn: "Você ativou a criptografia, mas ainda não gerou nenhuma chave de papel. Sem chaves de papel, você corre o risco de perder o acesso às suas mensagens criptografadas. Para gerar uma chave de papel, acesse a <a href='%{basePath}/my/preferences/security'>página de preferências de usuário(a)</a>, pressione o botão <kbd>Gerar chave de papel</kbd> e siga as instruções."
       integrity_check_pass: "A verificação de integridade para esta postagem passou."
       integrity_check_fail: "A verificação de integridade para esta postagem fracassou (incompatibilidade de %{fields})"
       integrity_check_warn_updated_at: "Os metadados da publicação foram atualizados sem ser assinados novamente."

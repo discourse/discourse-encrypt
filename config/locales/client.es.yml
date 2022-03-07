@@ -13,7 +13,7 @@ es:
       invalid_ciphertext: "No se ha podido descifrar el mensaje porque el texto cifrado de este mensaje no es válido."
       invalid_topic_key: "No se pudo descifrar el mensaje porque la clave del tema no es válida."
       invalid_identity: "No se pudo descifrar el mensaje porque la identidad del usuario no es válida."
-      no_backup_warn: "Has activado el cifrado, pero aún no has generado ninguna clave en papel. Sin ninguna clave en papel, corres el riesgo de perder el acceso a tus mensajes cifrados. Para generar una clave de papel, ve a la <a href='%{basePath}/my/preferences/account'>página de preferencias de usuario</a>, pulsa el botón <kbd>Generar clave de papel</kbd> y sigue las instrucciones."
+      no_backup_warn: "Has activado el cifrado, pero aún no has generado ninguna clave en papel. Sin ninguna clave en papel, corres el riesgo de perder el acceso a tus mensajes cifrados. Para generar una clave de papel, ve a la <a href='%{basePath}/my/preferences/security'>página de preferencias de usuario</a>, pulsa el botón <kbd>Generar clave de papel</kbd> y sigue las instrucciones."
       integrity_check_pass: "La comprobación de la integridad de este puesto ha sido superada."
       integrity_check_fail: "La comprobación de integridad de esta publicación ha fallado (%{fields} no coinciden)."
       integrity_check_warn_updated_at: "Los metadatos de la publicación se actualizaron sin volver a firmarse."
