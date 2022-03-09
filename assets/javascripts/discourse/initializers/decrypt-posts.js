@@ -40,6 +40,7 @@ import {
   lookupUncachedUploadUrls,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
+import { isTesting } from "discourse-common/config/environment";
 
 /*
  * Debounced queues for fetching information about user identities, mentions,
@@ -264,7 +265,7 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     const siteSettings = container.lookup("site-settings:main");
-    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    if (!isTesting() && getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
       return;
     }
 
