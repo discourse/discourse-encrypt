@@ -6,6 +6,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import UppyUploadEncrypt from "discourse/plugins/discourse-encrypt/lib/uppy-upload-encrypt-plugin";
 import { DEFAULT_LIST } from "pretty-text/white-lister";
+import { isTesting } from "discourse-common/config/environment";
 
 export default {
   name: "encrypt-uploads",
@@ -13,7 +14,7 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     const siteSettings = container.lookup("site-settings:main");
-    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (!isTesting() && getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 
