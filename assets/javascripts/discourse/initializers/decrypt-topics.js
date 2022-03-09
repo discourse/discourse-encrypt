@@ -227,7 +227,7 @@ export default {
   },
 
   decryptTopicPage(data) {
-    if (!data.currentRouteName.startsWith("topic.")) {
+    if (!data.currentRouteName?.startsWith("topic.")) {
       return;
     }
 
