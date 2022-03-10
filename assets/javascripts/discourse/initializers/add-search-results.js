@@ -12,7 +12,6 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import I18n from "I18n";
 import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
@@ -108,7 +107,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!isTesting() && getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

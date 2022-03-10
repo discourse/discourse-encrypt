@@ -11,14 +11,13 @@ import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
 import bootbox from "bootbox";
-import { isTesting } from "discourse-common/config/environment";
 
 export default {
   name: "invite-to-encrypted-topic",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!isTesting() && getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 
