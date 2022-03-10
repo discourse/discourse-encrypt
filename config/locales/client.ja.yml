@@ -13,7 +13,6 @@ ja:
       invalid_ciphertext: "このメッセージの暗号文が無効であるため、メッセージを復号化できませんでした。"
       invalid_topic_key: "トピックキーが無効であるため、メッセージを復号化できませんでした。"
       invalid_identity: "ユーザー ID が無効であるため、メッセージを復号化できませんでした。"
-      no_backup_warn: "暗号化を有効にしましたが、ペーパーキーをまだ生成していません。ペーパーキーがない場合、暗号化されたメッセージにアクセスできなくなる可能性があります。ペーパーキーを生成するには、<a href='%{basePath}/my/preferences/security'>ユーザー設定ページ</a>に移動し、<kbd>ペーパーキーを生成</kbd>ボタンを押して指示に従ってください。"
       integrity_check_pass: "この投稿の整合性チェックに合格しました。"
       integrity_check_fail: "この投稿の整合性チェックに失敗しました（不一致 %{fields}）。"
       integrity_check_warn_updated_at: "投稿メタデータは再度署名されずに更新されました。"

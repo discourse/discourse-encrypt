@@ -13,7 +13,6 @@ fr:
       invalid_ciphertext: "Le message n'a pas pu être déchiffré car le texte chiffré de ce message est invalide."
       invalid_topic_key: "Le message n'a pas pu être déchiffré car votre clé de sujet est invalide."
       invalid_identity: "Le message n'a pas pu être déchiffré car l'identité de l'utilisateur est invalide."
-      no_backup_warn: "Vous avez activé le chiffrement, mais vous n'avez encore généré aucune clé papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour générer une clé papier, accédez à <a href='%{basePath}/my/preferences/security'>page des préférences utilisateur</a>, appuyez sur le bouton <kbd>Générer une clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (le ou les champs %{fields} ne correspondent pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
