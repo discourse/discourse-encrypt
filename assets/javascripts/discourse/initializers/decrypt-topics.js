@@ -117,9 +117,9 @@ export default {
     appEvents.on("encrypt:status-changed", this, this.decryptTopicTitles);
     appEvents.on("page:changed", this, this.decryptTopicPage);
 
+    const self = this;
     if (!registeredComponentHook) {
       // Try to decrypt new titles that may appear after rendering a component
-      const self = this;
       Component.reopen({
         didRender() {
           scheduleOnce("afterRender", self, () => {
