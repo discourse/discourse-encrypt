@@ -98,6 +98,8 @@ function replaceIcons(containerSelector, elementSelector, iconSelector) {
   });
 }
 
+let registeredComponentHook = false;
+
 export default {
   name: "decrypt-topics",
   container: null,
@@ -115,16 +117,19 @@ export default {
     appEvents.on("encrypt:status-changed", this, this.decryptTopicTitles);
     appEvents.on("page:changed", this, this.decryptTopicPage);
 
-    // Try to decrypt new titles that may appear after rendering a component
     const self = this;
-    Component.reopen({
-      didRender() {
-        scheduleOnce("afterRender", self, () => {
-          discourseDebounce(self, self.decryptTopicTitles, 500);
-        });
-        return this._super(...arguments);
-      },
-    });
+    if (!registeredComponentHook) {
+      // Try to decrypt new titles that may appear after rendering a component
+      Component.reopen({
+        didRender() {
+          scheduleOnce("afterRender", self, () => {
+            discourseDebounce(self, self.decryptTopicTitles, 500);
+          });
+          return this._super(...arguments);
+        },
+      });
+      registeredComponentHook = true;
+    }
 
     withPluginApi("0.11.3", (api) => {
       // All quick-access panels
