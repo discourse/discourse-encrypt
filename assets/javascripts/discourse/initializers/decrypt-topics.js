@@ -13,7 +13,6 @@ import {
   syncGetTopicTitle,
   waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { isTesting } from "discourse-common/config/environment";
 
 /**
  * Decrypts elements that contain topic titles
@@ -106,7 +105,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!isTesting() && getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 

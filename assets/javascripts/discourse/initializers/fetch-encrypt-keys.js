@@ -10,7 +10,6 @@ import {
   putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
 
 const CACHE_KEY = "discourse-encrypt-bookmark-cache";
 
@@ -97,7 +96,7 @@ export default {
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!isTesting() && getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
+    if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
       return;
     }
 

@@ -8,14 +8,13 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
 
 export default {
   name: "decrypt-post-revisions",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!isTesting() && getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 
