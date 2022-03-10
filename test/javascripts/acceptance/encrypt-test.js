@@ -152,11 +152,11 @@ async function wait(statusOrWaiter, func) {
   }
 }
 
-acceptance("Encrypt", function (needs) {
+function setupEncryptTests(needs) {
   needs.user({ can_encrypt: true });
   needs.settings({ encrypt_pms_default: true });
 
-  needs.hooks.beforeEach(() => {
+  needs.hooks.beforeEach(function () {
     sinon.stub(EncryptLibDiscourse, "reload");
 
     // Hook `XMLHttpRequest` to search for leaked plaintext.
@@ -173,7 +173,7 @@ acceptance("Encrypt", function (needs) {
     resetEncrypt();
   });
 
-  needs.hooks.afterEach(() => {
+  needs.hooks.afterEach(function () {
     // Restore `XMLHttpRequest`.
     XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.send_;
     delete XMLHttpRequest.prototype.send_;
@@ -196,123 +196,16 @@ acceptance("Encrypt", function (needs) {
       return helper.response({});
     });
   });
+}
 
-  test("meta: leak checker works", async function (assert) {
-    globalAssert = { notContains: () => assert.ok(true) };
+acceptance("Encrypt - disabled", function (needs) {
+  setupEncryptTests(needs);
 
-    await visit("/");
-    await click("#create-topic");
-
-    requests = [];
-    await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
-    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
-    await wait(
-      () => requests.includes("/posts"),
-      () => click("button.create")
-    );
-  });
-
-  test("posting does not leak plaintext", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-    globalAssert = assert;
-
-    pretender.get("/u/search/users", () => {
-      return [
-        200,
-        { "Content-Type": "application/json" },
-        {
-          users: [
-            {
-              username: "eviltrout",
-              name: "eviltrout",
-              avatar_template: "/images/avatar.png",
-            },
-          ],
-        },
-      ];
-    });
-
-    pretender.post("/posts", (request) => {
-      const body = parsePostData(request.requestBody);
-
-      assert.strictEqual(body.raw, I18n.t("encrypt.encrypted_post"));
-      assert.strictEqual(body.title, I18n.t("encrypt.encrypted_title"));
-      assert.strictEqual(body.archetype, "private_message");
-      assert.strictEqual(body.target_recipients, "eviltrout");
-      assert.strictEqual(body.draft_key, "new_topic");
-      assert.strictEqual(body.is_encrypted, "true");
-      assert.ok(body.encrypted_title.startsWith("1$"));
-      assert.ok(body.encrypted_raw.startsWith("1$"));
-      assert.ok(JSON.parse(body.encrypted_keys).eviltrout);
-
-      return [
-        200,
-        { "Content-Type": "application/json" },
-        { action: "create_post", post: { topic_id: 34 } },
-      ];
-    });
-
-    const composerActions = selectKit(".composer-actions");
-
-    await visit("/");
-    await click("#create-topic");
-    await composerActions.expand();
-    await composerActions.selectRowByValue("reply_as_private_message");
-
-    // simulate selecting from autocomplete suggestions
-    const usersSelector = selectKit("#private-message-users");
-    await usersSelector.expand();
-    await usersSelector.fillInFilter("evilt");
-    await usersSelector.selectRowByValue("eviltrout");
-
-    requests = [];
-    await wait(
-      () => requests.includes("/drafts.json"),
-      async () => {
-        await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
-        await fillIn(
-          ".d-editor-input",
-          `Hello, world! ${PLAINTEXT}`.repeat(42)
-        );
-      }
-    );
-
-    requests = [];
-    await wait(
-      () => requests.includes("/posts") && requests.includes("/encrypt/post"),
-      () => click("button.create")
-    );
-  });
-
-  test("new draft for public topic is not encrypted", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-
-    pretender.post("/drafts.json", (request) => {
-      const data = JSON.parse(parsePostData(request.requestBody).data);
-      if (data.title) {
-        assert.strictEqual(data.title, `Some public message ${PLAINTEXT}`);
-      }
-      if (data.reply) {
-        assert.strictEqual(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
-      }
-      return [200, { "Content-Type": "application/json" }, {}];
-    });
-
-    await visit("/");
-    await click("#create-topic");
-    await fillIn("#reply-title", `Some public message ${PLAINTEXT}`);
-    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
-
-    requests = [];
-    await wait(
-      () => requests.includes("/drafts.json"),
-      () => click(".toggler")
-    );
+  needs.hooks.beforeEach(async function () {
+    await setEncryptionStatus(ENCRYPT_DISABLED);
   });
 
   test("enabling works", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_DISABLED);
-
     let ajaxRequested = false;
     pretender.put("/encrypt/keys", () => {
       ajaxRequested = true;
@@ -330,9 +223,61 @@ acceptance("Encrypt", function (needs) {
     assert.ok(identity.signPrivate instanceof CryptoKey);
   });
 
-  test("activation works", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ENABLED);
+  test("encrypt settings visible only if user can encrypt", async function (assert) {
+    await visit("/u/eviltrout/preferences/security");
+    assert.ok(
+      query(".encrypt").innerText.trim().length > 0,
+      "encrypt settings are visible"
+    );
 
+    updateCurrentUser({ can_encrypt: false });
+
+    await visit("/u/eviltrout/preferences");
+    await click(".nav-security a");
+    assert.strictEqual(
+      query(".encrypt").innerText.trim().length,
+      0,
+      "encrypt settings are not visible"
+    );
+
+    updateCurrentUser({ can_encrypt: true });
+
+    await visit("/u/eviltrout/preferences");
+    await click(".nav-security a");
+    assert.ok(
+      query(".encrypt").innerText.trim().length > 0,
+      "encrypt settings are visible"
+    );
+  });
+
+  test("user preferences connector works for other users", async function (assert) {
+    pretender.get("/u/eviltrout2.json", () => {
+      const json = cloneJSON(userFixtures["/u/eviltrout.json"]);
+      json.user.id += 1;
+      json.user.can_edit = true;
+      json.user.can_encrypt = true;
+      json.user.encrypt_public = "encrypted public identity";
+      return [200, { "Content-Type": "application/json" }, json];
+    });
+
+    await visit("/u/eviltrout2/preferences/security");
+
+    assert.ok(
+      query(".user-preferences-security-outlet.encrypt")
+        .innerText.trim()
+        .includes(I18n.t("encrypt.preferences.status_enabled_other"))
+    );
+  });
+});
+
+acceptance("Encrypt - enabled", function (needs) {
+  setupEncryptTests(needs);
+
+  needs.hooks.beforeEach(async function () {
+    await setEncryptionStatus(ENCRYPT_ENABLED);
+  });
+
+  test("activation works", async function (assert) {
     await visit("/u/eviltrout/preferences/security");
     await fillIn(".encrypt #passphrase", PASSPHRASE);
     await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
@@ -344,17 +289,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(identity.signPrivate instanceof CryptoKey);
   });
 
-  test("deactivation works", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-
-    await visit("/u/eviltrout/preferences/security");
-    await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
-
-    assert.rejects(loadDbIdentity());
-  });
-
   test("viewing encrypted topic works when just enabled", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ENABLED);
     globalAssert = assert;
 
     const identities = JSON.parse(User.current().encrypt_private);
@@ -605,9 +540,133 @@ acceptance("Encrypt", function (needs) {
     await visit("/t/a-secret-message/42"); // wait for re-render
     assert.ok(exists(".modal.activate-encrypt-modal"));
   });
+});
+
+acceptance("Encrypt - active", function (needs) {
+  setupEncryptTests(needs);
+
+  needs.hooks.beforeEach(async function () {
+    await setEncryptionStatus(ENCRYPT_ACTIVE);
+  });
+
+  test("meta: leak checker works", async function (assert) {
+    globalAssert = { notContains: () => assert.ok(true) };
+
+    await visit("/");
+    await click("#create-topic");
+
+    requests = [];
+    await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
+    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+    await wait(
+      () => requests.includes("/posts"),
+      () => click("button.create")
+    );
+  });
+
+  test("posting does not leak plaintext", async function (assert) {
+    globalAssert = assert;
+
+    pretender.get("/u/search/users", () => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          users: [
+            {
+              username: "eviltrout",
+              name: "eviltrout",
+              avatar_template: "/images/avatar.png",
+            },
+          ],
+        },
+      ];
+    });
+
+    pretender.post("/posts", (request) => {
+      const body = parsePostData(request.requestBody);
+
+      assert.strictEqual(body.raw, I18n.t("encrypt.encrypted_post"));
+      assert.strictEqual(body.title, I18n.t("encrypt.encrypted_title"));
+      assert.strictEqual(body.archetype, "private_message");
+      assert.strictEqual(body.target_recipients, "eviltrout");
+      assert.strictEqual(body.draft_key, "new_topic");
+      assert.strictEqual(body.is_encrypted, "true");
+      assert.ok(body.encrypted_title.startsWith("1$"));
+      assert.ok(body.encrypted_raw.startsWith("1$"));
+      assert.ok(JSON.parse(body.encrypted_keys).eviltrout);
+
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        { action: "create_post", post: { topic_id: 34 } },
+      ];
+    });
+
+    const composerActions = selectKit(".composer-actions");
+
+    await visit("/");
+    await click("#create-topic");
+    await composerActions.expand();
+    await composerActions.selectRowByValue("reply_as_private_message");
+
+    // simulate selecting from autocomplete suggestions
+    const usersSelector = selectKit("#private-message-users");
+    await usersSelector.expand();
+    await usersSelector.fillInFilter("evilt");
+    await usersSelector.selectRowByValue("eviltrout");
+
+    requests = [];
+    await wait(
+      () => requests.includes("/drafts.json"),
+      async () => {
+        await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
+        await fillIn(
+          ".d-editor-input",
+          `Hello, world! ${PLAINTEXT}`.repeat(42)
+        );
+      }
+    );
+
+    requests = [];
+    await wait(
+      () => requests.includes("/posts") && requests.includes("/encrypt/post"),
+      () => click("button.create")
+    );
+  });
+
+  test("new draft for public topic is not encrypted", async function (assert) {
+    pretender.post("/drafts.json", (request) => {
+      const data = JSON.parse(parsePostData(request.requestBody).data);
+      if (data.title) {
+        assert.strictEqual(data.title, `Some public message ${PLAINTEXT}`);
+      }
+      if (data.reply) {
+        assert.strictEqual(data.reply, `Hello, world! ${PLAINTEXT}`.repeat(42));
+      }
+      return [200, { "Content-Type": "application/json" }, {}];
+    });
+
+    await visit("/");
+    await click("#create-topic");
+    await fillIn("#reply-title", `Some public message ${PLAINTEXT}`);
+    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+
+    requests = [];
+    await wait(
+      () => requests.includes("/drafts.json"),
+      () => click(".toggler")
+    );
+  });
+
+  test("deactivation works", async function (assert) {
+    await visit("/u/eviltrout/preferences/security");
+    await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
+
+    assert.rejects(loadDbIdentity());
+  });
 
   test("viewing encrypted topic works when active", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
     globalAssert = assert;
 
     const identity = await getIdentity();
@@ -868,59 +927,7 @@ acceptance("Encrypt", function (needs) {
     assert.ok(exists(".private_message.encrypted"), "encrypted class is added");
   });
 
-  test("encrypt settings visible only if user can encrypt", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_DISABLED);
-
-    await visit("/u/eviltrout/preferences/security");
-    assert.ok(
-      query(".encrypt").innerText.trim().length > 0,
-      "encrypt settings are visible"
-    );
-
-    updateCurrentUser({ can_encrypt: false });
-
-    await visit("/u/eviltrout/preferences");
-    await click(".nav-security a");
-    assert.strictEqual(
-      query(".encrypt").innerText.trim().length,
-      0,
-      "encrypt settings are not visible"
-    );
-
-    updateCurrentUser({ can_encrypt: true });
-
-    await visit("/u/eviltrout/preferences");
-    await click(".nav-security a");
-    assert.ok(
-      query(".encrypt").innerText.trim().length > 0,
-      "encrypt settings are visible"
-    );
-  });
-
-  test("user preferences connector works for other users", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_DISABLED);
-
-    pretender.get("/u/eviltrout2.json", () => {
-      const json = cloneJSON(userFixtures["/u/eviltrout.json"]);
-      json.user.id += 1;
-      json.user.can_edit = true;
-      json.user.can_encrypt = true;
-      json.user.encrypt_public = "encrypted public identity";
-      return [200, { "Content-Type": "application/json" }, json];
-    });
-
-    await visit("/u/eviltrout2/preferences/security");
-
-    assert.ok(
-      query(".user-preferences-security-outlet.encrypt")
-        .innerText.trim()
-        .includes(I18n.t("encrypt.preferences.status_enabled_other"))
-    );
-  });
-
   test("topic titles in notification panel are decrypted", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-
     const identity = await getIdentity();
     const topicKey = await generateKey();
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
@@ -980,8 +987,6 @@ acceptance("Encrypt", function (needs) {
   });
 
   test("searching in encrypted topic titles", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-
     const identity = await getIdentity();
     const topicKey = await generateKey();
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
@@ -1155,8 +1160,6 @@ acceptance("Encrypt", function (needs) {
   });
 
   test("searching in bookmarks", async function (assert) {
-    await setEncryptionStatus(ENCRYPT_ACTIVE);
-
     const identity = await getIdentity();
 
     const topicKey = await generateKey();
