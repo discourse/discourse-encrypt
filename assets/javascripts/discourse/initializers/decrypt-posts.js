@@ -360,90 +360,94 @@ export default {
         },
       });
 
-      function decryptPost(attrs, state, topicId) {
-        const ciphertext = attrs.encrypted_raw;
+      async function decryptPost(attrs, state, topicId) {
+        const cipherText = attrs.encrypted_raw;
 
-        if (!ciphertext || state.ciphertext === ciphertext) {
+        if (!cipherText || state.cipherText === cipherText) {
           return;
         } else if (!window.isSecureContext) {
           state.encryptState = "error";
           state.error = I18n.t("encrypt.preferences.insecure_context");
           return;
-        } else if (ciphertext && !hasTopicKey(topicId)) {
+        } else if (cipherText && !hasTopicKey(topicId)) {
           state.encryptState = "error";
           state.error = I18n.t("encrypt.missing_topic_key");
           return;
         }
 
         state.encryptState = "decrypting";
-        state.ciphertext = ciphertext;
+        state.cipherText = cipherText;
 
-        getIdentity()
-          .then(() => {
-            getTopicKey(topicId)
-              .then((key) => {
-                decrypt(key, ciphertext)
-                  .then((plaintext) => {
-                    if (plaintext.signature) {
-                      if (!userIdentitiesQueues) {
-                        userIdentitiesQueues = new DebouncedQueue(
-                          500,
-                          getUserIdentities
-                        );
-                      }
-                      userIdentitiesQueues
-                        .push(plaintext.signed_by_name)
-                        .then((ids) => ids[plaintext.signed_by_name])
-                        .then((userIdentity) => {
-                          return verify(
-                            userIdentity.signPublic,
-                            plaintext,
-                            ciphertext
-                          );
-                        })
-                        .then((result) => {
-                          verified[attrs.id] = checkMetadata(attrs, plaintext);
-                          if (!result) {
-                            verified[attrs.id].push({
-                              attr: "signature",
-                              actual: false,
-                              expected: true,
-                            });
-                          }
-                        })
-                        .catch(() => {
-                          verified[attrs.id] = [
-                            {
-                              attr: "signature",
-                              actual: false,
-                              expected: true,
-                            },
-                          ];
-                        })
-                        .finally(() => this.scheduleRerender());
-                    }
-                    return cookAsync(plaintext.raw);
-                  })
-                  .then((cooked) => {
-                    state.encryptState = "decrypted";
-                    state.plaintext = cooked.string;
-                    this.scheduleRerender();
-                  })
-                  .catch(() => {
-                    state.encryptState = "error";
-                    state.error = I18n.t("encrypt.invalid_ciphertext");
-                    this.scheduleRerender();
-                  });
-              })
-              .catch(() => {
-                state.encryptState = "error";
-                state.error = I18n.t("encrypt.invalid_topic_key");
-                this.scheduleRerender();
-              });
-          })
-          .catch(() => {
-            showModal("activate-encrypt", { model: { widget: this } });
-          });
+        try {
+          await getIdentity();
+
+          let key;
+          try {
+            key = await getTopicKey(topicId);
+          } catch (error) {
+            state.encryptState = "error";
+            state.error = I18n.t("encrypt.invalid_topic_key");
+            this.scheduleRerender();
+            return;
+          }
+
+          let plaintext;
+          try {
+            plaintext = await decrypt(key, cipherText);
+          } catch (error) {
+            state.encryptState = "error";
+            state.error = I18n.t("encrypt.invalid_cipherText");
+            this.scheduleRerender();
+            return;
+          }
+
+          if (plaintext.signature) {
+            if (!userIdentitiesQueues) {
+              userIdentitiesQueues = new DebouncedQueue(500, getUserIdentities);
+            }
+
+            try {
+              const ids = await userIdentitiesQueues.push(
+                plaintext.signed_by_name
+              );
+              const userIdentity = ids[plaintext.signed_by_name];
+
+              const result = await verify(
+                userIdentity.signPublic,
+                plaintext,
+                cipherText
+              );
+
+              verified[attrs.id] = checkMetadata(attrs, plaintext);
+
+              if (!result) {
+                verified[attrs.id].push({
+                  attr: "signature",
+                  actual: false,
+                  expected: true,
+                });
+              }
+            } catch (error) {
+              verified[attrs.id] = [
+                {
+                  attr: "signature",
+                  actual: false,
+                  expected: true,
+                },
+              ];
+            } finally {
+              this.scheduleRerender();
+            }
+          }
+
+          const cooked = await cookAsync(plaintext.raw);
+
+          state.encryptState = "decrypted";
+          state.plaintext = cooked.string;
+          this.scheduleRerender();
+        } catch (error) {
+          showModal("activate-encrypt", { model: { widget: this } });
+        }
       }
 
       function updateHtml(attrs, state, topicId) {
