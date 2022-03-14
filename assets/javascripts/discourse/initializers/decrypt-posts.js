@@ -361,22 +361,22 @@ export default {
       });
 
       async function decryptPost(attrs, state, topicId) {
-        const cipherText = attrs.encrypted_raw;
+        const ciphertext = attrs.encrypted_raw;
 
-        if (!cipherText || state.cipherText === cipherText) {
+        if (!ciphertext || state.ciphertext === ciphertext) {
           return;
         } else if (!window.isSecureContext) {
           state.encryptState = "error";
           state.error = I18n.t("encrypt.preferences.insecure_context");
           return;
-        } else if (cipherText && !hasTopicKey(topicId)) {
+        } else if (ciphertext && !hasTopicKey(topicId)) {
           state.encryptState = "error";
           state.error = I18n.t("encrypt.missing_topic_key");
           return;
         }
 
         state.encryptState = "decrypting";
-        state.cipherText = cipherText;
+        state.ciphertext = ciphertext;
 
         try {
           await getIdentity();
@@ -393,10 +393,10 @@ export default {
 
           let plaintext;
           try {
-            plaintext = await decrypt(key, cipherText);
+            plaintext = await decrypt(key, ciphertext);
           } catch (error) {
             state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_cipherText");
+            state.error = I18n.t("encrypt.invalid_ciphertext");
             this.scheduleRerender();
             return;
           }
@@ -415,7 +415,7 @@ export default {
               const result = await verify(
                 userIdentity.signPublic,
                 plaintext,
-                cipherText
+                ciphertext
               );
 
               verified[attrs.id] = checkMetadata(attrs, plaintext);
