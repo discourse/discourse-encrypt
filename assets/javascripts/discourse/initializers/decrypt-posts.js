@@ -406,19 +406,19 @@ export default {
               userIdentitiesQueues = new DebouncedQueue(500, getUserIdentities);
             }
 
-            try {
-              const ids = await userIdentitiesQueues.push(
-                plaintext.signed_by_name
-              );
-              const userIdentity = ids[plaintext.signed_by_name];
+            const ids = await userIdentitiesQueues.push(
+              plaintext.signed_by_name
+            );
+            const userIdentity = ids[plaintext.signed_by_name];
 
+            verified[attrs.id] = checkMetadata(attrs, plaintext);
+
+            try {
               const result = await verify(
                 userIdentity.signPublic,
                 plaintext,
                 ciphertext
               );
-
-              verified[attrs.id] = checkMetadata(attrs, plaintext);
 
               if (!result) {
                 verified[attrs.id].push({
@@ -435,9 +435,9 @@ export default {
                   expected: true,
                 },
               ];
-            } finally {
-              this.scheduleRerender();
             }
+
+            this.scheduleRerender();
           }
 
           const cooked = await cookAsync(plaintext.raw);
