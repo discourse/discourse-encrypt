@@ -4,6 +4,18 @@ import {
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { Promise } from "rsvp";
+import { registerWaiter } from "@ember/test";
+
+/**
+ * Used to determine the waiter state
+ *
+ * @var {Number}
+ */
+let pendingOperationsCount = 0;
+
+if (isTesting()) {
+  registerWaiter(() => pendingOperationsCount === 0);
+}
 
 /**
  * @var {String} DB_NAME Name of IndexedDb used for storing key pairs
@@ -140,10 +152,11 @@ export function saveDbIdentity(identity) {
     return saveIdentityToLocalStorage(identity);
   }
 
+  pendingOperationsCount++;
+
   return new Promise((resolve, reject) => {
     const req = openDb(true);
-    // eslint-disable-next-line no-unused-vars
-    req.onerror = (evt) => {
+    req.onerror = () => {
       saveIdentityToLocalStorage(identity).then(resolve, reject);
     };
 
@@ -156,14 +169,15 @@ export function saveDbIdentity(identity) {
       dataReq.onsuccess = (dataEvt) => {
         window.localStorage.setItem(DB_NAME, true);
         window.localStorage.setItem(DB_VERSION, identity.version);
-        resolve(dataEvt);
         db.close();
+        resolve(dataEvt);
       };
-      // eslint-disable-next-line no-unused-vars
-      dataReq.onerror = (dataEvt) => {
+      dataReq.onerror = () => {
         saveIdentityToLocalStorage(identity).then(resolve, reject);
       };
     };
+  }).finally(() => {
+    pendingOperationsCount--;
   });
 }
 
@@ -184,38 +198,42 @@ export function loadDbIdentity() {
     return loadIdentityFromLocalStorage();
   }
 
-  return initIndexedDb().then(() => {
-    return new Promise((resolve, reject) => {
-      const req = openDb(false);
-      // eslint-disable-next-line no-unused-vars
-      req.onerror = (evt) => {
-        loadIdentityFromLocalStorage().then(resolve, reject);
-      };
+  pendingOperationsCount++;
 
-      req.onsuccess = (evt) => {
-        const db = evt.target.result;
-        const tx = db.transaction("keys", "readonly");
-        const st = tx.objectStore("keys");
-
-        const dataReq = st.getAll();
-        dataReq.onsuccess = (dataEvt) => {
-          const identities = dataEvt.target.result;
-          db.close();
-
-          if (identities && identities.length > 0) {
-            const identity = identities[identities.length - 1];
-            resolve(identity);
-          } else {
-            reject();
-          }
-        };
-        // eslint-disable-next-line no-unused-vars
-        dataReq.onerror = (dataEvt) => {
+  return initIndexedDb()
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        const req = openDb(false);
+        req.onerror = () => {
           loadIdentityFromLocalStorage().then(resolve, reject);
         };
-      };
+
+        req.onsuccess = (evt) => {
+          const db = evt.target.result;
+          const tx = db.transaction("keys", "readonly");
+          const st = tx.objectStore("keys");
+
+          const dataReq = st.getAll();
+          dataReq.onsuccess = (dataEvt) => {
+            const identities = dataEvt.target.result;
+            db.close();
+
+            if (identities && identities.length > 0) {
+              const identity = identities[identities.length - 1];
+              resolve(identity);
+            } else {
+              reject();
+            }
+          };
+          dataReq.onerror = () => {
+            loadIdentityFromLocalStorage().then(resolve, reject);
+          };
+        };
+      });
+    })
+    .finally(() => {
+      pendingOperationsCount--;
     });
-  });
 }
 
 /**
@@ -227,13 +245,19 @@ export function deleteDb() {
   window.localStorage.removeItem(DB_NAME);
   window.localStorage.removeItem(DB_VERSION);
 
-  return initIndexedDb().then(() => {
-    return new Promise((resolve) => {
-      const req = indexedDb.deleteDatabase(DB_NAME);
+  pendingOperationsCount++;
 
-      req.onsuccess = (evt) => resolve(evt);
-      req.onerror = (evt) => resolve(evt);
-      req.onblocked = (evt) => resolve(evt);
+  return initIndexedDb()
+    .then(() => {
+      return new Promise((resolve) => {
+        const req = indexedDb.deleteDatabase(DB_NAME);
+
+        req.onsuccess = (evt) => resolve(evt);
+        req.onerror = (evt) => resolve(evt);
+        req.onblocked = (evt) => resolve(evt);
+      });
+    })
+    .finally(() => {
+      pendingOperationsCount--;
     });
-  });
 }

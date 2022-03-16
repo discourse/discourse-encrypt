@@ -38,7 +38,7 @@ export const ENCRYPT_ENABLED = 1;
 export const ENCRYPT_ACTIVE = 2;
 
 /**
- * @var {Object} userIdentity Current user's identity.
+ * @var {Promise<Object>} userIdentity Current user's identity.
  */
 let userIdentity;
 
@@ -118,7 +118,7 @@ export function getIdentity() {
  * @return {Promise}
  */
 export function getUserIdentities(usernames) {
-  // If some of the user identities are msising, then try to refresh all of
+  // If some of the user identities are missing, then try to refresh all of
   // the newly requested ones.
   if (usernames.some((username) => !userIdentities[username])) {
     const promise = ajax("/encrypt/user", {
