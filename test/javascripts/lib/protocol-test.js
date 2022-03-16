@@ -24,8 +24,8 @@ module("discourse-encrypt:lib:protocol", function () {
   test("encrypt & decrypt", async function (assert) {
     const key = await generateKey();
     const plaintext = "this is a message";
-    const cipherText = await encrypt(key, plaintext);
+    const ciphertext = await encrypt(key, plaintext);
 
-    assert.equal(plaintext, await decrypt(key, cipherText));
+    assert.equal(plaintext, await decrypt(key, ciphertext));
   });
 });
