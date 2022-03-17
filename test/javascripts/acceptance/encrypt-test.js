@@ -1,4 +1,4 @@
-import { click, fillIn, visit } from "@ember/test-helpers";
+import { click, fillIn, settled, visit } from "@ember/test-helpers";
 import { registerWaiter, unregisterWaiter } from "@ember/test";
 import User from "discourse/models/user";
 import {
@@ -1255,6 +1255,7 @@ acceptance("Encrypt - active", function (needs) {
     });
 
     await visit("/u/eviltrout/activity/bookmarks");
+    await settled();
 
     assert.strictEqual(count(".bookmark-list-item"), 2);
     assert.strictEqual(
