@@ -1,4 +1,5 @@
 import { click, fillIn, visit } from "@ember/test-helpers";
+import { registerWaiter, unregisterWaiter } from "@ember/test";
 import User from "discourse/models/user";
 import {
   deleteDb,
@@ -142,13 +143,13 @@ async function wait(statusOrWaiter, func) {
       : () => getEncryptionStatus(User.current()) === statusOrWaiter;
 
   try {
-    Ember.Test.registerWaiter(waiter);
+    registerWaiter(waiter);
     await func();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(`Caught exception while waiting: ${e.message}`, e);
   } finally {
-    Ember.Test.unregisterWaiter(waiter);
+    unregisterWaiter(waiter);
   }
 }
 
@@ -537,7 +538,6 @@ acceptance("Encrypt - enabled", function (needs) {
     });
 
     await visit("/t/a-secret-message/42");
-    await visit("/t/a-secret-message/42"); // wait for re-render
     assert.ok(exists(".modal.activate-encrypt-modal"));
   });
 });
@@ -913,7 +913,6 @@ acceptance("Encrypt - active", function (needs) {
     });
 
     await visit("/t/a-secret-message/42");
-    await visit("/t/a-secret-message/42"); // wait for re-render
 
     assert.strictEqual(
       query(".fancy-title").innerText.trim(),
@@ -1256,7 +1255,7 @@ acceptance("Encrypt - active", function (needs) {
     });
 
     await visit("/u/eviltrout/activity/bookmarks");
-    await visit("/u/eviltrout/activity/bookmarks"); // wait for re-render
+    await visit("/u/eviltrout/activity/bookmarks"); // extra wait
 
     assert.strictEqual(count(".bookmark-list-item"), 2);
     assert.strictEqual(
