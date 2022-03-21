@@ -53,6 +53,8 @@ let shortUrlsQueue;
 
 function checkMetadata(attrs, expected) {
   const actual = {
+    signed_by_id: attrs.user_id,
+    signed_by_name: attrs.username,
     user_id: attrs.user_id,
     user_name: attrs.username,
     created_at: attrs.created_at,
@@ -66,11 +68,13 @@ function checkMetadata(attrs, expected) {
   Object.keys(expected).forEach((attr) => {
     if (
       attr === "raw" ||
-      attr === "signed_by_id" ||
-      attr === "signed_by_name" ||
-      // Check user_id only if username matches, so it does not report
-      // username and user_id.
-      (attr === "user_id" && attrs.user_name !== expected.user_name)
+      // Signature is checked using crypto primitives.
+      attr === "signature" ||
+      // Check user ID only if username matches, so it does not report both
+      // username and user ID.
+      (attr === "signed_by_id" &&
+        actual.signed_by_name !== expected.signed_by_name) ||
+      (attr === "user_id" && actual.user_name !== expected.user_name)
     ) {
       return;
     }
@@ -89,14 +93,6 @@ function checkMetadata(attrs, expected) {
       diff.push({ attr, actual: a, expected: b });
     }
   });
-
-  if (expected.signed_by_name !== attrs.username) {
-    diff.push({
-      attr: "signed_by_name",
-      actual: expected.signed_by_name,
-      expected: attrs.username,
-    });
-  }
 
   // eslint-disable-next-line no-console
   if (console && console.warn && diff.length > 0) {
@@ -267,6 +263,9 @@ export default {
     }
 
     withPluginApi("0.11.3", (api) => {
+      // Keys represent post IDs and values represent either arrays of errors
+      // or 'null' to indicate that the post has been processed, but it had no
+      // signature.
       const verified = {};
 
       api.includePostAttributes("encrypted_raw");
@@ -294,8 +293,15 @@ export default {
 
       api.decorateWidget("post-meta-data:after", (helper) => {
         const result = verified[helper.attrs.id];
+
         if (result === undefined) {
           return;
+        } else if (result === null) {
+          return helper.h(
+            "div.post-info.integrity-warn",
+            { title: I18n.t("encrypt.integrity_check_skip") },
+            iconNode("exclamation-triangle")
+          );
         } else if (result.length === 0) {
           return helper.h(
             "div.post-info.integrity-pass",
@@ -304,33 +310,47 @@ export default {
           );
         }
 
-        const fields = result
-          .map((x) => x.attr)
-          .filter((x) => x !== "updated_at" && x !== "signed_by_name");
+        const messages = [];
 
-        const warns = [];
-        if (fields.length > 0) {
-          warns.push(
-            I18n.t("encrypt.integrity_check_fail", {
-              fields: fields.join(", "),
+        // Show a more descriptive error message if user does not match or if
+        // it was recently updated because these errors are more common and
+        // are not clear indicators of a problem or malicious behavior.
+        const signedError = result.find((x) => x.attr === "signed_by_name");
+        if (signedError) {
+          messages.push(
+            I18n.t("encrypt.integrity_check_warn_signed_by", {
+              actual: signedError.actual,
+              expected: signedError.expected,
             })
           );
-        } else {
-          result.forEach((x) => {
-            if (x.attr === "updated_at") {
-              warns.push(I18n.t("encrypt.integrity_check_warn_updated_at"));
-            } else if (x.attr === "signed_by_name") {
-              warns.push(I18n.t("encrypt.integrity_check_warn_signed_by", x));
-            }
-          });
         }
 
+        const updatedAtError = result.find((x) => x.attr === "updated_at");
+        if (updatedAtError) {
+          messages.push(I18n.t("encrypt.integrity_check_warn_updated_at"));
+        }
+
+        const otherFields = result
+          .map((x) => x.attr)
+          .filter((attr) => attr !== "signed_by_name" && attr !== "updated_at");
+        if (otherFields.length > 0) {
+          messages.push(
+            I18n.t("encrypt.integrity_check_fail", {
+              fields: otherFields.join(", "),
+            })
+          );
+        }
+
+        // Show red error icon only if signature is invalid, all other messages
+        // are treated as warnings otherwise.
+        const isError = result.find((x) => x.attr === "signature");
+
         return helper.h(
-          fields.length === 0
-            ? "div.post-info.integrity-warn"
-            : "div.post-info.integrity-fail",
-          { title: warns.join(" ") },
-          iconNode(fields.length === 0 ? "exclamation-triangle" : "times")
+          isError
+            ? "div.post-info.integrity-fail"
+            : "div.post-info.integrity-warn",
+          { title: messages.join(" ") },
+          iconNode(isError ? "times" : "exclamation-triangle")
         );
       });
 
@@ -438,10 +458,11 @@ export default {
             }
 
             this.scheduleRerender();
+          } else {
+            verified[attrs.id] = null;
           }
 
           const cooked = await cookAsync(plaintext.raw);
-
           state.encryptState = "decrypted";
           state.plaintext = cooked.string;
           this.scheduleRerender();

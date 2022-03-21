@@ -12,6 +12,7 @@ en:
       no_backup_warn: "Encryption is enabled on your account, but you have not yet generated any paper keys. Without any paper keys, you risk losing access to your encrypted messages. To generate a paper key, navigate to <a href='%{basePath}/my/preferences/security'>your security preferences page</a>, press the <kbd>Generate paper key</kbd> button and follow the instructions."
 
       integrity_check_pass: "The integrity check for this post has passed."
+      integrity_check_skip: "The integrity check for this post was skipped because post has no signature."
       integrity_check_fail: "The integrity check for this post has failed (%{fields} mismatch)."
       integrity_check_warn_updated_at: "Post metadata was updated without being signed again."
       integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}."
