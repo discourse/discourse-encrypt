@@ -225,7 +225,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       user_key.encrypt_private = nil
       user_key.save!
 
-      params[:keys].each do |topic_id, key|
+      params[:keys]&.each do |topic_id, key|
         EncryptedTopicsUser.where(user: current_user, topic_id: topic_id).update_all(key: key)
       end
     end

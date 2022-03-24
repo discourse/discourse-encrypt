@@ -220,6 +220,17 @@ describe DiscourseEncrypt::EncryptController do
       expect(response.status).to eq(400)
     end
 
+    it 'updates public keys even if user does not have access to any encrypted topic' do
+      EncryptedTopicsUser.where(user: user).delete_all
+      sign_in(user)
+
+      put '/encrypt/rotate.json', params: {
+        public: 'public key'
+      }
+
+      expect(response.status).to eq(200)
+    end
+
     it 'updates all keys' do
       sign_in(user)
 
