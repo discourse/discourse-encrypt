@@ -184,6 +184,9 @@ pre.exported-key-pair {
   }
 }
 
-.private_message.encrypted .move-to-topic {
-  display: none;
+.private_message.encrypted {
+  .move-to-topic,
+  .topic-admin-convert {
+    display: none;
+  }
 }
