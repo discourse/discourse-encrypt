@@ -15,14 +15,6 @@ import { Promise } from "rsvp";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
-function getCache(session) {
-  let cache = session.get(CACHE_KEY);
-  if (!cache) {
-    session.set(CACHE_KEY, (cache = {}));
-  }
-  return cache;
-}
-
 function addObjectToCache(cache, type, object) {
   if (!cache[type]) {
     cache[type] = {};
@@ -36,23 +28,41 @@ function addPostToCache(cache, post) {
 }
 
 function addTopicToCache(cache, topic) {
+  if (!topic.topic_key || !topic.encrypted_title) {
+    return;
+  }
+
   putTopicKey(topic.id, topic.topic_key);
   putTopicTitle(topic.id, topic.encrypted_title);
-  return getTopicTitle(topic.id).then((title) => {
-    topic.title = title;
-    topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
-    topic.excerpt = null;
-    addObjectToCache(cache, "topics", topic);
-    return topic;
-  });
+
+  return getTopicTitle(topic.id)
+    .then((title) => {
+      topic.title = title;
+      topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
+      topic.excerpt = null;
+
+      addObjectToCache(cache, "topics", topic);
+    })
+    .catch(() => {});
+}
+
+function getCache(session) {
+  let cache = session.get(CACHE_KEY);
+  if (!cache) {
+    session.set(CACHE_KEY, (cache = {}));
+  }
+  return cache;
 }
 
 function loadCache(cache) {
   return ajax("/encrypt/posts").then((result) => {
-    result.posts.forEach((post) => addPostToCache(cache, post));
-    const promises = result.topics.map((topic) =>
-      addTopicToCache(cache, topic).catch(() => {})
+    const promises = [];
+
+    result.posts?.forEach((post) => addPostToCache(cache, post));
+    result.topics?.forEach((topic) =>
+      promises.push(addTopicToCache(cache, topic))
     );
+
     return Promise.all(promises);
   });
 }
@@ -95,11 +105,13 @@ function addEncryptedSearchResultsFromCache(cache, results) {
   });
 
   // Reset topic_title_headline for encrypted results
-  results.posts.map((post) => {
-    if (cache.topics[post.topic_id]) {
-      post.set("topic_title_headline", "");
-    }
-  });
+  if (cache.topics) {
+    results.posts.map((post) => {
+      if (cache.topics[post.topic_id]) {
+        post.set("topic_title_headline", "");
+      }
+    });
+  }
 }
 
 export default {
@@ -119,9 +131,7 @@ export default {
 
         // Decrypt existing topics and cache them
         results.topics.forEach((topic) => {
-          if (topic.topic_key) {
-            promises.push(addTopicToCache(cache, topic).catch(() => {}));
-          }
+          promises.push(addTopicToCache(cache, topic));
         });
 
         // Search for more encrypted topics
