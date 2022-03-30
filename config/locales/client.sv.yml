@@ -13,6 +13,7 @@ sv:
       invalid_ciphertext: "Meddelandet kunde inte avkrypteras eftersom chiffertexten i detta meddelande är ogiltig."
       invalid_topic_key: "Meddelandet kunde inte avkrypteras eftersom din ämnesnyckel är ogiltig."
       invalid_identity: "Meddelandet kunde inte avkrypteras eftersom användaridentiteten är ogiltig."
+      no_backup_warn: "Kryptering är aktiverad på ditt konto, men du har ännu inte genererat några pappersnycklar. Utan pappersnycklar riskerar du att förlora tillgången till dina krypterade meddelanden. För att generera en pappersnyckel navigerar du till <a href='%{basePath}/my/preferences/security'>din sida med säkerhetsinställningar</a>, trycker på knappen <kbd>Generera pappersnyckel</kbd> och följer instruktionerna."
       integrity_check_pass: "Integritetskontrollen för detta inlägg har godkänts."
       integrity_check_fail: "Integritetskontrollen för detta inlägg har misslyckats (%{fields} är felaktigt)."
       integrity_check_warn_updated_at: "Inläggets metadata uppdaterades utan att signering utfördes igen."
