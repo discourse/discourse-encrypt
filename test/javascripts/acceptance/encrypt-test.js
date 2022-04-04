@@ -1158,6 +1158,39 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
+  test("searching works when user has no encrypted topics", async function (assert) {
+    pretender.get("/search", (request) => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          posts: [],
+          topics: [],
+          grouped_search_result: {
+            term: request.queryParams.q,
+            type_filter: "private_messages",
+            post_ids: [],
+          },
+        },
+      ];
+    });
+
+    pretender.get("/encrypt/posts", () => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          success: "OK",
+          topics: [],
+          posts: [],
+        },
+      ];
+    });
+
+    await visit("/search?q=nothing+in:personal");
+    assert.strictEqual(count(".fps-result"), 0);
+  });
+
   test("searching in bookmarks", async function (assert) {
     const identity = await getIdentity();
 
