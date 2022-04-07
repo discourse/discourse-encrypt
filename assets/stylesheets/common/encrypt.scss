@@ -185,6 +185,7 @@ pre.exported-key-pair {
 }
 
 .private_message.encrypted {
+  h1[data-topic-id] .edit-topic,
   .move-to-topic,
   .topic-admin-convert {
     display: none;
