@@ -78,7 +78,13 @@ function addEncryptedSearchResultsFromCache(cache, results) {
   const existentTopicIds = new Set(results.topics.map((topic) => topic.id));
   const topics = {};
   Object.values(cache.topics || {}).forEach((topic) => {
-    if (existentTopicIds.has(topic.id) || !topic.title) {
+    if (existentTopicIds.has(topic.id)) {
+      return;
+    }
+
+    if (!topic.title) {
+      // eslint-disable-next-line no-console
+      console.warn("Encrypted topic title is missing: topic =", topic);
       return;
     }
 
