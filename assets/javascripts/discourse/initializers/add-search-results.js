@@ -82,6 +82,12 @@ function addEncryptedSearchResultsFromCache(cache, results) {
       return;
     }
 
+    if (!topic.title) {
+      // eslint-disable-next-line no-console
+      console.warn("Encrypted topic title is missing: topic =", topic);
+      return;
+    }
+
     if (terms.every((term) => topic.title.toLowerCase().includes(term))) {
       topics[topic.id] = topic = Topic.create(topic);
       results.topics.unshift(topic);
