@@ -56,12 +56,6 @@ function decryptTopicTitles(
         }
       })
       .catch(() => {});
-
-    // HACK: Hide quick-edit button for the time being
-    const quickEditBtn = element.querySelector(".edit-topic");
-    if (quickEditBtn) {
-      quickEditBtn.style.display = "none";
-    }
   });
 }
 
