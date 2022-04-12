@@ -12,8 +12,7 @@ describe ::DiscourseEncrypt do
     post.update!(raw: "#{post.raw}\n[](#{upload.short_url})")
     post.rebake!
 
-    expect(post.post_uploads.size).to eq(1)
-    expect(post.post_uploads.first.upload).to eq(upload)
+    expect(post.uploads).to contain_exactly(upload)
   end
 
   it 'can enable encrypt if safe CSP' do
