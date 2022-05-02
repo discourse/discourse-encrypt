@@ -659,6 +659,302 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
+  test("draft for new topics is encrypted", async function (assert) {
+    pretender.post("/drafts.json", (request) => {
+      const data = JSON.parse(parsePostData(request.requestBody).data);
+      if (data.title) {
+        assert.notStrictEqual(data.title, `Some public message ${PLAINTEXT}`);
+      }
+      if (data.reply) {
+        assert.notStrictEqual(
+          data.reply,
+          `Hello, world! ${PLAINTEXT}`.repeat(42)
+        );
+      }
+      return [200, { "Content-Type": "application/json" }, {}];
+    });
+
+    await visit("/");
+    await click("#create-topic");
+    const composerActions = selectKit(".composer-actions");
+    await composerActions.expand();
+    await composerActions.selectRowByValue("reply_as_private_message");
+    await fillIn("#reply-title", `Some public message ${PLAINTEXT}`);
+    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+
+    requests = [];
+    await wait(
+      () => requests.includes("/drafts.json"),
+      () => click(".toggler")
+    );
+  });
+
+  test("draft for replies is encrypted", async function (assert) {
+    pretender.post("/drafts.json", (request) => {
+      const data = JSON.parse(parsePostData(request.requestBody).data);
+      if (data.reply) {
+        assert.notStrictEqual(
+          data.reply,
+          `Hello, world! ${PLAINTEXT}`.repeat(42)
+        );
+      }
+      return [200, { "Content-Type": "application/json" }, {}];
+    });
+
+    const identity = await getIdentity();
+    const topicKey = await generateKey();
+    const exportedTopicKey = await exportKey(topicKey, identity.encryptPublic);
+    const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
+    const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
+
+    pretender.get("/t/42.json", () => {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          post_stream: {
+            posts: [
+              {
+                id: 42,
+                name: null,
+                username: "bar",
+                avatar_template:
+                  "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
+                created_at: "2020-01-01T12:00:00.000Z",
+                cooked:
+                  "<p>This is a secret message with end to end encryption. To view it, you must be invited to this topic.</p>",
+                post_number: 1,
+                post_type: 1,
+                updated_at: "2020-01-01T12:00:00.000Z",
+                reply_count: 0,
+                reply_to_post_number: null,
+                quote_count: 0,
+                incoming_link_count: 0,
+                reads: 2,
+                readers_count: 1,
+                score: 0.4,
+                yours: false,
+                topic_id: 42,
+                topic_slug: "a-secret-message",
+                display_username: null,
+                primary_group_name: null,
+                primary_group_flair_url: null,
+                primary_group_flair_bg_color: null,
+                primary_group_flair_color: null,
+                version: 1,
+                can_edit: true,
+                can_delete: false,
+                can_recover: false,
+                can_wiki: true,
+                read: true,
+                user_title: null,
+                title_is_group: false,
+                bookmarked: false,
+                actions_summary: [
+                  {
+                    id: 2,
+                    can_act: true,
+                  },
+                  {
+                    id: 3,
+                    can_act: true,
+                  },
+                  {
+                    id: 4,
+                    can_act: true,
+                  },
+                  {
+                    id: 8,
+                    can_act: true,
+                  },
+                  {
+                    id: 6,
+                    can_act: true,
+                  },
+                  {
+                    id: 7,
+                    can_act: true,
+                  },
+                ],
+                moderator: false,
+                admin: true,
+                staff: true,
+                user_id: 2,
+                hidden: false,
+                trust_level: 0,
+                deleted_at: null,
+                user_deleted: false,
+                edit_reason: null,
+                can_view_edit_history: true,
+                wiki: false,
+                reviewable_id: 0,
+                reviewable_score_count: 0,
+                reviewable_score_pending_count: 0,
+                encrypted_raw: encryptedRaw,
+              },
+            ],
+            stream: [42],
+          },
+          timeline_lookup: [[1, 0]],
+          related_messages: [],
+          suggested_topics: [],
+          id: 42,
+          title: "A secret message",
+          fancy_title: "A secret message",
+          posts_count: 1,
+          created_at: "2020-01-01T12:00:00.000Z",
+          views: 2,
+          reply_count: 0,
+          like_count: 0,
+          last_posted_at: "2020-01-01T12:00:00.000Z",
+          visible: true,
+          closed: false,
+          archived: false,
+          has_summary: false,
+          archetype: "private_message",
+          slug: "a-secret-message",
+          category_id: null,
+          word_count: 16,
+          deleted_at: null,
+          user_id: 2,
+          featured_link: null,
+          pinned_globally: false,
+          pinned_at: null,
+          pinned_until: null,
+          image_url: null,
+          slow_mode_seconds: 0,
+          draft: null,
+          draft_key: "topic_42",
+          draft_sequence: 0,
+          posted: false,
+          unpinned: null,
+          pinned: false,
+          current_post_number: 1,
+          highest_post_number: 1,
+          last_read_post_number: 1,
+          last_read_post_id: 42,
+          deleted_by: null,
+          has_deleted: false,
+          actions_summary: [
+            {
+              id: 4,
+              count: 0,
+              hidden: false,
+              can_act: true,
+            },
+            {
+              id: 8,
+              count: 0,
+              hidden: false,
+              can_act: true,
+            },
+            {
+              id: 7,
+              count: 0,
+              hidden: false,
+              can_act: true,
+            },
+          ],
+          chunk_size: 20,
+          bookmarked: false,
+          message_archived: false,
+          topic_timer: null,
+          message_bus_last_id: 3,
+          participant_count: 1,
+          pm_with_non_human_user: false,
+          queued_posts_count: 0,
+          show_read_indicator: false,
+          requested_group_name: null,
+          thumbnails: null,
+          slow_mode_enabled_until: null,
+          encrypted_title: encryptedTitle,
+          topic_key: exportedTopicKey,
+          details: {
+            can_edit: true,
+            notification_level: 3,
+            notifications_reason_id: 2,
+            can_move_posts: true,
+            can_delete: true,
+            can_remove_allowed_users: true,
+            can_invite_to: true,
+            can_invite_via_email: true,
+            can_create_post: true,
+            can_reply_as_new_topic: true,
+            can_flag_topic: true,
+            can_convert_topic: true,
+            can_review_topic: true,
+            can_close_topic: true,
+            can_archive_topic: true,
+            can_split_merge_topic: true,
+            can_edit_staff_notes: true,
+            can_toggle_topic_visibility: true,
+            can_pin_unpin_topic: true,
+            can_moderate_category: true,
+            can_remove_self_id: 1,
+            participants: [
+              {
+                id: 2,
+                username: "bar",
+                name: null,
+                avatar_template:
+                  "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
+                post_count: 1,
+                primary_group_name: null,
+                primary_group_flair_url: null,
+                primary_group_flair_color: null,
+                primary_group_flair_bg_color: null,
+                admin: true,
+                trust_level: 0,
+              },
+            ],
+            allowed_users: [
+              {
+                id: 1,
+                username: "foo",
+                name: null,
+                avatar_template:
+                  "/letter_avatar_proxy/v4/letter/f/000000/{size}.png",
+              },
+              {
+                id: 2,
+                username: "bar",
+                name: null,
+                avatar_template:
+                  "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
+              },
+            ],
+            created_by: {
+              id: 2,
+              username: "bar",
+              name: null,
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
+            },
+            last_poster: {
+              id: 2,
+              username: "bar",
+              name: null,
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
+            },
+            allowed_groups: [],
+          },
+          pending_posts: [],
+        },
+      ];
+    });
+
+    await visit("/t/a-secret-message/42");
+    await click(".topic-footer-main-buttons .btn-primary.create");
+    await fillIn(".d-editor-input", `Hello, world! ${PLAINTEXT}`.repeat(42));
+
+    requests = [];
+    await wait(
+      () => requests.includes("/drafts.json"),
+      () => click(".toggler")
+    );
+  });
+
   test("deactivation works", async function (assert) {
     await visit("/u/eviltrout/preferences/security");
     await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
