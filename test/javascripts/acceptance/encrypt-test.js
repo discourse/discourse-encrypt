@@ -201,14 +201,14 @@ function setupEncryptTests(needs) {
   });
 }
 
-async function setupEncryptedTopicPretender(pretender, { identity } = {}) {
+async function setupEncryptedTopicPretender(server, { identity } = {}) {
   identity = identity || (await getIdentity());
   const topicKey = await generateKey();
   const exportedTopicKey = await exportKey(topicKey, identity.encryptPublic);
   const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
   const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
 
-  pretender.get("/t/42.json", () => {
+  server.get("/t/42.json", () => {
     return [
       200,
       { "Content-Type": "application/json" },
