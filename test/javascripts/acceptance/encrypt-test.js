@@ -640,12 +640,15 @@ acceptance("Encrypt - active", function (needs) {
   });
 
   test("new draft for public topic is not encrypted", async function (assert) {
+    let assertedTitle, assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
+        assertedTitle = true;
         assert.strictEqual(data.title, PLAINTEXT_TITLE);
       }
       if (data.reply) {
+        assertedReply = true;
         assert.strictEqual(data.reply, PLAINTEXT_RAW);
       }
       return [200, { "Content-Type": "application/json" }, {}];
@@ -656,20 +659,22 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    requests = [];
     await wait(
-      () => requests.includes("/drafts.json"),
+      () => assertedTitle && assertedReply,
       () => click(".toggler")
     );
   });
 
   test("draft for new topics is encrypted", async function (assert) {
+    let assertedTitle, assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
+        assertedTitle = true;
         assert.notStrictEqual(data.title, PLAINTEXT_TITLE);
       }
       if (data.reply) {
+        assertedReply = true;
         assert.notStrictEqual(data.reply, PLAINTEXT_RAW);
       }
       return [200, { "Content-Type": "application/json" }, {}];
@@ -683,17 +688,18 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    requests = [];
     await wait(
-      () => requests.includes("/drafts.json"),
+      () => assertedTitle && assertedReply,
       () => click(".toggler")
     );
   });
 
   test("draft for replies is encrypted", async function (assert) {
+    let assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.reply) {
+        assertedReply = true;
         assert.notStrictEqual(data.reply, PLAINTEXT_RAW);
       }
       return [200, { "Content-Type": "application/json" }, {}];
@@ -705,9 +711,8 @@ acceptance("Encrypt - active", function (needs) {
     await click(".topic-footer-main-buttons .btn-primary.create");
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    requests = [];
     await wait(
-      () => requests.includes("/drafts.json"),
+      () => assertedReply,
       () => click(".toggler")
     );
   });
