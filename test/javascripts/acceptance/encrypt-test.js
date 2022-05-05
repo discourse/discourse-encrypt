@@ -67,8 +67,8 @@ const PASSPHRASE = "curren7U$er.pa$$Phr4se";
  * @var PLAINTEXT Constant string that is used to check for plaintext leakage.
  */
 const PLAINTEXT = "!PL41N73X7!";
-const PLAINTEXT_TITLE = `Some public message ${PLAINTEXT}`;
-const PLAINTEXT_RAW = `Hello, world! ${PLAINTEXT}`.repeat(42);
+const PLAINTEXT_TITLE = `A new topic ${PLAINTEXT}`;
+const PLAINTEXT_RAW = `Hello, world! ${PLAINTEXT}\n`.repeat(42);
 
 /**
  * @var keys User keys.
