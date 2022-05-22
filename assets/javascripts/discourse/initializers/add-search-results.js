@@ -141,9 +141,7 @@ export default {
         });
 
         // Search for more encrypted topics
-        if (
-          results?.grouped_search_result?.type_filter === "private_messages"
-        ) {
+        if (results?.topics[0]?.archetype === "private_message") {
           let cachePromise = Promise.resolve();
           if (!cache.loaded) {
             cachePromise = loadCache(cache);

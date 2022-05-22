@@ -38,7 +38,6 @@ after_initialize do
   require_relative 'lib/email_sender_extensions.rb'
   require_relative 'lib/encrypted_post_creator.rb'
   require_relative 'lib/encrypted_search.rb'
-  require_relative 'lib/grouped_search_result_serializer_extension.rb'
   require_relative 'lib/openssl.rb'
   require_relative 'lib/post_actions_controller_extensions.rb'
   require_relative 'lib/post_extensions.rb'
@@ -77,7 +76,6 @@ after_initialize do
 
   reloadable_patch do |plugin|
     Email::Sender.class_eval                 { prepend DiscourseEncrypt::EmailSenderExtensions }
-    GroupedSearchResultSerializer.class_eval { prepend DiscourseEncrypt::GroupedSearchResultSerializerExtension }
     Post.class_eval                          { prepend DiscourseEncrypt::PostExtensions }
     PostActionsController.class_eval         { prepend DiscourseEncrypt::PostActionsControllerExtensions }
     SiteSettings::TypeSupervisor.class_eval  { prepend DiscourseEncrypt::SiteSettingsTypeSupervisorExtensions }
