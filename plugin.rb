@@ -120,34 +120,21 @@ after_initialize do
 
   BookmarkQuery.on_preload do |bookmarks, query|
     if SiteSetting.encrypt_enabled? && bookmarks.size > 0
-      if SiteSetting.use_polymorphic_bookmarks
-        user_id = bookmarks.first.user_id
-        topic_ids = Bookmark.select_type(bookmarks, "Topic").map(&:bookmarkable_id).concat(
-          Bookmark.select_type(bookmarks, "Post").map { |bm| bm.bookmarkable.topic_id }
-        ).uniq
+      user_id = bookmarks.first.user_id
+      topic_ids = Bookmark.select_type(bookmarks, "Topic").map(&:bookmarkable_id).concat(
+        Bookmark.select_type(bookmarks, "Post").map { |bm| bm.bookmarkable.topic_id }
+      ).uniq
 
-        encrypted_topics_data = EncryptedTopicsData.where(topic_id: topic_ids).index_by(&:topic_id)
-        encrypted_topics_users = EncryptedTopicsUser.where(user_id: user_id, topic_id: topic_ids).index_by(&:topic_id)
+      encrypted_topics_data = EncryptedTopicsData.where(topic_id: topic_ids).index_by(&:topic_id)
+      encrypted_topics_users = EncryptedTopicsUser.where(user_id: user_id, topic_id: topic_ids).index_by(&:topic_id)
 
-        bookmarks.each do |bookmark|
-          if bookmark.bookmarkable_type == "Topic"
-            bookmark.bookmarkable.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.bookmarkable_id]
-            bookmark.bookmarkable.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.bookmarkable_id]].compact
-          elsif bookmark.bookmarkable_type == "Post"
-            bookmark.bookmarkable.topic.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.bookmarkable.topic_id]
-            bookmark.bookmarkable.topic.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.bookmarkable.topic_id]].compact
-          end
-        end
-      else
-        user_id = bookmarks.first.user_id
-        topic_ids = bookmarks.map(&:topic_id)
-
-        encrypted_topics_data = EncryptedTopicsData.where(topic_id: topic_ids).index_by(&:topic_id)
-        encrypted_topics_users = EncryptedTopicsUser.where(user_id: user_id, topic_id: topic_ids).index_by(&:topic_id)
-
-        bookmarks.each do |bookmark|
-          bookmark.topic.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.topic_id]
-          bookmark.topic.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.topic_id]].compact
+      bookmarks.each do |bookmark|
+        if bookmark.bookmarkable_type == "Topic"
+          bookmark.bookmarkable.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.bookmarkable_id]
+          bookmark.bookmarkable.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.bookmarkable_id]].compact
+        elsif bookmark.bookmarkable_type == "Post"
+          bookmark.bookmarkable.topic.association(:encrypted_topics_data).target = encrypted_topics_data[bookmark.bookmarkable.topic_id]
+          bookmark.bookmarkable.topic.association(:encrypted_topics_users).target = [encrypted_topics_users[bookmark.bookmarkable.topic_id]].compact
         end
       end
     end
@@ -250,49 +237,31 @@ after_initialize do
     scope&.user.present? && object&.topic&.is_encrypted?
   end
 
-  add_to_serializer(:user_bookmark, :encrypted_title, false) do
-    topic.encrypted_topics_data&.title
+  # UserBookmarkBaseSerializer
+  add_to_class(:user_bookmark_base_serializer, :bookmark_topic) do
+    @bookmark_topic ||= bookmarkable_type == "Topic" ? bookmarkable : bookmarkable.topic
   end
 
-  add_to_serializer(:user_bookmark, :include_encrypted_title?) do
-    scope&.user.present? && topic&.is_encrypted?
+  add_to_class(:user_bookmark_base_serializer, :can_have_encryption_data?) do
+    ["Post", "Topic"].include?(bookmarkable_type)
   end
 
-  add_to_serializer(:user_bookmark, :topic_key, false) do
-    topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
+  add_to_serializer(:user_bookmark_base, :encrypted_title, false) do
+    bookmark_topic.encrypted_topics_data&.title
   end
 
-  add_to_serializer(:user_bookmark, :include_topic_key?) do
-    scope&.user.present? && topic&.is_encrypted?
+  add_to_serializer(:user_bookmark_base, :include_encrypted_title?) do
+    return false if !can_have_encryption_data?
+    scope&.user.present? && bookmark_topic&.is_encrypted?
   end
 
-  if SiteSetting.use_polymorphic_bookmarks
-    # UserBookmarkBaseSerializer
-    add_to_class(:user_bookmark_base_serializer, :bookmark_topic) do
-      @bookmark_topic ||= bookmarkable_type == "Topic" ? bookmarkable : bookmarkable.topic
-    end
+  add_to_serializer(:user_bookmark_base, :topic_key, false) do
+    bookmark_topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
+  end
 
-    add_to_class(:user_bookmark_base_serializer, :can_have_encryption_data?) do
-      ["Post", "Topic"].include?(bookmarkable_type)
-    end
-
-    add_to_serializer(:user_bookmark_base, :encrypted_title, false) do
-      bookmark_topic.encrypted_topics_data&.title
-    end
-
-    add_to_serializer(:user_bookmark_base, :include_encrypted_title?) do
-      return false if !can_have_encryption_data?
-      scope&.user.present? && bookmark_topic&.is_encrypted?
-    end
-
-    add_to_serializer(:user_bookmark_base, :topic_key, false) do
-      bookmark_topic.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
-    end
-
-    add_to_serializer(:user_bookmark_base, :include_topic_key?) do
-      return false if !can_have_encryption_data?
-      scope&.user.present? && bookmark_topic&.is_encrypted?
-    end
+  add_to_serializer(:user_bookmark_base, :include_topic_key?) do
+    return false if !can_have_encryption_data?
+    scope&.user.present? && bookmark_topic&.is_encrypted?
   end
 
   # +topic_id+ and +raws+
