@@ -37,7 +37,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
-import QUnit, { skip, test } from "qunit";
+import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -1012,7 +1012,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.strictEqual(count(".fps-result"), 0);
   });
 
-  skip("searching in bookmarks", async function (assert) {
+  test("searching in bookmarks", async function (assert) {
     const identity = await getIdentity();
 
     const topicKey = await generateKey();
