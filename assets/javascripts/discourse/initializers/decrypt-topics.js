@@ -12,6 +12,8 @@ import {
   hasTopicTitle,
   syncGetTopicTitle,
   waitForPendingTitles,
+  putTopicKey,
+  putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { observes } from "discourse-common/utils/decorators";
 
@@ -178,6 +180,30 @@ export default {
           return this._super(...arguments);
         },
       });
+
+      if (api.registerModelTransformer) {
+        api.registerModelTransformer("topic", async (topics) => {
+          for (const topic of topics) {
+            if (topic.topic_key && topic.encrypted_title) {
+              putTopicKey(topic.id, topic.topic_key);
+              putTopicTitle(topic.id, topic.encrypted_title);
+              try {
+                const decryptedTitle = await getTopicTitle(topic.id);
+                if (decryptedTitle) {
+                  topic.fancy_title = escapeExpression(decryptedTitle);
+                }
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                  `Decryption of the title of encrypted message ${topic.id} failed with this error:`,
+                  err,
+                  err.stack
+                );
+              }
+            }
+          }
+        });
+      }
 
       api.decorateWidget("header:after", (helper) => {
         if (
