@@ -597,7 +597,7 @@ acceptance("Encrypt - active", function (needs) {
       assert.strictEqual(body.title, I18n.t("encrypt.encrypted_title"));
       assert.strictEqual(body.archetype, "private_message");
       assert.strictEqual(body.target_recipients, "eviltrout");
-      assert.strictEqual(body.draft_key, "new_topic");
+      assert.strictEqual(body.draft_key, "new_private_message");
       assert.strictEqual(body.is_encrypted, "true");
       assert.ok(body.encrypted_title.startsWith("1$"));
       assert.ok(body.encrypted_raw.startsWith("1$"));
@@ -610,12 +610,8 @@ acceptance("Encrypt - active", function (needs) {
       ];
     });
 
-    const composerActions = selectKit(".composer-actions");
-
-    await visit("/");
-    await click("#create-topic");
-    await composerActions.expand();
-    await composerActions.selectRowByValue("reply_as_private_message");
+    await visit("/u/eviltrout/messages");
+    await click(".new-private-message");
 
     // simulate selecting from autocomplete suggestions
     const usersSelector = selectKit("#private-message-users");
@@ -680,11 +676,8 @@ acceptance("Encrypt - active", function (needs) {
       return [200, { "Content-Type": "application/json" }, {}];
     });
 
-    await visit("/");
-    await click("#create-topic");
-    const composerActions = selectKit(".composer-actions");
-    await composerActions.expand();
-    await composerActions.selectRowByValue("reply_as_private_message");
+    await visit("/u/eviltrout/messages");
+    await click(".new-private-message");
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
