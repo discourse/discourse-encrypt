@@ -4,7 +4,7 @@
 # about: Provides encrypted communication channels through Discourse.
 # version: 1.0
 # authors: Dan Ungureanu
-# url: https://github.com/udan11/discourse-encrypt.git
+# url: https://github.com/discourse/discourse-encrypt
 # transpile_js: true
 
 enabled_site_setting :encrypt_enabled
