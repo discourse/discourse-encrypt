@@ -1,15 +1,32 @@
 {{#if showEncryptControls}}
   <div class="encrypt-controls">
     {{#if isEncryptActive}}
-      <a href {{action "clicked"}} title={{title}} class="btn btn-default btn-icon no-text encrypt-toggle {{if model.isEncrypted "enabled"}} {{if disabled "disabled"}}">
+      <a
+        href
+        {{action "clicked"}}
+        title={{title}}
+        class="btn btn-default btn-icon no-text encrypt-toggle
+          {{if model.isEncrypted "enabled"}}
+          {{if disabled "disabled"}}"
+      >
         {{d-icon (if model.isEncrypted "lock" "unlock")}}
       </a>
 
       {{~#if model.isEncrypted}}
         {{~#unless model.editingPost~}}
           <div class="composer-action-divider"></div>
-          {{~encrypted-post-timer-dropdown topicDeleteAt=this.model.topic.delete_at onChange=(action "timerClicked")}}
-          <span title={{ i18n "encrypt.time_bomb.title" after=this.model.deleteAfterMinutesLabel}}>{{this.model.deleteAfterMinutesLabel}}</span>
+          {{~encrypted-post-timer-dropdown
+            topicDeleteAt=this.model.topic.delete_at
+            onChange=(action "timerClicked")
+          }}
+          <span
+            title={{i18n
+              "encrypt.time_bomb.title"
+              after=this.model.deleteAfterMinutesLabel
+            }}
+          >
+            {{this.model.deleteAfterMinutesLabel}}
+          </span>
         {{/unless}}
       {{/if}}
 

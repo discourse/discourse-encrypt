@@ -9,7 +9,11 @@
   {{d-button
     class=(if copied "btn btn-primary ok" "btn btn-primary")
     icon="far-clipboard"
-    label=(if copied "admin.customize.copied_to_clipboard" "admin.customize.copy_to_clipboard")
+    label=(if
+      copied
+      "admin.customize.copied_to_clipboard"
+      "admin.customize.copy_to_clipboard"
+    )
     disabled=inProgress
     action=(action "copy")
   }}

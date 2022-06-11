@@ -86,11 +86,8 @@ export default {
 
             const topicKey = generateKey();
 
-            const encKey = Promise.all([
-              topicKey,
-              getIdentity(),
-            ]).then(([key, identity]) =>
-              exportKey(key, identity.encryptPublic)
+            const encKey = Promise.all([topicKey, getIdentity()]).then(
+              ([key, identity]) => exportKey(key, identity.encryptPublic)
             );
 
             const encTitle = data.title
