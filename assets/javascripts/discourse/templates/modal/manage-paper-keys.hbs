@@ -24,7 +24,8 @@
                   action=(action "delete")
                   actionParam=key.label
                   class="btn-danger pull-right"
-                  title="encrypt.manage_paper_keys.delete"}}
+                  title="encrypt.manage_paper_keys.delete"
+                }}
               </td>
             </tr>
           {{/each}}
@@ -37,5 +38,9 @@
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paper_key.title"}}
+  {{d-button
+    icon="ticket-alt"
+    action=(action "generatePaperKey")
+    label="encrypt.generate_paper_key.title"
+  }}
 </div>

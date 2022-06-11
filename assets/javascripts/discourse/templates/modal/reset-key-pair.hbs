@@ -3,8 +3,14 @@
     {{#if encryptedPmsCount}}
       <p>{{i18n "encrypt.reset.instructions"}}</p>
       <p>
-        {{html-safe (i18n "encrypt.reset.instructions_lost_pms" count=encryptedPmsCount)}}
-        {{html-safe (i18n "encrypt.reset.confirm_instructions" username=currentUser.username)}}
+        {{html-safe
+          (i18n "encrypt.reset.instructions_lost_pms" count=encryptedPmsCount)
+        }}
+        {{html-safe
+          (i18n
+            "encrypt.reset.confirm_instructions" username=currentUser.username
+          )
+        }}
       </p>
       {{input type="text" value=confirmation}}
     {{else}}
@@ -14,6 +20,12 @@
 {{/d-modal-body}}
 
 <div class="modal-footer">
-  {{d-button class="btn btn-danger" icon="trash-alt" label="encrypt.reset.title" action=(action "reset") disabled=disabled}}
+  {{d-button
+    class="btn btn-danger"
+    icon="trash-alt"
+    label="encrypt.reset.title"
+    action=(action "reset")
+    disabled=disabled
+  }}
   {{d-modal-cancel close=(action "closeModal")}}
 </div>

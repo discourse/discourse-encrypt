@@ -7,12 +7,8 @@ import { module, test } from "qunit";
 
 module("discourse-encrypt:lib:protocol_v1", function () {
   test("generateIdentity", async function (assert) {
-    const {
-      encryptPublic,
-      encryptPrivate,
-      signPublic,
-      signPrivate,
-    } = await generateIdentity();
+    const { encryptPublic, encryptPrivate, signPublic, signPrivate } =
+      await generateIdentity();
 
     assert.ok(encryptPublic instanceof CryptoKey);
     assert.ok(encryptPrivate instanceof CryptoKey);

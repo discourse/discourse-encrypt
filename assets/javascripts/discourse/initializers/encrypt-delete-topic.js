@@ -46,9 +46,9 @@ export default {
           let { _super } = this;
           if (this.model.encrypted_title) {
             this.permanentDeleteConfirmation(() => {
-              return this.createTimer(
-                this.model.postStream.posts[0].id
-              ).then(() => this.model.destroy(this.currentUser));
+              return this.createTimer(this.model.postStream.posts[0].id).then(
+                () => this.model.destroy(this.currentUser)
+              );
             });
           } else {
             return _super.call(this, ...arguments);

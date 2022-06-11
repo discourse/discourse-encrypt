@@ -1,6 +1,7 @@
 {{#if canEnableEncrypt}}
   <div class="control-group pref-title">
     <label class="control-label">{{i18n "encrypt.title"}}</label>
+
     {{#if capabilities.isIE11}}
       <div class="alert alert-error">
         <p>{{i18n "encrypt.preferences.ie11"}}</p>
@@ -15,42 +16,72 @@
           {{#if isEncryptEnabled}}
             {{#if isEncryptActive}}
               <p>{{i18n "encrypt.preferences.status_enabled"}}</p>
-              {{d-button icon="times" action=(action "deactivateEncrypt") label="encrypt.preferences.deactivate" id="deactivate"}}
-              {{d-button icon="plus" action=(action "generatePaperKey" true) label="encrypt.generate_paper_key.title_device"}}
-              {{d-button icon="ticket-alt" action=(action "generatePaperKey") label="encrypt.generate_paper_key.title"}}
-              {{encrypt-preferences-dropdown onChange=(action "selectEncryptPreferencesDropdownAction")}}
+              {{d-button
+                icon="times"
+                action=(action "deactivateEncrypt")
+                label="encrypt.preferences.deactivate"
+                id="deactivate"
+              }}
+              {{d-button
+                icon="plus"
+                action=(action "generatePaperKey" true)
+                label="encrypt.generate_paper_key.title_device"
+              }}
+              {{d-button
+                icon="ticket-alt"
+                action=(action "generatePaperKey")
+                label="encrypt.generate_paper_key.title"
+              }}
+              {{encrypt-preferences-dropdown
+                onChange=(action "selectEncryptPreferencesDropdownAction")
+              }}
             {{else}}
               <form>
-                <p>{{i18n "encrypt.preferences.status_enabled_but_inactive"}}</p>
+                <p>
+                  {{i18n "encrypt.preferences.status_enabled_but_inactive"}}
+                </p>
 
                 {{#if importIdentity}}
                   {{html-safe (i18n "encrypt.preferences.notice_import")}}
-                  {{textarea class="imported-key-pair" value=identity placeholder=identityPlaceholder}}
+                  {{textarea
+                    class="imported-key-pair"
+                    value=identity
+                    placeholder=identityPlaceholder
+                  }}
                 {{else}}
                   {{html-safe (i18n "encrypt.preferences.notice_active")}}
                   <p>
-                    <label for="password">{{i18n "encrypt.preferences.paper_key_label"}}</label>
+                    <label for="password">
+                      {{i18n "encrypt.preferences.paper_key_label"}}
+                    </label>
+
                     {{input
                       type="password"
                       value=passphrase
-                      placeholder=(i18n "encrypt.preferences.paper_key_placeholder")
+                      placeholder=(i18n
+                        "encrypt.preferences.paper_key_placeholder"
+                      )
                       id="passphrase"
                       autocomplete="current-password"
-                      disabled=inProgress}}
+                      disabled=inProgress
+                    }}
                   </p>
                 {{/if}}
 
                 <p>
-                  {{d-button class="btn-primary"
-                             icon="unlock"
-                             action=(action "activateEncrypt")
-                             type="submit"
-                             disabled=inProgress
-                             label="encrypt.preferences.activate"
+                  {{d-button
+                    class="btn-primary"
+                    icon="unlock"
+                    action=(action "activateEncrypt")
+                    type="submit"
+                    disabled=inProgress
+                    label="encrypt.preferences.activate"
                   }}
-                  {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
-                                            importIdentity=importIdentity
-                                            onChange=(action "selectEncryptEnableDropdownAction")}}
+                  {{encrypt-enable-dropdown
+                    isEncryptEnabled=isEncryptEnabled
+                    importIdentity=importIdentity
+                    onChange=(action "selectEncryptEnableDropdownAction")
+                  }}
                 </p>
               </form>
             {{/if}}
@@ -58,17 +89,38 @@
             <p>{{i18n "encrypt.preferences.status_disabled"}}</p>
             {{#if importIdentity}}
               {{html-safe (i18n "encrypt.preferences.notice_import")}}
-              {{textarea class="imported-key-pair" value=identity placeholder=identityPlaceholder}}
+              {{textarea
+                class="imported-key-pair"
+                value=identity
+                placeholder=identityPlaceholder
+              }}
             {{/if}}
-            {{d-button class="btn-primary" icon="lock" action=(action "enableEncrypt") disabled=inProgress label="encrypt.preferences.enable"}}
-            {{encrypt-enable-dropdown isEncryptEnabled=isEncryptEnabled
-                                      importIdentity=importIdentity
-                                      onChange=(action "selectEncryptEnableDropdownAction")}}
+
+            {{d-button
+              class="btn-primary"
+              icon="lock"
+              action=(action "enableEncrypt")
+              disabled=inProgress
+              label="encrypt.preferences.enable"
+            }}
+            {{encrypt-enable-dropdown
+              isEncryptEnabled=isEncryptEnabled
+              importIdentity=importIdentity
+              onChange=(action "selectEncryptEnableDropdownAction")
+            }}
           {{/if}}
         {{else}}
           {{#if isEncryptEnabled}}
             <p>{{i18n "encrypt.preferences.status_enabled_other"}}</p>
-            <p><a href {{action "selectEncryptEnableDropdownAction" "reset"}} class="text-danger">{{i18n "encrypt.reset.title"}}</a></p>
+            <p>
+              <a
+                href
+                {{action "selectEncryptEnableDropdownAction" "reset"}}
+                class="text-danger"
+              >
+                {{i18n "encrypt.reset.title"}}
+              </a>
+            </p>
           {{else}}
             <p>{{i18n "encrypt.preferences.status_disabled_other"}}</p>
           {{/if}}
