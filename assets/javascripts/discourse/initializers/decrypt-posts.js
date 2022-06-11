@@ -485,7 +485,10 @@ export default {
             const post =
               document.querySelector(`article[data-post-id='${attrs.id}']`) ||
               document.querySelector(`#post_${attrs.post_number}.small-action`);
-            postProcessPost(this.siteSettings, topicId, post);
+
+            if (post) {
+              postProcessPost(this.siteSettings, topicId, post);
+            }
           });
         } else if (state.encryptState === "error") {
           attrs.cooked =
