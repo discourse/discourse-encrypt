@@ -504,7 +504,8 @@ export default {
 
       api.decorateWidget("post-meta-data:after", (dec) => {
         const post = dec.getModel();
-        if (post && post?.encrypted_raw !== "") {
+
+        if (post?.topic.archetype === "private_message") {
           return dec.attach("encrypted-post-timer-counter", { post });
         }
       });
