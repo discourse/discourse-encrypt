@@ -15,7 +15,7 @@ createWidget("encrypted-post-timer-counter", {
     }
   },
 
-  formatedClock(attrs) {
+  formattedClock(attrs) {
     const miliseconds = Math.max(
       moment(attrs.post.delete_at) - moment().utc(),
       60000
@@ -31,11 +31,11 @@ createWidget("encrypted-post-timer-counter", {
         {
           attributes: {
             title: i18n.t("encrypt.time_bomb.title", {
-              after: this.formatedClock(attrs),
+              after: this.formattedClock(attrs),
             }),
           },
         },
-        [iconNode("discourse-trash-clock"), this.formatedClock(attrs)]
+        [iconNode("discourse-trash-clock"), this.formattedClock(attrs)]
       );
     }
   },
