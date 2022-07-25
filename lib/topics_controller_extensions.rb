@@ -12,7 +12,7 @@ module DiscourseEncrypt::TopicsControllerExtensions
   def update
     @topic ||= Topic.find_by(id: params[:topic_id])
 
-    if @topic.is_encrypted? && encrypted_title = params[:encrypted_title].presence
+    if @topic&.is_encrypted? && params[:encrypted_title].presence
       guardian.ensure_can_edit!(@topic)
       @topic.encrypted_topics_data.update!(title: params.delete(:encrypted_title))
     end
