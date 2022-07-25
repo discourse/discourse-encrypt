@@ -21,6 +21,12 @@ describe TopicsController do
       expect(response.status).to eq(200)
       expect(topic.reload.encrypted_topics_data.title).to eq('new encrypted title')
     end
+
+    it 'returns invalid access for deleted topic' do
+      topic.destroy!
+      put "/t/#{topic.slug}/#{topic.id}.json", params: { encrypted_title: 'new encrypted title' }
+      expect(response.status).to eq(403)
+    end
   end
 
   it 'not invited admin does not have access' do
