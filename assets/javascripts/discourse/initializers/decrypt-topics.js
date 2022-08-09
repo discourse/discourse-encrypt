@@ -13,6 +13,9 @@ import {
   syncGetTopicTitle,
   waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
+import { observes } from "discourse-common/utils/decorators";
+
+const PLUGIN_ID = "discourse-encrypt";
 
 /**
  * Decrypts elements that contain topic titles
@@ -175,9 +178,7 @@ export default {
           return this._super(...arguments);
         },
       });
-    });
 
-    withPluginApi("0.11.3", (api) => {
       api.decorateWidget("header:after", (helper) => {
         if (
           helper.widget.state.userVisible ||
@@ -185,6 +186,22 @@ export default {
         ) {
           discourseDebounce(self, self.decryptTopicTitles, 500);
         }
+      });
+
+      api.modifyClass("controller:topic", {
+        pluginId: PLUGIN_ID,
+
+        @observes("editingTopic")
+        _editingTopicChanged() {
+          if (this.get("editingTopic")) {
+            const topicId = this.get("model.id");
+
+            getTopicTitle(topicId).then((topicTitle) => {
+              // Update the title stored in buffered state
+              this.buffered.set("title", topicTitle);
+            });
+          }
+        },
       });
     });
   },

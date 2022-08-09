@@ -734,10 +734,10 @@ acceptance("Encrypt - active", function (needs) {
       "Top Secret Title - QUnit Discourse Tests"
     );
     assert.ok(exists(".private_message.encrypted"), "encrypted class is added");
-    assert.ok(
-      exists(".private_message.encrypted h1[data-topic-id] .edit-topic"),
-      "edit-topic is nested under correct DOM elements"
-    );
+
+    await click(".private_message.encrypted h1[data-topic-id] .edit-topic");
+
+    assert.strictEqual(query("#edit-title").value.trim(), "Top Secret Title");
   });
 
   test("topic titles in notification panel are decrypted", async function (assert) {
