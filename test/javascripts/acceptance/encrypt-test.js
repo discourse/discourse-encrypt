@@ -737,10 +737,7 @@ acceptance("Encrypt - active", function (needs) {
 
     await click(".private_message.encrypted h1[data-topic-id] .edit-topic");
 
-    assert.strictEqual(
-      query("#edit-title").value.trim(),
-      "Top Secret Title"
-    );
+    assert.strictEqual(query("#edit-title").value.trim(), "Top Secret Title");
   });
 
   test("topic titles in notification panel are decrypted", async function (assert) {
