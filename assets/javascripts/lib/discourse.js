@@ -16,7 +16,7 @@ import {
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { getCaseInsensitiveObj } from "discourse/plugins/discourse-encrypt/lib/utils";
-import { Promise, allSettled } from "rsvp";
+import { Promise } from "rsvp";
 
 /*
  * Possible states of the encryption system.
@@ -257,15 +257,12 @@ export function hasTopicTitle(topicId) {
  *
  * @return {Promise}
  */
-export function waitForPendingTitles({ ignoreErrors = false } = {}) {
-  const promises = Object.values(topicTitles)
-    .filter((t) => !t.result)
-    .map((t) => t.promise);
-  if (ignoreErrors) {
-    return allSettled(promises);
-  } else {
-    return Promise.all(promises);
-  }
+export function waitForPendingTitles() {
+  return Promise.all(
+    Object.values(topicTitles)
+      .filter((t) => !t.result)
+      .map((t) => t.promise)
+  );
 }
 
 /*
