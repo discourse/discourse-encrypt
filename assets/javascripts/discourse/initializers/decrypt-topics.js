@@ -203,6 +203,61 @@ export default {
             }
           }
         });
+        api.registerModelTransformer("bookmark", async (bookmarks) => {
+          for (const bookmark of bookmarks) {
+            if (
+              bookmark.topic_id &&
+              bookmark.topic_key &&
+              bookmark.encrypted_title
+            ) {
+              putTopicKey(bookmark.topic_id, bookmark.topic_key);
+              putTopicTitle(bookmark.topic_id, bookmark.encrypted_title);
+              try {
+                const decryptedTitle = await getTopicTitle(bookmark.topic_id);
+                if (decryptedTitle) {
+                  bookmark.title = decryptedTitle;
+                }
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                  `Decryption of the title of encrypted message ${bookmark.topic_id} failed with this error:`,
+                  err,
+                  err.stack
+                );
+              }
+            }
+          }
+        });
+        api.registerModelTransformer("notification", async (notifications) => {
+          for (const notification of notifications) {
+            if (
+              notification.topic_id &&
+              notification.topic_key &&
+              notification.encrypted_title
+            ) {
+              putTopicKey(notification.topic_id, notification.topic_key);
+              putTopicTitle(
+                notification.topic_id,
+                notification.encrypted_title
+              );
+              try {
+                const decryptedTitle = await getTopicTitle(
+                  notification.topic_id
+                );
+                if (decryptedTitle) {
+                  notification.fancy_title = escapeExpression(decryptedTitle);
+                }
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                  `Decryption of the title of encrypted message ${notification.topic_id} failed with this error:`,
+                  err,
+                  err.stack
+                );
+              }
+            }
+          }
+        });
       }
 
       api.decorateWidget("header:after", (helper) => {
