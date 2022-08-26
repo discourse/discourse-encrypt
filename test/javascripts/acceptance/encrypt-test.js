@@ -799,7 +799,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.strictEqual(count(".quick-access-panel span[data-topic-id] img"), 1);
   });
 
-  test("topic titles in the notifications tab in the experimental user menu are decrypted", async function (assert) {
+  test("encrypted topic titles in experiemental user menu notifications tab are decrypted", async function (assert) {
     updateCurrentUser({
       redesigned_user_menu_enabled: true,
     });
