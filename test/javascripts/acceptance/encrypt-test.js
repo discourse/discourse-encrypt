@@ -871,7 +871,7 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  test("topic titles in the bookmarks tab in the experimental user menu are decrypted", async function (assert) {
+  test("encrypted topic titles in experiemental user menu bookmarks tab are decrypted", async function (assert) {
     updateCurrentUser({
       redesigned_user_menu_enabled: true,
     });
@@ -955,7 +955,7 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  test("topic titles in the messages tab in the experimental user menu are decrypted", async function (assert) {
+  test("encrypted topic titles in experiemental user menu messages tab are decrypted", async function (assert) {
     updateCurrentUser({
       redesigned_user_menu_enabled: true,
     });

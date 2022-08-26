@@ -220,7 +220,7 @@ export default {
               } catch (err) {
                 // eslint-disable-next-line no-console
                 console.warn(
-                  `Decryption of the title of encrypted message ${bookmark.topic_id} failed with this error:`,
+                  `Decrypting the title of encrypted message (topicId: ${bookmark.topic_id}) failed with the following error:`,
                   err,
                   err.stack
                 );
@@ -250,7 +250,7 @@ export default {
               } catch (err) {
                 // eslint-disable-next-line no-console
                 console.warn(
-                  `Decryption of the title of encrypted message ${notification.topic_id} failed with this error:`,
+                  `Decrypting the title of encrypted message (topicId: ${notification.topic_id}) failed with the following error:`,
                   err,
                   err.stack
                 );
