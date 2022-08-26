@@ -195,7 +195,7 @@ export default {
               } catch (err) {
                 // eslint-disable-next-line no-console
                 console.warn(
-                  `Decryption of the title of encrypted message ${topic.id} failed with this error:`,
+                  `Decrypting the title of encrypted message (topicId: ${topic.id}) failed with the following error:`,
                   err,
                   err.stack
                 );
