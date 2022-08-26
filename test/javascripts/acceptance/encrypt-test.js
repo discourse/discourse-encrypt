@@ -799,6 +799,263 @@ acceptance("Encrypt - active", function (needs) {
     assert.strictEqual(count(".quick-access-panel span[data-topic-id] img"), 1);
   });
 
+  test("encrypted topic titles in experiemental user menu notifications tab are decrypted", async function (assert) {
+    updateCurrentUser({
+      redesigned_user_menu_enabled: true,
+    });
+    const identity = await getIdentity();
+    const topicKey = await generateKey();
+    const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+    const title = "Top Secret <a> :male_detective:";
+    const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+    pretender.get("/notifications", () => [
+      200,
+      { "Content-Type": "application/json" },
+      {
+        notifications: [
+          {
+            id: 42,
+            user_id: 1,
+            notification_type: NOTIFICATION_TYPES.private_message,
+            read: false,
+            created_at: "2020-01-01T12:12:12.000Z",
+            post_number: 1,
+            topic_id: 42,
+            fancy_title: "A Secret Message",
+            slug: "a-secret-message",
+            data: {
+              topic_title: "A Secret Message",
+              original_post_id: 42,
+              original_post_type: 1,
+              original_username: "foo",
+              revision_number: null,
+              display_username: "secret-mailer",
+            },
+            encrypted_title: encryptedTitle,
+            topic_key: exportedKey,
+          },
+        ],
+        total_rows_notifications: 1,
+        seen_notification_id: 5,
+        load_more_notifications: "/notifications?offset=60&username=foo",
+      },
+    ]);
+
+    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
+    stub.returns(title);
+
+    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
+    stub2.returns(Promise.resolve(title));
+
+    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
+    stub3.returns(Promise.resolve());
+
+    await visit("/");
+    await click(".header-dropdown-toggle.current-user");
+
+    const notifications = queryAll(
+      "#quick-access-all-notifications ul li.notification"
+    );
+
+    assert.strictEqual(
+      notifications[0].textContent.replace(/\s+/g, " ").trim(),
+      "secret-mailer Top Secret <a>",
+      "message title in the notifications tab is decrypted and rendered safely"
+    );
+    const emoji = notifications[0].querySelector(".item-description img.emoji");
+    assert.strictEqual(
+      emoji.title,
+      "male_detective",
+      "emoji in encrypted message title in the notifications tab is rendered correctly"
+    );
+  });
+
+  test("encrypted topic titles in experiemental user menu bookmarks tab are decrypted", async function (assert) {
+    updateCurrentUser({
+      redesigned_user_menu_enabled: true,
+    });
+    const identity = await getIdentity();
+    const topicKey = await generateKey();
+    const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+    const title = "Top Secret <a> :male_detective:";
+    const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+    pretender.get("/u/eviltrout/user-menu-bookmarks", () => [
+      200,
+      { "Content-Type": "application/json" },
+      {
+        notifications: [],
+        bookmarks: [
+          {
+            id: 18207,
+            created_at: "2022-08-25T21:19:09.646Z",
+            updated_at: "2022-08-25T21:19:09.646Z",
+            name: "",
+            reminder_at: null,
+            pinned: false,
+            title: "A secret message",
+            fancy_title: "A secret message",
+            excerpt:
+              "This is a secret message with end to end encryption. To view it, you must be invited to this topic.",
+            bookmarkable_id: 84390,
+            bookmarkable_type: "Post",
+            bookmarkable_url:
+              "https://local.discourse.org/t/a-secret-message/8223/1",
+            tags: [],
+            tags_descriptions: {},
+            topic_id: 8223,
+            linked_post_number: 1,
+            deleted: false,
+            hidden: false,
+            category_id: null,
+            closed: false,
+            archived: false,
+            archetype: "private_message",
+            highest_post_number: 1,
+            bumped_at: "2022-08-25T08:53:01.491Z",
+            slug: "a-secret-message",
+            encrypted_title: encryptedTitle,
+            topic_key: exportedKey,
+            user: {
+              id: 1500,
+              username: "top-sekret-man",
+              avatar_template: "/user_avatar/localhost/nat/{size}/515078_2.png",
+            },
+          },
+        ],
+      },
+    ]);
+
+    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
+    stub.returns(title);
+
+    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
+    stub2.returns(Promise.resolve(title));
+
+    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
+    stub3.returns(Promise.resolve());
+
+    await visit("/");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#user-menu-button-bookmarks");
+
+    const bookmarks = queryAll("#quick-access-bookmarks ul li.bookmark");
+
+    assert.strictEqual(
+      bookmarks[0].textContent.replace(/\s+/g, " ").trim(),
+      "top-sekret-man Top Secret <a>",
+      "message title in the bookmarks tab is decrypted and rendered safely"
+    );
+    const emoji = bookmarks[0].querySelector(".item-description img.emoji");
+    assert.strictEqual(
+      emoji.title,
+      "male_detective",
+      "emoji in encrypted message title in the bookmarks tab is rendered correctly"
+    );
+  });
+
+  test("encrypted topic titles in experiemental user menu messages tab are decrypted", async function (assert) {
+    updateCurrentUser({
+      redesigned_user_menu_enabled: true,
+    });
+    const identity = await getIdentity();
+    const topicKey = await generateKey();
+    const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+    const title = "Top Secret <a> :male_detective:";
+    const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+    pretender.get("/u/eviltrout/user-menu-private-messages", () => [
+      200,
+      { "Content-Type": "application/json" },
+      {
+        notifications: [],
+        topics: [
+          {
+            id: 127,
+            title: "A secret message",
+            fancy_title: "A secret message",
+            slug: "a-secret-message",
+            posts_count: 1,
+            reply_count: 0,
+            highest_post_number: 2,
+            image_url: null,
+            created_at: "2019-07-26T01:29:24.008Z",
+            last_posted_at: "2019-07-26T01:29:24.177Z",
+            bumped: true,
+            bumped_at: "2019-07-26T01:29:24.177Z",
+            unseen: false,
+            last_read_post_number: 2,
+            unread_posts: 0,
+            pinned: false,
+            unpinned: null,
+            visible: true,
+            closed: false,
+            archived: false,
+            notification_level: 3,
+            bookmarked: false,
+            bookmarks: [],
+            liked: false,
+            views: 5,
+            like_count: 0,
+            has_summary: false,
+            archetype: "private_message",
+            last_poster_username: "detective",
+            category_id: null,
+            pinned_globally: false,
+            featured_link: null,
+            posters: [
+              {
+                extras: "latest single",
+                description: "Original Poster, Most Recent Poster",
+                user_id: 13,
+                primary_group_id: null,
+              },
+            ],
+            participants: [
+              {
+                extras: "latest",
+                description: null,
+                user_id: 13,
+                primary_group_id: null,
+              },
+            ],
+            encrypted_title: encryptedTitle,
+            topic_key: exportedKey,
+          },
+        ],
+      },
+    ]);
+
+    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
+    stub.returns(title);
+
+    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
+    stub2.returns(Promise.resolve(title));
+
+    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
+    stub3.returns(Promise.resolve());
+
+    await visit("/");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#user-menu-button-messages");
+
+    const messages = queryAll("#quick-access-messages ul li.message");
+    assert.strictEqual(messages.length, 1);
+
+    assert.strictEqual(
+      messages[0].textContent.replace(/\s+/g, " ").trim(),
+      "detective Top Secret <a>",
+      "message title in the messages tab is decrypted and rendered safely"
+    );
+    const emoji = messages[0].querySelector(".item-description img.emoji");
+    assert.strictEqual(
+      emoji.title,
+      "male_detective",
+      "emoji in encrypted message title in the messages tab is rendered correctly"
+    );
+  });
+
   test("searching in encrypted topic titles", async function (assert) {
     const identity = await getIdentity();
     const topicKey = await generateKey();
