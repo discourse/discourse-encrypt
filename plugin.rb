@@ -416,7 +416,9 @@ after_initialize do
   # Delete TopicAllowedUser records for users who do not have the key
   on(:post_created) do |post, opts, user|
     if post.post_number > 1 && post.topic&.is_encrypted? && !EncryptedTopicsUser.find_by(topic_id: post.topic_id, user_id: user.id)&.key
-      TopicAllowedUser.find_by(user_id: user.id, topic_id: post.topic_id).delete
+      TopicAllowedUser
+        .where(user_id: user.id, topic_id: post.topic_id)
+        .delete_all
     end
   end
 end
