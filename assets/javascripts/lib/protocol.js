@@ -19,6 +19,14 @@ import {
   verify as verifyV1,
 } from "discourse/plugins/discourse-encrypt/lib/protocol-v1";
 import { Promise } from "rsvp";
+import { isTesting } from "discourse-common/config/environment";
+import { registerWaiter } from "@ember/test";
+
+let pendingOperationsCount = 0;
+
+if (isTesting()) {
+  registerWaiter(() => pendingOperationsCount === 0);
+}
 
 /**
  * @var {Number} ENCRYPT_PROTOCOL_VERSION Current protocol version.
@@ -47,10 +55,14 @@ export function generateIdentity(version) {
     promise = generateIdentityV1();
   }
 
-  return promise.then((id) => {
-    id.version = version;
-    return id;
-  });
+  pendingOperationsCount++;
+
+  return promise
+    .then((id) => {
+      id.version = version;
+      return id;
+    })
+    .finally(() => pendingOperationsCount--);
 }
 
 /**
@@ -76,10 +88,14 @@ export function exportIdentity(identity, passphrase) {
     promise = exportIdentityV1(identity, passphrase);
   }
 
-  return promise.then((exported) => ({
-    public: identity.version + "$" + exported.public,
-    private: identity.version + "$" + exported.private,
-  }));
+  pendingOperationsCount++;
+
+  return promise
+    .then((exported) => ({
+      public: identity.version + "$" + exported.public,
+      private: identity.version + "$" + exported.private,
+    }))
+    .finally(() => pendingOperationsCount--);
 }
 
 /**
@@ -112,10 +128,14 @@ export function importIdentity(identity, passphrase, extractable) {
     promise = importIdentityV1(identity, passphrase, extractable);
   }
 
-  return promise.then((id) => {
-    id.version = version;
-    return id;
-  });
+  pendingOperationsCount++;
+
+  return promise
+    .then((id) => {
+      id.version = version;
+      return id;
+    })
+    .finally(() => pendingOperationsCount--);
 }
 
 /*
@@ -158,7 +178,10 @@ export function encrypt(key, data, opts) {
     promise = encryptV1(key, opts && opts.signKey, data);
   }
 
-  return promise.then((ciphertext) => version + "$" + ciphertext + extra);
+  pendingOperationsCount++;
+  return promise
+    .then((ciphertext) => version + "$" + ciphertext + extra)
+    .finally(() => pendingOperationsCount--);
 }
 
 /**
@@ -177,11 +200,15 @@ export function decrypt(key, ciphertext) {
   ciphertext = ciphertext.substr(sep + 1);
 
   if (version === 0) {
-    return decryptV0(key, ciphertext).then((plaintext) => ({
-      raw: plaintext,
-    }));
+    pendingOperationsCount++;
+    return decryptV0(key, ciphertext)
+      .then((plaintext) => ({
+        raw: plaintext,
+      }))
+      .finally(() => pendingOperationsCount--);
   } else if (version === 1) {
-    return decryptV1(key, ciphertext);
+    pendingOperationsCount++;
+    return decryptV1(key, ciphertext).finally(() => pendingOperationsCount--);
   }
 
   return Promise.reject();
@@ -204,7 +231,10 @@ export function verify(key, plaintext, ciphertext) {
   if (version === 0) {
     return Promise.resolve(null);
   } else if (version === 1) {
-    return verifyV1(key, plaintext, ciphertext);
+    pendingOperationsCount++;
+    return verifyV1(key, plaintext, ciphertext).finally(
+      () => pendingOperationsCount--
+    );
   }
 
   return Promise.reject();
@@ -220,13 +250,15 @@ export function verify(key, plaintext, ciphertext) {
  * @return {Promise<CryptoKey>}
  */
 export function generateKey() {
+  pendingOperationsCount++;
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .generateKey({ name: "AES-GCM", length: 256 }, true, [
         "encrypt",
         "decrypt",
       ])
-      .then(resolve, reject);
+      .then(resolve, reject)
+      .finally(() => pendingOperationsCount--);
   });
 }
 
@@ -239,6 +271,7 @@ export function generateKey() {
  * @return {Promise<String>}
  */
 export function exportKey(key, publicKey) {
+  pendingOperationsCount++;
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .wrapKey("raw", key, publicKey, {
@@ -246,7 +279,8 @@ export function exportKey(key, publicKey) {
         hash: { name: "SHA-256" },
       })
       .then((wrapped) => bufferToBase64(wrapped))
-      .then(resolve, reject);
+      .then(resolve, reject)
+      .finally(() => pendingOperationsCount--);
   });
 }
 
@@ -259,6 +293,7 @@ export function exportKey(key, publicKey) {
  * @return {Promise<CryptoKey>}
  */
 export function importKey(key, privateKey) {
+  pendingOperationsCount++;
   return new Promise((resolve, reject) => {
     window.crypto.subtle
       .unwrapKey(
@@ -270,6 +305,7 @@ export function importKey(key, privateKey) {
         true,
         ["encrypt", "decrypt"]
       )
-      .then(resolve, reject);
+      .then(resolve, reject)
+      .finally(() => pendingOperationsCount--);
   });
 }
