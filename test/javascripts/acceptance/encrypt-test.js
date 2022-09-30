@@ -969,7 +969,8 @@ acceptance("Encrypt - active", function (needs) {
       200,
       { "Content-Type": "application/json" },
       {
-        notifications: [],
+        unread_notifications: [],
+        read_notifications: [],
         topics: [
           {
             id: 127,
