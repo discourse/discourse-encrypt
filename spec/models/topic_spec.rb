@@ -7,7 +7,7 @@ describe Topic do
   let(:encrypt_post) { Fabricate(:encrypt_post) }
   let!(:encrypt_topic) { encrypt_post.topic }
 
-  context '#is_encrypted?' do
+  describe '#is_encrypted?' do
     it 'works' do
       expect(topic.is_encrypted?).to eq(false)
       expect(encrypt_topic.is_encrypted?).to eq(true)

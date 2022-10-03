@@ -11,7 +11,7 @@ describe PostsController do
     sign_in(Fabricate(:admin))
   end
 
-  context '#create' do
+  describe '#create' do
     it 'works' do
       post '/posts.json', params: {
         raw: I18n.t('js.encrypt.encrypted_post'),

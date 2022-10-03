@@ -14,7 +14,7 @@ describe TopicsController do
     sign_in(admin)
   end
 
-  context '#update' do
+  describe '#update' do
     it 'updates encrypted title' do
       put "/t/#{topic.slug}/#{topic.id}.json", params: { encrypted_title: 'new encrypted title' }
 
@@ -39,7 +39,7 @@ describe TopicsController do
     expect(response.status).to eq(200)
   end
 
-  context '#invite' do
+  describe '#invite' do
     it 'saves user key' do
       post "/t/#{topic.id}/invite.json", params: { user: user.username, key: 'key of user' }
 
@@ -57,7 +57,7 @@ describe TopicsController do
     end
   end
 
-  context '#invite_group' do
+  describe '#invite_group' do
     it 'returns an error with no key' do
       post "/t/#{topic.id}/invite-group.json", params: { group: group.name }
 
@@ -66,7 +66,7 @@ describe TopicsController do
     end
   end
 
-  context '#remove_allowed_user' do
+  describe '#remove_allowed_user' do
     let(:topic) { Fabricate(:encrypt_topic, user: user) }
     let(:other_user) { topic.topic_allowed_users.map(&:user).find { |u| u != user } }
 

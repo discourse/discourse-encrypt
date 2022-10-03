@@ -38,7 +38,7 @@ describe EncryptedPostCreator do
     end
   end
 
-  context '#create' do
+  describe '#create' do
     it 'ensures archetype is private message' do
       creator = described_class.new(user, raw: 'Hello world!')
       post = creator.create

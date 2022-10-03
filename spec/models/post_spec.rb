@@ -7,7 +7,7 @@ describe Post do
   let(:encrypt_user) { Fabricate(:encrypt_user) }
   let(:encrypt_post) { Fabricate(:encrypt_post, user: encrypt_user) }
 
-  context '#ciphertext' do
+  describe '#ciphertext' do
     it 'works' do
       ciphertext = "0$ciphertextbase64encoded=="
       encrypt_post.update!(raw: "#{ciphertext}\nmetadata maybe?")
@@ -16,7 +16,7 @@ describe Post do
     end
   end
 
-  context '#is_encrypted?' do
+  describe '#is_encrypted?' do
     it 'works' do
       expect(post.is_encrypted?).to eq(false)
       expect(encrypt_post.is_encrypted?).to eq(true)
