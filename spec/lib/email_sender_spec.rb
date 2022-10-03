@@ -26,7 +26,7 @@ describe Email::Sender do
                              email_previous_replies: UserOption.previous_replies_type[:always])
   end
 
-  context "encrypted" do
+  context "when encrypted" do
     fab!(:encrypted_topic) { Fabricate(:encrypt_topic) }
     fab!(:encrypted_post) { Fabricate(:encrypt_post, topic: encrypted_topic) }
     fab!(:encrypted_reply) do
@@ -67,7 +67,7 @@ describe Email::Sender do
     end
   end
 
-  context "plain post" do
+  context "with plain post" do
     fab!(:post) { Fabricate(:post) }
     fab!(:reply) do
       raw = <<~RAW

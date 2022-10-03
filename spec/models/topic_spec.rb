@@ -14,7 +14,7 @@ describe Topic do
     end
   end
 
-  context 'remove_allowed_user' do
+  describe 'remove_allowed_user' do
     it 'deletes topic key for user' do
       expect { encrypt_topic.remove_allowed_user(Discourse.system_user, encrypt_topic.user) }
         .to change { TopicAllowedUser.count }.by(-1)

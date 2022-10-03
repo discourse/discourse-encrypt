@@ -8,7 +8,7 @@ describe Jobs::EncryptedPostTimerEvaluator do
   fab!(:post2) { Fabricate(:encrypt_post, topic: topic) }
   fab!(:post3) { Fabricate(:encrypt_post, topic: topic) }
 
-  context 'explosion of first post' do
+  describe 'explosion of first post' do
     it 'when time is right, delete all posts' do
       encrypted_post_timer = EncryptedPostTimer.create!(post: post1, delete_at: 1.hour.from_now)
       described_class.new.execute({})
@@ -28,7 +28,7 @@ describe Jobs::EncryptedPostTimerEvaluator do
     end
   end
 
-  context 'explosion of consecutive posts' do
+  describe 'explosion of consecutive posts' do
     it 'when time is right, delete only one post' do
       encrypted_post_timer = EncryptedPostTimer.create!(post: post2, delete_at: 1.hour.from_now)
       encrypted_post_timer2 = EncryptedPostTimer.create!(post: post3, delete_at: 1.hour.from_now)

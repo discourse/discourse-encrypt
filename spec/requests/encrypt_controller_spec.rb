@@ -102,8 +102,8 @@ describe DiscourseEncrypt::EncryptController do
 
     it 'resets only keys' do
       expect { post '/encrypt/reset.json', params: { user_id: user.id } }
-        .to change { TopicAllowedUser.count }.by(0)
-        .and change { EncryptedTopicsUser.count }.by(0)
+        .to not_change { TopicAllowedUser.count }
+        .and not_change { EncryptedTopicsUser.count }
         .and change { UserEncryptionKey.count }.by(-1)
 
       expect(response.status).to eq(200)
