@@ -7,7 +7,7 @@ describe DiscourseEncrypt::EncryptController do
   let(:user2) { Fabricate(:encrypt_user) }
   let(:user3) { Fabricate(:user) }
 
-  context '#update_keys' do
+  describe '#update_keys' do
     it 'does not work when not logged in' do
       put '/encrypt/keys.json', params: { public: '0$publicKey', private: '0$privateKey' }
       expect(response.status).to eq(403)
@@ -60,7 +60,7 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#show_user' do
+  describe '#show_user' do
     it 'does not work when not logged in' do
       get '/encrypt/user.json', params: { usernames: [ user.username, user2.username, user3.username ] }
       expect(response.status).to eq(403)
@@ -79,7 +79,7 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#reset_user' do
+  describe '#reset_user' do
     let!(:topic) do
       Fabricate(:encrypt_topic, topic_allowed_users: [
         Fabricate.build(:topic_allowed_user, user: user),
@@ -102,15 +102,15 @@ describe DiscourseEncrypt::EncryptController do
 
     it 'resets only keys' do
       expect { post '/encrypt/reset.json', params: { user_id: user.id } }
-        .to change { TopicAllowedUser.count }.by(0)
-        .and change { EncryptedTopicsUser.count }.by(0)
+        .to not_change { TopicAllowedUser.count }
+        .and not_change { EncryptedTopicsUser.count }
         .and change { UserEncryptionKey.count }.by(-1)
 
       expect(response.status).to eq(200)
     end
   end
 
-  context '#update_post' do
+  describe '#update_post' do
     let!(:post) { Fabricate(:encrypt_post) }
 
     before do
@@ -130,7 +130,7 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#posts' do
+  describe '#posts' do
     let!(:topic) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:post) { Fabricate(:post, topic: topic) }
 
@@ -178,7 +178,7 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#show_all_keys' do
+  describe '#show_all_keys' do
     let!(:topic1) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:topic2) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:topic3) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user2) ]) }
@@ -192,7 +192,7 @@ describe DiscourseEncrypt::EncryptController do
     end
   end
 
-  context '#update_all_keys' do
+  describe '#update_all_keys' do
     let!(:topic1) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:topic2) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ]) }
     let!(:topic3) { Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user2) ]) }
