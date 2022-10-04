@@ -22,9 +22,9 @@ describe EncryptedPostCreator do
     EOS
   end
 
-  let(:bot) { Fabricate(:user, id: -42) }
+  let!(:bot) { Fabricate(:user, id: -42) }
 
-  let(:user) do
+  let!(:user) do
     Fabricate(:user).tap do |user|
       UserEncryptionKey.create!(user: user, encrypt_public: public_key)
     end
@@ -32,10 +32,14 @@ describe EncryptedPostCreator do
 
   let(:topic) { Fabricate(:topic) }
 
-  let(:destination_user) do
+  let!(:destination_user) do
     Fabricate(:user).tap do |user|
       UserEncryptionKey.create!(user: user, encrypt_public: public_key)
     end
+  end
+
+  before do
+    Group.refresh_automatic_groups!
   end
 
   describe '#create' do
