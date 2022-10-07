@@ -35,9 +35,8 @@ en:
 
       post:
         delete:
-          confirm: "The content will be completely deleted, there will be no way to restore it"
-          yes_value: "Delete Content"
-          no_value: "Cancel"
+          title: "Are you sure?"
+          confirm: "The content will be completely deleted, there will be no way to restore it."
       composer:
         no_topic_key: "You cannot encrypt messages in this topic."
         user_has_no_key: "%{username} did not enable encrypted messages."

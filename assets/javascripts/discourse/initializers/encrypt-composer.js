@@ -19,13 +19,13 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
-import bootbox from "bootbox";
 
 export default {
   name: "encrypt-composer",
 
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
+
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
@@ -151,15 +151,15 @@ export default {
             return Promise.resolve();
           }
 
+          const dialog = container.lookup("service:dialog");
           return new Promise((resolve, reject) => {
-            bootbox.confirm(
-              I18n.t("encrypt.composer.confirm.message", {
+            dialog.yesNoConfirm({
+              message: I18n.t("encrypt.composer.confirm.message", {
                 error: this.encryptError,
               }),
-              I18n.t("encrypt.composer.confirm.no_value"),
-              I18n.t("encrypt.composer.confirm.yes_value"),
-              (result) => (result ? resolve() : reject())
-            );
+              didConfirm: () => resolve(),
+              didCancel: () => reject(),
+            });
           });
         },
       });

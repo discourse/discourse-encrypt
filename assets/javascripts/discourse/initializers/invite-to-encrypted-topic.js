@@ -10,7 +10,6 @@ import {
 import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
-import bootbox from "bootbox";
 
 export default {
   name: "invite-to-encrypted-topic",
@@ -43,7 +42,8 @@ export default {
               });
             })
             .catch((username) => {
-              bootbox.alert(
+              const dialog = container.lookup("service:dialog");
+              dialog.alert(
                 I18n.t("encrypt.composer.user_has_no_key", { username })
               );
               return Promise.reject(username);

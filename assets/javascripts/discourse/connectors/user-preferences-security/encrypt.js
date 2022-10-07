@@ -17,6 +17,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
+import { getOwner } from "discourse-common/lib/get-owner";
 import bootbox from "bootbox";
 
 export default {
@@ -98,13 +99,14 @@ export default {
   actions: {
     enableEncrypt() {
       this.set("inProgress", true);
+      const dialog = getOwner(this).lookup("service:dialog");
 
       return enableEncrypt(this.model, this.importIdentity && this.identity)
         .then(() => {
           this.appEvents.trigger("encrypt:status-changed");
         })
         .catch(() =>
-          bootbox.alert(I18n.t("encrypt.preferences.key_pair_invalid"))
+          dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"))
         )
         .finally(() => {
           this.setProperties({
@@ -118,6 +120,7 @@ export default {
 
     activateEncrypt() {
       this.set("inProgress", true);
+      const dialog = getOwner(this).lookup("service:dialog");
 
       const identityPromise = this.importIdentity
         ? importIdentity(unpackIdentity(this.identity)).then((identity) =>
@@ -131,9 +134,9 @@ export default {
         })
         .catch(() => {
           if (this.importIdentity) {
-            bootbox.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
+            dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
           } else {
-            bootbox.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
+            dialog.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
           }
         })
         .finally(() =>

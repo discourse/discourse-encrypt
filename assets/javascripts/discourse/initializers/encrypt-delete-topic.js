@@ -2,29 +2,22 @@ import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import Post from "discourse/models/post";
 import I18n from "I18n";
-import bootbox from "bootbox";
 
 export default {
   name: "encrypt-delete-topic",
 
-  initialize() {
+  initialize(container) {
     withPluginApi("0.11.3", (api) => {
       api.modifyClass("controller:topic", {
         pluginId: "encrypt-delete-topic",
 
         permanentDeleteConfirmation(callback) {
-          bootbox.confirm(
-            I18n.t("encrypt.post.delete.confirm"),
-            I18n.t("encrypt.post.delete.no_value"),
-            I18n.t("encrypt.post.delete.yes_value"),
-            (result) => {
-              if (result) {
-                callback();
-              } else {
-                return;
-              }
-            }
-          );
+          const dialog = container.lookup("service:dialog");
+          dialog.deleteConfirm({
+            title: I18n.t("encrypt.post.delete.title"),
+            message: I18n.t("encrypt.post.delete.confirm"),
+            didConfirm: () => callback(),
+          });
         },
 
         createTimer(post_id) {
