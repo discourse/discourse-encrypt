@@ -18,7 +18,6 @@ import {
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { getOwner } from "discourse-common/lib/get-owner";
-import bootbox from "bootbox";
 
 export default {
   setupComponent(args, component) {
