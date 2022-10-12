@@ -561,6 +561,9 @@ acceptance("Encrypt - active", function (needs) {
 
     await visit("/");
     await click("#create-topic");
+    const categoryChooser = selectKit(".category-chooser");
+    await categoryChooser.expand();
+    await categoryChooser.selectRowByValue(2);
 
     requests = [];
     await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
@@ -652,6 +655,9 @@ acceptance("Encrypt - active", function (needs) {
 
     await visit("/");
     await click("#create-topic");
+    const categoryChooser = selectKit(".category-chooser");
+    await categoryChooser.expand();
+    await categoryChooser.selectRowByValue(2);
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
