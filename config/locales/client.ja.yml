@@ -29,11 +29,6 @@ ja:
       checkbox:
         checked: "このメッセージはエンドツーエンドで暗号化されます。"
         unchecked: "このメッセージを暗号化するには、ロック記号をクリックします。"
-      post:
-        delete:
-          confirm: "コンテンツは完全に削除され、復元できなくなります。"
-          yes_value: "コンテンツを削除"
-          no_value: "キャンセル"
       composer:
         no_topic_key: "このトピックのメッセージを暗号化できません。"
         user_has_no_key: "%{username} は暗号化メッセージを有効にしませんでした。"

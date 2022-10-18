@@ -29,11 +29,6 @@ zh_CN:
       checkbox:
         checked: "此消息将进行端到端加密。"
         unchecked: "点击锁符号来加密此消息。"
-      post:
-        delete:
-          confirm: "内容将被彻底删除，将无法恢复"
-          yes_value: "删除内容"
-          no_value: "取消"
       composer:
         no_topic_key: "您无法加密此话题中的消息。"
         user_has_no_key: "%{username} 未启用加密消息。"

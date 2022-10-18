@@ -25,9 +25,6 @@ nl:
       checkbox:
         checked: "Dit bericht wordt end-to-end versleuteld."
         unchecked: "Klik op het slotsymbool om dit bericht te versleutelen."
-      post:
-        delete:
-          confirm: "De inhoud wordt volledig verwijderd, er is geen manier om deze te herstellen"
       preferences:
         ie11: "De vereiste coderingssuite is niet beschikbaar in Internet Explorer 11."
         insecure_context: "Versleuteling kan niet worden gebruikt in een onveilige context (geen HTTPS)."

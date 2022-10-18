@@ -15,8 +15,8 @@ fa_IR:
       invalid_identity: "پیام قابل رمزگشایی نیست، زیرا هویت کاربر معتبر نیست."
       post:
         delete:
-          yes_value: "حذف محتوا"
-          no_value: "انصراف"
+          title: "مطمئنی؟"
+          confirm: "محتوا به طور کامل حذف خواهد شد، هیچ راهی برای بازیابی آن وجود نخواهد داشت."
       preferences:
         paper_key_label: "کلید مقاله:"
         paper_key_placeholder: "دوازده کلمه..."

@@ -29,11 +29,6 @@ pt_BR:
       checkbox:
         checked: "Esta mensagem usará criptografia ponta a ponta."
         unchecked: "Clique no símbolo de cadeado para criptografar esta mensagem."
-      post:
-        delete:
-          confirm: "O conteúdo será excluído completamente, não terá como restaurá-lo"
-          yes_value: "Excluir conteúdo"
-          no_value: "Cancelar"
       composer:
         no_topic_key: "Não é possível criptografar mensagens neste tópico."
         user_has_no_key: "%{username} não ativou mensagens criptografadas."

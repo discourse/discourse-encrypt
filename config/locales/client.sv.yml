@@ -31,11 +31,6 @@ sv:
       checkbox:
         checked: "Detta meddelande kommer att vara krypterat från början till slut."
         unchecked: "Klicka på låssymbolen för att kryptera detta meddelande."
-      post:
-        delete:
-          confirm: "Innehållet kommer att raderas helt, och det finns sedan inte något sätt att återställa det"
-          yes_value: "Radera innehåll"
-          no_value: "Avbryt"
       composer:
         no_topic_key: "Du kan inte kryptera meddelanden i detta ämne."
         user_has_no_key: "%{username} aktiverade inte krypterade meddelanden."
