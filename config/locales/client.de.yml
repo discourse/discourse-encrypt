@@ -29,11 +29,6 @@ de:
       checkbox:
         checked: "Diese Nachricht wird Ende-zu-Ende verschlüsselt."
         unchecked: "Klicke das Schloss-Symbol zum Verschlüsseln dieser Nachricht."
-      post:
-        delete:
-          confirm: "Der Inhalt wird vollständig gelöscht – es gibt keine Möglichkeit, ihn wiederherzustellen"
-          yes_value: "Inhalt löschen"
-          no_value: "Abbrechen"
       composer:
         no_topic_key: "Du kannst keine Nachrichten in dieser Unterhaltung verschlüsseln."
         user_has_no_key: "%{username} hat verschlüsselte Nachrichten nicht aktiviert."

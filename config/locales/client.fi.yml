@@ -29,11 +29,6 @@ fi:
       checkbox:
         checked: "Tämä viesti salataan päästä päähän."
         unchecked: "Salaa tämä viesti napsauttamalla lukkokuvaketta."
-      post:
-        delete:
-          confirm: "Sisältö poistetaan kokonaan, eikä sitä voi palauttaa"
-          yes_value: "Poista sisältö"
-          no_value: "Peruuta"
       composer:
         no_topic_key: "Et voi salata tämän ketjun viestejä."
         user_has_no_key: "%{username} ei ottanut salattuja viestejä käyttöön."

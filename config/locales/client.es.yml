@@ -29,11 +29,6 @@ es:
       checkbox:
         checked: "Este mensaje se cifrará de extremo a extremo."
         unchecked: "Pulsa el símbolo del candado para cifrar este mensaje."
-      post:
-        delete:
-          confirm: "El contenido se eliminará completamente, no habrá forma de restaurarlo"
-          yes_value: "Eliminar contenido"
-          no_value: "Cancelar"
       composer:
         no_topic_key: "No puedes cifrar mensajes en este tema."
         user_has_no_key: "%{username} no habilitó los mensajes cifrados."

@@ -29,11 +29,6 @@ fr:
       checkbox:
         checked: "Ce message sera chiffré de bout en bout."
         unchecked: "Cliquez sur le symbole du cadenas pour chiffrer ce message."
-      post:
-        delete:
-          confirm: "Le contenu sera complètement supprimé, il n'y aura aucun moyen de le restaurer"
-          yes_value: "Supprimer le contenu"
-          no_value: "Annuler"
       composer:
         no_topic_key: "Vous ne pouvez pas chiffrer les messages dans ce sujet."
         user_has_no_key: "%{username} n'a pas activé les messages chiffrés."

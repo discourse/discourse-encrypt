@@ -29,11 +29,6 @@ it:
       checkbox:
         checked: "Questo messaggio verrà codificato con crittografia end to end."
         unchecked: "Clicca il lucchetto per crittografare questo messaggio."
-      post:
-        delete:
-          confirm: "Il contenuto verrà completamente eliminato e non ci sarà modo di ripristinarlo"
-          yes_value: "Elimina contenuto"
-          no_value: "Annulla"
       composer:
         no_topic_key: "Non è possibile crittografare i messaggi in questo argomento."
         user_has_no_key: "%{username} non ha abilitato i messaggi crittografati."
