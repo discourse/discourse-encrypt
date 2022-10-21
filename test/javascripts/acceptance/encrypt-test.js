@@ -964,6 +964,7 @@ acceptance("Encrypt - active", function (needs) {
   test("encrypted topic titles in experiemental user menu messages tab are decrypted", async function (assert) {
     updateCurrentUser({
       redesigned_user_menu_enabled: true,
+      can_send_private_messages: true,
     });
     const identity = await getIdentity();
     const topicKey = await generateKey();
