@@ -13,7 +13,9 @@ fr:
       invalid_ciphertext: "Le message n'a pas pu être déchiffré car le texte chiffré de ce message est invalide."
       invalid_topic_key: "Le message n'a pas pu être déchiffré car votre clé de sujet est invalide."
       invalid_identity: "Le message n'a pas pu être déchiffré car l'identité de l'utilisateur est invalide."
+      no_backup_warn: "Le chiffrement est activé sur votre compte, mais vous n'avez pas encore généré de clés papier. Sans clé papier, vous risquez de perdre l'accès à vos messages chiffrés. Pour générer une clé papier, accédez à la page <a href='%{basePath}/my/preferences/security'>de vos préférences de sécurité</a>, appuyez sur le bouton <kbd>Générer la clé papier</kbd> et suivez les instructions."
       integrity_check_pass: "La vérification d'intégrité pour ce message a réussi."
+      integrity_check_skip: "La vérification de l'intégrité de ce message a été ignorée, car le message n'a pas de signature."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (le ou les champs %{fields} ne correspondent pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
       integrity_check_warn_signed_by: "Ce message a été signé la dernière fois par %{actual}, et non par %{expected}."
@@ -29,6 +31,10 @@ fr:
       checkbox:
         checked: "Ce message sera chiffré de bout en bout."
         unchecked: "Cliquez sur le symbole du cadenas pour chiffrer ce message."
+      post:
+        delete:
+          title: "Êtes-vous sûr(e) ?"
+          confirm: "Le contenu sera complètement supprimé et il n'y aura aucun moyen de le restaurer."
       composer:
         no_topic_key: "Vous ne pouvez pas chiffrer les messages dans ce sujet."
         user_has_no_key: "%{username} n'a pas activé les messages chiffrés."
