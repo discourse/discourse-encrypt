@@ -13,7 +13,9 @@ de:
       invalid_ciphertext: "Die Nachricht konnte nicht entschlüsselt werden, da der Verschlüsselungstext dieser Nachricht ungültig ist."
       invalid_topic_key: "Die Nachricht konnte nicht entschlüsselt werden, da dein Themenschlüssel ungültig ist."
       invalid_identity: "Die Nachricht konnte nicht entschlüsselt werden, da die Benutzeridentität ungültig ist."
+      no_backup_warn: "Die Verschlüsselung ist in deinem Konto aktiviert, aber du hast noch keine Papierschlüssel generiert. Ohne Papierschlüssel riskierst du, den Zugriff auf deine verschlüsselten Nachrichten zu verlieren. Um einen Papierschlüssel zu generieren, gehe in <a href='%{basePath}/my/preferences/security'>deine Sicherheitseinstellungen</a>, klicke auf die Schaltfläche <kbd>Papierschlüssel generieren</kbd> und folge den Anweisungen."
       integrity_check_pass: "Die Integritätsprüfung für diesen Beitrag war gültig."
+      integrity_check_skip: "Die Integritätsprüfung für diesen Beitrag wurde übersprungen, weil der Beitrag keine Signatur hat."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurden aktualisiert, ohne erneut signiert zu werden."
       integrity_check_warn_signed_by: "Dieser Beitrag wurde zuletzt von %{actual} signiert, nicht von %{expected}."
@@ -29,6 +31,10 @@ de:
       checkbox:
         checked: "Diese Nachricht wird Ende-zu-Ende verschlüsselt."
         unchecked: "Klicke das Schloss-Symbol zum Verschlüsseln dieser Nachricht."
+      post:
+        delete:
+          title: "Bist du sicher?"
+          confirm: "Der Inhalt wird vollständig gelöscht – es gibt keine Möglichkeit, ihn wiederherzustellen."
       composer:
         no_topic_key: "Du kannst keine Nachrichten in dieser Unterhaltung verschlüsseln."
         user_has_no_key: "%{username} hat verschlüsselte Nachrichten nicht aktiviert."

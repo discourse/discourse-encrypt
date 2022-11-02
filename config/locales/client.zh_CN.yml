@@ -13,7 +13,9 @@ zh_CN:
       invalid_ciphertext: "无法解密消息，因为此消息的加密文本无效。"
       invalid_topic_key: "无法解密消息，因为您的话题密钥无效。"
       invalid_identity: "无法解密消息，因为用户身份无效。"
+      no_backup_warn: "您的帐户已启用加密，但尚未生成任何纸质密钥。如果没有任何纸质密钥，您可能会失去对您的加密消息的访问权限。要生成纸质密钥，请导航到<a href='%{basePath}/my/preferences/security'>安全偏好设置页面</a>，按<kbd>生成纸质密钥</kbd>按钮并按照说明进行操作。"
       integrity_check_pass: "此帖子的完整性检查已通过。"
+      integrity_check_skip: "由于帖子没有签名，跳过了此帖子的完整性检查。"
       integrity_check_fail: "此帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据已更新，无需再次签名。"
       integrity_check_warn_signed_by: "此帖子最后由 %{actual} 而不是 %{expected} 签名。"
@@ -29,6 +31,10 @@ zh_CN:
       checkbox:
         checked: "此消息将进行端到端加密。"
         unchecked: "点击锁符号来加密此消息。"
+      post:
+        delete:
+          title: "您确定吗？"
+          confirm: "内容将被彻底删除，将无法恢复。"
       composer:
         no_topic_key: "您无法加密此话题中的消息。"
         user_has_no_key: "%{username} 未启用加密消息。"

@@ -13,7 +13,9 @@ fi:
       invalid_ciphertext: "Viestin salausta ei voitu purkaa, koska tämän viestin salausteksti on virheellinen."
       invalid_topic_key: "Viestin salausta ei voitu purkaa, koska ketjuavaimesi on virheellinen."
       invalid_identity: "Viestin salausta ei voitu purkaa, koska käyttäjän identiteetti on virheellinen."
+      no_backup_warn: "Salaus on käytössä tililläsi, mutta et ole vielä luonut paperiavaimia. Ilman paperiavaimia saatat menettää pääsyn salattuihin viesteihisi. Luo paperiavain siirtymällä <a href='%{basePath}/my/preferences/security'>turvallisuusasetussivulle</a>, painamalla <kbd>Luo paperiavain</kbd> -painiketta ja noudattamalla ohjeita."
       integrity_check_pass: "Tämän viestin eheystarkastus on läpäisty."
+      integrity_check_skip: "Tämän viestin eheystarkistus ohitettiin, koska viestissä ei ole allekirjoitusta."
       integrity_check_fail: "Tämän viestin eheystarkastus epäonnistui (%{fields} ei täsmää)."
       integrity_check_warn_updated_at: "Viestin metatiedot päivitettiin ilman allekirjoittamista."
       integrity_check_warn_signed_by: "Tämän viestin on allekirjoittanut viimeksi %{actual}, ei %{expected}."
@@ -29,6 +31,10 @@ fi:
       checkbox:
         checked: "Tämä viesti salataan päästä päähän."
         unchecked: "Salaa tämä viesti napsauttamalla lukkokuvaketta."
+      post:
+        delete:
+          title: "Oletko varma?"
+          confirm: "Sisältö poistetaan kokonaan, eikä sitä voi palauttaa."
       composer:
         no_topic_key: "Et voi salata tämän ketjun viestejä."
         user_has_no_key: "%{username} ei ottanut salattuja viestejä käyttöön."

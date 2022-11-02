@@ -13,7 +13,9 @@ it:
       invalid_ciphertext: "Impossibile decrittografare questo messaggio perché il testo crittografato di questo messaggio non è valido."
       invalid_topic_key: "Impossibile decrittografare questo messaggio perché la tua chiave per l'argomento non è valida."
       invalid_identity: "Impossibile decrittografare questo messaggio perché l'identità dell'utente non è valida."
+      no_backup_warn: "Hai abilitato la crittografia sul tuo account, ma non hai generato alcuna chiave cartacea. Senza chiavi cartacee rischi di perdere l'accesso ai messaggi crittografati. Per generare una chiave cartacea vai alla <a href='%{basePath}/my/preferences/security'>pagina delle preferenze di sicurezza</a>, premi il pulsante <kbd>Genera Chiave Cartacea</kbd> e segui le istruzioni."
       integrity_check_pass: "Il controllo di integrità per questo messaggio è riuscito."
+      integrity_check_skip: "Il controllo di integrità per questo messaggio è stato ignorato perché il messaggio non ha firma."
       integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito (%{fields} mancata corrispondenza)."
       integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."
       integrity_check_warn_signed_by: "Questo messaggio è stato firmato l'ultima volta da %{actual}, non da %{expected}."
@@ -29,6 +31,10 @@ it:
       checkbox:
         checked: "Questo messaggio verrà codificato con crittografia end to end."
         unchecked: "Clicca il lucchetto per crittografare questo messaggio."
+      post:
+        delete:
+          title: "Sei sicuro?"
+          confirm: "Il contenuto verrà completamente eliminato e non ci sarà modo di ripristinarlo."
       composer:
         no_topic_key: "Non è possibile crittografare i messaggi in questo argomento."
         user_has_no_key: "%{username} non ha abilitato i messaggi crittografati."

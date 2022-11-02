@@ -13,7 +13,9 @@ es:
       invalid_ciphertext: "No se ha podido descifrar el mensaje porque el texto cifrado de este mensaje no es válido."
       invalid_topic_key: "No se pudo descifrar el mensaje porque la clave del tema no es válida."
       invalid_identity: "No se pudo descifrar el mensaje porque la identidad del usuario no es válida."
+      no_backup_warn: "El cifrado está activado en tu cuenta, pero aún no has generado ninguna clave en papel. Sin ninguna clave en papel, corres el riesgo de perder el acceso a tus mensajes cifrados. Para generar una clave en papel, ve a <a href='%{basePath}/my/preferences/security'>tu página de preferencias de seguridad</a>, pulsa el botón <kbd>Generar clave de papel</kbd> y sigue las instrucciones."
       integrity_check_pass: "La comprobación de la integridad de este puesto ha sido superada."
+      integrity_check_skip: "La comprobación de la integridad de esta entrada se ha omitido porque la entrada no tiene firma."
       integrity_check_fail: "La comprobación de integridad de esta publicación ha fallado (%{fields} no coinciden)."
       integrity_check_warn_updated_at: "Los metadatos de la publicación se actualizaron sin volver a firmarse."
       integrity_check_warn_signed_by: "Esta publicación fue firmada por última vez por %{actual}, no por %{expected}."
@@ -29,6 +31,10 @@ es:
       checkbox:
         checked: "Este mensaje se cifrará de extremo a extremo."
         unchecked: "Pulsa el símbolo del candado para cifrar este mensaje."
+      post:
+        delete:
+          title: "¿Seguro?"
+          confirm: "El contenido se eliminará completamente, no habrá forma de restaurarlo."
       composer:
         no_topic_key: "No puedes cifrar mensajes en este tema."
         user_has_no_key: "%{username} no habilitó los mensajes cifrados."
