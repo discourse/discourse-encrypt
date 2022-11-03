@@ -16,24 +16,36 @@
           {{#if isEncryptEnabled}}
             {{#if isEncryptActive}}
               <p>{{i18n "encrypt.preferences.status_enabled"}}</p>
-              {{d-button
-                icon="times"
-                action=(action "deactivateEncrypt")
-                label="encrypt.preferences.deactivate"
-                id="deactivate"
+              <fieldset class="control-group">
+                {{d-button
+                  icon="times"
+                  action=(action "deactivateEncrypt")
+                  label="encrypt.preferences.deactivate"
+                  id="deactivate"
+                }}
+                {{d-button
+                  icon="plus"
+                  action=(action "generatePaperKey" true)
+                  label="encrypt.generate_paper_key.title_device"
+                }}
+                {{d-button
+                  icon="ticket-alt"
+                  action=(action "generatePaperKey")
+                  label="encrypt.generate_paper_key.title"
+                }}
+                {{encrypt-preferences-dropdown
+                  onChange=(action "selectEncryptPreferencesDropdownAction")
+                }}
+              </fieldset>
+              {{preference-checkbox
+                labelKey="encrypt.preferences.encrypt_pms_default"
+                checked=model.user_option.encrypt_pms_default
               }}
-              {{d-button
-                icon="plus"
-                action=(action "generatePaperKey" true)
-                label="encrypt.generate_paper_key.title_device"
-              }}
-              {{d-button
-                icon="ticket-alt"
-                action=(action "generatePaperKey")
-                label="encrypt.generate_paper_key.title"
-              }}
-              {{encrypt-preferences-dropdown
-                onChange=(action "selectEncryptPreferencesDropdownAction")
+              {{save-controls
+                id="encrypt_preference_save"
+                model=model
+                action=(action "save")
+                saved=saved
               }}
             {{else}}
               <form>

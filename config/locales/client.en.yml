@@ -73,6 +73,8 @@ en:
         import: "Import Encryption Key Pair"
         use_paper_key: "Use Paper Key"
         generate_key: "Generate New Key Pair"
+        encrypt_pms_default: "Encrypt all new personal messages by default"
+        save: "Save Changes"
 
       generate_paper_key:
         title: "Generate Paper Key"
