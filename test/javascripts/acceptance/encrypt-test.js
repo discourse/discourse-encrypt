@@ -41,6 +41,7 @@ import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
+import EmberObject from "@ember/object";
 
 /*
  * Checks if a string is not contained in a string.
@@ -156,8 +157,12 @@ async function wait(statusOrWaiter, func) {
 }
 
 function setupEncryptTests(needs) {
-  needs.user({ can_encrypt: true });
-  needs.settings({ encrypt_pms_default: true });
+  needs.user({
+    can_encrypt: true,
+    user_option: EmberObject.create({
+      encrypt_pms_default: true
+    }),
+  });
 
   needs.hooks.beforeEach(function () {
     sinon.stub(EncryptLibDiscourse, "reload");

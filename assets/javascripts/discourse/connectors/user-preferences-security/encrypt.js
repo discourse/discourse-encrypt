@@ -1,4 +1,4 @@
-import { computed, defineProperty, action } from "@ember/object";
+import { action, computed, defineProperty } from "@ember/object";
 import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
