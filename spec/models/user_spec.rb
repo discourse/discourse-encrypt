@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe User do
   let(:user) { Fabricate(:user) }
-  
+
   before do
     SiteSetting.encrypt_enabled = true
   end

@@ -1,4 +1,4 @@
-import { computed, defineProperty } from "@ember/object";
+import { computed, defineProperty, action } from "@ember/object";
 import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
@@ -18,7 +18,6 @@ import {
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { getOwner } from "discourse-common/lib/get-owner";
-import { action } from "@ember/object";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
@@ -107,9 +106,7 @@ export default {
       .then(() => {
         this.appEvents.trigger("encrypt:status-changed");
       })
-      .catch(() =>
-        dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"))
-      )
+      .catch(() => dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid")))
       .finally(() => {
         this.setProperties({
           passphrase: "",
@@ -185,7 +182,6 @@ export default {
         }
       })
       .catch(popupAjaxError);
-
   },
 
   @action
