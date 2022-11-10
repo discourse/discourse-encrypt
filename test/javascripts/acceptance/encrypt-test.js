@@ -41,7 +41,6 @@ import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
-import EmberObject from "@ember/object";
 
 /*
  * Checks if a string is not contained in a string.
