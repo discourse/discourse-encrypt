@@ -159,9 +159,7 @@ async function wait(statusOrWaiter, func) {
 function setupEncryptTests(needs) {
   needs.user({
     can_encrypt: true,
-    user_option: EmberObject.create({
-      encrypt_pms_default: true,
-    }),
+    encrypt_pms_default: true,
   });
 
   needs.hooks.beforeEach(function () {

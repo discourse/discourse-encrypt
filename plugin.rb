@@ -313,6 +313,14 @@ after_initialize do
     scope.can_encrypt?
   end
 
+  add_to_serializer(:current_user, :encrypt_pms_default, false) do
+    object.user_option.encrypt_pms_default
+  end
+
+  add_to_serializer(:current_user, :include_encrypt_pms_default?) do
+    scope.can_encrypt?
+  end
+
   add_to_serializer(:user, :can_encrypt, false) do
     true
   end
