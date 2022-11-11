@@ -75,6 +75,8 @@ after_initialize do
     mount DiscourseEncrypt::Engine, at: '/'
   end
 
+  UserUpdater::OPTION_ATTR.push(:encrypt_pms_default)
+
   reloadable_patch do |plugin|
     Email::Sender.class_eval                 { prepend DiscourseEncrypt::EmailSenderExtensions }
     GroupedSearchResultSerializer.class_eval { prepend DiscourseEncrypt::GroupedSearchResultSerializerExtension }
@@ -311,12 +313,28 @@ after_initialize do
     scope.can_encrypt?
   end
 
+  add_to_serializer(:current_user, :encrypt_pms_default, false) do
+    object.user_option.encrypt_pms_default
+  end
+
+  add_to_serializer(:current_user, :include_encrypt_pms_default?) do
+    scope.can_encrypt?
+  end
+
   add_to_serializer(:user, :can_encrypt, false) do
     true
   end
 
   add_to_serializer(:user, :include_can_encrypt?) do
     scope.can_encrypt?
+  end
+
+  add_to_serializer(:user_option, :encrypt_pms_default) do
+    object.encrypt_pms_default
+  end
+
+  add_model_callback(:user_option, :before_create) do
+    self.encrypt_pms_default = SiteSetting.encrypt_pms_default if SiteSetting.encrypt_enabled
   end
 
   #

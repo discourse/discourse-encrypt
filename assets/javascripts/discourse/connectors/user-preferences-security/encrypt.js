@@ -1,4 +1,4 @@
-import { computed, defineProperty } from "@ember/object";
+import { action, computed, defineProperty } from "@ember/object";
 import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
@@ -18,6 +18,8 @@ import {
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { getOwner } from "discourse-common/lib/get-owner";
+import { isTesting } from "discourse-common/config/environment";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default {
   setupComponent(args, component) {
@@ -95,104 +97,120 @@ export default {
     }
   },
 
-  actions: {
-    enableEncrypt() {
-      this.set("inProgress", true);
-      const dialog = getOwner(this).lookup("service:dialog");
+  @action
+  enableEncrypt() {
+    this.set("inProgress", true);
+    const dialog = getOwner(this).lookup("service:dialog");
 
-      return enableEncrypt(this.model, this.importIdentity && this.identity)
-        .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
-        })
-        .catch(() =>
-          dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"))
-        )
-        .finally(() => {
-          this.setProperties({
-            passphrase: "",
-            inProgress: false,
-            importIdentity: false,
-            identity: "",
-          });
+    return enableEncrypt(this.model, this.importIdentity && this.identity)
+      .then(() => {
+        this.appEvents.trigger("encrypt:status-changed");
+      })
+      .catch(() => dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid")))
+      .finally(() => {
+        this.setProperties({
+          passphrase: "",
+          inProgress: false,
+          importIdentity: false,
+          identity: "",
         });
-    },
-
-    activateEncrypt() {
-      this.set("inProgress", true);
-      const dialog = getOwner(this).lookup("service:dialog");
-
-      const identityPromise = this.importIdentity
-        ? importIdentity(unpackIdentity(this.identity)).then((identity) =>
-            saveDbIdentity(identity)
-          )
-        : activateEncrypt(this.model, this.passphrase);
-
-      return identityPromise
-        .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
-        })
-        .catch(() => {
-          if (this.importIdentity) {
-            dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
-          } else {
-            dialog.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
-          }
-        })
-        .finally(() =>
-          this.setProperties({
-            passphrase: "",
-            inProgress: false,
-            importIdentity: false,
-            identity: "",
-          })
-        );
-    },
-
-    deactivateEncrypt() {
-      this.setProperties("inProgress", true);
-
-      deleteDb()
-        .then(() => {
-          this.appEvents.trigger("encrypt:status-changed");
-        })
-        .finally(() => this.set("inProgress", false));
-    },
-
-    generatePaperKey(device) {
-      showModal("generate-paper-key", {
-        model: {
-          user: this.model,
-          device,
-        },
       });
-    },
+  },
 
-    selectEncryptPreferencesDropdownAction(actionId) {
-      switch (actionId) {
-        case "export":
-          showModal("export-key-pair", { model: this.model });
-          break;
-        case "managePaperKeys":
-          showModal("manage-paper-keys", { model: this.model });
-          break;
-        case "rotate":
-          showModal("rotate-key-pair", { model: this.model });
-          break;
-        case "reset":
-          showModal("reset-key-pair", { model: this.model });
-          break;
-      }
-    },
+  @action
+  activateEncrypt() {
+    this.set("inProgress", true);
+    const dialog = getOwner(this).lookup("service:dialog");
 
-    selectEncryptEnableDropdownAction(actionId) {
-      switch (actionId) {
-        case "import":
-          this.toggleProperty("importIdentity");
-          break;
-        case "reset":
-          showModal("reset-key-pair", { model: this.model });
-          break;
-      }
-    },
+    const identityPromise = this.importIdentity
+      ? importIdentity(unpackIdentity(this.identity)).then((identity) =>
+          saveDbIdentity(identity)
+        )
+      : activateEncrypt(this.model, this.passphrase);
+
+    return identityPromise
+      .then(() => {
+        this.appEvents.trigger("encrypt:status-changed");
+      })
+      .catch(() => {
+        if (this.importIdentity) {
+          dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
+        } else {
+          dialog.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
+        }
+      })
+      .finally(() =>
+        this.setProperties({
+          passphrase: "",
+          inProgress: false,
+          importIdentity: false,
+          identity: "",
+        })
+      );
+  },
+
+  @action
+  deactivateEncrypt() {
+    this.setProperties("inProgress", true);
+
+    deleteDb()
+      .then(() => {
+        this.appEvents.trigger("encrypt:status-changed");
+      })
+      .finally(() => this.set("inProgress", false));
+  },
+
+  @action
+  generatePaperKey(device) {
+    showModal("generate-paper-key", {
+      model: {
+        user: this.model,
+        device,
+      },
+    });
+  },
+
+  @action
+  save() {
+    this.set("saved", false);
+    return this.model
+      .save(["encrypt_pms_default"])
+      .then(() => {
+        this.set("saved", true);
+        if (!isTesting()) {
+          location.reload();
+        }
+      })
+      .catch(popupAjaxError);
+  },
+
+  @action
+  selectEncryptPreferencesDropdownAction(actionId) {
+    switch (actionId) {
+      case "export":
+        showModal("export-key-pair", { model: this.model });
+        break;
+      case "managePaperKeys":
+        showModal("manage-paper-keys", { model: this.model });
+        break;
+      case "rotate":
+        showModal("rotate-key-pair", { model: this.model });
+        break;
+      case "reset":
+        showModal("reset-key-pair", { model: this.model });
+        break;
+    }
+  },
+
+  @action
+  selectEncryptEnableDropdownAction(actionId) {
+    switch (actionId) {
+      case "import":
+        this.toggleProperty("importIdentity");
+        break;
+      case "reset":
+        showModal("reset-key-pair", { model: this.model });
+        break;
+    }
   },
 };

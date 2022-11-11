@@ -156,8 +156,10 @@ async function wait(statusOrWaiter, func) {
 }
 
 function setupEncryptTests(needs) {
-  needs.user({ can_encrypt: true });
-  needs.settings({ encrypt_pms_default: true });
+  needs.user({
+    can_encrypt: true,
+    encrypt_pms_default: true,
+  });
 
   needs.hooks.beforeEach(function () {
     sinon.stub(EncryptLibDiscourse, "reload");

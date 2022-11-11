@@ -57,7 +57,7 @@ export default {
             // (serialization), this method is called and `isEncrypted` is
             // reset.
             if (!this.isEncryptedChanged) {
-              isEncrypted = this.siteSettings.encrypt_pms_default;
+              isEncrypted = currentUser.encrypt_pms_default;
             }
           }
 
@@ -77,7 +77,7 @@ export default {
         checkEncryptRecipients() {
           if (!this.targetRecipients) {
             this.setProperties({
-              isEncrypted: this.siteSettings.encrypt_pms_default,
+              isEncrypted: currentUser.encrypt_pms_default,
               isEncryptedChanged: true,
               showEncryptError: true,
               encryptErrorUser: false,
