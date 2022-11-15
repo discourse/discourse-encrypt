@@ -21,6 +21,8 @@ fa_IR:
         paper_key_label: "کلید مقاله:"
         paper_key_placeholder: "دوازده کلمه..."
         paper_key_invalid: "کلید مقاله‌ای که وارد کردید درست نیست."
+        encrypt_pms_default: "تمام پیا‌م‌های شخصی جدید را به طور پیش‌فرض رمزگذاری کنید"
+        save: "ذخیره تغییرات"
       manage_paper_keys:
         delete: "حذف"
       time_bomb:
