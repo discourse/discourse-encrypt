@@ -145,7 +145,9 @@ export default {
         if (
           groupedResult &&
           groupedResult.type_filter === "private_messages" &&
-          !groupedResult.term.split(" ").some((t) => /^group_messages:(.+)$/i.test(t))
+          !groupedResult.term
+            .split(" ")
+            .some((t) => /^group_messages:(.+)$/i.test(t))
         ) {
           let cachePromise = Promise.resolve();
           if (!cache.loaded) {
