@@ -134,6 +134,7 @@ export default {
       api.addSearchResultsCallback((results) => {
         const cache = getCache(session);
         const promises = [];
+        const groupedResult = results?.grouped_search_result;
 
         // Decrypt existing topics and cache them
         results.topics.forEach((topic) => {
@@ -142,7 +143,9 @@ export default {
 
         // Search for more encrypted topics
         if (
-          results?.grouped_search_result?.type_filter === "private_messages"
+          groupedResult &&
+          groupedResult.type_filter === "private_messages" &&
+          !groupedResult.term.split(" ").some((t) => /^group_messages:(.+)$/i.test(t))
         ) {
           let cachePromise = Promise.resolve();
           if (!cache.loaded) {
