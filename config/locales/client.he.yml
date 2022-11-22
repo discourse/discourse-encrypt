@@ -65,6 +65,8 @@ he:
         import: "ייבוא צמד מפתחות הצפנה"
         use_paper_key: "להשתמש במפתח נייר"
         generate_key: "יצירת זוג מפתחות חדש"
+        encrypt_pms_default: "להצפין את כל ההודעות האישיות החדשות כבררת מחדל"
+        save: "שמירת השינויים"
       generate_paper_key:
         title: "יצירת מפתח נייר"
         title_device: "הפעלת מכשיר אחר"
