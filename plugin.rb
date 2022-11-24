@@ -314,7 +314,7 @@ after_initialize do
   end
 
   add_to_serializer(:current_user, :encrypt_pms_default, false) do
-    object.user_option.encrypt_pms_default
+    object.user_option.encrypt_pms_default || SiteSetting.encrypt_pms_default
   end
 
   add_to_serializer(:current_user, :include_encrypt_pms_default?) do
@@ -330,7 +330,7 @@ after_initialize do
   end
 
   add_to_serializer(:user_option, :encrypt_pms_default) do
-    object.encrypt_pms_default
+    object.encrypt_pms_default || SiteSetting.encrypt_pms_default
   end
 
   add_model_callback(:user_option, :before_create) do
