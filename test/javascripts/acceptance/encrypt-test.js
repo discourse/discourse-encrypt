@@ -1275,7 +1275,7 @@ acceptance("Encrypt - active", function (needs) {
             type_filter: "private_messages",
             post_ids: [3833],
           },
-        }
+        },
       ];
     });
 
