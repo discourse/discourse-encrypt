@@ -1,4 +1,4 @@
-import { click, fillIn, visit } from "@ember/test-helpers";
+import { click, fillIn, triggerKeyEvent, visit } from "@ember/test-helpers";
 import { registerWaiter, unregisterWaiter } from "@ember/test";
 import User from "discourse/models/user";
 import {
@@ -446,6 +446,75 @@ async function setupEncryptedTopicPretender(server, { identity } = {}) {
       },
     ];
   });
+}
+
+async function setupEncryptedSearchResultPretender(server) {
+  const identity = await getIdentity();
+  const topicKey = await generateKey();
+  const exportedKey = await exportKey(topicKey, identity.encryptPublic);
+  const title = "Top Secret Developer <a> :male_detective:";
+  const encryptedTitle = await encrypt(topicKey, { raw: title });
+
+  server.get("/encrypt/posts", () => {
+    return [
+      200,
+      { "Content-Type": "application/json" },
+      {
+        success: "OK",
+        topics: [
+          {
+            id: 42,
+            title: "A secret message",
+            fancy_title: "A secret message",
+            slug: "a-secret-message",
+            posts_count: 1,
+            reply_count: 0,
+            highest_post_number: 1,
+            created_at: "2021-01-01T12:00:00.000Z",
+            last_posted_at: "2021-01-01T12:00:00.000Z",
+            bumped: true,
+            bumped_at: "2021-01-01T12:00:00.000Z",
+            archetype: "private_message",
+            unseen: false,
+            pinned: false,
+            unpinned: null,
+            visible: true,
+            closed: false,
+            archived: false,
+            bookmarked: null,
+            liked: null,
+            category_id: null,
+            encrypted_title: encryptedTitle,
+            topic_key: exportedKey,
+          },
+        ],
+        posts: [
+          {
+            id: 42,
+            username: "foo",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+            created_at: "2021-01-01T12:00:00.000Z",
+            like_count: 0,
+            post_number: 1,
+            topic_id: 42,
+          },
+          {
+            id: 43,
+            username: "foo",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+            created_at: "2021-01-01T12:00:00.000Z",
+            like_count: 0,
+            post_number: 2,
+            topic_id: 42,
+          },
+        ],
+      },
+    ];
+  });
+
+  return { encryptedTitle, exportedKey };
 }
 
 acceptance("Encrypt - disabled", function (needs) {
@@ -1066,13 +1135,170 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  test("searching in encrypted topic titles", async function (assert) {
-    const identity = await getIdentity();
-    const topicKey = await generateKey();
-    const exportedKey = await exportKey(topicKey, identity.encryptPublic);
-    const title = "Top Secret :male_detective:";
-    const encryptedTitle = await encrypt(topicKey, { raw: title });
+  test("searching in group messages", async function (assert) {
+    pretender.get("/search/query", (request) => {
+      // return only one result for PM search
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          posts: [
+            {
+              id: 3833,
+              name: "Bill Dudney",
+              username: "bdudney",
+              avatar_template:
+                "/user_avatar/meta.discourse.org/bdudney/{size}/8343_1.png",
+              uploaded_avatar_id: 8343,
+              created_at: "2013-02-07T17:46:57.469Z",
+              cooked:
+                "<p>I've gotten vagrant up and running with a development environment but it's taking forever to load.</p>\n\n<p>For example <a href=\"http://192.168.10.200:3000/\" rel=\"nofollow\">http://192.168.10.200:3000/</a> takes tens of seconds to load.</p>\n\n<p>I'm running the whole stack on a new rMBP with OS X 10.8.2.</p>\n\n<p>Any ideas of what I've done wrong? Or is this just a function of being on the bleeding edge?</p>\n\n<p>Thanks,</p>\n\n<p>-bd</p>",
+              post_number: 1,
+              post_type: 1,
+              updated_at: "2013-02-07T17:46:57.469Z",
+              like_count: 0,
+              reply_count: 1,
+              reply_to_post_number: null,
+              quote_count: 0,
+              incoming_link_count: 4422,
+              reads: 327,
+              score: 21978.4,
+              yours: false,
+              topic_id: 2179,
+              topic_slug: "development-mode-super-slow",
+              display_username: "Bill Dudney",
+              primary_group_name: null,
+              version: 2,
+              can_edit: false,
+              can_delete: false,
+              can_recover: false,
+              user_title: null,
+              actions_summary: [
+                {
+                  id: 2,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+                {
+                  id: 3,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+                {
+                  id: 4,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+                {
+                  id: 5,
+                  count: 0,
+                  hidden: true,
+                  can_act: false,
+                },
+                {
+                  id: 6,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+                {
+                  id: 7,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+                {
+                  id: 8,
+                  count: 0,
+                  hidden: false,
+                  can_act: false,
+                },
+              ],
+              moderator: false,
+              admin: false,
+              staff: false,
+              user_id: 1828,
+              hidden: false,
+              hidden_reason_id: null,
+              trust_level: 1,
+              deleted_at: null,
+              user_deleted: false,
+              edit_reason: null,
+              can_view_edit_history: true,
+              wiki: false,
+              blurb:
+                "I've gotten vagrant up and running with a development environment but it's taking forever to load. For example http://192.168.10.200:3000/ takes...",
+            },
+          ],
+          topics: [
+            {
+              id: 2179,
+              title: "Development mode super slow",
+              fancy_title: "Development mode super slow",
+              slug: "development-mode-super-slow",
+              posts_count: 72,
+              reply_count: 53,
+              highest_post_number: 73,
+              image_url: null,
+              created_at: "2013-02-07T17:46:57.262Z",
+              last_posted_at: "2015-04-17T08:08:26.671Z",
+              bumped: true,
+              bumped_at: "2015-04-17T08:08:26.671Z",
+              unseen: false,
+              pinned: false,
+              unpinned: null,
+              visible: true,
+              closed: false,
+              archived: false,
+              bookmarked: null,
+              liked: null,
+              views: 9538,
+              like_count: 45,
+              has_summary: true,
+              archetype: "regular",
+              last_poster_username: null,
+              category_id: 7,
+              pinned_globally: false,
+              posters: [],
+              tags: ["dev", "slow"],
+              tags_descriptions: {
+                dev: "dev description",
+                slow: "slow description",
+              },
+            },
+          ],
+          grouped_search_result: {
+            term: request.queryParams.term,
+            type_filter: "private_messages",
+            post_ids: [3833],
+          },
+        },
+      ];
+    });
 
+    await setupEncryptedSearchResultPretender(pretender);
+
+    await visit("/");
+    await click("#search-button");
+
+    await fillIn("#search-term", "dev");
+    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await click(document.activeElement);
+
+    const container = ".search-menu .results";
+    assert.strictEqual(count(`${container} .item`), 2);
+
+    await fillIn("#search-term", "group_messages:staff dev");
+    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await click(document.activeElement);
+
+    assert.strictEqual(count(`${container} .item`), 1);
+  });
+
+  test("searching in encrypted topic titles", async function (assert) {
     pretender.get("/search", (request) => {
       return [
         200,
@@ -1089,70 +1315,13 @@ acceptance("Encrypt - active", function (needs) {
       ];
     });
 
-    pretender.get("/encrypt/posts", () => {
-      return [
-        200,
-        { "Content-Type": "application/json" },
-        {
-          success: "OK",
-          topics: [
-            {
-              id: 42,
-              title: "A secret message",
-              fancy_title: "A secret message",
-              slug: "a-secret-message",
-              posts_count: 1,
-              reply_count: 0,
-              highest_post_number: 1,
-              created_at: "2021-01-01T12:00:00.000Z",
-              last_posted_at: "2021-01-01T12:00:00.000Z",
-              bumped: true,
-              bumped_at: "2021-01-01T12:00:00.000Z",
-              archetype: "private_message",
-              unseen: false,
-              pinned: false,
-              unpinned: null,
-              visible: true,
-              closed: false,
-              archived: false,
-              bookmarked: null,
-              liked: null,
-              category_id: null,
-              encrypted_title: encryptedTitle,
-              topic_key: exportedKey,
-            },
-          ],
-          posts: [
-            {
-              id: 42,
-              username: "foo",
-              avatar_template:
-                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
-              created_at: "2021-01-01T12:00:00.000Z",
-              like_count: 0,
-              post_number: 1,
-              topic_id: 42,
-            },
-            {
-              id: 43,
-              username: "foo",
-              avatar_template:
-                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
-              created_at: "2021-01-01T12:00:00.000Z",
-              like_count: 0,
-              post_number: 2,
-              topic_id: 42,
-            },
-          ],
-        },
-      ];
-    });
+    const result = await setupEncryptedSearchResultPretender(pretender);
 
     await visit("/search?q=secret+in:personal");
     assert.strictEqual(count(".fps-result"), 1);
     assert.strictEqual(
       query(".fps-result .topic-title").innerText.trim(),
-      "Top Secret"
+      "Top Secret Developer"
     );
 
     pretender.get("/search", (request) => {
@@ -1203,8 +1372,8 @@ acceptance("Encrypt - active", function (needs) {
               bookmarked: false,
               liked: false,
               category_id: null,
-              encrypted_title: encryptedTitle,
-              topic_key: exportedKey,
+              encrypted_title: result.encryptedTitle,
+              topic_key: result.exportedKey,
             },
           ],
           users: [],
@@ -1235,7 +1404,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.strictEqual(count(".fps-result"), 1);
     assert.strictEqual(
       query(".fps-result .topic-title").innerText.trim(),
-      "Top Secret"
+      "Top Secret Developer"
     );
   });
 
