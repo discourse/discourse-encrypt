@@ -184,8 +184,11 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   #
   # Returns status code 200, topics and posts.
   def posts
+    term = "in:first".dup
+    term << " #{params[:term]}" if params[:term].present?
+
     search = EncryptedSearch.new(
-      'in:first',
+      term,
       guardian: guardian,
       type_filter: 'private_messages',
       limit: 250,

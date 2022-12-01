@@ -7,7 +7,7 @@ class EncryptedSearch < Search
   # Simplified posts_query that does almost nothing, but fetch visible posts.
   # The term is looked up on the client side.
   def posts_query(limit, type_filter: nil)
-    Post
+    posts = Post
       .includes(topic: :encrypted_topics_data)
       .where.not(encrypted_topics_data: { title: nil })
       .joins(topic: :encrypted_topics_users)
@@ -15,8 +15,16 @@ class EncryptedSearch < Search
       .where(post_number: 1)
       .where(post_type: Topic.visible_post_types(@guardian.user))
       .where('post_search_data.private_message')
-      .order('posts.created_at DESC')
-      .limit(limit)
+
+    @filters.each do |block, match|
+      if block.arity == 1
+        posts = instance_exec(posts, &block) || posts
+      else
+        posts = instance_exec(posts, match, &block) || posts
+      end
+    end if @filters
+
+    posts.order('posts.created_at DESC').limit(limit)
   end
 
   # Similar to posts_query does almost nothing other than to return a set of

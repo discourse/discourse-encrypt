@@ -160,9 +160,26 @@ describe DiscourseEncrypt::EncryptController do
 
     it 'fetches posts' do
       sign_in(user)
+      freeze_time 2.days.from_now
+
+      topic = Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ])
+      Fabricate(:post, topic: topic)
+      filter_date = 1.day.ago.iso8601.split('T')[0]
 
       get '/encrypt/posts.json'
       expect(response.status).to eq(200)
+      expect(response.parsed_body['topics'].size).to eq(2)
+      expect(response.parsed_body['posts'].size).to eq(2)
+
+      get '/encrypt/posts.json', params: {
+        term: "after:#{filter_date}",
+      }
+      expect(response.parsed_body['topics'].size).to eq(1)
+      expect(response.parsed_body['posts'].size).to eq(1)
+
+      get '/encrypt/posts.json', params: {
+        term: "before:#{filter_date}",
+      }
       expect(response.parsed_body['topics'].size).to eq(1)
       expect(response.parsed_body['posts'].size).to eq(1)
     end
