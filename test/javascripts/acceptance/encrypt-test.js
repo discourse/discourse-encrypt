@@ -37,7 +37,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
-import QUnit, { test } from "qunit";
+import QUnit, { skip, test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -1135,7 +1135,7 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  test("searching in group messages", async function (assert) {
+  skip("searching in group messages", async function (assert) {
     pretender.get("/search/query", (request) => {
       // return only one result for PM search
       return [
