@@ -16,13 +16,15 @@ class EncryptedSearch < Search
       .where(post_type: Topic.visible_post_types(@guardian.user))
       .where('post_search_data.private_message')
 
-    @filters.each do |block, match|
-      if block.arity == 1
-        posts = instance_exec(posts, &block) || posts
-      else
-        posts = instance_exec(posts, match, &block) || posts
+    if @filters
+      @filters.each do |block, match|
+        if block.arity == 1
+          posts = instance_exec(posts, &block) || posts
+        else
+          posts = instance_exec(posts, match, &block) || posts
+        end
       end
-    end if @filters
+    end
 
     posts.order('posts.created_at DESC').limit(limit)
   end
