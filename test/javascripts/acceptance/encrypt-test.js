@@ -37,7 +37,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
-import QUnit, { skip, test } from "qunit";
+import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -1290,23 +1290,34 @@ acceptance("Encrypt - active", function (needs) {
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    const container = ".search-menu .results";
     const item = ".search-menu .results .item";
-    assert.strictEqual(query(`${item} [data-topic-id='2179']`)?.innerText?.trim(), "Development mode super slow");
-    assert.strictEqual(query(`${item} [data-topic-id='42']`)?.innerText?.trim(), "Top Secret Developer");
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
+    assert.strictEqual(
+      query(`${item} [data-topic-id='42']`)?.innerText?.trim(),
+      "Top Secret Developer"
+    );
 
     await fillIn("#search-term", "group_messages:staff dev");
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    assert.strictEqual(query(`${item} [data-topic-id='2179']`)?.innerText?.trim(), "Development mode super slow");
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
     assert.notOk(exists(`${item} [data-topic-id='42']`));
 
     await fillIn("#search-term", "in:messages after:2022-11-01 dev");
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    assert.strictEqual(query(`${item} [data-topic-id='2179']`)?.innerText?.trim(), "Development mode super slow");
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
     assert.notOk(exists(`${item} [data-topic-id='42']`));
   });
 
