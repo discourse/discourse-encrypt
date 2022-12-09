@@ -41,6 +41,7 @@ import QUnit, { skip, test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
+import Session from "discourse/models/session";
 
 /*
  * Checks if a string is not contained in a string.
@@ -1135,7 +1136,7 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  skip("searching in group messages", async function (assert) {
+  test("searching in group messages", async function (assert) {
     pretender.get("/search/query", (request) => {
       // return only one result for PM search
       return [
@@ -1288,14 +1289,16 @@ acceptance("Encrypt - active", function (needs) {
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    const container = ".search-menu .results";
-    assert.strictEqual(count(`${container} .item`), 2);
+    const item = ".search-menu .results .item";
+    assert.strictEqual(query(`${item} [data-topic-id='2179']`)?.innerText?.trim(), "Development mode super slow");
+    assert.strictEqual(query(`${item} [data-topic-id='42']`)?.innerText?.trim(), "Top Secret Developer");
 
     await fillIn("#search-term", "group_messages:staff dev");
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    assert.strictEqual(count(`${container} .item`), 1);
+    assert.strictEqual(query(`${item} [data-topic-id='2179']`)?.innerText?.trim(), "Development mode super slow");
+    assert.notOk(exists(`${item} [data-topic-id='42']`));
   });
 
   test("searching in encrypted topic titles", async function (assert) {
