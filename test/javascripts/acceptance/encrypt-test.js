@@ -789,7 +789,9 @@ acceptance("Encrypt - active", function (needs) {
 
   test("deactivation works", async function (assert) {
     await visit("/u/eviltrout/preferences/security");
-    await wait(ENCRYPT_ENABLED, () => click(".encrypt button#deactivate"));
+    await wait(ENCRYPT_ENABLED, () =>
+      click(".encrypt button#encrypt-deactivate")
+    );
 
     assert.rejects(loadDbIdentity());
   });

@@ -21,19 +21,22 @@
                   icon="times"
                   action=(action "deactivateEncrypt")
                   label="encrypt.preferences.deactivate"
-                  id="deactivate"
+                  id="encrypt-deactivate"
                 }}
                 {{d-button
+                  id="encrypt-generate-paper-key-for-device"
                   icon="plus"
                   action=(action "generatePaperKey" true)
                   label="encrypt.generate_paper_key.title_device"
                 }}
                 {{d-button
+                  id="encrypt-generate-paper-key"
                   icon="ticket-alt"
                   action=(action "generatePaperKey")
                   label="encrypt.generate_paper_key.title"
                 }}
                 {{encrypt-preferences-dropdown
+                  id="encrypt-preferences"
                   onChange=(action "selectEncryptPreferencesDropdownAction")
                 }}
               </fieldset>
@@ -83,6 +86,7 @@
                 <p>
                   {{d-button
                     class="btn-primary"
+                    id="encrypt-activate"
                     icon="unlock"
                     action=(action "activateEncrypt")
                     type="submit"
@@ -110,6 +114,7 @@
 
             {{d-button
               class="btn-primary"
+              id="enable-encrypted-messages"
               icon="lock"
               action=(action "enableEncrypt")
               disabled=inProgress
