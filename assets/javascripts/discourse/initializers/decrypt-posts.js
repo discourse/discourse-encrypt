@@ -216,17 +216,7 @@ function postProcessPost(siteSettings, site, topicId, post) {
   }
 
   // Paint category and tag hashtags
-  if (!siteSettings.enable_experimental_hashtag_autocomplete) {
-    const unseenTagHashtags = linkSeenHashtags(post);
-    if (unseenTagHashtags.length > 0) {
-      if (!hashtagsQueue) {
-        hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
-      }
-      hashtagsQueue.push(...unseenTagHashtags).then(() => {
-        linkSeenHashtags(post);
-      });
-    }
-  } else {
+  if (siteSettings.enable_experimental_hashtag_autocomplete) {
     const hashtagContext = site.hashtag_configurations["topic-composer"];
     const unseenTagHashtags = linkSeenHashtagsInContext(hashtagContext, post);
     if (unseenTagHashtags.length > 0) {
@@ -237,6 +227,16 @@ function postProcessPost(siteSettings, site, topicId, post) {
       }
       hashtagsQueue.push(...unseenTagHashtags).then(() => {
         linkSeenHashtagsInContext(hashtagContext, post);
+      });
+    }
+  } else {
+    const unseenTagHashtags = linkSeenHashtags(post);
+    if (unseenTagHashtags.length > 0) {
+      if (!hashtagsQueue) {
+        hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
+      }
+      hashtagsQueue.push(...unseenTagHashtags).then(() => {
+        linkSeenHashtags(post);
       });
     }
   }
