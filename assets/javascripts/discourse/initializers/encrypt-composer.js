@@ -75,7 +75,7 @@ export default {
 
         @observes("targetRecipients")
         checkEncryptRecipients() {
-          if (!this.targetRecipients) {
+          if (!this.targetRecipients || this.targetRecipients.length === 0) {
             this.setProperties({
               isEncrypted: currentUser.encrypt_pms_default,
               isEncryptedChanged: true,

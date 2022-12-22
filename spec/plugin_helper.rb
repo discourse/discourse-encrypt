@@ -49,3 +49,68 @@ Fabricator(:encrypt_post, from: :private_message_post) do
   end
   raw Fabricate.sequence(:encrypt) { |i| "0$base64encryptedRaw#{i}" }
 end
+
+module EncryptSystemHelpers
+  def encrypt_system_bootstrap(user)
+    SiteSetting.encrypt_enabled = true
+    SiteSetting.encrypt_groups = "trust_level_1"
+    SiteSetting.encrypt_pms_default = true
+    Group.refresh_automatic_groups!
+  end
+
+  # NOTE: For enable_encrypt_with_keys_for_user and activate_encrypt. Since we
+  # do a lot of complex cryptography logic client-side, there are a lot of things
+  # we must do in the browser. However, we can at least start with some known
+  # good keys for the UserEncryptionKey. This simulates the user clicking Enable
+  # Encrypted Messages in the UI and also generating the paper key.
+  #
+  # Activating encryption must be done in the browser for every test, since it
+  # inserts records into an IndexedDb in the browser among other things. This
+  # must be called for both the current user and every user that user will be
+  # sending messages to.
+  def enable_encrypt_with_keys_for_user(user, num = 1)
+    UserEncryptionKey.create!(
+      user: user,
+      encrypt_private: test_private_key(num),
+      encrypt_public: test_public_key(num),
+    )
+  end
+
+  def activate_encrypt(user_preferences_page, user, num = 1)
+    user_preferences_page.visit(user)
+    click_link "Security"
+    find("#passphrase").fill_in(with: test_paper_key(num))
+    find("#encrypt-activate").click
+    expect(page).to have_content(I18n.t("js.encrypt.preferences.status_enabled"))
+    expect(page.execute_script("return localStorage[\"discourse-encrypt\"]")).to eq("true")
+  end
+
+  # NOTE: Only two combinations of private/public/paper keys have been provided thusfar,
+  # to allow for both the current user and a target user to have encrypt enabled. To
+  # add more in future, follow these steps:
+  #
+  # 1. Open the "Encrypt | Enabling encrypted messages -> enables encryption and generates paper keys"
+  #    system test and add pause_test to the bottom of the `it` block.
+  # 2. When the test is paused, copy the paper_key into a new file, then copy
+  #    current_user.reload.user_encryption_key.encrypt_private into a new test_private_key_N.txt
+  #    file and copy current_user.reload.user_encryption_key.encrypt_public into a new
+  #    test_public_key_N.txt file
+  #
+  # This is all very manual, but we shouldn't have to do it often, and it saves having
+  # to do a huge amount of manual setup for each test.
+  def test_paper_key(num = 1)
+    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_paper_key_#{num}.txt")).chomp
+  end
+
+  def test_private_key(num = 1)
+    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_private_key_#{num}.txt")).chomp
+  end
+
+  def test_public_key(num = 1)
+    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_public_key_#{num}.txt")).chomp
+  end
+end
+
+RSpec.configure do |config|
+  config.include EncryptSystemHelpers, type: :system
+end

@@ -8,6 +8,10 @@ import {
   linkSeenHashtags,
 } from "discourse/lib/link-hashtags";
 import {
+  fetchUnseenHashtagsInContext,
+  linkSeenHashtagsInContext,
+} from "discourse/lib/hashtag-autocomplete";
+import {
   fetchUnseenMentions,
   linkSeenMentions,
 } from "discourse/lib/link-mentions";
@@ -197,7 +201,7 @@ function resolveShortUrlElement($el) {
   }
 }
 
-function postProcessPost(siteSettings, topicId, post) {
+function postProcessPost(siteSettings, site, topicId, post) {
   // Paint mentions
   const unseenMentions = linkSeenMentions(post, siteSettings);
   if (unseenMentions.length > 0) {
@@ -212,14 +216,29 @@ function postProcessPost(siteSettings, topicId, post) {
   }
 
   // Paint category and tag hashtags
-  const unseenTagHashtags = linkSeenHashtags(post);
-  if (unseenTagHashtags.length > 0) {
-    if (!hashtagsQueue) {
-      hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
+  if (siteSettings.enable_experimental_hashtag_autocomplete) {
+    const hashtagContext = site.hashtag_configurations["topic-composer"];
+    const unseenTagHashtags = linkSeenHashtagsInContext(hashtagContext, post);
+    if (unseenTagHashtags.length > 0) {
+      if (!hashtagsQueue) {
+        hashtagsQueue = new DebouncedQueue(500, () =>
+          fetchUnseenHashtagsInContext(hashtagContext, unseenTagHashtags)
+        );
+      }
+      hashtagsQueue.push(...unseenTagHashtags).then(() => {
+        linkSeenHashtagsInContext(hashtagContext, post);
+      });
     }
-    hashtagsQueue.push(...unseenTagHashtags).then(() => {
-      linkSeenHashtags(post);
-    });
+  } else {
+    const unseenTagHashtags = linkSeenHashtags(post);
+    if (unseenTagHashtags.length > 0) {
+      if (!hashtagsQueue) {
+        hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
+      }
+      hashtagsQueue.push(...unseenTagHashtags).then(() => {
+        linkSeenHashtags(post);
+      });
+    }
   }
 
   // Resolve short URLs
@@ -487,7 +506,7 @@ export default {
               document.querySelector(`#post_${attrs.post_number}.small-action`);
 
             if (post) {
-              postProcessPost(this.siteSettings, topicId, post);
+              postProcessPost(this.siteSettings, this.site, topicId, post);
             }
           });
         } else if (state.encryptState === "error") {
