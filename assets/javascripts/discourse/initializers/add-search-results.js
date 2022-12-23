@@ -12,6 +12,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { isTesting } from "discourse-common/config/environment";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
@@ -53,7 +54,11 @@ function getCache(session, filterKey) {
     key += `-${filterKey}`;
   }
 
-  let cache = session.get(key);
+  let cache;
+  if (!isTesting()) {
+    cache = session.get(key);
+  }
+
   if (!cache) {
     session.set(key, (cache = {}));
   }

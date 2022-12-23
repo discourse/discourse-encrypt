@@ -456,7 +456,17 @@ async function setupEncryptedSearchResultPretender(server) {
   const encryptedTitle = await encrypt(topicKey, { raw: title });
 
   server.get("/encrypt/posts", (request) => {
-    if (!request.queryParams["term"]) {
+    if (request.queryParams["term"]) {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          success: "OK",
+          topics: [],
+          posts: [],
+        },
+      ];
+    } else {
       return [
         200,
         { "Content-Type": "application/json" },
