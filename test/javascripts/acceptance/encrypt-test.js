@@ -37,7 +37,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
-import QUnit, { skip, test } from "qunit";
+import QUnit, { test } from "qunit";
 import { Promise } from "rsvp";
 import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -455,63 +455,75 @@ async function setupEncryptedSearchResultPretender(server) {
   const title = "Top Secret Developer <a> :male_detective:";
   const encryptedTitle = await encrypt(topicKey, { raw: title });
 
-  server.get("/encrypt/posts", () => {
-    return [
-      200,
-      { "Content-Type": "application/json" },
-      {
-        success: "OK",
-        topics: [
-          {
-            id: 42,
-            title: "A secret message",
-            fancy_title: "A secret message",
-            slug: "a-secret-message",
-            posts_count: 1,
-            reply_count: 0,
-            highest_post_number: 1,
-            created_at: "2021-01-01T12:00:00.000Z",
-            last_posted_at: "2021-01-01T12:00:00.000Z",
-            bumped: true,
-            bumped_at: "2021-01-01T12:00:00.000Z",
-            archetype: "private_message",
-            unseen: false,
-            pinned: false,
-            unpinned: null,
-            visible: true,
-            closed: false,
-            archived: false,
-            bookmarked: null,
-            liked: null,
-            category_id: null,
-            encrypted_title: encryptedTitle,
-            topic_key: exportedKey,
-          },
-        ],
-        posts: [
-          {
-            id: 42,
-            username: "foo",
-            avatar_template:
-              "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
-            created_at: "2021-01-01T12:00:00.000Z",
-            like_count: 0,
-            post_number: 1,
-            topic_id: 42,
-          },
-          {
-            id: 43,
-            username: "foo",
-            avatar_template:
-              "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
-            created_at: "2021-01-01T12:00:00.000Z",
-            like_count: 0,
-            post_number: 2,
-            topic_id: 42,
-          },
-        ],
-      },
-    ];
+  server.get("/encrypt/posts", (request) => {
+    if (request.queryParams["term"]) {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          success: "OK",
+          topics: [],
+          posts: [],
+        },
+      ];
+    } else {
+      return [
+        200,
+        { "Content-Type": "application/json" },
+        {
+          success: "OK",
+          topics: [
+            {
+              id: 42,
+              title: "A secret message",
+              fancy_title: "A secret message",
+              slug: "a-secret-message",
+              posts_count: 1,
+              reply_count: 0,
+              highest_post_number: 1,
+              created_at: "2021-01-01T12:00:00.000Z",
+              last_posted_at: "2021-01-01T12:00:00.000Z",
+              bumped: true,
+              bumped_at: "2021-01-01T12:00:00.000Z",
+              archetype: "private_message",
+              unseen: false,
+              pinned: false,
+              unpinned: null,
+              visible: true,
+              closed: false,
+              archived: false,
+              bookmarked: null,
+              liked: null,
+              category_id: null,
+              encrypted_title: encryptedTitle,
+              topic_key: exportedKey,
+            },
+          ],
+          posts: [
+            {
+              id: 42,
+              username: "foo",
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+              created_at: "2021-01-01T12:00:00.000Z",
+              like_count: 0,
+              post_number: 1,
+              topic_id: 42,
+            },
+            {
+              id: 43,
+              username: "foo",
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/f/eada6e/{size}.png",
+              created_at: "2021-01-01T12:00:00.000Z",
+              like_count: 0,
+              post_number: 2,
+              topic_id: 42,
+            },
+          ],
+        },
+      ];
+    }
   });
 
   return { encryptedTitle, exportedKey };
@@ -1137,7 +1149,7 @@ acceptance("Encrypt - active", function (needs) {
     );
   });
 
-  skip("searching in group messages", async function (assert) {
+  test("searching in messages with filters", async function (assert) {
     pretender.get("/search/query", (request) => {
       // return only one result for PM search
       return [
@@ -1290,14 +1302,35 @@ acceptance("Encrypt - active", function (needs) {
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    const container = ".search-menu .results";
-    assert.strictEqual(count(`${container} .item`), 2);
+    const item = ".search-menu .results .item";
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
+    assert.strictEqual(
+      query(`${item} [data-topic-id='42']`)?.innerText?.trim(),
+      "Top Secret Developer"
+    );
 
     await fillIn("#search-term", "group_messages:staff dev");
     await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
     await click(document.activeElement);
 
-    assert.strictEqual(count(`${container} .item`), 1);
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
+    assert.notOk(exists(`${item} [data-topic-id='42']`));
+
+    await fillIn("#search-term", "in:messages after:2022-11-01 dev");
+    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await click(document.activeElement);
+
+    assert.strictEqual(
+      query(`${item} [data-topic-id='2179']`)?.innerText?.trim(),
+      "Development mode super slow"
+    );
+    assert.notOk(exists(`${item} [data-topic-id='42']`));
   });
 
   test("searching in encrypted topic titles", async function (assert) {

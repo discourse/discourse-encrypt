@@ -160,11 +160,28 @@ describe DiscourseEncrypt::EncryptController do
 
     it 'fetches posts' do
       sign_in(user)
+      freeze_time 2.days.from_now
+
+      topic_2 = Fabricate(:encrypt_topic, topic_allowed_users: [ Fabricate.build(:topic_allowed_user, user: user) ])
+      post_2 = Fabricate(:post, topic: topic_2)
+      filter_date = 1.day.ago.iso8601.split('T')[0]
 
       get '/encrypt/posts.json'
       expect(response.status).to eq(200)
-      expect(response.parsed_body['topics'].size).to eq(1)
-      expect(response.parsed_body['posts'].size).to eq(1)
+      expect(response.parsed_body['topics'].pluck("id")).to contain_exactly(topic.id, topic_2.id)
+      expect(response.parsed_body['posts'].pluck("id")).to contain_exactly(post.id, post_2.id)
+
+      get '/encrypt/posts.json', params: {
+        term: "after:#{filter_date}",
+      }
+      expect(response.parsed_body['topics'].pluck("id")).to contain_exactly(topic_2.id)
+      expect(response.parsed_body['posts'].pluck("id")).to contain_exactly(post_2.id)
+
+      get '/encrypt/posts.json', params: {
+        term: "before:#{filter_date}",
+      }
+      expect(response.parsed_body['topics'].pluck("id")).to contain_exactly(topic.id)
+      expect(response.parsed_body['posts'].pluck("id")).to contain_exactly(post.id)
     end
 
     it 'fetches posts when use_pg_headlines_for_excerpt is enabled' do

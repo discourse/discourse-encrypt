@@ -12,6 +12,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { isTesting } from "discourse-common/config/environment";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 
@@ -46,16 +47,26 @@ function addTopicToCache(cache, topic) {
     .catch(() => {});
 }
 
-function getCache(session) {
-  let cache = session.get(CACHE_KEY);
+function getCache(session, filterKey) {
+  let key = CACHE_KEY;
+
+  if (filterKey) {
+    key += `-${filterKey}`;
+  }
+
+  let cache;
+  if (!isTesting()) {
+    cache = session.get(key);
+  }
+
   if (!cache) {
-    session.set(CACHE_KEY, (cache = {}));
+    session.set(key, (cache = {}));
   }
   return cache;
 }
 
-function loadCache(cache) {
-  return ajax("/encrypt/posts").then((result) => {
+function loadCache(cache, term) {
+  return ajax("/encrypt/posts", { data: { term } }).then((result) => {
     const promises = [];
 
     result.posts?.forEach((post) => addPostToCache(cache, post));
@@ -132,9 +143,15 @@ export default {
     const session = container.lookup("session:main");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
-        const cache = getCache(session);
         const promises = [];
         const groupedResult = results?.grouped_search_result;
+        const term = groupedResult?.term || "";
+        const filters = term
+          .toLowerCase()
+          .trim()
+          .split(/\s+/)
+          .filter((t) => /^(@|after:|before:).+$/i.test(t));
+        const cache = getCache(session, filters.join("-"));
 
         // Decrypt existing topics and cache them
         results.topics.forEach((topic) => {
@@ -145,13 +162,11 @@ export default {
         if (
           groupedResult &&
           groupedResult.type_filter === "private_messages" &&
-          !groupedResult.term
-            .split(" ")
-            .some((t) => /^group_messages:(.+)$/i.test(t))
+          !term.split(" ").some((t) => /^group_messages:(.+)$/i.test(t))
         ) {
           let cachePromise = Promise.resolve();
           if (!cache.loaded) {
-            cachePromise = loadCache(cache);
+            cachePromise = loadCache(cache, filters.join(" "));
             cache.loaded = true;
           }
 
