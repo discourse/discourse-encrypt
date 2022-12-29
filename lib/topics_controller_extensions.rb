@@ -29,7 +29,7 @@ module DiscourseEncrypt::TopicsControllerExtensions
         guardian.ensure_can_invite_to!(@topic)
         EncryptedTopicsUser.create!(topic_id: @topic.id, user_id: @user.id, key: params[:key])
       else
-        return render_json_error(I18n.t('js.encrypt.cannot_invite'))
+        return render_json_error(I18n.t("js.encrypt.cannot_invite"))
       end
     end
 
@@ -39,9 +39,7 @@ module DiscourseEncrypt::TopicsControllerExtensions
   def invite_group
     @topic ||= Topic.find_by(id: params[:topic_id])
 
-    if @topic.is_encrypted?
-      return render_json_error(I18n.t('js.encrypt.cannot_invite_group'))
-    end
+    return render_json_error(I18n.t("js.encrypt.cannot_invite_group")) if @topic.is_encrypted?
 
     super
   end

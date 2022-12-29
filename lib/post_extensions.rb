@@ -10,7 +10,6 @@ module DiscourseEncrypt::PostExtensions
   end
 
   def is_encrypted?
-    !!(topic&.is_encrypted? &&
-       ciphertext.match(/\A[A-Za-z0-9+\/=$]+\Z/))
+    !!(topic&.is_encrypted? && ciphertext.match(%r{\A[A-Za-z0-9+/=$]+\Z}))
   end
 end

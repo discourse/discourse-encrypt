@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Email::Sender do
   before do
@@ -14,16 +14,19 @@ describe Email::Sender do
   end
 
   fab!(:small_pdf) do
-    SiteSetting.authorized_extensions = 'pdf'
-    UploadCreator.new(file_from_fixtures("small.pdf", "pdf"), "small.pdf")
-      .create_for(Discourse.system_user.id)
+    SiteSetting.authorized_extensions = "pdf"
+    UploadCreator.new(file_from_fixtures("small.pdf", "pdf"), "small.pdf").create_for(
+      Discourse.system_user.id,
+    )
   end
 
   fab!(:user) { Fabricate(:user) }
 
   before do
-    user.user_option.update!(email_in_reply_to: true,
-                             email_previous_replies: UserOption.previous_replies_type[:always])
+    user.user_option.update!(
+      email_in_reply_to: true,
+      email_previous_replies: UserOption.previous_replies_type[:always],
+    )
   end
 
   context "when encrypted" do
@@ -35,21 +38,26 @@ describe Email::Sender do
       Hello world!
       #{UploadMarkdown.new(small_pdf).attachment_markdown}
       RAW
-      reply = Fabricate(:encrypt_post,
-                        raw: raw,
-                        topic: encrypted_post.topic,
-                        user: Fabricate(:user),
-                        reply_to_post_number: encrypted_post.post_number)
+      reply =
+        Fabricate(
+          :encrypt_post,
+          raw: raw,
+          topic: encrypted_post.topic,
+          user: Fabricate(:user),
+          reply_to_post_number: encrypted_post.post_number,
+        )
       reply.link_post_uploads
       reply
     end
-    fab!(:notification) { Fabricate(:posted_notification, user: encrypted_post.user, post: encrypted_reply) }
+    fab!(:notification) do
+      Fabricate(:posted_notification, user: encrypted_post.user, post: encrypted_reply)
+    end
     let(:message) do
       UserNotifications.user_replied(
         user,
         post: encrypted_reply,
         notification_type: notification.notification_type,
-        notification_data_hash: notification.data_hash
+        notification_data_hash: notification.data_hash,
       )
     end
 
@@ -74,11 +82,14 @@ describe Email::Sender do
       Hello world!
       #{UploadMarkdown.new(small_pdf).attachment_markdown}
       RAW
-      reply = Fabricate(:post,
-                        raw: raw,
-                        topic: post.topic,
-                        user: Fabricate(:user),
-                        reply_to_post_number: post.post_number)
+      reply =
+        Fabricate(
+          :post,
+          raw: raw,
+          topic: post.topic,
+          user: Fabricate(:user),
+          reply_to_post_number: post.post_number,
+        )
       reply.link_post_uploads
       reply
     end
@@ -88,7 +99,7 @@ describe Email::Sender do
         user,
         post: reply,
         notification_type: notification.notification_type,
-        notification_data_hash: notification.data_hash
+        notification_data_hash: notification.data_hash,
       )
     end
 

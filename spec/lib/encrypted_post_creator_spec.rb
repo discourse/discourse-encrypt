@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe EncryptedPostCreator do
-  let(:public_key) do
-    <<~EOS
+  let(:public_key) { <<~EOS }
     1$eyJlbmNyeXB0UHVibGljIjp7ImFsZyI6IlJTQS1PQUVQLTI1NiIsImUiOiJBUUFCIiwiZXh0Ijp0cnVlLCJrZXlfb3BzIjpbImVuY3J5cHQiLCJ3cmFwS2V5Il0sImt0eSI6IlJTQSIsIm4iOiIzY3Nn
     NWN4ZFJ4SUF6c041dk5EckwteExvNjRCSkNLM25KeGF5NHV1U280SEpYSzVyT2VZbjBueTdkUmc1LUlKT1ZxS0tNTXF4c2JVT0xyang3WkFDZU50Y2Qyc3NSaXo1UWNiaTU4Nl9jc0hrRldZOFpMd0Y2Vk
     JJWGxONlZpdHVqWkU4cDlVVjZIR2J6RjBqYjZfRWhkSlNQb3lWR3R5N3Naem9mSTktdGc0ZDFKcHhkWmxMODJ6WVpONEl1a2N6Tkc3NjVfcjNYb1RyYlVEOFBqc0Mxa1hPZnRPTjBtU2tNSUZjQlFHY0M5
@@ -20,7 +19,6 @@ describe EncryptedPostCreator do
     9rZ0RjWUxnc2pQLTZKNjRUMklMX01QRW9hdnltMmtqQVFNZXlWZzZOc1dJN0RRTmNfU0RFLUw2bjdHWnBKdER6ZkI2b1hNOHE1TlRKMV8zcXZCUENCRzljMjJTZWs3c0s5c09zeEFxRGZ3aU5vU2NLR3Jf
     aHRWSTZKQlYwU2xueVJPSDJsWVFwX0FEc3paakN4X2tDdjNGTmlMR1FlUkRDUmtpWHlqX0c0Skhnb0tSeDFDLWV5MCJ9fQ==
     EOS
-  end
 
   let!(:bot) { Fabricate(:user, id: -42) }
 
@@ -38,58 +36,60 @@ describe EncryptedPostCreator do
     end
   end
 
-  before do
-    Group.refresh_automatic_groups!
-  end
+  before { Group.refresh_automatic_groups! }
 
-  describe '#create' do
-    it 'ensures archetype is private message' do
-      creator = described_class.new(user, raw: 'Hello world!')
+  describe "#create" do
+    it "ensures archetype is private message" do
+      creator = described_class.new(user, raw: "Hello world!")
       post = creator.create
 
       expect(post).to eq(nil)
       expect(creator.errors.count).to eq(1)
-      expect(creator.errors.messages[:base][0]).to eq(I18n.t('encrypt.only_pms'))
+      expect(creator.errors.messages[:base][0]).to eq(I18n.t("encrypt.only_pms"))
     end
 
-    it 'ensures topic is private message' do
-      creator = described_class.new(user, raw: 'Hello world!', topic: topic)
+    it "ensures topic is private message" do
+      creator = described_class.new(user, raw: "Hello world!", topic: topic)
       post = creator.create
 
       expect(post).to eq(nil)
       expect(creator.errors.count).to eq(1)
-      expect(creator.errors.messages[:base][0]).to eq(I18n.t('encrypt.only_pms'))
+      expect(creator.errors.messages[:base][0]).to eq(I18n.t("encrypt.only_pms"))
     end
 
-    it 'encrypts title and raw' do
-      raw = 'Hello world!'
+    it "encrypts title and raw" do
+      raw = "Hello world!"
 
-      creator = described_class.new(user,
-        title: raw,
-        raw: raw,
-        target_usernames: destination_user.username,
-        archetype: Archetype.private_message
-      )
+      creator =
+        described_class.new(
+          user,
+          title: raw,
+          raw: raw,
+          target_usernames: destination_user.username,
+          archetype: Archetype.private_message,
+        )
       post = creator.create
 
       expect(creator.errors.count).to eq(0)
-      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(creator.opts[:title]).to eq(I18n.t("js.encrypt.encrypted_title"))
       expect(creator.opts[:raw]).not_to eq(raw)
 
       expect(post.topic.is_encrypted?).to eq(true)
-      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(post.topic.title).to eq(I18n.t("js.encrypt.encrypted_title"))
       expect(post.topic.encrypted_topics_data.title).not_to eq(nil)
       expect(post.is_encrypted?).to eq(true)
       expect(post.raw).not_to eq(raw)
     end
 
-    it 'creates topic keys for all allowed users' do
-      creator = described_class.new(user,
-        title: 'Hello world!',
-        raw: 'Hello world!',
-        target_usernames: destination_user.username,
-        archetype: Archetype.private_message
-      )
+    it "creates topic keys for all allowed users" do
+      creator =
+        described_class.new(
+          user,
+          title: "Hello world!",
+          raw: "Hello world!",
+          target_usernames: destination_user.username,
+          archetype: Archetype.private_message,
+        )
 
       post = creator.create
       expect(post.topic.topic_allowed_users.map(&:user)).to contain_exactly(user, destination_user)
@@ -97,23 +97,25 @@ describe EncryptedPostCreator do
       expect(EncryptedTopicsUser.find_by(user: destination_user, topic: post.topic)).to be_present
     end
 
-    it 'allows bots to send encrypted messages' do
-      raw = 'Hello world from a bot'
+    it "allows bots to send encrypted messages" do
+      raw = "Hello world from a bot"
 
-      creator = described_class.new(bot,
-        title: raw,
-        raw: raw,
-        target_usernames: destination_user.username,
-        archetype: Archetype.private_message
-      )
+      creator =
+        described_class.new(
+          bot,
+          title: raw,
+          raw: raw,
+          target_usernames: destination_user.username,
+          archetype: Archetype.private_message,
+        )
       post = creator.create
 
       expect(creator.errors.count).to eq(0)
-      expect(creator.opts[:title]).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(creator.opts[:title]).to eq(I18n.t("js.encrypt.encrypted_title"))
       expect(creator.opts[:raw]).not_to eq(raw)
 
       expect(post.topic.is_encrypted?).to eq(true)
-      expect(post.topic.title).to eq(I18n.t('js.encrypt.encrypted_title'))
+      expect(post.topic.title).to eq(I18n.t("js.encrypt.encrypted_title"))
       expect(post.topic.encrypted_topics_data.title).not_to eq(nil)
       expect(post.is_encrypted?).to eq(true)
       expect(post.raw).not_to eq(raw)

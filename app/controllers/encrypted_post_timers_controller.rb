@@ -8,9 +8,7 @@ class DiscourseEncrypt::EncryptedPostTimersController < ApplicationController
 
   def create
     delete_at = 1.minutes.from_now
-    Array.wrap(params[:post_id]).each do |post_id|
-      create_for_post(post_id, delete_at)
-    end
+    Array.wrap(params[:post_id]).each { |post_id| create_for_post(post_id, delete_at) }
     render json: { delete_at: delete_at }
   end
 

@@ -33,15 +33,13 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
 
       # select other user to send the message to (who has encryption enabled)
       find("#private-message-users").click
-      find(
-        "#private-message-users-filter input[name='filter-input-search']"
-      ).send_keys("otherguy")
+      find("#private-message-users-filter input[name='filter-input-search']").send_keys("otherguy")
       find(".email-group-user-chooser-row").click
 
       # fill topic details in composer + create
       find("#reply-title").fill_in(with: topic_title)
       find("#reply-control .d-editor-input").fill_in(
-        with: "Here are some hashtags for decryption later on #todo #bugs"
+        with: "Here are some hashtags for decryption later on #todo #bugs",
       )
       find("#reply-control .save-or-cancel .create").click
 
@@ -49,9 +47,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
       using_wait_time(5) do
         expect(find(".fancy-title")).to have_content(topic_title)
         expect(page).to have_css(".d-icon-user-secret.private-message-glyph")
-        expect(page).to have_content(
-          "Here are some hashtags for decryption later"
-        )
+        expect(page).to have_content("Here are some hashtags for decryption later")
       end
 
       # make sure hashtags are rendered by the post decrypter
