@@ -8,7 +8,7 @@ class CreateEncryptedTopicsUsers < ActiveRecord::Migration[6.0]
       t.text :key
     end
 
-    add_index :encrypted_topics_users, [:user_id, :topic_id], unique: true
+    add_index :encrypted_topics_users, %i[user_id topic_id], unique: true
 
     execute <<~SQL
       INSERT INTO encrypted_topics_users(user_id, topic_id, key)

@@ -13,12 +13,8 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
-    using_wait_time(5) do
-      expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100])
-    end
-    expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(
-      nil
-    )
+    using_wait_time(5) { expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100]) }
+    expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(nil)
     expect(current_user.reload.user_encryption_key.encrypt_private).to eq(nil)
   end
 
@@ -26,20 +22,14 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
-    using_wait_time(5) do
-      expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100])
-    end
-    expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(
-      nil
-    )
+    using_wait_time(5) { expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100]) }
+    expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(nil)
     find("#encrypt-generate-paper-key").click
     expect(page).to have_css(".generate-paper-key-modal .paper-key")
     paper_key = find(".generate-paper-key-modal .paper-key").text
     expect(paper_key).not_to eq(nil)
     try_until_success do
-      expect(current_user.reload.user_encryption_key.encrypt_private).not_to eq(
-        nil
-      )
+      expect(current_user.reload.user_encryption_key.encrypt_private).not_to eq(nil)
     end
   end
 
@@ -47,16 +37,10 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     enable_encrypt_with_keys_for_user(current_user)
     user_preferences_page.visit(current_user)
     click_link "Security"
-    expect(page).to have_content(
-      I18n.t("js.encrypt.preferences.status_enabled_but_inactive")
-    )
+    expect(page).to have_content(I18n.t("js.encrypt.preferences.status_enabled_but_inactive"))
     find("#passphrase").fill_in(with: test_paper_key)
     find("#encrypt-activate").click
-    expect(page).to have_content(
-      I18n.t("js.encrypt.preferences.status_enabled")
-    )
-    expect(
-      page.execute_script("return localStorage[\"discourse-encrypt\"]")
-    ).to eq("true")
+    expect(page).to have_content(I18n.t("js.encrypt.preferences.status_enabled"))
+    expect(page.execute_script("return localStorage[\"discourse-encrypt\"]")).to eq("true")
   end
 end

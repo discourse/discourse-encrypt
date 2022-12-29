@@ -6,7 +6,7 @@ class EncryptedPostTimer < ActiveRecord::Base
   validates :post_id, presence: true
   validates :delete_at, presence: true
 
-  scope :pending, -> { where(destroyed_at: nil).where('delete_at < ?', Time.zone.now) }
+  scope :pending, -> { where(destroyed_at: nil).where("delete_at < ?", Time.zone.now) }
 end
 
 # == Schema Information

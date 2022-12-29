@@ -5,17 +5,17 @@ Fabricator(:encrypt_user, from: :user) do
     UserEncryptionKey.create!(
       user_id: user.id,
       encrypt_public: Fabricate.sequence(:encrypt) { |i| "0$publicKey#{i}" },
-      encrypt_private: Fabricate.sequence(:encrypt) { |i| "0$privateKey#{i}" }
+      encrypt_private: Fabricate.sequence(:encrypt) { |i| "0$privateKey#{i}" },
     )
   end
 end
 
 Fabricator(:encrypt_topic, from: :private_message_topic) do
-  title 'A secret message'
+  title "A secret message"
   topic_allowed_users do |attrs|
     [
       Fabricate.build(:topic_allowed_user, user: attrs[:user]),
-      Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user))
+      Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user)),
     ]
   end
   encrypted_topics_data
@@ -25,26 +25,25 @@ Fabricator(:encrypt_topic, from: :private_message_topic) do
       EncryptedTopicsUser.create!(
         topic_id: topic.id,
         user_id: allowed_user.user_id,
-        key: Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" }
+        key: Fabricate.sequence(:encrypt) { |i| "0$topicKey#{i}" },
       )
     end
   end
 end
 
-Fabricator(:encrypted_topics_data) do
-  title Fabricate.sequence(:title) { |i| "0$topicKey#{i}" }
-end
+Fabricator(:encrypted_topics_data) { title Fabricate.sequence(:title) { |i| "0$topicKey#{i}" } }
 
 Fabricator(:encrypt_post, from: :private_message_post) do
   user
   topic do |attrs|
-    Fabricate(:encrypt_topic,
+    Fabricate(
+      :encrypt_topic,
       user: attrs[:user],
       created_at: attrs[:created_at],
       topic_allowed_users: [
         Fabricate.build(:topic_allowed_user, user: attrs[:user]),
-        Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user))
-      ]
+        Fabricate.build(:topic_allowed_user, user: Fabricate.build(:encrypt_user)),
+      ],
     )
   end
   raw Fabricate.sequence(:encrypt) { |i| "0$base64encryptedRaw#{i}" }
@@ -99,18 +98,22 @@ module EncryptSystemHelpers
   # This is all very manual, but we shouldn't have to do it often, and it saves having
   # to do a huge amount of manual setup for each test.
   def test_paper_key(num = 1)
-    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_paper_key_#{num}.txt")).chomp
+    File.read(
+      Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_paper_key_#{num}.txt"),
+    ).chomp
   end
 
   def test_private_key(num = 1)
-    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_private_key_#{num}.txt")).chomp
+    File.read(
+      Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_private_key_#{num}.txt"),
+    ).chomp
   end
 
   def test_public_key(num = 1)
-    File.read(Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_public_key_#{num}.txt")).chomp
+    File.read(
+      Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_public_key_#{num}.txt"),
+    ).chomp
   end
 end
 
-RSpec.configure do |config|
-  config.include EncryptSystemHelpers, type: :system
-end
+RSpec.configure { |config| config.include EncryptSystemHelpers, type: :system }

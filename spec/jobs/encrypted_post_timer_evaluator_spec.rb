@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::EncryptedPostTimerEvaluator do
   fab!(:topic) { Fabricate(:encrypt_topic) }
@@ -8,8 +8,8 @@ describe Jobs::EncryptedPostTimerEvaluator do
   fab!(:post2) { Fabricate(:encrypt_post, topic: topic) }
   fab!(:post3) { Fabricate(:encrypt_post, topic: topic) }
 
-  describe 'explosion of first post' do
-    it 'when time is right, delete all posts' do
+  describe "explosion of first post" do
+    it "when time is right, delete all posts" do
       encrypted_post_timer = EncryptedPostTimer.create!(post: post1, delete_at: 1.hour.from_now)
       described_class.new.execute({})
       expect(post1.reload.persisted?).to be true
@@ -28,8 +28,8 @@ describe Jobs::EncryptedPostTimerEvaluator do
     end
   end
 
-  describe 'explosion of consecutive posts' do
-    it 'when time is right, delete only one post' do
+  describe "explosion of consecutive posts" do
+    it "when time is right, delete only one post" do
       encrypted_post_timer = EncryptedPostTimer.create!(post: post2, delete_at: 1.hour.from_now)
       encrypted_post_timer2 = EncryptedPostTimer.create!(post: post3, delete_at: 1.hour.from_now)
       described_class.new.execute({})
@@ -49,7 +49,7 @@ describe Jobs::EncryptedPostTimerEvaluator do
       expect(encrypted_post_timer2.reload.destroyed_at).not_to be nil
     end
 
-    it 'does not error when post is already deleted' do
+    it "does not error when post is already deleted" do
       encrypted_post_timer = EncryptedPostTimer.create!(post_id: -5, delete_at: 1.hour.from_now)
       freeze_time 61.minutes.from_now
       described_class.new.execute({})

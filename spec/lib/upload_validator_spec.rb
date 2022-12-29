@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseEncrypt::UploadValidatorExtensions do
   it "removes '.encrypted' extension and validates the real extension" do
@@ -8,8 +8,12 @@ describe DiscourseEncrypt::UploadValidatorExtensions do
 
     expect { Fabricate(:upload, original_filename: "test.foo") }.not_to raise_exception
     expect { Fabricate(:upload, original_filename: "test.foo.encrypted") }.not_to raise_exception
-    expect { Fabricate(:upload, original_filename: "test.bar") }.to raise_exception(ActiveRecord::RecordInvalid)
-    expect { Fabricate(:upload, original_filename: "test.bar.encrypted") }.to raise_exception(ActiveRecord::RecordInvalid)
+    expect { Fabricate(:upload, original_filename: "test.bar") }.to raise_exception(
+      ActiveRecord::RecordInvalid,
+    )
+    expect { Fabricate(:upload, original_filename: "test.bar.encrypted") }.to raise_exception(
+      ActiveRecord::RecordInvalid,
+    )
 
     SiteSetting.authorized_extensions = "*"
 

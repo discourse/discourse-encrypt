@@ -16,7 +16,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   # Returns status code 200 on success or 409 if user already has an
   # identity and public identities mismatch.
   def update_keys
-    public_identity  = params.require(:public)
+    public_identity = params.require(:public)
     private_identity = params[:private]
     private_id_label = params[:label]
 
@@ -25,15 +25,21 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     # different devices at the same time.
     old_identity = current_user.user_encryption_key&.encrypt_public
     if old_identity && old_identity != public_identity
-      return render_json_error(I18n.t('encrypt.enabled_already'), status: 409)
+      return render_json_error(I18n.t("encrypt.enabled_already"), status: 409)
     end
 
-    current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
+    current_user.user_encryption_key =
+      UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
     current_user.user_encryption_key.encrypt_public = public_identity
 
     if private_identity.present?
       if private_id_label.present?
-        data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
+        data =
+          begin
+            JSON.parse(current_user.user_encryption_key.encrypt_private)
+          rescue StandardError
+            {}
+          end
         data[private_id_label.downcase] = private_identity
         current_user.user_encryption_key.encrypt_private = JSON.dump(data)
       else
@@ -58,9 +64,15 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def delete_key
     private_id_label = params.require(:label)
 
-    data = JSON.parse(current_user.user_encryption_key.encrypt_private) rescue {}
+    data =
+      begin
+        JSON.parse(current_user.user_encryption_key.encrypt_private)
+      rescue StandardError
+        {}
+      end
     if data.delete(private_id_label)
-      current_user.user_encryption_key = UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
+      current_user.user_encryption_key =
+        UserEncryptionKey.new(user_id: current_user.id) if !current_user.user_encryption_key
       current_user.user_encryption_key.update!(encrypt_private: JSON.dump(data))
 
       current_user.publish_identity
@@ -79,11 +91,12 @@ class DiscourseEncrypt::EncryptController < ApplicationController
   def show_user
     usernames = params.require(:usernames)
 
-    identities = User
-      .includes(:user_encryption_key)
-      .where(username_lower: usernames.map(&:downcase))
-      .map { |u| [u.username, u.user_encryption_key&.encrypt_public] }
-      .to_h
+    identities =
+      User
+        .includes(:user_encryption_key)
+        .where(username_lower: usernames.map(&:downcase))
+        .map { |u| [u.username, u.user_encryption_key&.encrypt_public] }
+        .to_h
 
     render json: identities
   end
@@ -103,25 +116,19 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     guardian.ensure_can_edit!(user)
 
-    if params[:everything] == 'true'
+    if params[:everything] == "true"
       TopicAllowedUser
         .joins(topic: :encrypted_topics_data)
         .where.not(encrypted_topics_data: { id: nil })
         .where(topic_allowed_users: { user_id: user.id })
         .delete_all
 
-      EncryptedTopicsUser
-        .where(user_id: user.id)
-        .delete_all
+      EncryptedTopicsUser.where(user_id: user.id).delete_all
     end
 
     user.user_encryption_key&.delete
 
-    MessageBus.publish(
-      '/plugin/encrypt/keys',
-      { public: nil, private: nil },
-      user_ids: [user.id]
-    )
+    MessageBus.publish("/plugin/encrypt/keys", { public: nil, private: nil }, user_ids: [user.id])
 
     render json: success_json
   end
@@ -143,7 +150,7 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     guardian.ensure_can_encrypt_post!(post)
 
     if post.updated_at < 5.seconds.ago
-      return render_json_error(I18n.t('too_late_to_edit'), status: 409)
+      return render_json_error(I18n.t("too_late_to_edit"), status: 409)
     end
 
     post.update!(raw: encrypted_raw)
@@ -166,15 +173,14 @@ class DiscourseEncrypt::EncryptController < ApplicationController
 
     guardian.ensure_can_edit!(user)
 
-    pms_count = TopicAllowedUser
-      .joins(topic: :encrypted_topics_data)
-      .where.not(encrypted_topics_data: { id: nil })
-      .where(topic_allowed_users: { user_id: user.id })
-      .count
+    pms_count =
+      TopicAllowedUser
+        .joins(topic: :encrypted_topics_data)
+        .where.not(encrypted_topics_data: { id: nil })
+        .where(topic_allowed_users: { user_id: user.id })
+        .count
 
-    keys_count = EncryptedTopicsUser
-      .where(user_id: user.id)
-      .count
+    keys_count = EncryptedTopicsUser.where(user_id: user.id).count
 
     render json: success_json.merge(encrypted_pms_count: [pms_count, keys_count].max)
   end
@@ -187,12 +193,8 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     term = "in:first".dup
     term << " #{params[:term]}" if params[:term].present?
 
-    search = EncryptedSearch.new(
-      term,
-      guardian: guardian,
-      type_filter: 'private_messages',
-      limit: 250,
-    )
+    search =
+      EncryptedSearch.new(term, guardian: guardian, type_filter: "private_messages", limit: 250)
     result = search.execute
     result.find_user_data(guardian) if result
 

@@ -13,7 +13,7 @@ class EncryptedPostCreator < PostCreator
       @opts[:raw] = EncryptedPostCreator.encrypt(@opts[:raw], topic_key)
       if title = @opts[:title]
         @opts[:title] = I18n.with_locale(SiteSetting.default_locale) do
-          I18n.t('js.encrypt.encrypted_title')
+          I18n.t("js.encrypt.encrypted_title")
         end
       end
 
@@ -39,13 +39,13 @@ class EncryptedPostCreator < PostCreator
   def encrypt_valid?
     @topic = Topic.find_by(id: @opts[:topic_id]) if @opts[:topic_id]
     if @opts[:archetype] != Archetype.private_message && !@topic&.is_encrypted?
-      errors.add(:base, I18n.t('encrypt.only_pms'))
+      errors.add(:base, I18n.t("encrypt.only_pms"))
       return false
     end
 
     users.each do |user|
       if !user.encrypt_key
-        errors.add(:base, I18n.t('js.encrypt.composer.user_has_no_key', username: user.username))
+        errors.add(:base, I18n.t("js.encrypt.composer.user_has_no_key", username: user.username))
         return false
       end
     end
@@ -56,11 +56,14 @@ class EncryptedPostCreator < PostCreator
   private
 
   def users
-    @users ||= User
-      .human_users
-      .includes(:user_encryption_key)
-      .where(username_lower: (@opts[:target_usernames].split(',') << @user.username).map(&:downcase))
-      .to_a
+    @users ||=
+      User
+        .human_users
+        .includes(:user_encryption_key)
+        .where(
+          username_lower: (@opts[:target_usernames].split(",") << @user.username).map(&:downcase),
+        )
+        .to_a
   end
 
   def self.encrypt(raw, key)
@@ -69,7 +72,7 @@ class EncryptedPostCreator < PostCreator
     cipher = OpenSSL::Cipher::AES.new(256, :GCM).encrypt
     cipher.key = key
     cipher.iv = iv
-    cipher.auth_data = ''
+    cipher.auth_data = ""
 
     plaintext = JSON.dump(raw: raw)
     ciphertext = cipher.update(plaintext)
