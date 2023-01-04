@@ -6,8 +6,8 @@
         {{action "clicked"}}
         title={{title}}
         class="btn btn-default btn-icon no-text encrypt-toggle
-          {{if model.isEncrypted "enabled"}}
-          {{if disabled "disabled"}}"
+          {{if model.isEncrypted 'enabled'}}
+          {{if disabled 'disabled'}}"
       >
         {{d-icon (if model.isEncrypted "lock" "unlock")}}
       </a>
