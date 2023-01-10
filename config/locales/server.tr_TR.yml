@@ -5,3 +5,15 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  encrypt:
+    encrypted_excerpt: "Bu mesaj şifreli, lütfen tarayıcıda okuyun."
+    enabled_already: "Şifreli mesajları zaten etkinleştirdiniz."
+    only_pms: "Yalnızca özel mesajlar şifrelenebilir."
+    no_encrypt_keys: "Bir şeyler ters gitti. Yüke şifreleme anahtarı dahil edilmedi."
+  site_settings:
+    encrypt_enabled: "Şifrelenmiş özel mesajları etkinleştirin."
+    auto_enable_encrypt: "Oturum açmış tüm kullanıcılar için şifrelemeyi otomatik olarak etkinleştirin."
+    encrypt_groups: "Şifreleme kullanabilen grupların adı (boş, herkes anlamına gelir)."
+    encrypt_pms_default: "Tüm yeni özel mesajları varsayılan olarak şifreleyin."
+    errors:
+      encrypt_unsafe_csp: "Discourse Encrypt eklentisi etkinleştirildiğinde \"unsafe-eval\" ve \"unsafe-inline\" gibi güvenli olmayan CSP yönergeleri kullanılamaz. "

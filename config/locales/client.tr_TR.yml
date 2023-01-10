@@ -7,5 +7,104 @@
 tr_TR:
   js:
     encrypt:
+      title: "Şifrelenmiş Mesajlar"
+      decrypting: "Şifre çözülüyor..."
+      missing_topic_key: "Bu mesajın şifresi çözülemedi çünkü bu mesaj için konu anahtarınız yok. Bu konuya davet edildiniz mi?"
+      invalid_ciphertext: "Bu mesajın şifreli metni geçersiz olduğu için mesajın şifresi çözülemedi."
+      invalid_topic_key: "Konu anahtarınız geçersiz olduğu için mesajın şifresi çözülemedi."
+      invalid_identity: "Kullanıcı kimliği geçersiz olduğu için mesajın şifresi çözülemedi."
+      no_backup_warn: "Hesabınızda şifreleme etkinleştirildi, ancak henüz herhangi bir kağıt anahtar oluşturmadınız. Herhangi bir kağıt anahtar olmadan, şifrelenmiş mesajlarınıza erişiminizi kaybetme riskiyle karşı karşıya kalırsınız. Kağıt anahtar oluşturmak için <a href='%{basePath}/my/preferences/security'>güvenlik tercihleriniz sayfasına</a> gidin, <kbd>Kağıt anahtar oluştur</kbd> düğmesine basın ve talimatları izleyin."
+      integrity_check_pass: "Bu gönderi için bütünlük kontrolü geçti."
+      integrity_check_skip: "Bu gönderi için bütünlük kontrolü atlandı çünkü gönderinin imzası yok."
+      integrity_check_fail: "Bu gönderi için bütünlük kontrolü başarısız oldu (%{fields} uyuşmazlığı)."
+      integrity_check_warn_updated_at: "Gönderi meta verileri tekrar imzalanmadan güncellendi."
+      integrity_check_warn_signed_by: "Bu gönderi en son %{actual} tarafından imzalandı, %{expected} tarafından değil."
+      encrypted_title: "Gizli bir mesaj"
+      encrypted_post: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için bu konuya davet edilmiş olmanız gerekiyor."
+      encrypted_post_email: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için konuyu ziyaret etmelisiniz."
+      encrypted_post_email_timer_annotation: "Bu mesaj %{delete_at} tarihinde kalıcı olarak silinecek."
+      encrypted_icon_title: "Bu mesaj uçtan uca şifreli."
+      encrypted_uploads: "Yüklemeler şu anda şifrelenemiyor."
+      cannot_encrypt: "Bu konuşmadaki mesajları şifreleyemezsiniz."
+      cannot_invite: "Bu konuşmaya davet edemezsiniz."
+      cannot_invite_group: "Grupları şifrelenmiş mesajlara davet edemezsiniz."
+      checkbox:
+        checked: "Bu mesaj uçtan uca şifrelenecek."
+        unchecked: "Bu mesajı şifrelemek için kilit sembolüne tıklayın."
+      post:
+        delete:
+          title: "Emin misiniz?"
+          confirm: "İçerik tamamen silinecek, geri yüklemenin hiçbir yolu olmayacak."
+      composer:
+        no_topic_key: "Bu konudaki mesajları şifreleyemezsiniz."
+        user_has_no_key: "%{username} şifrelenmiş mesajları etkinleştirmedi."
+        group_not_allowed: "Gruplara şifreli mesaj göndermenize izin verilmiyor."
+        confirm:
+          message: "%{error} Devam etmek istiyor musunuz?"
+          no_value: "Hayır, geri dön."
+          yes_value: "Evet, şifrelenmemiş olarak gönder"
+      preferences:
+        ie11: "Gerekli şifre paketi Internet Explorer 11'de kullanılamıyor."
+        insecure_context: "Şifreleme güvensiz bir bağlamda (HTTPS değil) kullanılamaz."
+        status_enabled: "Şifrelemeyi etkinleştirdiniz ve bu cihazda aktive ettiniz."
+        status_enabled_other: "Bu kullanıcı şifrelemeyi etkinleştirdi ve şifreli mesajlar alabilir."
+        status_enabled_but_inactive: "Şifrelemeyi etkinleştirdiniz, ancak bu cihazda aktive etmediniz."
+        status_disabled: "Bu hesapta şifrelemeyi etkinleştirmediniz."
+        status_disabled_other: "Bu kullanıcı şifrelemeyi etkinleştirmedi ve şifrelenmiş mesajları alamıyor."
+        paper_key_label: "Kağıt anahtar:"
+        paper_key_placeholder: "ON İKİ KELİME..."
+        paper_key_invalid: "Girdiğiniz kağıt anahtar yanlış."
+        key_pair_invalid: "Girdiğiniz anahtar çifti yanlış."
+        notice_active: |
+          <p>Bunu etkinleştirmek için bir kağıt anahtarı yazın veya başka bir cihaz kullanın. Kelimeler arasındaki boşlukları unutmayın.</p>
+        notice_import: |
+          <p>Lütfen daha önce dışa aktardığınız şifreleme anahtarını yapıştırın.</p>
+        activate: "Şifrelenmiş Mesajları Etkinleştir"
+        deactivate: "Bu Cihazı Devre Dışı Bırak"
+        enable: "Şifreli Mesajları Etkinleştir"
+        import: "Şifreleme Anahtarı Çiftini İçe Aktar"
+        use_paper_key: "Kağıt Anahtar Kullan"
+        generate_key: "Yeni Anahtar Çifti Oluştur"
+        encrypt_pms_default: "Tüm yeni kişisel mesajları varsayılan olarak şifreleyin"
+        save: "Değişiklikleri Kaydet"
+      generate_paper_key:
+        title: "Kağıt Anahtar Oluştur"
+        title_device: "Başka Bir Cihazı Etkinleştir"
+        instructions: "İşte benzersiz kağıt anahtarınız; gelecekteki şifrelenmiş cihazları etkinleştirmenize izin verebilir. Bunu sadece bir kez göreceksiniz, bu yüzden not ettiğinizden ve güvenli bir yerde sakladığınızdan emin olun."
+        instructions_device: "Diğer cihazınızda, tercihlere gidin ve şifrelemeyi etkinleştirmek için aşağıdaki kağıt anahtarı kullanın:"
       manage_paper_keys:
+        title: "Kağıt Anahtarları Yönet"
+        instructions: "Aşağıdan, önceden oluşturulmuş kağıt anahtarlardan herhangi birini silebilirsiniz. Kağıt anahtar silindikten sonra kurtarılamaz, bu nedenle lütfen en az bir kağıt anahtarınız veya başka aktif cihazlarınız olduğundan emin olun."
         delete: "Sil"
+        no_key: "Kağıt anahtarınız yok. En az bir kağıt anahtarınız veya diğer etkin aygıtlarınız olduğundan emin olun."
+        passphrase: "parola tabanlı"
+        not_recommended: "(tavsiye edilmez)"
+      export:
+        title: "Şifreleme Anahtar Çiftini Dışa Aktar"
+        instructions: "Anahtar çiftinizi dışa aktarmak başka bir yedekleme mekanizmasıdır. Lütfen dışa aktarılan anahtar çiftinin korumasız olduğunu ve tüm özel konuşmalarınızın şifresini çözebileceğini unutmayın."
+      rotate:
+        title: "Şifreleme Anahtar Çiftini Döndür"
+        instructions: "Şifreleme anahtarınızı döndürmek istediğinizden emin misiniz? Bu işlem yeni bir anahtar çifti oluşturur ve tüm kağıt anahtarlar yok edilir. Şifrelenmiş mesajlara erişiminizi kaybetmezsiniz, ancak diğer cihazlarda şifrelemeyi yeniden etkinleştirmeniz gerekir."
+        loading: "Eski konu anahtarları yükleniyor..."
+        rotating: "Anahtarlar döndürülüyor..."
+        saving: "Yeni konu anahtarları kaydediliyor..."
+        updating: "Anahtar güncelleniyor..."
+        finished: "Bitti!"
+      reset:
+        title: "Şifreli Mesajları Devre Dışı Bırak"
+        instructions: "Şifrelenmiş mesajları devre dışı bırakmak ve şifreleme anahtarınızı sıfırlamak istediğinizden emin misiniz? Bu işlem şifreleme anahtarınızı sonsuza kadar siler ve şifrelenmiş özel mesajlarınıza artık erişemezsiniz."
+        instructions_lost_pms:
+          one: "%{count} şifrelenmiş mesaja <strong>kalıcı olarak</strong> erişiminizi kaybedeceksiniz."
+          other: "%{count} şifrelenmiş mesaja <strong>kalıcı olarak</strong> erişiminizi kaybedeceksiniz."
+        instructions_safe: "Şifreli mesajları devre dışı bırakmak ve şifreleme anahtarınızı sıfırlamak istediğinizden emin misiniz? Yeni bir anahtar çifti oluşturarak şifreli mesajları tekrar etkinleştirebilirsiniz."
+        confirm_instructions: "Onaylamak için lütfen <code>%{username}</code> yazın:"
+      time_bomb:
+        title: "Bu mesaj %{after} sonra kalıcı olarak silinecek."
+        never: "Asla"
+        3_minutes: "3 dakika"
+        1_hour: "1 saat"
+        3_hours: "3 saat"
+        12_hours: "12 saat"
+        24_hours: "24 saat"
+        3_days: "3 gün"
+        7_days: "7 gün"
