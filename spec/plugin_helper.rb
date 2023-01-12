@@ -114,6 +114,15 @@ module EncryptSystemHelpers
       Rails.root.join("plugins", "discourse-encrypt", "spec/fixtures/test_public_key_#{num}.txt"),
     ).chomp
   end
+
+  def enable_encrypt_for_user_in_session(user, user_preferences_page)
+    using_session("user_#{user.username}_enable_encrypt") do |session|
+      sign_in(user)
+      enable_encrypt_with_keys_for_user(user, 2)
+      activate_encrypt(user_preferences_page, user, 2)
+      session.quit
+    end
+  end
 end
 
 RSpec.configure { |config| config.include EncryptSystemHelpers, type: :system }
