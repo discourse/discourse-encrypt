@@ -206,8 +206,8 @@ function postProcessPost(siteSettings, site, topicId, post) {
   const unseenMentions = linkSeenMentions(post, siteSettings);
   if (unseenMentions.length > 0) {
     if (!mentionsQueues[topicId]) {
-      mentionsQueues[topicId] = new DebouncedQueue(500, (items) =>
-        fetchUnseenMentions(items, topicId)
+      mentionsQueues[topicId] = new DebouncedQueue(500, (names) =>
+        fetchUnseenMentions({ names, topicId })
       );
     }
     mentionsQueues[topicId]
