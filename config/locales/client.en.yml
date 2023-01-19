@@ -93,6 +93,8 @@ en:
       export:
         title: "Export Encryption Key Pair"
         instructions: "Exporting your key pair is another backup mechanism. Please note that the exported key pair is unprotected and it can decrypt all your private conversations."
+        copy_to_clipboard: "Copy to Clipboard"
+        copied_to_clipboard: "Copied to Clipboard"
 
       rotate:
         title: "Rotate Encryption Key Pair"
