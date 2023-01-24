@@ -51,7 +51,7 @@ function getCache(session, filterKey) {
   let key = CACHE_KEY;
 
   if (filterKey) {
-    key += `-${filterKey}`;
+    key += `-${filterKey.replaceAll(".", "-")}`;
   }
 
   let cache;
