@@ -7,5 +7,9 @@
 id:
   js:
     encrypt:
+      preferences:
+        save: "Simpan Perubahan"
       manage_paper_keys:
         delete: "Hapus"
+      time_bomb:
+        never: "Tidak pernah"

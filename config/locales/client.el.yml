@@ -7,5 +7,19 @@
 el:
   js:
     encrypt:
+      preferences:
+        save: "Αποθήκευση αλλαγών"
       manage_paper_keys:
         delete: "Σβήσιμο"
+      export:
+        copy_to_clipboard: "Αντιγραφή στο Clipboard"
+        copied_to_clipboard: "Αντιγράφτηκε στο Clipboard"
+      rotate:
+        finished: "Ολοκληρώθηκε!"
+      time_bomb:
+        never: "Ποτέ"
+        3_minutes: "3 λεπτά"
+        1_hour: "1 ώρα"
+        3_hours: "3 ώρες"
+        12_hours: "12 ώρες"
+        24_hours: "24 ώρες"

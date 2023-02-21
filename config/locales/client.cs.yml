@@ -7,5 +7,14 @@
 cs:
   js:
     encrypt:
+      preferences:
+        save: "Uložit změny"
       manage_paper_keys:
         delete: "Smazat"
+      export:
+        copy_to_clipboard: "Kopírovat do schránky"
+        copied_to_clipboard: "Zkopírováno do schránky"
+      rotate:
+        finished: "Hotovo!"
+      time_bomb:
+        never: "Nikdy"

@@ -7,5 +7,19 @@
 sl:
   js:
     encrypt:
+      preferences:
+        save: "Shrani spremembe"
       manage_paper_keys:
         delete: "Izbriši"
+      export:
+        copy_to_clipboard: "Kopiraj v odložišče"
+        copied_to_clipboard: "Kopirano v odložišče"
+      rotate:
+        finished: "Končano!"
+      time_bomb:
+        never: "Nikoli"
+        3_minutes: "3 minut"
+        1_hour: "1 ura"
+        3_hours: "3 uri"
+        12_hours: "12 uri"
+        24_hours: "24 uri"

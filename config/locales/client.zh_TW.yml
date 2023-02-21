@@ -7,5 +7,19 @@
 zh_TW:
   js:
     encrypt:
+      preferences:
+        save: "儲存變更"
       manage_paper_keys:
         delete: "刪除"
+      export:
+        copy_to_clipboard: "複製至剪貼簿"
+        copied_to_clipboard: "已複製至剪貼簿"
+      rotate:
+        finished: "完成!"
+      time_bomb:
+        never: "永不"
+        3_minutes: "3 分鐘"
+        1_hour: "1 小時"
+        3_hours: "3 小時"
+        12_hours: "12 小時"
+        24_hours: "24 小時"

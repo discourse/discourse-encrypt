@@ -13,6 +13,7 @@ pl_PL:
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
       integrity_check_warn_updated_at: "Metadane postu zostały zaktualizowane bez ponownego podpisywania."
       integrity_check_warn_signed_by: "Ten post został ostatnio podpisany przez %{actual}, a nie %{expected}."
+      encrypted_title: "Tajna wiadomość"
       encrypted_post: "To jest tajna wiadomość z szyfrowaniem end-to-end. Aby ją zobaczyć, musisz zostać zaproszony do tego tematu."
       encrypted_post_email: "To jest tajna wiadomość z szyfrowaniem end-to-end. Musisz odwiedzić temat, aby go wyświetlić."
       encrypted_post_email_timer_annotation: "Ta wiadomość zostanie trwale usunięta o %{delete_at}"
@@ -44,6 +45,7 @@ pl_PL:
         key_pair_invalid: "Wprowadzona para kluczy jest nieprawidłowa."
         notice_import: |
           <p>Wklej wcześniej wyeksportowany klucz szyfrowania.</p>
+        save: "Zapisz zmiany"
       generate_paper_key:
         instructions: "Oto Twój unikalny papierowy klucz, który może umożliwić aktywację zaszyfrowanych urządzeń w przyszłości. To jedyny raz, kiedy go zobaczysz, więc zapisz swój klucz i przechowuj w bezpiecznym miejscu."
       manage_paper_keys:
@@ -54,6 +56,8 @@ pl_PL:
         not_recommended: "(nie zalecane)"
       export:
         instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
+        copy_to_clipboard: "Skopiuj do schowka"
+        copied_to_clipboard: "Tekst skopiowany do schowka."
       rotate:
         loading: "Ładowanie starych kluczy tematów ..."
         saving: "Zapisywanie nowych kluczy tematów ..."

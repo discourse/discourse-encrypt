@@ -7,5 +7,11 @@
 be:
   js:
     encrypt:
+      preferences:
+        save: "Захаваць"
       manage_paper_keys:
         delete: "выдаліць"
+      rotate:
+        finished: "Выканана!"
+      time_bomb:
+        never: "ніколі"

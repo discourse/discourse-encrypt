@@ -11,5 +11,19 @@ pt:
       decrypting: "A desencriptar..."
       integrity_check_pass: "A verificação de integridade para esta publicação expirou."
       integrity_check_fail: "A verificação de integridade para esta publicação falhou (disparidade %{fields})."
+      preferences:
+        save: "Guardar alterações"
       manage_paper_keys:
         delete: "Eliminar"
+      export:
+        copy_to_clipboard: "Copiar para a Área de Transferência"
+        copied_to_clipboard: "Copiado para a Área de Transferência"
+      rotate:
+        finished: "Concluído!"
+      time_bomb:
+        never: "Nunca"
+        3_minutes: "3 minutos"
+        1_hour: "1 hora"
+        3_hours: "3 horas"
+        12_hours: "12 horas"
+        24_hours: "24 horas"

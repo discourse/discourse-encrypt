@@ -7,5 +7,19 @@
 bg:
   js:
     encrypt:
+      preferences:
+        save: "Запазете промените"
       manage_paper_keys:
         delete: "Изтрий"
+      export:
+        copy_to_clipboard: "Копиране в клипборда"
+        copied_to_clipboard: "Копирано в клипборда"
+      rotate:
+        finished: "Готово!"
+      time_bomb:
+        never: "Никога"
+        3_minutes: "3 минути"
+        1_hour: "1 час"
+        3_hours: "3 часа"
+        12_hours: "12 часа"
+        24_hours: "24 часа"

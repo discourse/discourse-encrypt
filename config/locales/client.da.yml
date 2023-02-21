@@ -7,5 +7,19 @@
 da:
   js:
     encrypt:
+      preferences:
+        save: "Gem ændringer"
       manage_paper_keys:
         delete: "Slet"
+      export:
+        copy_to_clipboard: "Kopiér til udklipsholder"
+        copied_to_clipboard: "Kopieret til udklipsholder"
+      rotate:
+        finished: "Færdig!"
+      time_bomb:
+        never: "Aldrig"
+        3_minutes: "3 minutter"
+        1_hour: "1 time"
+        3_hours: "3 timer"
+        12_hours: "12 timer"
+        24_hours: "24 timer"

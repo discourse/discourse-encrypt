@@ -82,6 +82,8 @@ nl:
       export:
         title: "Sleutelpaar importeren"
         instructions: "Exporteren van je sleutelpaar is een ander back-upmechanisme. Denk eraan dat het geëxporteerde sleutelpaar onbeschermd is en al je privéconversaties kan ontsleutelen."
+        copy_to_clipboard: "Kopiëren naar klembord"
+        copied_to_clipboard: "Gekopieerd naar klembord"
       rotate:
         title: "Sleutelpaar vervangen"
         instructions: "Weet je zeker dat je je sleutel wilt vervangen? Hierdoor wordt een nieuw sleutelpaar gegenereerd en worden alle papieren sleutels vernietigd. Je verliest de toegang tot versleutelde berichten niet, maar je moet de versleuteling op andere apparaten opnieuw activeren."

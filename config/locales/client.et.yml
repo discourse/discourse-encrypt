@@ -7,5 +7,19 @@
 et:
   js:
     encrypt:
+      preferences:
+        save: "Salvesta muudatused"
       manage_paper_keys:
         delete: "Kustuta"
+      export:
+        copy_to_clipboard: "Kopeeri lõikelauale"
+        copied_to_clipboard: "Kopeeritud lõikelauale"
+      rotate:
+        finished: "Tehtud!"
+      time_bomb:
+        never: "Mitte kunagi"
+        3_minutes: "3 minutit"
+        1_hour: "1 tund"
+        3_hours: "3 tundi"
+        12_hours: "12 tundi"
+        24_hours: "24 tundi"

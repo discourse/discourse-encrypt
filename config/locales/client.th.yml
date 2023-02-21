@@ -7,5 +7,11 @@
 th:
   js:
     encrypt:
+      preferences:
+        save: "บันทึกการเปลี่ยนแปลง"
       manage_paper_keys:
         delete: "ลบ"
+      rotate:
+        finished: "เสร็จ!"
+      time_bomb:
+        never: "ไม่เคย"

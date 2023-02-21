@@ -65,6 +65,7 @@ zh_CN:
         import: "导入加密密钥对"
         use_paper_key: "使用纸质密钥"
         generate_key: "生成新的密钥对"
+        save: "保存变更"
       generate_paper_key:
         title: "生成纸质密钥"
         title_device: "激活其他设备"
@@ -80,6 +81,8 @@ zh_CN:
       export:
         title: "导出加密密钥对"
         instructions: "导出您的密钥对是另一种备份机制。请注意，导出的密钥对不受保护，它可以解密您的所有私人对话。"
+        copy_to_clipboard: "复制到剪贴板"
+        copied_to_clipboard: "已复制到剪贴板"
       rotate:
         title: "轮换加密密钥对"
         instructions: "确定要轮换您的加密密钥吗？此操作将生成一个新的密钥对，并且所有纸质密钥都将被销毁。您不会失去对任何加密消息的访问权限，但您必须在其他设备上重新激活加密。"

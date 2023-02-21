@@ -7,5 +7,19 @@
 nb_NO:
   js:
     encrypt:
+      preferences:
+        save: "Lagre endringer"
       manage_paper_keys:
         delete: "Slett"
+      export:
+        copy_to_clipboard: "Kopier til utklippstavle"
+        copied_to_clipboard: "Kopiert til utklippstavle"
+      rotate:
+        finished: "Ferdig!"
+      time_bomb:
+        never: "Aldri"
+        3_minutes: "3 minutter"
+        1_hour: "1 time"
+        3_hours: "3 timer"
+        12_hours: "12 timer"
+        24_hours: "24 timer"

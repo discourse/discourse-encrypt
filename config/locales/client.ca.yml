@@ -7,5 +7,14 @@
 ca:
   js:
     encrypt:
+      preferences:
+        save: "Desa els canvis"
       manage_paper_keys:
         delete: "Suprimeix"
+      export:
+        copy_to_clipboard: "Copia al porta-retalls"
+        copied_to_clipboard: "Copiat al porta-retalls."
+      rotate:
+        finished: "Fet!"
+      time_bomb:
+        never: "Mai"
