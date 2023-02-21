@@ -7,5 +7,11 @@
 sq:
   js:
     encrypt:
+      preferences:
+        save: "Ruaj ndryshimet"
       manage_paper_keys:
         delete: "Fshij"
+      rotate:
+        finished: "Përfundo!"
+      time_bomb:
+        never: "Asnjëherë"

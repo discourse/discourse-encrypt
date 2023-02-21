@@ -7,5 +7,19 @@
 lt:
   js:
     encrypt:
+      preferences:
+        save: "Išsaugoti pakeitimus"
       manage_paper_keys:
         delete: "Pašalinti"
+      export:
+        copy_to_clipboard: "Nukopijuoti į iškarpinę"
+        copied_to_clipboard: "Nukopijuota į iškirptę"
+      rotate:
+        finished: "Baigta!"
+      time_bomb:
+        never: "Niekada"
+        3_minutes: "3 minučių"
+        1_hour: "1 valanda"
+        3_hours: "3 valandos"
+        12_hours: "12 valandos"
+        24_hours: "24 valandos"

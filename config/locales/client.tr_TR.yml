@@ -82,6 +82,8 @@ tr_TR:
       export:
         title: "Şifreleme Anahtar Çiftini Dışa Aktar"
         instructions: "Anahtar çiftinizi dışa aktarmak başka bir yedekleme mekanizmasıdır. Lütfen dışa aktarılan anahtar çiftinin korumasız olduğunu ve tüm özel konuşmalarınızın şifresini çözebileceğini unutmayın."
+        copy_to_clipboard: "Panoya kopyala"
+        copied_to_clipboard: "Panoya Kopyalandı"
       rotate:
         title: "Şifreleme Anahtar Çiftini Döndür"
         instructions: "Şifreleme anahtarınızı döndürmek istediğinizden emin misiniz? Bu işlem yeni bir anahtar çifti oluşturur ve tüm kağıt anahtarlar yok edilir. Şifrelenmiş mesajlara erişiminizi kaybetmezsiniz, ancak diğer cihazlarda şifrelemeyi yeniden etkinleştirmeniz gerekir."

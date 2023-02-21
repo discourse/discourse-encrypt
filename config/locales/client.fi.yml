@@ -65,6 +65,7 @@ fi:
         import: "Tuo salausavainpari"
         use_paper_key: "Käytä paperiavainta"
         generate_key: "Luo uusi avainpari"
+        save: "Tallenna muutokset"
       generate_paper_key:
         title: "Luo paperiavain"
         title_device: "Aktivoi toinen laite"
@@ -80,6 +81,8 @@ fi:
       export:
         title: "Vie salausavainpari"
         instructions: "Avainparin vieminen on toinen varamekanismi. Huomaa, että viety avainpari on suojaamaton, ja se voi purkaa kaikkien yksityisten keskustelujesi salauksen."
+        copy_to_clipboard: "Kopioi leikepöydälle"
+        copied_to_clipboard: "Kopioitiin leikepöydälle"
       rotate:
         title: "Kierrätä salausavainpari"
         instructions: "Oletko varma, että haluat kierrättää salausavaimesi? Tämä luo uuden avainparin, ja kaikki paperiavaimet tuhoutuvat. Et menetä pääsyä salattuihin viesteihin, mutta sinun täytyy aktivoida salaus uudelleen muissa laitteissa."

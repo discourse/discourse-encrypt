@@ -65,6 +65,7 @@ it:
         import: "Importa coppia di chiavi di crittografia"
         use_paper_key: "Usa chiave cartacea"
         generate_key: "Genera nuova coppia di chiavi"
+        save: "Salva Modifiche"
       generate_paper_key:
         title: "Genera chiave cartacea"
         title_device: "Attiva un altro dispositivo"
@@ -80,6 +81,8 @@ it:
       export:
         title: "Esporta coppia di chiavi di crittografia"
         instructions: "Si esporta una coppia di chiavi a scopo di backup. Nota bene: la coppia di chiavi esportata non è protetta e può decodificare tutte le tue conversazioni private. "
+        copy_to_clipboard: "Copia negli Appunti"
+        copied_to_clipboard: "Copiato negli Appunti"
       rotate:
         title: "Ruota coppia di chiavi di crittografia"
         instructions: "Vuoi ruotare la tua chiave di crittografia? Questo genererà una nuova coppia di chiavi e tutte le chiavi cartacee verranno distrutte. Non perderai l'accesso a nessun messaggio crittografato, ma dovrai riattivare la crittografia su altri dispositivi."

@@ -25,6 +25,11 @@ fa_IR:
         save: "ذخیره تغییرات"
       manage_paper_keys:
         delete: "حذف"
+      export:
+        copy_to_clipboard: "کپی در clipboard"
+        copied_to_clipboard: "کپی شد"
+      rotate:
+        finished: "انجام شد!"
       time_bomb:
         never: "هرگز"
         3_minutes: "۳ دقیقه"

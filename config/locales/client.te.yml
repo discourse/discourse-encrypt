@@ -7,5 +7,7 @@
 te:
   js:
     encrypt:
+      preferences:
+        save: "మార్పులను భద్రపరచు"
       manage_paper_keys:
         delete: "తొలగించు"

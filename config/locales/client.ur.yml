@@ -7,5 +7,19 @@
 ur:
   js:
     encrypt:
+      preferences:
+        save: "تبدیلیاں محفوظ کریں"
       manage_paper_keys:
         delete: "حذف کریں"
+      export:
+        copy_to_clipboard: "کلِپ بورڈ میں کاپی کریں"
+        copied_to_clipboard: "کلِپ بورڈ میں کاپی کر لیا گیا"
+      rotate:
+        finished: "مکمل!"
+      time_bomb:
+        never: "کبھی نہیں"
+        3_minutes: "3 منٹ"
+        1_hour: "1 گھنٹہ"
+        3_hours: "3 گھنٹے"
+        12_hours: "12 گھنٹے"
+        24_hours: "24 گھنٹے"

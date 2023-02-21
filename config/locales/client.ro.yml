@@ -7,5 +7,19 @@
 ro:
   js:
     encrypt:
+      preferences:
+        save: "Salvează schimbările"
       manage_paper_keys:
         delete: "Șterge"
+      export:
+        copy_to_clipboard: "Copiază în clipboard"
+        copied_to_clipboard: "Copiat în clipboard"
+      rotate:
+        finished: "Terminat!"
+      time_bomb:
+        never: "Niciodată"
+        3_minutes: "3 de minute"
+        1_hour: "1 oră"
+        3_hours: "3 ore"
+        12_hours: "12 ore"
+        24_hours: "24 ore"

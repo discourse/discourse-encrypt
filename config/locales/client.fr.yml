@@ -65,6 +65,7 @@ fr:
         import: "Importer une paire de clés de chiffrement"
         use_paper_key: "Utiliser une clé papier"
         generate_key: "Générer une nouvelle paire de clés"
+        save: "Enregistrer les modifications"
       generate_paper_key:
         title: "Générer une clé papier"
         title_device: "Activer un autre appareil"
@@ -80,6 +81,8 @@ fr:
       export:
         title: "Exporter la paire de clés de chiffrement"
         instructions: "L'exportation de votre paire de clés constitue un autre mécanisme de sauvegarde. Veuillez noter que la paire de clés exportée n'est pas protégée et qu'elle peut déchiffrer toutes vos conversations privées."
+        copy_to_clipboard: "Copier dans le presse-papier"
+        copied_to_clipboard: "Copié dans le presse-papier"
       rotate:
         title: "Remplacer la paire de clés de chiffrement"
         instructions: "Voulez-vous vraiment remplacer votre clé de chiffrement ? Cette opération générera une nouvelle paire de clés et toutes les clés papier seront détruites. Vous ne perdrez pas l'accès aux messages chiffrés, mais vous devrez réactiver le chiffrement sur vos autres appareils."

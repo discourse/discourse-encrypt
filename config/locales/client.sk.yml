@@ -8,5 +8,14 @@ sk:
   js:
     encrypt:
       decrypting: "Dešifrujem..."
+      encrypted_title: "Tajná správa"
+      preferences:
+        save: "Uložiť zmeny"
       manage_paper_keys:
         delete: "Odstrániť"
+      export:
+        copied_to_clipboard: "Skopírované do schránky"
+      rotate:
+        finished: "Hotovo!"
+      time_bomb:
+        never: "Nikdy"

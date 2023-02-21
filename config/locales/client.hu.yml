@@ -7,5 +7,19 @@
 hu:
   js:
     encrypt:
+      preferences:
+        save: "Módosítások mentése"
       manage_paper_keys:
         delete: "Törlés"
+      export:
+        copy_to_clipboard: "Vágólapra másolás"
+        copied_to_clipboard: "Vágólapra másolva"
+      rotate:
+        finished: "Kész!"
+      time_bomb:
+        never: "Soha"
+        3_minutes: "3 percig"
+        1_hour: "1 óráig"
+        3_hours: "3 óráig"
+        12_hours: "12 óráig"
+        24_hours: "24 óráig"

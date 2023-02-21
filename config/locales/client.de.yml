@@ -65,6 +65,7 @@ de:
         import: "Verschlüsselungs-Schlüsselpaar importieren"
         use_paper_key: "Papierschlüssel verwenden"
         generate_key: "Neues Schlüsselpaar generieren"
+        save: "Änderungen speichern"
       generate_paper_key:
         title: "Papierschlüssel generieren"
         title_device: "Ein weiteres Gerät aktivieren"
@@ -80,6 +81,8 @@ de:
       export:
         title: "Verschlüsselungs-Schlüsselpaar exportieren"
         instructions: "Das Exportieren deines Schlüsselpaars ist ein weiterer Sicherungsmechanismus. Bitte beachte, dass das exportierte Schlüsselpaar ungeschützt ist und alle deine privaten Gespräche entschlüsseln kann."
+        copy_to_clipboard: "In Zwischenablage kopieren"
+        copied_to_clipboard: "Wurde in Zwischenablage kopiert"
       rotate:
         title: "Verschlüsselungs-Schlüsselpaar erneuern"
         instructions: "Bist du sicher, dass du deinen Verschlüsselungsschlüssel erneuern möchtest? Dadurch wird ein neues Schlüsselpaar erzeugt und alle Papierschlüssel werden zerstört. Du verlierst zwar nicht den Zugriff auf verschlüsselte Nachrichten, aber du musst die Verschlüsselung auf anderen Geräten wieder aktivieren."

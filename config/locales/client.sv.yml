@@ -31,6 +31,9 @@ sv:
       checkbox:
         checked: "Detta meddelande kommer att vara krypterat från början till slut."
         unchecked: "Klicka på låssymbolen för att kryptera detta meddelande."
+      post:
+        delete:
+          confirm: "Innehållet kommer att raderas helt, och det finns sedan inte något sätt att återställa det."
       composer:
         no_topic_key: "Du kan inte kryptera meddelanden i detta ämne."
         user_has_no_key: "%{username} aktiverade inte krypterade meddelanden."
@@ -61,6 +64,7 @@ sv:
         import: "Importera nyckelpar för kryptering"
         use_paper_key: "Använd pappersnyckel"
         generate_key: "Generera nytt nyckelpar"
+        save: "Spara ändringar"
       generate_paper_key:
         title: "Generera pappersnyckel"
         title_device: "Aktivera en annan enhet"
@@ -76,6 +80,8 @@ sv:
       export:
         title: "Exportera nyckelpar för kryptering"
         instructions: "Att exportera ditt nyckelpar är en annan reservåtgärd. Notera att det exporterade nyckelparet är oskyddat och kan avkryptera alla dina privata samtal."
+        copy_to_clipboard: "Kopiera till urklipp"
+        copied_to_clipboard: "Kopierad till urklipp"
       rotate:
         title: "Rotera nyckelpar för kryptering"
         instructions: "Är du säker på att du vill rotera din krypteringsnyckel? Detta kommer att generera ett nytt nyckelpar och alla pappersnycklar kommer att förstöras. Du kommer inte att förlora åtkomst till krypterade meddelanden, men du måste återaktivera kryptering på andra enheter."

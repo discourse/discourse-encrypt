@@ -7,5 +7,14 @@
 lv:
   js:
     encrypt:
+      preferences:
+        save: "Saglabāt izmaiņas"
       manage_paper_keys:
         delete: "Dzēst"
+      export:
+        copy_to_clipboard: "Kopēt uz starpliktuvi (clipboard)"
+        copied_to_clipboard: "Nokopēts uz starpliktuvi (clipboard)"
+      rotate:
+        finished: "Pabeigt!"
+      time_bomb:
+        never: "Nekad"

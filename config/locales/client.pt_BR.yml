@@ -65,6 +65,7 @@ pt_BR:
         import: "Importar par de chaves de criptografia"
         use_paper_key: "Usar chave de papel"
         generate_key: "Gerar novo par de chaves"
+        save: "Salvar alterações"
       generate_paper_key:
         title: "Gerar chave de papel"
         title_device: "Ativar outro dispositivo"
@@ -80,6 +81,8 @@ pt_BR:
       export:
         title: "Exportar par de chaves de criptografia"
         instructions: "Exportar seu par de chaves é outro mecanismo de backup. Observe que o par de chaves exportadas não está protegido e pode descriptografar todas as suas conversas privadas."
+        copy_to_clipboard: "Copiar para área de transferência"
+        copied_to_clipboard: "Copiou para área de transferência"
       rotate:
         title: "Girar par de chaves de criptografia"
         instructions: "Tem certeza de que deseja girar sua chave de criptografia? Isso irá gerar um novo par de chaves e todas as chaves de papel serão destruídas. Você não perderá acesso às mensagens criptografadas, mas precisará reativar a criptografia em outros dispositivos."

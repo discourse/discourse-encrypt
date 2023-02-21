@@ -65,6 +65,7 @@ es:
         import: "Importar par de claves de cifrado"
         use_paper_key: "Usar clave de papel"
         generate_key: "Generar un nuevo par de claves"
+        save: "Guardar cambios"
       generate_paper_key:
         title: "Generar clave de papel"
         title_device: "Activar otro dispositivo"
@@ -80,6 +81,8 @@ es:
       export:
         title: "Exportar par de claves de cifrado"
         instructions: "Exportar tu par de claves es otro mecanismo de copia de seguridad. Ten en cuenta que el par de claves exportado está desprotegido y puede descifrar todas tus conversaciones privadas."
+        copy_to_clipboard: "Copiar al portapapeles"
+        copied_to_clipboard: "Copiado al portapapeles"
       rotate:
         title: "Rotar el par de claves de cifrado"
         instructions: "¿Estás seguro de que quieres rotar tu clave de cifrado? Esto generará un nuevo par de claves y se destruirán todas las claves en papel. No perderás el acceso a ningún mensaje cifrado, pero tendrás que reactivar el cifrado en otros dispositivos."

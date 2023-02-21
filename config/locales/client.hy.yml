@@ -7,5 +7,14 @@
 hy:
   js:
     encrypt:
+      preferences:
+        save: "Պահպանել Փոփոխությունները"
       manage_paper_keys:
         delete: "Ջնջել"
+      export:
+        copy_to_clipboard: "Կրկնօրինակել Փոխանակման Հարթակում"
+        copied_to_clipboard: "Կրկնօրինակված է Փոխանակման Հարթակում"
+      rotate:
+        finished: "Կատարված է!"
+      time_bomb:
+        never: "Երբեք"

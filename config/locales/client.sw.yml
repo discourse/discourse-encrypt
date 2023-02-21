@@ -7,5 +7,14 @@
 sw:
   js:
     encrypt:
+      preferences:
+        save: "Hifadhi Mabadiliko"
       manage_paper_keys:
         delete: "Futa"
+      export:
+        copy_to_clipboard: "Umenakili kwenye Ubao Nakili"
+        copied_to_clipboard: "Umenakili kwenye Ubao Nakili"
+      rotate:
+        finished: "Imekwisha!"
+      time_bomb:
+        never: "Kamwe"

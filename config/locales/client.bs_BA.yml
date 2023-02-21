@@ -7,5 +7,14 @@
 bs_BA:
   js:
     encrypt:
+      preferences:
+        save: "Spremiti promjene"
       manage_paper_keys:
         delete: "Izbriši"
+      export:
+        copy_to_clipboard: "Kopirati u clipboard"
+        copied_to_clipboard: "Kopirano u međuspremnik"
+      rotate:
+        finished: "Urađeno!"
+      time_bomb:
+        never: "Nikad"
