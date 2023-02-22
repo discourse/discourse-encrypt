@@ -564,7 +564,7 @@ acceptance("Encrypt - disabled", function (needs) {
     updateCurrentUser({ can_encrypt: false });
 
     await visit("/u/eviltrout/preferences");
-    await click(".nav-security a");
+    await click(".user-nav__preferences-security a");
     assert.strictEqual(
       query(".encrypt").innerText.trim().length,
       0,
@@ -574,7 +574,7 @@ acceptance("Encrypt - disabled", function (needs) {
     updateCurrentUser({ can_encrypt: true });
 
     await visit("/u/eviltrout/preferences");
-    await click(".nav-security a");
+    await click(".user-nav__preferences-security a");
     assert.ok(
       query(".encrypt").innerText.trim().length > 0,
       "encrypt settings are visible"
