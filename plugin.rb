@@ -201,28 +201,32 @@ after_initialize do
 
   # Send plugin-specific data to client via serializers.
 
-  add_to_serializer(:post, :encrypted_raw, false) { object.raw }
+  add_to_serializer(
+    :post,
+    :encrypted_raw,
+    include_condition: -> { scope&.user.present? && object.topic&.is_encrypted? },
+  ) { object.raw }
 
-  add_to_serializer(:post, :include_encrypted_raw?) do
-    scope&.user.present? && object.topic&.is_encrypted?
-  end
+  add_to_serializer(
+    :post,
+    :delete_at,
+    include_condition: -> do
+      scope&.user.present? && object.topic&.is_encrypted? &&
+        object.encrypted_post_timer&.delete_at.present?
+    end,
+  ) { object.encrypted_post_timer&.delete_at }
 
-  add_to_serializer(:post, :delete_at, false) { object.encrypted_post_timer&.delete_at }
+  add_to_serializer(
+    :topic_view,
+    :encrypted_title,
+    include_condition: -> { scope&.user.present? && object.topic.is_encrypted? },
+  ) { object.topic.encrypted_topics_data&.title }
 
-  add_to_serializer(:post, :include_delete_at?) do
-    scope&.user.present? && object.topic&.is_encrypted? &&
-      object.encrypted_post_timer&.delete_at.present?
-  end
-
-  add_to_serializer(:topic_view, :encrypted_title, false) do
-    object.topic.encrypted_topics_data&.title
-  end
-
-  add_to_serializer(:topic_view, :include_encrypted_title?) do
-    scope&.user.present? && object.topic.is_encrypted?
-  end
-
-  add_to_serializer(:topic_view, :topic_key, false) do
+  add_to_serializer(
+    :topic_view,
+    :topic_key,
+    include_condition: -> { scope&.user.present? && object.topic.is_encrypted? },
+  ) do
     object
       .topic
       .encrypted_topics_users
@@ -230,51 +234,43 @@ after_initialize do
       &.key
   end
 
-  add_to_serializer(:topic_view, :include_topic_key?) do
-    scope&.user.present? && object.topic.is_encrypted?
-  end
+  add_to_serializer(
+    :topic_view,
+    :delete_at,
+    include_condition: -> do
+      scope&.user.present? && object.topic.is_encrypted? &&
+        object.topic.posts.first&.encrypted_post_timer&.delete_at.present?
+    end,
+  ) { object.topic.posts.first&.encrypted_post_timer&.delete_at }
 
-  add_to_serializer(:topic_view, :delete_at, false) do
-    object.topic.posts.first&.encrypted_post_timer&.delete_at
-  end
+  add_to_serializer(
+    :basic_topic,
+    :encrypted_title,
+    include_condition: -> { scope&.user.present? && object.is_encrypted? },
+  ) { object.encrypted_topics_data&.title }
 
-  add_to_serializer(:topic_view, :include_delete_at?) do
-    scope&.user.present? && object.topic.is_encrypted? &&
-      object.topic.posts.first&.encrypted_post_timer&.delete_at.present?
-  end
+  add_to_serializer(
+    :basic_topic,
+    :topic_key,
+    include_condition: -> { scope&.user.present? && object.is_encrypted? },
+  ) { object.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key }
 
-  add_to_serializer(:basic_topic, :encrypted_title, false) { object.encrypted_topics_data&.title }
+  add_to_serializer(
+    :notification,
+    :encrypted_title,
+    include_condition: -> { scope&.user.present? && object&.topic&.is_encrypted? },
+  ) { object.topic.encrypted_topics_data&.title }
 
-  add_to_serializer(:basic_topic, :include_encrypted_title?) do
-    scope&.user.present? && object.is_encrypted?
-  end
-
-  add_to_serializer(:basic_topic, :topic_key, false) do
-    object.encrypted_topics_users.find { |topic_user| topic_user.user_id == scope.user.id }&.key
-  end
-
-  add_to_serializer(:basic_topic, :include_topic_key?) do
-    scope&.user.present? && object.is_encrypted?
-  end
-
-  add_to_serializer(:notification, :encrypted_title, false) do
-    object.topic.encrypted_topics_data&.title
-  end
-
-  add_to_serializer(:notification, :include_encrypted_title?) do
-    scope&.user.present? && object&.topic&.is_encrypted?
-  end
-
-  add_to_serializer(:notification, :topic_key, false) do
+  add_to_serializer(
+    :notification,
+    :topic_key,
+    include_condition: -> { scope&.user.present? && object&.topic&.is_encrypted? },
+  ) do
     object
       .topic
       .encrypted_topics_users
       .find { |topic_user| topic_user.user_id == scope.user.id }
       &.key
-  end
-
-  add_to_serializer(:notification, :include_topic_key?) do
-    scope&.user.present? && object&.topic&.is_encrypted?
   end
 
   # UserBookmarkBaseSerializer
@@ -286,25 +282,27 @@ after_initialize do
     %w[Post Topic].include?(bookmarkable_type)
   end
 
-  add_to_serializer(:user_bookmark_base, :encrypted_title, false) do
-    bookmark_topic.encrypted_topics_data&.title
-  end
+  add_to_serializer(
+    :user_bookmark_base,
+    :encrypted_title,
+    include_condition: -> do
+      return false if !can_have_encryption_data?
+      scope&.user.present? && bookmark_topic&.is_encrypted?
+    end,
+  ) { bookmark_topic.encrypted_topics_data&.title }
 
-  add_to_serializer(:user_bookmark_base, :include_encrypted_title?) do
-    return false if !can_have_encryption_data?
-    scope&.user.present? && bookmark_topic&.is_encrypted?
-  end
-
-  add_to_serializer(:user_bookmark_base, :topic_key, false) do
+  add_to_serializer(
+    :user_bookmark_base,
+    :topic_key,
+    include_condition: -> do
+      return false if !can_have_encryption_data?
+      scope&.user.present? && bookmark_topic&.is_encrypted?
+    end,
+  ) do
     bookmark_topic
       .encrypted_topics_users
       .find { |topic_user| topic_user.user_id == scope.user.id }
       &.key
-  end
-
-  add_to_serializer(:user_bookmark_base, :include_topic_key?) do
-    return false if !can_have_encryption_data?
-    scope&.user.present? && bookmark_topic&.is_encrypted?
   end
 
   # +topic_id+ and +raws+
@@ -314,45 +312,39 @@ after_initialize do
   # These values are required by `Post.loadRevision` to decrypt the
   # ciphertexts and perform client-sided diff.
 
-  add_to_serializer(:post_revision, :topic_id) { post.topic_id }
+  add_to_serializer(
+    :post_revision,
+    :topic_id,
+    include_condition: -> { scope&.user.present? && post.topic&.is_encrypted? },
+  ) { post.topic_id }
 
-  add_to_serializer(:post_revision, :include_topic_id?) do
-    scope&.user.present? && post.topic&.is_encrypted?
-  end
+  add_to_serializer(
+    :post_revision,
+    :raws,
+    include_condition: -> { scope&.user.present? && post.topic&.is_encrypted? },
+  ) { { previous: previous["raw"], current: current["raw"] } }
 
-  add_to_serializer(:post_revision, :raws) do
-    { previous: previous["raw"], current: current["raw"] }
-  end
-
-  add_to_serializer(:post_revision, :include_raws?) do
-    scope&.user.present? && post.topic&.is_encrypted?
-  end
-
-  add_to_serializer(:current_user, :encrypt_public, false) do
+  add_to_serializer(:current_user, :encrypt_public, include_condition: -> { scope.can_encrypt? }) do
     object.user_encryption_key&.encrypt_public
   end
 
-  add_to_serializer(:current_user, :include_encrypt_public?) { scope.can_encrypt? }
+  add_to_serializer(
+    :current_user,
+    :encrypt_private,
+    include_condition: -> { scope.can_encrypt? },
+  ) { object.user_encryption_key&.encrypt_private }
 
-  add_to_serializer(:current_user, :encrypt_private, false) do
-    object.user_encryption_key&.encrypt_private
+  add_to_serializer(:current_user, :can_encrypt, include_condition: -> { scope.can_encrypt? }) do
+    true
   end
 
-  add_to_serializer(:current_user, :include_encrypt_private?) { scope.can_encrypt? }
+  add_to_serializer(
+    :current_user,
+    :encrypt_pms_default,
+    include_condition: -> { scope.can_encrypt? },
+  ) { object.user_option.encrypt_pms_default || SiteSetting.encrypt_pms_default }
 
-  add_to_serializer(:current_user, :can_encrypt, false) { true }
-
-  add_to_serializer(:current_user, :include_can_encrypt?) { scope.can_encrypt? }
-
-  add_to_serializer(:current_user, :encrypt_pms_default, false) do
-    object.user_option.encrypt_pms_default || SiteSetting.encrypt_pms_default
-  end
-
-  add_to_serializer(:current_user, :include_encrypt_pms_default?) { scope.can_encrypt? }
-
-  add_to_serializer(:user, :can_encrypt, false) { true }
-
-  add_to_serializer(:user, :include_can_encrypt?) { scope.can_encrypt? }
+  add_to_serializer(:user, :can_encrypt, include_condition: -> { scope.can_encrypt? }) { true }
 
   add_to_serializer(:user_option, :encrypt_pms_default) do
     object.encrypt_pms_default || SiteSetting.encrypt_pms_default
