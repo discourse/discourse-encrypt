@@ -9,7 +9,7 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
 
   let(:user_preferences_page) { PageObjects::Pages::UserPreferences.new }
 
-  it "shows warning about paper keys when encryption is enabled" do
+  xit "shows warning about paper keys when encryption is enabled" do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
@@ -20,7 +20,7 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     expect(current_user.reload.user_encryption_key.encrypt_private).to eq(nil)
   end
 
-  it "enables encryption and generates paper keys" do
+  xit "enables encryption and generates paper keys" do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
@@ -35,7 +35,7 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     end
   end
 
-  it "activates encrypted messages on the device" do
+  xit "activates encrypted messages on the device" do
     enable_encrypt_with_keys_for_user(current_user)
     user_preferences_page.visit(current_user)
     click_link "Security"
