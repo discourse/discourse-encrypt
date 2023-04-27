@@ -37,7 +37,10 @@
                 />
                 <EncryptPreferencesDropdown
                   @id="encrypt-preferences"
-                  @onChange={{action "selectEncryptPreferencesDropdownAction"}}
+                  {{on
+                    "change"
+                    (action "selectEncryptPreferencesDropdownAction")
+                  }}
                 />
               </fieldset>
               <PreferenceCheckbox
@@ -96,7 +99,7 @@
                   <EncryptEnableDropdown
                     @isEncryptEnabled={{isEncryptEnabled}}
                     @importIdentity={{importIdentity}}
-                    @onChange={{action "selectEncryptEnableDropdownAction"}}
+                    {{on "change" (action "selectEncryptEnableDropdownAction")}}
                   />
                 </p>
               </form>
@@ -123,7 +126,7 @@
             <EncryptEnableDropdown
               @isEncryptEnabled={{isEncryptEnabled}}
               @importIdentity={{importIdentity}}
-              @onChange={{action "selectEncryptEnableDropdownAction"}}
+              {{on "change" (action "selectEncryptEnableDropdownAction")}}
             />
           {{/if}}
         {{else}}
