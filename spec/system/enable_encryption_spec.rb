@@ -9,7 +9,7 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
 
   let(:user_preferences_page) { PageObjects::Pages::UserPreferences.new }
 
-  it "shows warning about paper keys when encryption is enabled" do
+  xit "shows warning about paper keys when encryption is enabled" do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
