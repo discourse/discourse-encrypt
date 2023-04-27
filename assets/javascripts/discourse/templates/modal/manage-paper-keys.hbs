@@ -1,4 +1,4 @@
-{{#d-modal-body title="encrypt.manage_paper_keys.title"}}
+<DModalBody @title="encrypt.manage_paper_keys.title">
   <div>
     {{#if keys}}
       <p>{{i18n "encrypt.manage_paper_keys.instructions"}}</p>
@@ -19,13 +19,13 @@
                 {{/if}}
               </td>
               <td>
-                {{d-button
-                  icon="far-trash-alt"
-                  action=(action "delete")
-                  actionParam=key.label
-                  class="btn-danger pull-right"
-                  title="encrypt.manage_paper_keys.delete"
-                }}
+                <DButton
+                  @icon="far-trash-alt"
+                  @action={{action "delete"}}
+                  @actionParam={{key.label}}
+                  @class="btn-danger pull-right"
+                  @title="encrypt.manage_paper_keys.delete"
+                />
               </td>
             </tr>
           {{/each}}
@@ -35,12 +35,12 @@
       <p>{{i18n "encrypt.manage_paper_keys.no_key"}}</p>
     {{/if}}
   </div>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    icon="ticket-alt"
-    action=(action "generatePaperKey")
-    label="encrypt.generate_paper_key.title"
-  }}
+  <DButton
+    @icon="ticket-alt"
+    @action={{action "generatePaperKey"}}
+    @label="encrypt.generate_paper_key.title"
+  />
 </div>
