@@ -171,7 +171,7 @@ export default {
   },
 
   @action
-  save() {
+  savePreference() {
     this.set("saved", false);
     return this.model
       .save(["encrypt_pms_default"])
