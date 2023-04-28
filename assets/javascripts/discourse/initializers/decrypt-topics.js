@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import EmberObject from "@ember/object";
 import { scheduleOnce } from "@ember/runloop";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { iconHTML } from "discourse-common/lib/icon-library";
@@ -118,7 +119,7 @@ export default {
     const self = this;
     if (!registeredComponentHook) {
       // Try to decrypt new titles that may appear after rendering a component
-      Component.reopen({
+      EmberObject.reopen.call(Component, {
         didRender() {
           scheduleOnce("afterRender", self, () => {
             discourseDebounce(self, self.decryptTopicTitles, 500);
