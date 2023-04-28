@@ -15,9 +15,10 @@
       {{~#if model.isEncrypted}}
         {{~#unless model.editingPost~}}
           <div class="composer-action-divider"></div>
+          {{~! ~}}
           <EncryptedPostTimerDropdown
             @topicDeleteAt={{this.model.topic.delete_at}}
-            {{on "change" (action "timerClicked")}}
+            @onChange={{(action "timerClicked")}}
           />
           <span
             title={{i18n
