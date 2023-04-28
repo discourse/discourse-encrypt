@@ -37,10 +37,9 @@
                 />
                 <EncryptPreferencesDropdown
                   @id="encrypt-preferences"
-                  {{on
-                    "change"
-                    (action "selectEncryptPreferencesDropdownAction")
-                  }}
+                  @onChange={{(action
+                    "selectEncryptPreferencesDropdownAction"
+                  )}}
                 />
               </fieldset>
               <PreferenceCheckbox
