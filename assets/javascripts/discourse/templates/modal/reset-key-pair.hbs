@@ -1,5 +1,5 @@
-{{#d-modal-body title="encrypt.reset.title"}}
-  {{#conditional-loading-section isLoading=isLoadingStats}}
+<DModalBody @title="encrypt.reset.title">
+  <ConditionalLoadingSection @isLoading={{isLoadingStats}}>
     {{#if encryptedPmsCount}}
       <p>{{i18n "encrypt.reset.instructions"}}</p>
       <p>
@@ -12,20 +12,20 @@
           )
         }}
       </p>
-      {{input type="text" value=confirmation}}
+      <Input @type="text" @value={{confirmation}} />
     {{else}}
       <p>{{i18n "encrypt.reset.instructions_safe"}}</p>
     {{/if}}
-  {{/conditional-loading-section}}
-{{/d-modal-body}}
+  </ConditionalLoadingSection>
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
+  <DButton
     class="btn btn-danger"
-    icon="trash-alt"
-    label="encrypt.reset.title"
-    action=(action "reset")
-    disabled=disabled
-  }}
-  {{d-modal-cancel close=(action "closeModal")}}
+    @icon="trash-alt"
+    @label="encrypt.reset.title"
+    @action={{action "reset"}}
+    @disabled="disabled"
+  />
+  <DModalCancel @close={{action "closeModal"}} />
 </div>

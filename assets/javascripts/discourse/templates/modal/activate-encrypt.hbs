@@ -1,4 +1,4 @@
-{{#d-modal-body title="encrypt.title"}}
+<DModalBody @title="encrypt.title">
   {{#if error}}
     <div class="alert alert-error">{{error}}</div>
   {{/if}}
@@ -9,24 +9,24 @@
       <label for="passphrase">
         {{i18n "encrypt.preferences.paper_key_label"}}
       </label>
-      {{input
-        type="password"
-        value=passphrase
-        placeholder=(i18n "encrypt.preferences.paper_key_placeholder")
+      <Input
+        @type="password"
+        @value={{passphrase}}
+        placeholder={{i18n "encrypt.preferences.paper_key_placeholder"}}
         id="passphrase"
         autocomplete="current-password"
-        disabled=inProgress
-      }}
+        disabled={{inProgress}}
+      />
     </p>
   </div>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
+  <DButton
     class="btn btn-primary"
-    icon="unlock"
-    label="encrypt.preferences.activate"
-    action=(action "activate")
-  }}
-  {{d-modal-cancel close=(action "closeModal")}}
+    @icon="unlock"
+    @label="encrypt.preferences.activate"
+    @action={{action "activate"}}
+  />
+  <DModalCancel @close={{action "closeModal"}} />
 </div>

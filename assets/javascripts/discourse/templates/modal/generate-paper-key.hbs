@@ -1,10 +1,10 @@
-{{#d-modal-body
-  title=(if
+<DModalBody
+  @title={{if
     model.device
     "encrypt.generate_paper_key.title_device"
     "encrypt.generate_paper_key.title"
-  )
-}}
+  }}
+>
   <div>
     <p>
       {{i18n
@@ -17,4 +17,4 @@
     </p>
     <p class="paper-key">{{paperKey}}</p>
   </div>
-{{/d-modal-body}}
+</DModalBody>

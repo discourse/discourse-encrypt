@@ -1,21 +1,21 @@
-{{#d-modal-body title="encrypt.export.title"}}
+<DModalBody @title="encrypt.export.title">
   <div>
     <p>{{i18n "encrypt.export.instructions"}}</p>
     <pre class="exported-key-pair">{{exported}}</pre>
   </div>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class=(if copied "btn btn-primary ok" "btn btn-primary")
-    icon="far-clipboard"
-    label=(if
+  <DButton
+    class={{if copied "btn btn-primary ok" "btn btn-primary"}}
+    @icon="far-clipboard"
+    @label={{if
       copied
       "encrypt.export.copied_to_clipboard"
       "encrypt.export.copy_to_clipboard"
-    )
-    disabled=inProgress
-    action=(action "copy")
-  }}
-  {{d-modal-cancel close=(action "closeModal")}}
+    }}
+    @disabled={{inProgress}}
+    @action={{action "copy"}}
+  />
+  <DModalCancel @close={{action "closeModal"}} />
 </div>

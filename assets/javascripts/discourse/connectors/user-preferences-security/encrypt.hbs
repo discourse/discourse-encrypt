@@ -17,39 +17,41 @@
             {{#if isEncryptActive}}
               <p>{{i18n "encrypt.preferences.status_enabled"}}</p>
               <fieldset class="control-group">
-                {{d-button
-                  icon="times"
-                  action=(action "deactivateEncrypt")
-                  label="encrypt.preferences.deactivate"
+                <DButton
+                  @icon="times"
+                  @action={{action "deactivateEncrypt"}}
+                  @label="encrypt.preferences.deactivate"
                   id="encrypt-deactivate"
-                }}
-                {{d-button
+                />
+                <DButton
                   id="encrypt-generate-paper-key-for-device"
-                  icon="plus"
-                  action=(action "generatePaperKey" true)
-                  label="encrypt.generate_paper_key.title_device"
-                }}
-                {{d-button
+                  @icon="plus"
+                  @action={{action "generatePaperKey" true}}
+                  @label="encrypt.generate_paper_key.title_device"
+                />
+                <DButton
                   id="encrypt-generate-paper-key"
-                  icon="ticket-alt"
-                  action=(action "generatePaperKey")
-                  label="encrypt.generate_paper_key.title"
-                }}
-                {{encrypt-preferences-dropdown
-                  id="encrypt-preferences"
-                  onChange=(action "selectEncryptPreferencesDropdownAction")
-                }}
+                  @icon="ticket-alt"
+                  @action={{action "generatePaperKey"}}
+                  @label="encrypt.generate_paper_key.title"
+                />
+                <EncryptPreferencesDropdown
+                  @id="encrypt-preferences"
+                  @onChange={{(action
+                    "selectEncryptPreferencesDropdownAction"
+                  )}}
+                />
               </fieldset>
-              {{preference-checkbox
-                labelKey="encrypt.preferences.encrypt_pms_default"
-                checked=model.user_option.encrypt_pms_default
-              }}
-              {{save-controls
-                id="encrypt_preference_save"
-                model=model
-                action=(action "save")
-                saved=saved
-              }}
+              <PreferenceCheckbox
+                @labelKey="encrypt.preferences.encrypt_pms_default"
+                @checked={{model.user_option.encrypt_pms_default}}
+              />
+              <SaveControls
+                @id="encrypt_preference_save"
+                @model={{model}}
+                @action={{action "save"}}
+                @saved={{saved}}
+              />
             {{else}}
               <form>
                 <p>
@@ -58,11 +60,11 @@
 
                 {{#if importIdentity}}
                   {{html-safe (i18n "encrypt.preferences.notice_import")}}
-                  {{textarea
+                  <Textarea
                     class="imported-key-pair"
-                    value=identity
-                    placeholder=identityPlaceholder
-                  }}
+                    @value={{identity}}
+                    placeholder={{identityPlaceholder}}
+                  />
                 {{else}}
                   {{html-safe (i18n "encrypt.preferences.notice_active")}}
                   <p>
@@ -70,34 +72,34 @@
                       {{i18n "encrypt.preferences.paper_key_label"}}
                     </label>
 
-                    {{input
-                      type="password"
-                      value=passphrase
-                      placeholder=(i18n
+                    <Input
+                      @type="password"
+                      @value={{passphrase}}
+                      placeholder={{i18n
                         "encrypt.preferences.paper_key_placeholder"
-                      )
+                      }}
                       id="passphrase"
                       autocomplete="current-password"
-                      disabled=inProgress
-                    }}
+                      disabled={{inProgress}}
+                    />
                   </p>
                 {{/if}}
 
                 <p>
-                  {{d-button
+                  <DButton
                     class="btn-primary"
                     id="encrypt-activate"
-                    icon="unlock"
-                    action=(action "activateEncrypt")
-                    type="submit"
-                    disabled=inProgress
-                    label="encrypt.preferences.activate"
-                  }}
-                  {{encrypt-enable-dropdown
-                    isEncryptEnabled=isEncryptEnabled
-                    importIdentity=importIdentity
-                    onChange=(action "selectEncryptEnableDropdownAction")
-                  }}
+                    @icon="unlock"
+                    @action={{action "activateEncrypt"}}
+                    @type="submit"
+                    @disabled={{inProgress}}
+                    @label="encrypt.preferences.activate"
+                  />
+                  <EncryptEnableDropdown
+                    @isEncryptEnabled={{isEncryptEnabled}}
+                    @importIdentity={{importIdentity}}
+                    @onChange={{(action "selectEncryptEnableDropdownAction")}}
+                  />
                 </p>
               </form>
             {{/if}}
@@ -105,26 +107,26 @@
             <p>{{i18n "encrypt.preferences.status_disabled"}}</p>
             {{#if importIdentity}}
               {{html-safe (i18n "encrypt.preferences.notice_import")}}
-              {{textarea
+              <Textarea
                 class="imported-key-pair"
-                value=identity
-                placeholder=identityPlaceholder
-              }}
+                @value={{identity}}
+                placeholder={{identityPlaceholder}}
+              />
             {{/if}}
 
-            {{d-button
+            <DButton
               class="btn-primary"
               id="enable-encrypted-messages"
-              icon="lock"
-              action=(action "enableEncrypt")
-              disabled=inProgress
-              label="encrypt.preferences.enable"
-            }}
-            {{encrypt-enable-dropdown
-              isEncryptEnabled=isEncryptEnabled
-              importIdentity=importIdentity
-              onChange=(action "selectEncryptEnableDropdownAction")
-            }}
+              @icon="lock"
+              @action={{action "enableEncrypt"}}
+              @disabled={{inProgress}}
+              @label="encrypt.preferences.enable"
+            />
+            <EncryptEnableDropdown
+              @isEncryptEnabled={{isEncryptEnabled}}
+              @importIdentity={{importIdentity}}
+              @onChange={{(action "selectEncryptEnableDropdownAction")}}
+            />
           {{/if}}
         {{else}}
           {{#if isEncryptEnabled}}
