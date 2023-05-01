@@ -18,7 +18,7 @@
           {{~! ~}}
           <EncryptedPostTimerDropdown
             @topicDeleteAt={{this.model.topic.delete_at}}
-            @onChange={{(action "timerClicked")}}
+            @onChange={{action "timerClicked"}}
           />
           <span
             title={{i18n
