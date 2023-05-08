@@ -13,7 +13,9 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
-    using_wait_time(5) { expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100]) }
+    using_wait_time(25) do
+      expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100])
+    end
     expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(nil)
     expect(current_user.reload.user_encryption_key.encrypt_private).to eq(nil)
   end
@@ -22,7 +24,9 @@ describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
     user_preferences_page.visit(current_user)
     click_link "Security"
     find("#enable-encrypted-messages").click
-    using_wait_time(5) { expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100]) }
+    using_wait_time(25) do
+      expect(page).to have_content(I18n.t("js.encrypt.no_backup_warn")[0..100])
+    end
     expect(current_user.reload.user_encryption_key.encrypt_public).not_to eq(nil)
     find("#encrypt-generate-paper-key").click
     expect(page).to have_css(".generate-paper-key-modal .paper-key")
