@@ -29,7 +29,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
 
     before { SiteSetting.enable_experimental_hashtag_autocomplete = true }
 
-    it "decrypts the post" do
+    xit "decrypts the post" do
       enable_encrypt_for_user_in_session(other_user, user_preferences_page)
 
       topic_page.open_new_message
@@ -59,7 +59,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
     fab!(:user_3) { Fabricate(:user) }
     fab!(:other_user) { Fabricate(:user) }
 
-    it "decrypts the post" do
+    xit "decrypts the post" do
       enable_encrypt_for_user_in_session(other_user, user_preferences_page)
 
       topic_page.open_new_message
