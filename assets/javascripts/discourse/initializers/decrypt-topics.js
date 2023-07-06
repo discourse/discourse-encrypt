@@ -13,8 +13,6 @@ import {
   hasTopicTitle,
   putTopicKey,
   putTopicTitle,
-  syncGetTopicTitle,
-  waitForPendingTitles,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { observes } from "discourse-common/utils/decorators";
 
