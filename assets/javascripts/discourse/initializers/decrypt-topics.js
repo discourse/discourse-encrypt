@@ -131,57 +131,6 @@ export default {
     }
 
     withPluginApi("0.11.3", (api) => {
-      // All quick-access panels
-      api.reopenWidget("quick-access-panel", {
-        setItems() {
-          // Artificially delay loading until all titles are decrypted
-          return waitForPendingTitles()
-            .catch(() => {
-              // eslint-disable-next-line no-console
-              console.warn("Not all encrypted titles could be decrypted");
-            })
-            .finally(() => this._super(...arguments));
-        },
-      });
-
-      // Notification topic titles
-      api.reopenWidget("default-notification-item", {
-        description() {
-          if (
-            this.attrs.fancy_title &&
-            this.attrs.topic_id &&
-            this.attrs.topic_key
-          ) {
-            const decrypted = syncGetTopicTitle(this.attrs.topic_id);
-            if (decrypted) {
-              return `<span data-topic-id="${
-                this.attrs.topic_id
-              }">${emojiUnescape(escapeExpression(decrypted))}</span>`;
-            }
-          }
-          return this._super(...arguments);
-        },
-      });
-
-      // Non-notification quick-access topic titles (assign, bookmarks, PMs)
-      api.reopenWidget("quick-access-item", {
-        _contentHtml() {
-          const href = this.attrs.href;
-          if (href) {
-            let topicId = href.match(/\/t\/.*?\/(\d+)/);
-            if (topicId && topicId[1]) {
-              topicId = parseInt(topicId[1], 10);
-              const decrypted = syncGetTopicTitle(topicId);
-              if (decrypted) {
-                return emojiUnescape(escapeExpression(decrypted));
-              }
-            }
-          }
-
-          return this._super(...arguments);
-        },
-      });
-
       if (api.registerModelTransformer) {
         api.registerModelTransformer("topic", async (topics) => {
           for (const topic of topics) {
