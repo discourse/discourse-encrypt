@@ -165,10 +165,7 @@ export default {
   generatePaperKey(device) {
     const modal = getOwner(this).lookup("service:modal");
     modal.show(GeneratePaperKey, {
-      model: {
-        user: this.model,
-        device,
-      },
+      model: { device },
     });
   },
 

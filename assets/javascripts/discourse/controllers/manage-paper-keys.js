@@ -34,10 +34,7 @@ export default Controller.extend(ModalFunctionality, {
   actions: {
     generatePaperKey() {
       this.modal.show(GeneratePaperKey, {
-        model: {
-          user: this.model,
-          device: false,
-        },
+        model: { device: false },
       });
     },
 
