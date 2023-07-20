@@ -5,10 +5,10 @@ import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
-  reload,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import I18n from "I18n";
 import { htmlSafe } from "@ember/template";
+import { isTesting } from "discourse-common/config/environment";
 
 export default {
   name: "encrypt-status",
@@ -17,8 +17,8 @@ export default {
     const currentUser = container.lookup("current-user:main");
     const appEvents = container.lookup("service:app-events");
     appEvents.on("encrypt:status-changed", (skipReload) => {
-      if (!skipReload) {
-        reload();
+      if (!skipReload && !isTesting()) {
+        window.location.reload();
       }
     });
 

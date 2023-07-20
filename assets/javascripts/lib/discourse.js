@@ -360,7 +360,3 @@ export function activateEncrypt(currentUser, passphrase) {
 
   return promise.then((identity) => saveDbIdentity(identity));
 }
-
-export function reload() {
-  return window.location.reload();
-}

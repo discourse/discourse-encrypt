@@ -178,7 +178,7 @@ export default {
       .then(() => {
         this.set("saved", true);
         if (!isTesting()) {
-          location.reload();
+          window.location.reload();
         }
       })
       .catch(popupAjaxError);
