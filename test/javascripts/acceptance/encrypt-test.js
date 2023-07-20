@@ -1,4 +1,10 @@
-import { click, fillIn, triggerKeyEvent, visit } from "@ember/test-helpers";
+import {
+  click,
+  fillIn,
+  triggerKeyEvent,
+  visit,
+  waitUntil,
+} from "@ember/test-helpers";
 import { registerWaiter, unregisterWaiter } from "@ember/test";
 import User from "discourse/models/user";
 import {
@@ -6,12 +12,13 @@ import {
   loadDbIdentity,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
-import EncryptLibDiscourse, {
+import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
   getEncryptionStatus,
   getIdentity,
+  putTopicTitle,
   resetEncrypt,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
@@ -26,6 +33,7 @@ import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notificati
 import userFixtures from "discourse/tests/fixtures/user-fixtures";
 import pretender, {
   parsePostData,
+  response,
 } from "discourse/tests/helpers/create-pretender";
 import {
   acceptance,
@@ -38,8 +46,6 @@ import {
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import I18n from "I18n";
 import QUnit, { test } from "qunit";
-import { Promise } from "rsvp";
-import sinon from "sinon";
 import { cloneJSON } from "discourse-common/lib/object";
 
 /*
@@ -542,7 +548,10 @@ acceptance("Encrypt - disabled", function (needs) {
     });
 
     await visit("/u/eviltrout/preferences/security");
-    await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
+    await click(".encrypt button.btn-primary");
+    await waitUntil(
+      () => getEncryptionStatus(User.current()) === ENCRYPT_ACTIVE
+    );
     assert.ok(ajaxRequested, "AJAX request to save keys was made");
 
     const identity = await loadDbIdentity();
@@ -609,7 +618,11 @@ acceptance("Encrypt - enabled", function (needs) {
   test("activation works", async function (assert) {
     await visit("/u/eviltrout/preferences/security");
     await fillIn(".encrypt #passphrase", PASSPHRASE);
-    await wait(ENCRYPT_ACTIVE, () => click(".encrypt button.btn-primary"));
+    await click(".encrypt button.btn-primary");
+
+    await waitUntil(
+      () => getEncryptionStatus(User.current()) === ENCRYPT_ACTIVE
+    );
 
     const identity = await loadDbIdentity();
     assert.ok(identity.encryptPublic instanceof CryptoKey);
@@ -646,13 +659,12 @@ acceptance("Encrypt - active", function (needs) {
     await categoryChooser.expand();
     await categoryChooser.selectRowByValue(2);
 
-    requests = [];
     await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
-    await wait(
-      () => requests.includes("/posts"),
-      () => click("button.create")
-    );
+
+    requests = [];
+    await click("button.create");
+    assert.true(requests.includes("/posts"));
   });
 
   test("posting does not leak plaintext", async function (assert) {
@@ -672,6 +684,10 @@ acceptance("Encrypt - active", function (needs) {
           ],
         },
       ];
+    });
+
+    pretender.get("/composer_messages/user_not_seen_in_a_while", () => {
+      return response({});
     });
 
     pretender.post("/posts", (request) => {
@@ -702,21 +718,18 @@ acceptance("Encrypt - active", function (needs) {
     await usersSelector.expand();
     await usersSelector.fillInFilter("evilt");
     await usersSelector.selectRowByValue("eviltrout");
+    await usersSelector.collapse();
 
     requests = [];
-    await wait(
-      () => requests.includes("/drafts.json"),
-      async () => {
-        await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
-        await fillIn(".d-editor-input", PLAINTEXT_RAW);
-      }
-    );
+
+    await fillIn("#reply-title", `Some hidden message ${PLAINTEXT}`);
+    await fillIn(".d-editor-input", PLAINTEXT_RAW);
+    await waitUntil(() => requests.includes("/drafts.json"));
 
     requests = [];
-    await wait(
-      () => requests.includes("/posts") && requests.includes("/encrypt/post"),
-      () => click("button.create")
-    );
+    await click("button.create");
+    assert.true(requests.includes("/posts"));
+    assert.true(requests.includes("/encrypt/post"));
   });
 
   test("new draft for public topic is not encrypted", async function (assert) {
@@ -799,8 +812,10 @@ acceptance("Encrypt - active", function (needs) {
 
   test("deactivation works", async function (assert) {
     await visit("/u/eviltrout/preferences/security");
-    await wait(ENCRYPT_ENABLED, () =>
-      click(".encrypt button#encrypt-deactivate")
+    await click(".encrypt button#encrypt-deactivate");
+
+    await waitUntil(
+      () => getEncryptionStatus(User.current()) === ENCRYPT_ENABLED
     );
 
     assert.rejects(loadDbIdentity());
@@ -835,6 +850,7 @@ acceptance("Encrypt - active", function (needs) {
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
     const title = "Top Secret :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
+    putTopicTitle(42, title);
 
     pretender.get("/notifications", () => [
       200,
@@ -869,23 +885,15 @@ acceptance("Encrypt - active", function (needs) {
       },
     ]);
 
-    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
-    stub.returns("Top Secret :male_detective:");
-
-    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
-    stub2.returns(Promise.resolve("Top Secret :male_detective:"));
-
-    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
-    stub3.returns(Promise.resolve());
-
     await visit("/");
     await click(".header-dropdown-toggle.current-user");
 
-    assert.strictEqual(
-      query(".quick-access-panel span[data-topic-id]").innerText,
-      "Top Secret "
-    );
-    assert.strictEqual(count(".quick-access-panel span[data-topic-id] img"), 1);
+    assert
+      .dom(".quick-access-panel span[data-topic-id]")
+      .includesText("Top Secret");
+    assert
+      .dom(".quick-access-panel span[data-topic-id] img")
+      .exists({ count: 1 });
   });
 
   test("encrypted topic titles in experiemental user menu notifications tab are decrypted", async function (assert) {
@@ -897,6 +905,7 @@ acceptance("Encrypt - active", function (needs) {
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
     const title = "Top Secret <a> :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
+    putTopicTitle(42, title);
 
     pretender.get("/notifications", () => [
       200,
@@ -931,15 +940,6 @@ acceptance("Encrypt - active", function (needs) {
       },
     ]);
 
-    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
-    stub.returns(title);
-
-    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
-    stub2.returns(Promise.resolve(title));
-
-    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
-    stub3.returns(Promise.resolve());
-
     await visit("/");
     await click(".header-dropdown-toggle.current-user");
 
@@ -969,6 +969,7 @@ acceptance("Encrypt - active", function (needs) {
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
     const title = "Top Secret <a> :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
+    putTopicTitle(8223, title);
 
     pretender.get("/u/eviltrout/user-menu-bookmarks", () => [
       200,
@@ -1016,15 +1017,6 @@ acceptance("Encrypt - active", function (needs) {
       },
     ]);
 
-    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
-    stub.returns(title);
-
-    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
-    stub2.returns(Promise.resolve(title));
-
-    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
-    stub3.returns(Promise.resolve());
-
     await visit("/");
     await click(".header-dropdown-toggle.current-user");
     await click("#user-menu-button-bookmarks");
@@ -1054,6 +1046,7 @@ acceptance("Encrypt - active", function (needs) {
     const exportedKey = await exportKey(topicKey, identity.encryptPublic);
     const title = "Top Secret <a> :male_detective:";
     const encryptedTitle = await encrypt(topicKey, { raw: title });
+    putTopicTitle(127, title);
 
     pretender.get("/u/eviltrout/user-menu-private-messages", () => [
       200,
@@ -1117,15 +1110,6 @@ acceptance("Encrypt - active", function (needs) {
         ],
       },
     ]);
-
-    const stub = sinon.stub(EncryptLibDiscourse, "syncGetTopicTitle");
-    stub.returns(title);
-
-    const stub2 = sinon.stub(EncryptLibDiscourse, "getTopicTitle");
-    stub2.returns(Promise.resolve(title));
-
-    const stub3 = sinon.stub(EncryptLibDiscourse, "waitForPendingTitles");
-    stub3.returns(Promise.resolve());
 
     await visit("/");
     await click(".header-dropdown-toggle.current-user");
