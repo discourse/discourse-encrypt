@@ -7,14 +7,16 @@
     "encrypt.generate_paper_key.title"
   }}
 >
-  <p>
-    {{i18n
-      (if
-        @model.device
-        "encrypt.generate_paper_key.instructions_device"
-        "encrypt.generate_paper_key.instructions"
-      )
-    }}
-  </p>
-  <p class="paper-key">{{this.paperKey}}</p>
+  <:body>
+    <p>
+      {{i18n
+        (if
+          @model.device
+          "encrypt.generate_paper_key.instructions_device"
+          "encrypt.generate_paper_key.instructions"
+        )
+      }}
+    </p>
+    <p class="paper-key">{{this.paperKey}}</p>
+  </:body>
 </DModal>
