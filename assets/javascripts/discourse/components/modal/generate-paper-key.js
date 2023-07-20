@@ -6,7 +6,6 @@ import { generatePaperKey } from "discourse/plugins/discourse-encrypt/lib/paper-
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
 export default class GeneratePaperKey extends Component {
-  @tracked inProgress = true;
   @tracked paperKey;
 
   async generate() {
@@ -15,22 +14,18 @@ export default class GeneratePaperKey extends Component {
       ? "device"
       : `paper_${paperKey.substr(0, paperKey.indexOf(" ")).toLowerCase()}`;
 
-    try {
-      const identity = await getIdentity();
-      const exported = await exportIdentity(identity, paperKey);
+    const identity = await getIdentity();
+    const exported = await exportIdentity(identity, paperKey);
 
-      this.paperKey = paperKey;
+    this.paperKey = paperKey;
 
-      await ajax("/encrypt/keys", {
-        type: "PUT",
-        data: {
-          public: exported.public,
-          private: exported.private,
-          label,
-        },
-      });
-    } finally {
-      this.inProgress = false;
-    }
+    await ajax("/encrypt/keys", {
+      type: "PUT",
+      data: {
+        public: exported.public,
+        private: exported.private,
+        label,
+      },
+    });
   }
 }
