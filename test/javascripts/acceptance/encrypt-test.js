@@ -162,8 +162,6 @@ function setupEncryptTests(needs) {
   });
 
   needs.hooks.beforeEach(function () {
-    sinon.stub(EncryptLibDiscourse, "reload");
-
     // Hook `XMLHttpRequest` to search for leaked plaintext.
     XMLHttpRequest.prototype.send_ = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function (body) {
