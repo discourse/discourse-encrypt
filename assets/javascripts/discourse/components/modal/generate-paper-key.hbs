@@ -1,10 +1,12 @@
 <DModal
   {{did-insert this.generate}}
   @closeModal={{@closeModal}}
-  @title={{if
-    @model.device
-    "encrypt.generate_paper_key.title_device"
-    "encrypt.generate_paper_key.title"
+  @title={{i18n
+    (if
+      @model.device
+      "encrypt.generate_paper_key.title_device"
+      "encrypt.generate_paper_key.title"
+    )
   }}
 >
   <:body>
