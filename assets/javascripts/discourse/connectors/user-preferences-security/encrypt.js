@@ -190,7 +190,7 @@ export default {
 
     switch (actionId) {
       case "export":
-        modal.show(ExportKeyPair, { model: this.model });
+        modal.show(ExportKeyPair);
         break;
       case "managePaperKeys":
         showModal("manage-paper-keys", { model: this.model });
