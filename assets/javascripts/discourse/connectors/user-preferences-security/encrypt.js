@@ -20,6 +20,7 @@ import I18n from "I18n";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import GeneratePaperKey from "../../components/modal/generate-paper-key";
 
 export default {
   setupComponent(args, component) {
@@ -162,7 +163,8 @@ export default {
 
   @action
   generatePaperKey(device) {
-    showModal("generate-paper-key", {
+    const modal = getOwner(this).lookup("service:modal");
+    modal.show(GeneratePaperKey, {
       model: {
         user: this.model,
         device,
