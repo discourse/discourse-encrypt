@@ -192,9 +192,9 @@ function setupEncryptTests(needs) {
 
   needs.pretender((server, helper) => {
     pretender.get("/encrypt/user", (request) => {
-      const response = {};
-      request.queryParams["usernames"].forEach((u) => (response[u] = keys[u]));
-      return helper.response(response);
+      const resp = {};
+      request.queryParams["usernames"].forEach((u) => (resp[u] = keys[u]));
+      return helper.response(resp);
     });
 
     pretender.get("/encrypt/posts", () => {
