@@ -6,13 +6,11 @@ import copyText from "discourse/lib/copy-text";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { packIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import I18n from "I18n";
 
 export default class ExportKeyPair extends Component {
   @tracked inProgress = true;
   @tracked exported = "";
   @tracked copied;
-  @tracked error;
 
   async export() {
     try {
@@ -22,7 +20,6 @@ export default class ExportKeyPair extends Component {
       this.inProgress = false;
     } catch {
       this.inProgress = false;
-      this.error = I18n.t("encrypt.preferences.paper_key_invalid");
     }
   }
 
