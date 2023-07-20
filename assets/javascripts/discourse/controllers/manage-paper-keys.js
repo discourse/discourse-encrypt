@@ -1,10 +1,13 @@
 import Controller from "@ember/controller";
+import { inject as service } from "@ember/service";
 import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
-import showModal from "discourse/lib/show-modal";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
+import GeneratePaperKey from "../components/modal/generate-paper-key";
 
 export default Controller.extend(ModalFunctionality, {
+  modal: service(),
+
   @discourseComputed("model.encrypt_private")
   keys() {
     const keys = [];
@@ -30,11 +33,8 @@ export default Controller.extend(ModalFunctionality, {
 
   actions: {
     generatePaperKey() {
-      showModal("generate-paper-key", {
-        model: {
-          user: this.model,
-          device: false,
-        },
+      this.modal.show(GeneratePaperKey, {
+        model: { device: false },
       });
     },
 
