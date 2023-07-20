@@ -21,6 +21,7 @@ import { getOwner } from "discourse-common/lib/get-owner";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import GeneratePaperKey from "../../components/modal/generate-paper-key";
+import ExportKeyPair from "../../components/modal/export-key-pair";
 
 export default {
   setupComponent(args, component) {
@@ -185,9 +186,11 @@ export default {
 
   @action
   selectEncryptPreferencesDropdownAction(actionId) {
+    const modal = getOwner(this).lookup("service:modal");
+
     switch (actionId) {
       case "export":
-        showModal("export-key-pair", { model: this.model });
+        modal.show(ExportKeyPair);
         break;
       case "managePaperKeys":
         showModal("manage-paper-keys", { model: this.model });

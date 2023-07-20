@@ -1,0 +1,24 @@
+<DModal
+  {{did-insert this.export}}
+  @closeModal={{@closeModal}}
+  @title={{i18n "encrypt.export.title"}}
+>
+  <:body>
+    <p>{{i18n "encrypt.export.instructions"}}</p>
+    <pre class="exported-key-pair">{{this.exported}}</pre>
+  </:body>
+
+  <:footer>
+    <DButton
+      @action={{this.copy}}
+      @icon="far-clipboard"
+      @label={{if
+        this.copied
+        "encrypt.export.copied_to_clipboard"
+        "encrypt.export.copy_to_clipboard"
+      }}
+      @disabled={{this.inProgress}}
+      class={{concat-class (if this.copied "ok") "btn btn-primary"}}
+    />
+  </:footer>
+</DModal>
