@@ -6,12 +6,14 @@ import copyText from "discourse/lib/copy-text";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { packIdentity } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import { bind } from "discourse-common/utils/decorators";
 
 export default class ExportKeyPair extends Component {
   @tracked inProgress = true;
   @tracked exported = "";
   @tracked copied;
 
+  @bind
   async export() {
     try {
       const identity = await getIdentity();

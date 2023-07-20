@@ -1,4 +1,8 @@
-<DModal @title="encrypt.export.title" {{did-insert this.export}}>
+<DModal
+  {{did-insert this.export}}
+  @closeModal={{@closeModal}}
+  @title="encrypt.export.title"
+>
   <:body>
     <p>{{i18n "encrypt.export.instructions"}}</p>
     <pre class="exported-key-pair">{{this.exported}}</pre>
