@@ -17,7 +17,6 @@ import {
 } from "discourse/lib/link-mentions";
 import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import showModal from "discourse/lib/show-modal";
 import { cookAsync } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
@@ -44,6 +43,8 @@ import {
   lookupUncachedUploadUrls,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
+import { getOwner } from "discourse-common/lib/get-owner";
+import ActivateEncrypt from "../components/modal/activate-encrypt";
 
 /*
  * Debounced queues for fetching information about user identities, mentions,
@@ -486,7 +487,11 @@ export default {
           state.plaintext = cooked.string;
           this.scheduleRerender();
         } catch (error) {
-          showModal("activate-encrypt", { model: { widget: this } });
+          const store = getOwner(this).lookup("service:encrypt-widget-store");
+          store.add(this);
+
+          const modal = getOwner(this).lookup("service:modal");
+          modal.show(ActivateEncrypt);
         }
       }
 

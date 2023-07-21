@@ -1,0 +1,36 @@
+<DModal
+  @title={{i18n "encrypt.title"}}
+  @closeModal={{this.close}}
+  @flash={{this.error}}
+  @flashType="error"
+>
+  <:body>
+    <p>{{i18n "encrypt.preferences.status_enabled_but_inactive"}}</p>
+
+    {{html-safe (i18n "encrypt.preferences.notice_active")}}
+
+    <p>
+      <label for="passphrase">
+        {{i18n "encrypt.preferences.paper_key_label"}}
+      </label>
+      <Input
+        @type="password"
+        @value={{this.passphrase}}
+        placeholder={{i18n "encrypt.preferences.paper_key_placeholder"}}
+        id="passphrase"
+        autocomplete="current-password"
+        disabled={{this.inProgress}}
+      />
+    </p>
+  </:body>
+
+  <:footer>
+    <DButton
+      class="btn btn-primary"
+      @icon="unlock"
+      @label="encrypt.preferences.activate"
+      @action={{this.activate}}
+    />
+    <DModalCancel @close={{this.close}} />
+  </:footer>
+</DModal>
