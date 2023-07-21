@@ -1,13 +1,18 @@
-<DModalBody @title="encrypt.manage_paper_keys.title">
-  <div>
-    {{#if keys}}
+<DModal
+  @title={{i18n "encrypt.manage_paper_keys.title"}}
+  @closeModal={{@closeModal}}
+>
+  <:body>
+    {{#if this.keys}}
       <p>{{i18n "encrypt.manage_paper_keys.instructions"}}</p>
+
       <table class="paper-keys">
         <tbody>
-          {{#each keys as |key|}}
+          {{#each this.keys as |key|}}
             <tr>
               <td>
                 {{d-icon "key"}}
+
                 {{#if key.isPaper}}
                   <span class="paper-key">{{key.name}}</span>
                   ...
@@ -18,13 +23,13 @@
                   </span>
                 {{/if}}
               </td>
+
               <td>
                 <DButton
                   @icon="far-trash-alt"
-                  @action={{action "delete"}}
-                  @actionParam={{key.label}}
-                  class="btn-danger pull-right"
+                  @action={{fn this.delete key.label}}
                   @title="encrypt.manage_paper_keys.delete"
+                  class="btn-danger pull-right"
                 />
               </td>
             </tr>
@@ -34,13 +39,13 @@
     {{else}}
       <p>{{i18n "encrypt.manage_paper_keys.no_key"}}</p>
     {{/if}}
-  </div>
-</DModalBody>
+  </:body>
 
-<div class="modal-footer">
-  <DButton
-    @icon="ticket-alt"
-    @action={{action "generatePaperKey"}}
-    @label="encrypt.generate_paper_key.title"
-  />
-</div>
+  <:footer>
+    <DButton
+      @icon="ticket-alt"
+      @action={{this.generatePaperKey}}
+      @label="encrypt.generate_paper_key.title"
+    />
+  </:footer>
+</DModal>
