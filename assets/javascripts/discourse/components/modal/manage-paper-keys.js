@@ -3,6 +3,7 @@ import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import GeneratePaperKey from "./generate-paper-key";
+import { isTesting } from "discourse-common/config/environment";
 
 export default class ManagePaperKeys extends Component {
   @service modal;
@@ -41,10 +42,14 @@ export default class ManagePaperKeys extends Component {
   }
 
   @action
-  delete(label) {
-    return ajax("/encrypt/keys", {
+  async delete(label) {
+    await ajax("/encrypt/keys", {
       type: "DELETE",
       data: { label },
     });
+
+    if (!isTesting()) {
+      window.location.reload();
+    }
   }
 }
