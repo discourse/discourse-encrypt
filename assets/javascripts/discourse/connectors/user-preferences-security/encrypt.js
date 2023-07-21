@@ -194,7 +194,7 @@ export default {
         modal.show(ExportKeyPair);
         break;
       case "managePaperKeys":
-        modal.show(ManagePaperKeys, { model: this.model });
+        modal.show(ManagePaperKeys, { model: { user: this.model } });
         break;
       case "rotate":
         showModal("rotate-key-pair", { model: this.model });
