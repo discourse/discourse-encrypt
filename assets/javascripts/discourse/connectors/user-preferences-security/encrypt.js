@@ -22,6 +22,7 @@ import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ExportKeyPair from "../../components/modal/export-key-pair";
+import ManagePaperKeys from "../../components/modal/manage-paper-keys";
 
 export default {
   setupComponent(args, component) {
@@ -193,7 +194,7 @@ export default {
         modal.show(ExportKeyPair);
         break;
       case "managePaperKeys":
-        showModal("manage-paper-keys", { model: this.model });
+        modal.show(ManagePaperKeys, { model: { user: this.model } });
         break;
       case "rotate":
         showModal("rotate-key-pair", { model: this.model });
