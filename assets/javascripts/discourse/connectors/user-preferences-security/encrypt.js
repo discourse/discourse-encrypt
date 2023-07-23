@@ -23,6 +23,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ExportKeyPair from "../../components/modal/export-key-pair";
 import ManagePaperKeys from "../../components/modal/manage-paper-keys";
+import ResetKeyPair from "../../components/modal/reset-key-pair";
 
 export default {
   setupComponent(args, component) {
@@ -200,19 +201,21 @@ export default {
         showModal("rotate-key-pair", { model: this.model });
         break;
       case "reset":
-        showModal("reset-key-pair", { model: this.model });
+        modal.show(ResetKeyPair, { model: { user: this.model } });
         break;
     }
   },
 
   @action
   selectEncryptEnableDropdownAction(actionId) {
+    const modal = getOwner(this).lookup("service:modal");
+
     switch (actionId) {
       case "import":
         this.toggleProperty("importIdentity");
         break;
       case "reset":
-        showModal("reset-key-pair", { model: this.model });
+        modal.show(ResetKeyPair, { model: { user: this.model } });
         break;
     }
   },
