@@ -1,0 +1,30 @@
+<DModal
+  @title={{i18n "encrypt.rotate.title"}}
+  @closeModal={{@closeModal}}
+  @flash={{this.error}}
+  @flashType="error"
+>
+  <:body>
+    <p>{{i18n "encrypt.rotate.instructions"}}</p>
+    <p>
+      {{html-safe
+        (i18n
+          "encrypt.reset.confirm_instructions"
+          username=this.currentUser.username
+        )
+      }}
+    </p>
+    <Input @type="text" @value={{this.confirmation}} />
+  </:body>
+
+  <:footer>
+    <DButton
+      class="btn btn-primary"
+      @icon="sync"
+      @label={{this.label}}
+      @action={{this.rotate}}
+      @disabled={{this.disabled}}
+    />
+    <DModalCancel @close={{@closeModal}} />
+  </:footer>
+</DModal>

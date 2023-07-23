@@ -99,11 +99,12 @@ en:
       rotate:
         title: "Rotate Encryption Key Pair"
         instructions: "Are you sure you want to rotate your encryption key? This will generate a new key pair and all paper keys will be destroyed. You will not lose access to any encrypted messages, but you will have to reactivate encryption on other devices."
-        loading: "Loading old topic keys..."
-        rotating: "Rotating keys..."
-        saving: "Saving new topic keys..."
-        updating: "Updating key..."
-        finished: "Done!"
+        loading_states:
+          fetching: "Loading old topic keys…"
+          rotating: "Rotating keys…"
+          saving: "Saving new topic keys…"
+          updating: "Updating key…"
+          finished: "Done!"
 
       reset:
         title: "Disable Encrypted Messages"

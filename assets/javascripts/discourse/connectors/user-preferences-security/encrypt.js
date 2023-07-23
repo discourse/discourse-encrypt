@@ -1,5 +1,4 @@
 import { action, computed, defineProperty } from "@ember/object";
-import showModal from "discourse/lib/show-modal";
 import {
   deleteDb,
   saveDbIdentity,
@@ -24,6 +23,7 @@ import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ExportKeyPair from "../../components/modal/export-key-pair";
 import ManagePaperKeys from "../../components/modal/manage-paper-keys";
 import ResetKeyPair from "../../components/modal/reset-key-pair";
+import RotateKeyPair from "../../components/modal/rotate-key-pair";
 
 export default {
   setupComponent(args, component) {
@@ -198,7 +198,7 @@ export default {
         modal.show(ManagePaperKeys, { model: { user: this.model } });
         break;
       case "rotate":
-        showModal("rotate-key-pair", { model: this.model });
+        modal.show(RotateKeyPair);
         break;
       case "reset":
         modal.show(ResetKeyPair, { model: { user: this.model } });
