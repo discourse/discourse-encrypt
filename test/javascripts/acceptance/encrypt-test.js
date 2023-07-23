@@ -639,7 +639,7 @@ acceptance("Encrypt - enabled", function (needs) {
     await setupEncryptedTopicPretender(pretender, { identity });
 
     await visit("/t/a-secret-message/42");
-    assert.ok(exists(".modal.activate-encrypt-modal"));
+    assert.dom(".modal.activate-encrypt-modal").exists();
   });
 });
 
