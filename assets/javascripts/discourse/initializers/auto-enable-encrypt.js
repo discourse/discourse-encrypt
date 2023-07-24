@@ -10,12 +10,12 @@ export default {
   name: "auto-enable-encrypt",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
+    const siteSettings = container.lookup("service:site-settings");
     if (!siteSettings.auto_enable_encrypt) {
       return;
     }
 
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (currentUser) {
       if (
         !window.localStorage.getItem(AUTO_ENABLE_KEY) &&

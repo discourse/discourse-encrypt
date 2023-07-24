@@ -36,7 +36,7 @@ export default {
   name: "encrypt-drafts",
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
