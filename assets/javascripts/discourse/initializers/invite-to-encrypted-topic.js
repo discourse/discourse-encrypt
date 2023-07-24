@@ -15,7 +15,7 @@ export default {
   name: "invite-to-encrypted-topic",
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }

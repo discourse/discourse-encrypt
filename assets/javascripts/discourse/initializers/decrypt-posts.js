@@ -276,8 +276,8 @@ export default {
   name: "decrypt-posts",
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
-    const siteSettings = container.lookup("site-settings:main");
+    const currentUser = container.lookup("service:current-user");
+    const siteSettings = container.lookup("service:site-settings");
     if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
       return;
     }

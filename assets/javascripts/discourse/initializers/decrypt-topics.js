@@ -103,7 +103,7 @@ export default {
   container: null,
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
@@ -286,8 +286,8 @@ export default {
       return;
     }
 
-    const router = this.container.lookup("router:main");
-    this.decryptTopicPage({ currentRouteName: router.currentRouteName });
+    const { currentRouteName } = this.container.lookup("service:router");
+    this.decryptTopicPage({ currentRouteName });
   },
 
   decryptTopicPage(data) {

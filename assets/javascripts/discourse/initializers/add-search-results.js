@@ -135,12 +135,12 @@ export default {
   name: "add-search-results",
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
       return;
     }
 
-    const session = container.lookup("session:main");
+    const session = container.lookup("service:session");
     withPluginApi("0.11.3", (api) => {
       api.addSearchResultsCallback((results) => {
         const promises = [];

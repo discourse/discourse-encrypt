@@ -95,12 +95,12 @@ export default {
   name: "fetch-encrypt-keys",
 
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) === ENCRYPT_DISABLED) {
       return;
     }
 
-    const session = container.lookup("session:main");
+    const session = container.lookup("service:session");
 
     // Go through the `PreloadStore` and look for preloaded topic keys
     for (let storeKey in PreloadStore.data) {
