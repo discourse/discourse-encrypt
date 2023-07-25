@@ -87,11 +87,8 @@ nl:
       rotate:
         title: "Sleutelpaar vervangen"
         instructions: "Weet je zeker dat je je sleutel wilt vervangen? Hierdoor wordt een nieuw sleutelpaar gegenereerd en worden alle papieren sleutels vernietigd. Je verliest de toegang tot versleutelde berichten niet, maar je moet de versleuteling op andere apparaten opnieuw activeren."
-        loading: "Oude topicsleutels laden..."
-        rotating: "Sleutels vervangen..."
-        saving: "Nieuwe topicsleutels opslaan..."
-        updating: "Sleutel bijwerken..."
-        finished: "Gereed!"
+        loading_states:
+          finished: "Gereed!"
       reset:
         title: "Versleutelde berichten uitschakelen"
         instructions: "Weet je zeker dat je versleutelde berichten wilt uitschakelen en je sleutel wilt resetten? Hierdoor wordt je sleutel permanent verwijderd en heb je geen toegang meer tot je versleutelde privéberichten."

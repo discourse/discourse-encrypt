@@ -86,11 +86,8 @@ es:
       rotate:
         title: "Rotar el par de claves de cifrado"
         instructions: "¿Estás seguro de que quieres rotar tu clave de cifrado? Esto generará un nuevo par de claves y se destruirán todas las claves en papel. No perderás el acceso a ningún mensaje cifrado, pero tendrás que reactivar el cifrado en otros dispositivos."
-        loading: "Cargando claves de temas antiguos..."
-        rotating: "Rotando claves..."
-        saving: "Guardando las claves del nuevo tema..."
-        updating: "Actualizando clave..."
-        finished: "¡Hecho!"
+        loading_states:
+          finished: "¡Hecho!"
       reset:
         title: "Deshabilitar mensajes cifrados"
         instructions: "¿Seguro que quieres deshabilitar los mensajes cifrados y restablecer tu clave de cifrado? Esta operación elimina tu clave de cifrado para siempre y ya no podrás acceder a ninguno de tus mensajes privados cifrados."

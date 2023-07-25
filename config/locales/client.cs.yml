@@ -15,6 +15,7 @@ cs:
         copy_to_clipboard: "Kopírovat do schránky"
         copied_to_clipboard: "Zkopírováno do schránky"
       rotate:
-        finished: "Hotovo!"
+        loading_states:
+          finished: "Hotovo!"
       time_bomb:
         never: "Nikdy"

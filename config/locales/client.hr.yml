@@ -15,7 +15,8 @@ hr:
         copy_to_clipboard: "Kopirati u međuspremnik"
         copied_to_clipboard: "Kopirano u međuspremnik"
       rotate:
-        finished: "Gotovo!"
+        loading_states:
+          finished: "Gotovo!"
       time_bomb:
         never: "Nikad"
         3_minutes: "3 minuta"

@@ -12,6 +12,7 @@ sr:
       manage_paper_keys:
         delete: "Obriši"
       rotate:
-        finished: "Gotovo!"
+        loading_states:
+          finished: "Gotovo!"
       time_bomb:
         never: "Nikad"

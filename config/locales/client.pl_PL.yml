@@ -59,10 +59,8 @@ pl_PL:
         copy_to_clipboard: "Skopiuj do schowka"
         copied_to_clipboard: "Tekst skopiowany do schowka."
       rotate:
-        loading: "Ładowanie starych kluczy tematów ..."
-        saving: "Zapisywanie nowych kluczy tematów ..."
-        updating: "Aktualizowanie klucza..."
-        finished: "Gotowe!"
+        loading_states:
+          finished: "Gotowe!"
       reset:
         confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
       time_bomb:

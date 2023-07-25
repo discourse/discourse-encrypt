@@ -29,7 +29,8 @@ fa_IR:
         copy_to_clipboard: "کپی در clipboard"
         copied_to_clipboard: "کپی شد"
       rotate:
-        finished: "انجام شد!"
+        loading_states:
+          finished: "انجام شد!"
       time_bomb:
         never: "هرگز"
         3_minutes: "۳ دقیقه"

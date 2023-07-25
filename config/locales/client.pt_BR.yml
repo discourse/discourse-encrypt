@@ -86,11 +86,8 @@ pt_BR:
       rotate:
         title: "Girar par de chaves de criptografia"
         instructions: "Tem certeza de que deseja girar sua chave de criptografia? Isso irá gerar um novo par de chaves e todas as chaves de papel serão destruídas. Você não perderá acesso às mensagens criptografadas, mas precisará reativar a criptografia em outros dispositivos."
-        loading: "Carregando chaves de tópico antigas"
-        rotating: "Girando chaves..."
-        saving: "Salvando novas chaves de tópico..."
-        updating: "Atualizando chave..."
-        finished: "Pronto!"
+        loading_states:
+          finished: "Pronto!"
       reset:
         title: "Desativar mensagens criptografadas"
         instructions: "Tem certeza de que desativar as mensagens criptografadas e redefinir sua chave de criptografia? Esta operação exclui sua chave de criptografia para sempre e não poderá acessar mais mensagens privadas."

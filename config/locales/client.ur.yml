@@ -15,7 +15,8 @@ ur:
         copy_to_clipboard: "کلِپ بورڈ میں کاپی کریں"
         copied_to_clipboard: "کلِپ بورڈ میں کاپی کر لیا گیا"
       rotate:
-        finished: "مکمل!"
+        loading_states:
+          finished: "مکمل!"
       time_bomb:
         never: "کبھی نہیں"
         3_minutes: "3 منٹ"

@@ -48,7 +48,8 @@ uk:
         copy_to_clipboard: "Скопіювати в буфер"
         copied_to_clipboard: "Скопійовано у буфер обміну"
       rotate:
-        finished: "Виконано!"
+        loading_states:
+          finished: "Виконано!"
       time_bomb:
         never: "Ніколи"
         3_minutes: "3 хвилин"

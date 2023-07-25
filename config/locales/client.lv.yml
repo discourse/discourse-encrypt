@@ -15,6 +15,7 @@ lv:
         copy_to_clipboard: "Kopēt uz starpliktuvi (clipboard)"
         copied_to_clipboard: "Nokopēts uz starpliktuvi (clipboard)"
       rotate:
-        finished: "Pabeigt!"
+        loading_states:
+          finished: "Pabeigt!"
       time_bomb:
         never: "Nekad"

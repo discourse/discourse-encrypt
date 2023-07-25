@@ -15,7 +15,8 @@ sl:
         copy_to_clipboard: "Kopiraj v odložišče"
         copied_to_clipboard: "Kopirano v odložišče"
       rotate:
-        finished: "Končano!"
+        loading_states:
+          finished: "Končano!"
       time_bomb:
         never: "Nikoli"
         3_minutes: "3 minut"

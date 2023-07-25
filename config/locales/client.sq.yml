@@ -12,6 +12,7 @@ sq:
       manage_paper_keys:
         delete: "Fshij"
       rotate:
-        finished: "Përfundo!"
+        loading_states:
+          finished: "Përfundo!"
       time_bomb:
         never: "Asnjëherë"

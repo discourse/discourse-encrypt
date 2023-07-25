@@ -15,7 +15,8 @@ lt:
         copy_to_clipboard: "Nukopijuoti į iškarpinę"
         copied_to_clipboard: "Nukopijuota į iškirptę"
       rotate:
-        finished: "Baigta!"
+        loading_states:
+          finished: "Baigta!"
       time_bomb:
         never: "Niekada"
         3_minutes: "3 minučių"
