@@ -16,6 +16,7 @@ sk:
       export:
         copied_to_clipboard: "Skopírované do schránky"
       rotate:
-        finished: "Hotovo!"
+        loading_states:
+          finished: "Hotovo!"
       time_bomb:
         never: "Nikdy"

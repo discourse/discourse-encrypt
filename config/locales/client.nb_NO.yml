@@ -15,7 +15,8 @@ nb_NO:
         copy_to_clipboard: "Kopier til utklippstavle"
         copied_to_clipboard: "Kopiert til utklippstavle"
       rotate:
-        finished: "Ferdig!"
+        loading_states:
+          finished: "Ferdig!"
       time_bomb:
         never: "Aldri"
         3_minutes: "3 minutter"

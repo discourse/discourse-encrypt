@@ -15,7 +15,8 @@ ko:
         copy_to_clipboard: "클립 보드에 복사"
         copied_to_clipboard: "클립보드로 복사됨"
       rotate:
-        finished: "완료!"
+        loading_states:
+          finished: "완료!"
       time_bomb:
         never: "알림 받지 않기"
         3_minutes: "3분"

@@ -15,7 +15,8 @@ gl:
         copy_to_clipboard: "Copiar ao portapapeis"
         copied_to_clipboard: "Copiado ao portapapeis"
       rotate:
-        finished: "Feito!"
+        loading_states:
+          finished: "Feito!"
       time_bomb:
         never: "Nunca"
         3_minutes: "3 minutos"

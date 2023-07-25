@@ -15,7 +15,8 @@ da:
         copy_to_clipboard: "Kopiér til udklipsholder"
         copied_to_clipboard: "Kopieret til udklipsholder"
       rotate:
-        finished: "Færdig!"
+        loading_states:
+          finished: "Færdig!"
       time_bomb:
         never: "Aldrig"
         3_minutes: "3 minutter"

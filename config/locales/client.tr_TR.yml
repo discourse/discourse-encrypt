@@ -87,11 +87,8 @@ tr_TR:
       rotate:
         title: "Şifreleme Anahtar Çiftini Döndür"
         instructions: "Şifreleme anahtarınızı döndürmek istediğinizden emin misiniz? Bu işlem yeni bir anahtar çifti oluşturur ve tüm kağıt anahtarlar yok edilir. Şifrelenmiş mesajlara erişiminizi kaybetmezsiniz, ancak diğer cihazlarda şifrelemeyi yeniden etkinleştirmeniz gerekir."
-        loading: "Eski konu anahtarları yükleniyor..."
-        rotating: "Anahtarlar döndürülüyor..."
-        saving: "Yeni konu anahtarları kaydediliyor..."
-        updating: "Anahtar güncelleniyor..."
-        finished: "Bitti!"
+        loading_states:
+          finished: "Bitti!"
       reset:
         title: "Şifreli Mesajları Devre Dışı Bırak"
         instructions: "Şifrelenmiş mesajları devre dışı bırakmak ve şifreleme anahtarınızı sıfırlamak istediğinizden emin misiniz? Bu işlem şifreleme anahtarınızı sonsuza kadar siler ve şifrelenmiş özel mesajlarınıza artık erişemezsiniz."

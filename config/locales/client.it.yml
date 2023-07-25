@@ -86,11 +86,8 @@ it:
       rotate:
         title: "Ruota coppia di chiavi di crittografia"
         instructions: "Vuoi ruotare la tua chiave di crittografia? Questo genererà una nuova coppia di chiavi e tutte le chiavi cartacee verranno distrutte. Non perderai l'accesso a nessun messaggio crittografato, ma dovrai riattivare la crittografia su altri dispositivi."
-        loading: "Caricamento chiavi del vecchio argomento..."
-        rotating: "Rotazione delle chiavi..."
-        saving: "Salvataggio chiavi del nuovo argomento..."
-        updating: "Aggiornamento chiave..."
-        finished: "Fatto!"
+        loading_states:
+          finished: "Fatto!"
       reset:
         title: "Disabilita messaggi crittografati"
         instructions: "Vuoi disabilitare i messaggi crittografati e reimpostare la chiave di crittografia? Questa operazione elimina per sempre la tua chiave di crittografia e non sarai più in grado di accedere a nessuno dei tuoi messaggi privati crittografati."

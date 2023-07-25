@@ -86,11 +86,8 @@ de:
       rotate:
         title: "Verschlüsselungs-Schlüsselpaar erneuern"
         instructions: "Bist du sicher, dass du deinen Verschlüsselungsschlüssel erneuern möchtest? Dadurch wird ein neues Schlüsselpaar erzeugt und alle Papierschlüssel werden zerstört. Du verlierst zwar nicht den Zugriff auf verschlüsselte Nachrichten, aber du musst die Verschlüsselung auf anderen Geräten wieder aktivieren."
-        loading: "Alte Themenschlüssel laden …"
-        rotating: "Schlüssel erneuern …"
-        saving: "Neue Themenschlüssel speichern …"
-        updating: "Schlüssel aktualisieren …"
-        finished: "Erledigt!"
+        loading_states:
+          finished: "Erledigt!"
       reset:
         title: "Verschlüsselte Nachrichten deaktivieren"
         instructions: "Möchtest du verschlüsselte Nachrichten wirklich deaktivieren und deinen Verschlüsselungsschlüssel zurücksetzen? Dieser Vorgang löscht deinen Verschlüsselungsschlüssel für immer und du kannst nicht mehr auf deine verschlüsselten privaten Nachrichten zugreifen."

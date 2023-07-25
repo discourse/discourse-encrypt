@@ -15,6 +15,7 @@ bs_BA:
         copy_to_clipboard: "Kopirati u clipboard"
         copied_to_clipboard: "Kopirano u međuspremnik"
       rotate:
-        finished: "Urađeno!"
+        loading_states:
+          finished: "Urađeno!"
       time_bomb:
         never: "Nikad"

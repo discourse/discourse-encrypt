@@ -15,6 +15,7 @@ hy:
         copy_to_clipboard: "Կրկնօրինակել Փոխանակման Հարթակում"
         copied_to_clipboard: "Կրկնօրինակված է Փոխանակման Հարթակում"
       rotate:
-        finished: "Կատարված է!"
+        loading_states:
+          finished: "Կատարված է!"
       time_bomb:
         never: "Երբեք"

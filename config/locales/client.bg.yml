@@ -15,7 +15,8 @@ bg:
         copy_to_clipboard: "Копиране в клипборда"
         copied_to_clipboard: "Копирано в клипборда"
       rotate:
-        finished: "Готово!"
+        loading_states:
+          finished: "Готово!"
       time_bomb:
         never: "Никога"
         3_minutes: "3 минути"

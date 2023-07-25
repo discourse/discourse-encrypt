@@ -15,7 +15,8 @@ vi:
         copy_to_clipboard: "Sao chép vào clipboard"
         copied_to_clipboard: "Sao chép vào Clipboard"
       rotate:
-        finished: "Hoàn tất!"
+        loading_states:
+          finished: "Hoàn tất!"
       time_bomb:
         never: "Không bao giờ"
         3_minutes: "3 phút"

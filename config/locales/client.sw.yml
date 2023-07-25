@@ -15,6 +15,7 @@ sw:
         copy_to_clipboard: "Umenakili kwenye Ubao Nakili"
         copied_to_clipboard: "Umenakili kwenye Ubao Nakili"
       rotate:
-        finished: "Imekwisha!"
+        loading_states:
+          finished: "Imekwisha!"
       time_bomb:
         never: "Kamwe"

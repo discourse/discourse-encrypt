@@ -12,6 +12,7 @@ th:
       manage_paper_keys:
         delete: "ลบ"
       rotate:
-        finished: "เสร็จ!"
+        loading_states:
+          finished: "เสร็จ!"
       time_bomb:
         never: "ไม่เคย"

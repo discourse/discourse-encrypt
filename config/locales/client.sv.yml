@@ -85,11 +85,8 @@ sv:
       rotate:
         title: "Rotera nyckelpar för kryptering"
         instructions: "Är du säker på att du vill rotera din krypteringsnyckel? Detta kommer att generera ett nytt nyckelpar och alla pappersnycklar kommer att förstöras. Du kommer inte att förlora åtkomst till krypterade meddelanden, men du måste återaktivera kryptering på andra enheter."
-        loading: "Laddar gamla ämnesnycklar..."
-        rotating: "Rotera nycklar..."
-        saving: "Sparar nya ämnesnycklar..."
-        updating: "Uppdaterar nyckel..."
-        finished: "Klart!"
+        loading_states:
+          finished: "Klart!"
       reset:
         title: "Inaktivera krypterade meddelanden"
         instructions: "Är du säker på att du vill inaktivera krypterade meddelanden och återställa din krypteringsnyckel? Den här åtgärden raderar din krypteringsnyckel för alltid och du kommer inte att kunna komma åt några av dina krypterade privata meddelanden längre."

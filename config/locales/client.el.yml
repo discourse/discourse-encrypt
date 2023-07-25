@@ -15,7 +15,8 @@ el:
         copy_to_clipboard: "Αντιγραφή στο Clipboard"
         copied_to_clipboard: "Αντιγράφτηκε στο Clipboard"
       rotate:
-        finished: "Ολοκληρώθηκε!"
+        loading_states:
+          finished: "Ολοκληρώθηκε!"
       time_bomb:
         never: "Ποτέ"
         3_minutes: "3 λεπτά"

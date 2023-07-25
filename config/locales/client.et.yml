@@ -15,7 +15,8 @@ et:
         copy_to_clipboard: "Kopeeri lõikelauale"
         copied_to_clipboard: "Kopeeritud lõikelauale"
       rotate:
-        finished: "Tehtud!"
+        loading_states:
+          finished: "Tehtud!"
       time_bomb:
         never: "Mitte kunagi"
         3_minutes: "3 minutit"

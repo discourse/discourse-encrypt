@@ -12,6 +12,7 @@ be:
       manage_paper_keys:
         delete: "выдаліць"
       rotate:
-        finished: "Выканана!"
+        loading_states:
+          finished: "Выканана!"
       time_bomb:
         never: "ніколі"

@@ -15,7 +15,8 @@ hu:
         copy_to_clipboard: "Vágólapra másolás"
         copied_to_clipboard: "Vágólapra másolva"
       rotate:
-        finished: "Kész!"
+        loading_states:
+          finished: "Kész!"
       time_bomb:
         never: "Soha"
         3_minutes: "3 percig"

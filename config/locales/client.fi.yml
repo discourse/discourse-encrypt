@@ -86,11 +86,8 @@ fi:
       rotate:
         title: "Kierrätä salausavainpari"
         instructions: "Oletko varma, että haluat kierrättää salausavaimesi? Tämä luo uuden avainparin, ja kaikki paperiavaimet tuhoutuvat. Et menetä pääsyä salattuihin viesteihin, mutta sinun täytyy aktivoida salaus uudelleen muissa laitteissa."
-        loading: "Ladataan vanhoja ketjuavaimia..."
-        rotating: "Kierrätetään avaimia..."
-        saving: "Tallennetaan uusia ketjuavaimia..."
-        updating: "Päivitetään avainta..."
-        finished: "Valmis!"
+        loading_states:
+          finished: "Valmis!"
       reset:
         title: "Poista salatut viestit käytöstä"
         instructions: "Haluatko varmasti poistaa salatut viestit käytöstä ja palauttaa salausavaimesi? Tämä toiminto poistaa salausavaimesi pysyvästi, eikä sinulla ole enää pääsyä salattuihin yksityisviesteihisi."
