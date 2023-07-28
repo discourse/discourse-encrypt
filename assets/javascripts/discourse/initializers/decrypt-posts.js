@@ -4,10 +4,6 @@ import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import lightbox from "discourse/lib/lightbox";
 import {
-  fetchUnseenHashtags,
-  linkSeenHashtags,
-} from "discourse/lib/link-hashtags";
-import {
   fetchUnseenHashtagsInContext,
   linkSeenHashtagsInContext,
 } from "discourse/lib/hashtag-autocomplete";
@@ -217,29 +213,17 @@ function postProcessPost(siteSettings, site, topicId, post) {
   }
 
   // Paint category and tag hashtags
-  if (siteSettings.enable_experimental_hashtag_autocomplete) {
-    const hashtagContext = site.hashtag_configurations["topic-composer"];
-    const unseenTagHashtags = linkSeenHashtagsInContext(hashtagContext, post);
-    if (unseenTagHashtags.length > 0) {
-      if (!hashtagsQueue) {
-        hashtagsQueue = new DebouncedQueue(500, () =>
-          fetchUnseenHashtagsInContext(hashtagContext, unseenTagHashtags)
-        );
-      }
-      hashtagsQueue.push(...unseenTagHashtags).then(() => {
-        linkSeenHashtagsInContext(hashtagContext, post);
-      });
+  const hashtagContext = site.hashtag_configurations["topic-composer"];
+  const unseenTagHashtags = linkSeenHashtagsInContext(hashtagContext, post);
+  if (unseenTagHashtags.length > 0) {
+    if (!hashtagsQueue) {
+      hashtagsQueue = new DebouncedQueue(500, () =>
+        fetchUnseenHashtagsInContext(hashtagContext, unseenTagHashtags)
+      );
     }
-  } else {
-    const unseenTagHashtags = linkSeenHashtags(post);
-    if (unseenTagHashtags.length > 0) {
-      if (!hashtagsQueue) {
-        hashtagsQueue = new DebouncedQueue(500, fetchUnseenHashtags);
-      }
-      hashtagsQueue.push(...unseenTagHashtags).then(() => {
-        linkSeenHashtags(post);
-      });
-    }
+    hashtagsQueue.push(...unseenTagHashtags).then(() => {
+      linkSeenHashtagsInContext(hashtagContext, post);
+    });
   }
 
   // Resolve short URLs
