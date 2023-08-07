@@ -15,7 +15,7 @@ en:
       integrity_check_skip: "The integrity check for this post was skipped because post has no signature."
       integrity_check_fail: "The integrity check for this post has failed (%{fields} mismatch)."
       integrity_check_warn_updated_at: "Post metadata was updated without being signed again."
-      integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}."
+      integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}. It was likely edited by the former."
 
       encrypted_title: "A secret message"
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
