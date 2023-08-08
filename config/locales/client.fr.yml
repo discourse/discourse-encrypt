@@ -18,7 +18,6 @@ fr:
       integrity_check_skip: "La vérification de l'intégrité de ce message a été ignorée, car le message n'a pas de signature."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (le ou les champs %{fields} ne correspondent pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
-      integrity_check_warn_signed_by: "Ce message a été signé la dernière fois par %{actual}, et non par %{expected}."
       encrypted_title: "Un message secret"
       encrypted_post: "Ceci est un message secret avec un chiffrement de bout en bout. Pour le visualiser, vous devez être invité(e) à participer à ce sujet."
       encrypted_post_email: "Ceci est un message secret avec un chiffrement de bout en bout. Vous devez visiter le sujet pour le visualiser."

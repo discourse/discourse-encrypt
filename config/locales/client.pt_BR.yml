@@ -18,7 +18,6 @@ pt_BR:
       integrity_check_skip: "A verificação de integridade para esta postagem foi ignorada porque a postagem não tem assinatura."
       integrity_check_fail: "A verificação de integridade para esta postagem fracassou (incompatibilidade de %{fields})"
       integrity_check_warn_updated_at: "Os metadados da publicação foram atualizados sem ser assinados novamente."
-      integrity_check_warn_signed_by: "Esta postagem foi assinada pela última vez por %{actual}, não %{expected}."
       encrypted_title: "Uma mensagem secreta"
       encrypted_post: "Esta é uma mensagem secreta com criptografia ponta a ponta. Para visualizar, você deve receber convite para este tópico."
       encrypted_post_email: "Esta é uma mensagem secreta com criptografia ponta a ponta. Você deve acessar o tópico para visualizá-la."

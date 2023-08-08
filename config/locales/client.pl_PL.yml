@@ -9,10 +9,16 @@ pl_PL:
     encrypt:
       title: "Zaszyfrowane wiadomości"
       decrypting: "Odszyfrowywanie ..."
+      missing_topic_key: "Nie można odszyfrować tej wiadomości, ponieważ nie masz klucza tematu dla tej wiadomości. Czy zostałeś zaproszony do tego tematu?"
+      invalid_ciphertext: "Nie można odszyfrować tej wiadomości, ponieważ szyfrogram tej wiadomości jest nieprawidłowy."
+      invalid_topic_key: "Nie można odszyfrować tej wiadomości, ponieważ klucz tematu jest nieprawidłowy."
+      invalid_identity: "Nie można odszyfrować tej wiadomości, ponieważ tożsamość użytkownika jest nieprawidłowa."
+      no_backup_warn: "Szyfrowanie jest włączone na Twoim koncie, ale nie wygenerowałeś jeszcze żadnych papierowych kluczy. Bez papierowych kluczy ryzykujesz utratę dostępu do zaszyfrowanych wiadomości. Aby wygenerować papierowy klucz, przejdź do <a href='%{basePath}/my/preferences/security'>swojej strony preferencji bezpieczeństwa</a>, naciśnij przycisk <kbd>Generuj papierowy klucz</kbd> i postępuj zgodnie z instrukcjami."
       integrity_check_pass: "Sprawdzanie integralności tego postu zakończyło się pomyślnie."
+      integrity_check_skip: "Sprawdzanie integralności tego posta zostało pominięte, ponieważ post nie ma podpisu."
       integrity_check_fail: "Sprawdzanie integralności tego postu nie powiodło się (%{fields} niezgodności)."
       integrity_check_warn_updated_at: "Metadane postu zostały zaktualizowane bez ponownego podpisywania."
-      integrity_check_warn_signed_by: "Ten post został ostatnio podpisany przez %{actual}, a nie %{expected}."
+      integrity_check_warn_signed_by: "Ten post został ostatnio podpisany przez %{actual}, a nie %{expected}. Prawdopodobnie został edytowany przez tego pierwszego."
       encrypted_title: "Tajna wiadomość"
       encrypted_post: "To jest tajna wiadomość z szyfrowaniem end-to-end. Aby ją zobaczyć, musisz zostać zaproszony do tego tematu."
       encrypted_post_email: "To jest tajna wiadomość z szyfrowaniem end-to-end. Musisz odwiedzić temat, aby go wyświetlić."
@@ -25,8 +31,14 @@ pl_PL:
       checkbox:
         checked: "Ta wiadomość będzie zaszyfrowana end-to-end."
         unchecked: "Kliknij symbol kłódki, aby zaszyfrować tę wiadomość."
+      post:
+        delete:
+          title: "Jesteś pewny(a)?"
+          confirm: "Zawartość zostanie całkowicie usunięta, nie będzie możliwości jej przywrócenia."
       composer:
         no_topic_key: "Nie możesz szyfrować wiadomości w tym temacie."
+        user_has_no_key: "%{username} nie włączył(a) zaszyfrowanych wiadomości."
+        group_not_allowed: "Nie możesz wysyłać zaszyfrowanych wiadomości do grup."
         confirm:
           message: "%{error} Czy chcesz kontynuować?"
           no_value: "Nie, wróć"
@@ -43,25 +55,53 @@ pl_PL:
         paper_key_placeholder: "DWANAŚCIE SŁÓW ..."
         paper_key_invalid: "Wprowadzony klucz papierowy jest nieprawidłowy."
         key_pair_invalid: "Wprowadzona para kluczy jest nieprawidłowa."
+        notice_active: |
+          <p>Wpisz klucz papierowy lub użyj innego urządzenia, aby go aktywować. Nie zapomnij o spacjach między wyrazami.</p>
         notice_import: |
           <p>Wklej wcześniej wyeksportowany klucz szyfrowania.</p>
+        activate: "Aktywuj zaszyfrowane wiadomości"
+        deactivate: "Dezaktywuj to urządzenie"
+        enable: "Włącz zaszyfrowane wiadomości"
+        import: "Importuj parę kluczy szyfrowania"
+        use_paper_key: "Użyj klucza papierowego"
+        generate_key: "Wygeneruj nową parę kluczy"
+        encrypt_pms_default: "Domyślnie zaszyfruj wszystkie nowe prywatne wiadomości"
         save: "Zapisz zmiany"
       generate_paper_key:
+        title: "Wygeneruj papierowy klucz"
+        title_device: "Aktywuj inne urządzenie"
         instructions: "Oto Twój unikalny papierowy klucz, który może umożliwić aktywację zaszyfrowanych urządzeń w przyszłości. To jedyny raz, kiedy go zobaczysz, więc zapisz swój klucz i przechowuj w bezpiecznym miejscu."
+        instructions_device: "Na drugim urządzeniu przejdź do preferencji i użyj następującego klucza papierowego, aby aktywować szyfrowanie:"
       manage_paper_keys:
+        title: "Zarządzaj papierowymi kluczami"
         instructions: "Poniżej możesz usunąć dowolny z wcześniej wygenerowanych kluczy papierowych. Po usunięciu klucza papierowego nie można odzyskać, więc upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         delete: "Usuń"
         no_key: "Nie masz papierowych kluczy. Upewnij się, że masz co najmniej jeden klucz papierowy lub inne aktywne urządzenia."
         passphrase: "oparte na hasłach"
         not_recommended: "(nie zalecane)"
       export:
+        title: "Eksportuj parę kluczy szyfrowania"
         instructions: "Eksportowanie pary kluczy to kolejny mechanizm tworzenia kopii zapasowych. Pamiętaj, że wyeksportowana para kluczy nie jest chroniona i może odszyfrować wszystkie prywatne rozmowy."
         copy_to_clipboard: "Skopiuj do schowka"
         copied_to_clipboard: "Tekst skopiowany do schowka."
       rotate:
+        title: "Regeneruj parę kluczy szyfrowania"
+        instructions: "Czy na pewno chcesz zmienić klucz szyfrowania? Spowoduje to wygenerowanie nowej pary kluczy, a wszystkie klucze papierowe zostaną zniszczone. Nie utracisz dostępu do żadnych zaszyfrowanych wiadomości, ale będziesz musiał ponownie aktywować szyfrowanie na innych urządzeniach."
         loading_states:
+          fetching: "Ładowanie starych kluczy tematu…"
+          rotating: "Regenerowanie kluczy..."
+          saving: "Zapisywanie nowych kluczy tematu…"
+          updating: "Aktualizowanie klucza…"
           finished: "Gotowe!"
       reset:
+        title: "Wyłącz zaszyfrowane wiadomości"
+        instructions: "Czy na pewno chcesz wyłączyć zaszyfrowane wiadomości i zresetować klucz szyfrowania? Ta operacja usuwa klucz szyfrowania na zawsze i nie będzie już można uzyskać dostępu do żadnych zaszyfrowanych wiadomości prywatnych."
+        instructions_lost_pms:
+          one: "Nastąpi <strong>trwała</strong> utrata dostępu do %{count} zaszyfrowanej wiadomości."
+          few: "Nastąpi <strong>trwała</strong> utrata dostępu do %{count} zaszyfrowanych wiadomości."
+          many: "Nastąpi <strong>trwała</strong> utrata dostępu do %{count} zaszyfrowanych wiadomości."
+          other: "Nastąpi <strong>trwała</strong> utrata dostępu do %{count} zaszyfrowanych wiadomości."
+        instructions_safe: "Czy na pewno chcesz wyłączyć zaszyfrowane wiadomości i zresetować klucz szyfrowania? Możesz ponownie włączyć zaszyfrowane wiadomości, generując nową parę kluczy."
         confirm_instructions: "Wpisz <code>%{username}</code>, aby potwierdzić:"
       time_bomb:
         title: "Ta wiadomość zostanie trwale usunięta po %{after}"

@@ -15,3 +15,5 @@ pl_PL:
     auto_enable_encrypt: "Automatycznie włącz szyfrowanie dla wszystkich zalogowanych użytkowników."
     encrypt_groups: "Nazwy grup, które mogą używać szyfrowania (puste oznacza wszystkich)."
     encrypt_pms_default: "Domyślnie szyfruj wszystkie nowe wiadomości prywatne."
+    errors:
+      encrypt_unsafe_csp: "Niebezpieczne dyrektywy CSP, takie jak 'unsafe-eval' i 'unsafe-inline', nie mogą być używane, gdy wtyczka Discourse Encrypt jest włączona. "

@@ -18,7 +18,6 @@ tr_TR:
       integrity_check_skip: "Bu gönderi için bütünlük kontrolü atlandı çünkü gönderinin imzası yok."
       integrity_check_fail: "Bu gönderi için bütünlük kontrolü başarısız oldu (%{fields} uyuşmazlığı)."
       integrity_check_warn_updated_at: "Gönderi meta verileri tekrar imzalanmadan güncellendi."
-      integrity_check_warn_signed_by: "Bu gönderi en son %{actual} tarafından imzalandı, %{expected} tarafından değil."
       encrypted_title: "Gizli bir mesaj"
       encrypted_post: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için bu konuya davet edilmiş olmanız gerekiyor."
       encrypted_post_email: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için konuyu ziyaret etmelisiniz."

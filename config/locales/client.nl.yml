@@ -18,7 +18,6 @@ nl:
       integrity_check_skip: "De integriteitscontrole voor dit bericht is overgeslagen omdat het bericht geen handtekening heeft."
       integrity_check_fail: "De integriteitscontrole voor dit bericht is mislukt (geen overeenkomst voor %{fields})."
       integrity_check_warn_updated_at: "Metagegevens van bericht bijgewerkt zonder hernieuwde ondertekening."
-      integrity_check_warn_signed_by: "Dit bericht is het laatst ondertekend door %{actual}, niet %{expected}."
       encrypted_title: "Een geheim bericht"
       encrypted_post: "Dit is een geheim bericht met end-to-end versleuteling. Je moet voor dit topic zijn uitgenodigd om het te bekijken."
       encrypted_post_email: "Dit is een geheim bericht met end-to-end versleuteling. Je moet het topic bezoeken om het te bekijken."
