@@ -18,7 +18,6 @@ ja:
       integrity_check_skip: "統合に署名がないため、この投稿の整合性チェックはスキップされました。"
       integrity_check_fail: "この投稿の整合性チェックに失敗しました（不一致 %{fields}）。"
       integrity_check_warn_updated_at: "投稿メタデータは再度署名されずに更新されました。"
-      integrity_check_warn_signed_by: "この投稿は最後に %{expected} ではなく %{actual} で署名されました。"
       encrypted_title: "シークレットメッセージ"
       encrypted_post: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、このトピックに招待されている必要があります。"
       encrypted_post_email: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、トピックにアクセスする必要があります。"

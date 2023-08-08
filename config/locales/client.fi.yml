@@ -18,7 +18,6 @@ fi:
       integrity_check_skip: "Tämän viestin eheystarkistus ohitettiin, koska viestissä ei ole allekirjoitusta."
       integrity_check_fail: "Tämän viestin eheystarkastus epäonnistui (%{fields} ei täsmää)."
       integrity_check_warn_updated_at: "Viestin metatiedot päivitettiin ilman allekirjoittamista."
-      integrity_check_warn_signed_by: "Tämän viestin on allekirjoittanut viimeksi %{actual}, ei %{expected}."
       encrypted_title: "Salainen viesti"
       encrypted_post: "Tämä on salainen viesti päästä päähän -salauksella. Sinut täytyy kutsua tähän ketjuun, jotta voit katsoa sen."
       encrypted_post_email: "Tämä on salainen viesti päästä päähän -salauksella. Sinun täytyy vierailla ketjussa, jotta voit katsoa sen."

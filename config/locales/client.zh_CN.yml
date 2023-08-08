@@ -18,7 +18,6 @@ zh_CN:
       integrity_check_skip: "由于帖子没有签名，跳过了此帖子的完整性检查。"
       integrity_check_fail: "此帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据已更新，无需再次签名。"
-      integrity_check_warn_signed_by: "此帖子最后由 %{actual} 而不是 %{expected} 签名。"
       encrypted_title: "一条私密消息"
       encrypted_post: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"
       encrypted_post_email: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"

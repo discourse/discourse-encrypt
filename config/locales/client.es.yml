@@ -18,7 +18,6 @@ es:
       integrity_check_skip: "La comprobación de la integridad de esta entrada se ha omitido porque la entrada no tiene firma."
       integrity_check_fail: "La comprobación de integridad de esta publicación ha fallado (%{fields} no coinciden)."
       integrity_check_warn_updated_at: "Los metadatos de la publicación se actualizaron sin volver a firmarse."
-      integrity_check_warn_signed_by: "Esta publicación fue firmada por última vez por %{actual}, no por %{expected}."
       encrypted_title: "Un mensaje secreto"
       encrypted_post: "Este es un mensaje secreto con cifrado de extremo a extremo. Para verlo, debes estar invitado a este tema."
       encrypted_post_email: "Este es un mensaje secreto con cifrado de extremo a extremo. Debes visitar el tema para verlo."
