@@ -45,16 +45,21 @@ export default class RotateKeyPair extends Component {
       ]);
       this.loadingState = "rotating";
 
-      // Rotating signatures will invalidate all previous signatures.
-      newIdentity.signPublic = oldIdentity.signPublic;
-      newIdentity.signPrivate = oldIdentity.signPrivate;
+      // Don't rotate signatures because that will invalidate all previous
+      // signatures.
+      // When the old identity is v0, there's no keypair for signing, so don't
+      // overwrite the new identity's signing keypair with nothing (undefined)
+      if (oldIdentity.signPublic && oldIdentity.signPrivate) {
+        newIdentity.signPublic = oldIdentity.signPublic;
+        newIdentity.signPrivate = oldIdentity.signPrivate;
+      }
 
       const topicKeys = {};
       // eslint-disable-next-line no-restricted-globals
       await Promise.all(
         Object.entries(data.topic_keys).map(async ([topicId, topicKey]) => {
           const key = await importKey(topicKey, oldIdentity.encryptPrivate);
-          topicKeys[topicId] = exportKey(key, newIdentity.encryptPublic);
+          topicKeys[topicId] = await exportKey(key, newIdentity.encryptPublic);
         })
       );
 
