@@ -18,6 +18,7 @@ fr:
       integrity_check_skip: "La vérification de l'intégrité de ce message a été ignorée, car le message n'a pas de signature."
       integrity_check_fail: "La vérification d'intégrité pour ce message a échoué (le ou les champs %{fields} ne correspondent pas)."
       integrity_check_warn_updated_at: "Les métadonnées du message ont été mises à jour sans avoir été signées à nouveau."
+      integrity_check_warn_signed_by: "Ce message a été signé pour la dernière fois par %{actual}, et non par %{expected}. Il a probablement été édité par le premier utilisateur."
       encrypted_title: "Un message secret"
       encrypted_post: "Ceci est un message secret avec un chiffrement de bout en bout. Pour le visualiser, vous devez être invité(e) à participer à ce sujet."
       encrypted_post_email: "Ceci est un message secret avec un chiffrement de bout en bout. Vous devez visiter le sujet pour le visualiser."
@@ -64,6 +65,7 @@ fr:
         import: "Importer une paire de clés de chiffrement"
         use_paper_key: "Utiliser une clé papier"
         generate_key: "Générer une nouvelle paire de clés"
+        encrypt_pms_default: "Chiffrez tous les nouveaux messages personnels par défaut"
         save: "Enregistrer les modifications"
       generate_paper_key:
         title: "Générer une clé papier"
@@ -86,6 +88,10 @@ fr:
         title: "Remplacer la paire de clés de chiffrement"
         instructions: "Voulez-vous vraiment remplacer votre clé de chiffrement ? Cette opération générera une nouvelle paire de clés et toutes les clés papier seront détruites. Vous ne perdrez pas l'accès aux messages chiffrés, mais vous devrez réactiver le chiffrement sur vos autres appareils."
         loading_states:
+          fetching: "Chargement des anciennes clés de sujet…"
+          rotating: "Remplacement des clés…"
+          saving: "Enregistrement des nouvelles clés de sujet…"
+          updating: "Mise à jour de la clé…"
           finished: "Terminé !"
       reset:
         title: "Désactiver les messages chiffrés"

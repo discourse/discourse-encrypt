@@ -18,6 +18,7 @@ zh_CN:
       integrity_check_skip: "由于帖子没有签名，跳过了此帖子的完整性检查。"
       integrity_check_fail: "此帖子的完整性检查失败（%{fields}不匹配）。"
       integrity_check_warn_updated_at: "帖子元数据已更新，无需再次签名。"
+      integrity_check_warn_signed_by: "此帖子最后由 %{actual} 而不是 %{expected} 签名。它很可能是由前者编辑的。"
       encrypted_title: "一条私密消息"
       encrypted_post: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"
       encrypted_post_email: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"
@@ -64,6 +65,7 @@ zh_CN:
         import: "导入加密密钥对"
         use_paper_key: "使用纸质密钥"
         generate_key: "生成新的密钥对"
+        encrypt_pms_default: "默认加密所有新的个人消息"
         save: "保存变更"
       generate_paper_key:
         title: "生成纸质密钥"
@@ -86,6 +88,10 @@ zh_CN:
         title: "轮换加密密钥对"
         instructions: "确定要轮换您的加密密钥吗？此操作将生成一个新的密钥对，并且所有纸质密钥都将被销毁。您不会失去对任何加密消息的访问权限，但您必须在其他设备上重新激活加密。"
         loading_states:
+          fetching: "正在加载旧的话题密钥…"
+          rotating: "正在轮换密钥…"
+          saving: "正在保存新的话题密钥…"
+          updating: "正在更新密钥…"
           finished: "完成！"
       reset:
         title: "禁用加密消息"

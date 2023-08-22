@@ -18,6 +18,7 @@ ja:
       integrity_check_skip: "統合に署名がないため、この投稿の整合性チェックはスキップされました。"
       integrity_check_fail: "この投稿の整合性チェックに失敗しました（不一致 %{fields}）。"
       integrity_check_warn_updated_at: "投稿メタデータは再度署名されずに更新されました。"
+      integrity_check_warn_signed_by: "この投稿を最後に署名したのは %{expected} ではなく %{actual} です。前者によって編集された可能性があります。"
       encrypted_title: "シークレットメッセージ"
       encrypted_post: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、このトピックに招待されている必要があります。"
       encrypted_post_email: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、トピックにアクセスする必要があります。"
@@ -64,6 +65,7 @@ ja:
         import: "暗号化キーペアをインポート"
         use_paper_key: "ペーパーキーを使用"
         generate_key: "新しいキーペアを生成"
+        encrypt_pms_default: "デフォルトですべての個人メッセージを暗号化する"
         save: "変更を保存"
       generate_paper_key:
         title: "ペーパーキーの生成"
@@ -86,6 +88,10 @@ ja:
         title: "暗号化キーペアのローテーション"
         instructions: "暗号化キーをローテーションしてもよろしいですか？これにより、新しいキーペアが生成され、すべてのペーパーキーは破棄されます。暗号化メッセージへのアクセスは失われませんが、別のデバイスで暗号化を再度アクティブ化する必要があります。"
         loading_states:
+          fetching: "古いトピックキーを読み込み中…"
+          rotating: "キーをローテーション中…"
+          saving: "新しいトピックキーを保存中…"
+          updating: "キーを更新中…"
           finished: "完了！"
       reset:
         title: "暗号化メッセージの無効化"

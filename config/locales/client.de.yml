@@ -18,6 +18,7 @@ de:
       integrity_check_skip: "Die Integritätsprüfung für diesen Beitrag wurde übersprungen, weil der Beitrag keine Signatur hat."
       integrity_check_fail: "Die Integritätsprüfung für diesen Beitrag ist fehlgeschlagen (%{fields} stimmt nicht überein)."
       integrity_check_warn_updated_at: "Die Metadaten des Beitrags wurden aktualisiert, ohne erneut signiert zu werden."
+      integrity_check_warn_signed_by: "Dieser Beitrag wurde zuletzt von %{actual} und nicht von %{expected} signiert. Er wurde wahrscheinlich von erstgenannter Person bearbeitet."
       encrypted_title: "Eine geheime Nachricht"
       encrypted_post: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Um sie anzuzeigen, musst du zu diesem Thema eingeladen sein."
       encrypted_post_email: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Du musst dieses Thema besuchen, um sie anzuzeigen."
@@ -64,6 +65,7 @@ de:
         import: "Verschlüsselungs-Schlüsselpaar importieren"
         use_paper_key: "Papierschlüssel verwenden"
         generate_key: "Neues Schlüsselpaar generieren"
+        encrypt_pms_default: "Neue persönliche Nachrichten standardmäßig verschlüsseln"
         save: "Änderungen speichern"
       generate_paper_key:
         title: "Papierschlüssel generieren"
@@ -86,6 +88,10 @@ de:
         title: "Verschlüsselungs-Schlüsselpaar erneuern"
         instructions: "Bist du sicher, dass du deinen Verschlüsselungsschlüssel erneuern möchtest? Dadurch wird ein neues Schlüsselpaar erzeugt und alle Papierschlüssel werden zerstört. Du verlierst zwar nicht den Zugriff auf verschlüsselte Nachrichten, aber du musst die Verschlüsselung auf anderen Geräten wieder aktivieren."
         loading_states:
+          fetching: "Alte Themenschlüssel laden …"
+          rotating: "Schlüssel erneuern …"
+          saving: "Neue Themenschlüssel speichern …"
+          updating: "Schlüssel aktualisieren …"
           finished: "Erledigt!"
       reset:
         title: "Verschlüsselte Nachrichten deaktivieren"

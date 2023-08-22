@@ -18,6 +18,7 @@ it:
       integrity_check_skip: "Il controllo di integrità per questo messaggio è stato ignorato perché il messaggio non ha firma."
       integrity_check_fail: "Il controllo di integrità per questo messaggio è fallito (%{fields} mancata corrispondenza)."
       integrity_check_warn_updated_at: "I metadati del messaggio sono stati aggiornati senza essere firmati nuovamente."
+      integrity_check_warn_signed_by: "Questo messaggio è stato firmato l'ultima volta da %{actual}, non da %{expected}. Probabilmente è stato modificato dalla prima persona."
       encrypted_title: "Un messaggio segreto"
       encrypted_post: "Questo è un messaggio segreto con crittografia end to end. Per poterlo vedere, devi essere invitato a questo argomento."
       encrypted_post_email: "Questo è un messaggio segreto con crittografia end to end. Per poterlo vedere devi visitare questo argomento."
@@ -64,6 +65,7 @@ it:
         import: "Importa coppia di chiavi di crittografia"
         use_paper_key: "Usa chiave cartacea"
         generate_key: "Genera nuova coppia di chiavi"
+        encrypt_pms_default: "Applica crittografia a tutti i nuovi messaggi personali per impostazione predefinita"
         save: "Salva Modifiche"
       generate_paper_key:
         title: "Genera chiave cartacea"
@@ -86,6 +88,10 @@ it:
         title: "Ruota coppia di chiavi di crittografia"
         instructions: "Vuoi ruotare la tua chiave di crittografia? Questo genererà una nuova coppia di chiavi e tutte le chiavi cartacee verranno distrutte. Non perderai l'accesso a nessun messaggio crittografato, ma dovrai riattivare la crittografia su altri dispositivi."
         loading_states:
+          fetching: "Caricamento chiavi del vecchio argomento…"
+          rotating: "Rotazione delle chiavi…"
+          saving: "Salvataggio chiavi del nuovo argomento…"
+          updating: "Aggiornamento chiave…"
           finished: "Fatto!"
       reset:
         title: "Disabilita messaggi crittografati"
