@@ -18,6 +18,7 @@ tr_TR:
       integrity_check_skip: "Bu gönderi için bütünlük kontrolü atlandı çünkü gönderinin imzası yok."
       integrity_check_fail: "Bu gönderi için bütünlük kontrolü başarısız oldu (%{fields} uyuşmazlığı)."
       integrity_check_warn_updated_at: "Gönderi meta verileri tekrar imzalanmadan güncellendi."
+      integrity_check_warn_signed_by: "Bu gönderi en son %{actual} tarafından imzalandı, %{expected} tarafından değil. Muhtemelen önceki kişi tarafından düzenlendi."
       encrypted_title: "Gizli bir mesaj"
       encrypted_post: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için bu konuya davet edilmiş olmanız gerekiyor."
       encrypted_post_email: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için konuyu ziyaret etmelisiniz."
@@ -82,11 +83,15 @@ tr_TR:
         title: "Şifreleme Anahtar Çiftini Dışa Aktar"
         instructions: "Anahtar çiftinizi dışa aktarmak başka bir yedekleme mekanizmasıdır. Lütfen dışa aktarılan anahtar çiftinin korumasız olduğunu ve tüm özel konuşmalarınızın şifresini çözebileceğini unutmayın."
         copy_to_clipboard: "Panoya kopyala"
-        copied_to_clipboard: "Panoya Kopyalandı"
+        copied_to_clipboard: "Panoya kopyalandı"
       rotate:
         title: "Şifreleme Anahtar Çiftini Döndür"
         instructions: "Şifreleme anahtarınızı döndürmek istediğinizden emin misiniz? Bu işlem yeni bir anahtar çifti oluşturur ve tüm kağıt anahtarlar yok edilir. Şifrelenmiş mesajlara erişiminizi kaybetmezsiniz, ancak diğer cihazlarda şifrelemeyi yeniden etkinleştirmeniz gerekir."
         loading_states:
+          fetching: "Eski konu anahtarları yükleniyor…"
+          rotating: "Anahtarlar döndürülüyor…"
+          saving: "Yeni konu anahtarları kaydediliyor…"
+          updating: "Anahtar güncelleniyor…"
           finished: "Bitti!"
       reset:
         title: "Şifreli Mesajları Devre Dışı Bırak"
