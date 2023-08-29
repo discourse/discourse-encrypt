@@ -18,6 +18,7 @@ fi:
       integrity_check_skip: "Tämän viestin eheystarkistus ohitettiin, koska viestissä ei ole allekirjoitusta."
       integrity_check_fail: "Tämän viestin eheystarkastus epäonnistui (%{fields} ei täsmää)."
       integrity_check_warn_updated_at: "Viestin metatiedot päivitettiin ilman allekirjoittamista."
+      integrity_check_warn_signed_by: "Tämän viestin on viimeksi allekirjoittanut %{actual}, ei %{expected}. Ensiksi mainittu on todennäköisesti muokannut sitä."
       encrypted_title: "Salainen viesti"
       encrypted_post: "Tämä on salainen viesti päästä päähän -salauksella. Sinut täytyy kutsua tähän ketjuun, jotta voit katsoa sen."
       encrypted_post_email: "Tämä on salainen viesti päästä päähän -salauksella. Sinun täytyy vierailla ketjussa, jotta voit katsoa sen."
@@ -64,6 +65,7 @@ fi:
         import: "Tuo salausavainpari"
         use_paper_key: "Käytä paperiavainta"
         generate_key: "Luo uusi avainpari"
+        encrypt_pms_default: "Salaa kaikki uudet yksityisviestit oletuksena"
         save: "Tallenna muutokset"
       generate_paper_key:
         title: "Luo paperiavain"
@@ -86,6 +88,10 @@ fi:
         title: "Kierrätä salausavainpari"
         instructions: "Oletko varma, että haluat kierrättää salausavaimesi? Tämä luo uuden avainparin, ja kaikki paperiavaimet tuhoutuvat. Et menetä pääsyä salattuihin viesteihin, mutta sinun täytyy aktivoida salaus uudelleen muissa laitteissa."
         loading_states:
+          fetching: "Ladataan vanhoja ketjuavaimia…"
+          rotating: "Kierrätetään avaimia…"
+          saving: "Tallennetaan uusia ketjuavaimia…"
+          updating: "Päivitetään avainta…"
           finished: "Valmis!"
       reset:
         title: "Poista salatut viestit käytöstä"
