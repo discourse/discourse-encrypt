@@ -468,7 +468,7 @@ export default {
 
           const cooked = await cookAsync(plaintext.raw);
           state.encryptState = "decrypted";
-          state.plaintext = cooked.string;
+          state.plaintext = cooked.toString();
           this.scheduleRerender();
         } catch (error) {
           const store = getOwner(this).lookup("service:encrypt-widget-store");
