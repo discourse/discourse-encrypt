@@ -20,14 +20,17 @@
             @topicDeleteAt={{this.model.topic.delete_at}}
             @onChange={{action "timerClicked"}}
           />
-          <span
-            title={{i18n
-              "encrypt.time_bomb.title"
-              after=this.model.deleteAfterMinutesLabel
-            }}
-          >
-            {{this.model.deleteAfterMinutesLabel}}
-          </span>
+
+          {{#if this.model.deleteAfterMinutesLabel}}
+            <span
+              title={{i18n
+                "encrypt.time_bomb.title"
+                after=this.model.deleteAfterMinutesLabel
+              }}
+            >
+              {{this.model.deleteAfterMinutesLabel}}
+            </span>
+          {{/if}}
         {{/unless}}
       {{/if}}
 
