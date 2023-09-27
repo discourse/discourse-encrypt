@@ -313,7 +313,7 @@ export default {
 
     getTopicTitle(topicId).then((topicTitle) => {
       // Update fancy title stored in model
-      topicController.model.set("fancy_title", topicTitle);
+      topicController.model.set("fancy_title", escapeExpression(topicTitle));
 
       // Update document title
       const documentTitle = this.container.lookup("service:document-title");
