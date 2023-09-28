@@ -207,11 +207,14 @@ function setupEncryptTests(needs) {
   });
 }
 
-async function setupEncryptedTopicPretender(server, { identity } = {}) {
+async function setupEncryptedTopicPretender(
+  server,
+  { identity, topicTitle = "Top Secret Title" } = {}
+) {
   identity = identity || (await getIdentity());
   const topicKey = await generateKey();
   const exportedTopicKey = await exportKey(topicKey, identity.encryptPublic);
-  const encryptedTitle = await encrypt(topicKey, { raw: "Top Secret Title" });
+  const encryptedTitle = await encrypt(topicKey, { raw: topicTitle });
   const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
 
   server.get("/t/42.json", () => {
@@ -842,6 +845,20 @@ acceptance("Encrypt - active", function (needs) {
     await click(".private_message.encrypted h1[data-topic-id] .edit-topic");
 
     assert.strictEqual(query("#edit-title").value.trim(), "Top Secret Title");
+  });
+
+  test("viewing encrypted topic escapes title correctly", async function (assert) {
+    globalAssert = assert;
+
+    const title = "Title <a>with some html chars</a>";
+    await setupEncryptedTopicPretender(pretender, { topicTitle: title });
+
+    await visit("/t/a-secret-message/42");
+
+    assert
+      .dom(".fancy-title")
+      .hasText(title, "Title in UI is escaped correctly");
+    assert.strictEqual(document.title, `${title} - QUnit Discourse Tests`);
   });
 
   test("topic titles in notification panel are decrypted", async function (assert) {
