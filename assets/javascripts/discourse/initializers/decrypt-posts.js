@@ -13,7 +13,7 @@ import {
 } from "discourse/lib/link-mentions";
 import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { cookAsync } from "discourse/lib/text";
+import { cook } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import DebouncedQueue from "discourse/plugins/discourse-encrypt/lib/debounced-queue";
@@ -465,7 +465,7 @@ export default {
             verified[attrs.id] = null;
           }
 
-          const cooked = await cookAsync(plaintext.raw);
+          const cooked = await cook(plaintext.raw);
           state.encryptState = "decrypted";
           state.plaintext = cooked.toString();
           this.scheduleRerender();
