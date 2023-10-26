@@ -32,7 +32,6 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { downloadEncryptedFile } from "discourse/plugins/discourse-encrypt/lib/uploads";
 import I18n from "I18n";
-import { ATTACHMENT_CSS_CLASS } from "pretty-text/engines/discourse-markdown-it";
 import {
   MISSING,
   lookupCachedUploadUrl,
@@ -143,7 +142,7 @@ function resolveShortUrlElement($el) {
     $el.attr("href", url);
 
     const isEncrypted = $el.data("key") || $el.text().endsWith(".encrypted");
-    if (!isEncrypted || !$el.hasClass(ATTACHMENT_CSS_CLASS)) {
+    if (!isEncrypted || !$el.hasClass("attachment")) {
       return;
     }
 
