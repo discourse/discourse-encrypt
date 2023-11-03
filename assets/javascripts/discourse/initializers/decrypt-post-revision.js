@@ -1,5 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { cookAsync } from "discourse/lib/text";
+import { cook } from "discourse/lib/text";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -36,9 +36,9 @@ export default {
               .then(([previous, current]) =>
                 Promise.all([
                   previous.raw,
-                  cookAsync(previous.raw),
+                  cook(previous.raw),
                   current.raw,
-                  cookAsync(current.raw),
+                  cook(current.raw),
                 ])
               )
               .then(([prevRaw, prevCooked, currRaw, currCooked]) => {
