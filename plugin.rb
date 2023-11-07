@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-encrypt
-# about: Provides encrypted communication channels through Discourse.
+# about: Provides private, encrypted messaging between end-users.
+# meta_topic_id: 107918
 # version: 1.0
 # authors: Dan Ungureanu
 # url: https://github.com/discourse/discourse-encrypt
