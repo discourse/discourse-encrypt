@@ -215,7 +215,14 @@ async function setupEncryptedTopicPretender(
   const topicKey = await generateKey();
   const exportedTopicKey = await exportKey(topicKey, identity.encryptPublic);
   const encryptedTitle = await encrypt(topicKey, { raw: topicTitle });
-  const encryptedRaw = await encrypt(topicKey, { raw: "Top Secret Post" });
+  const encryptedRaw = await encrypt(
+    topicKey,
+    {
+      raw: "Top Secret Post",
+      signed_by_name: "eviltrout",
+    },
+    { signKey: identity.signPrivate }
+  );
 
   server.get("/t/42.json", () => {
     return [
@@ -845,6 +852,28 @@ acceptance("Encrypt - active", function (needs) {
     await click(".private_message.encrypted h1[data-topic-id] .edit-topic");
 
     assert.strictEqual(query("#edit-title").value.trim(), "Top Secret Title");
+  });
+
+  test("viewing encrypted topic works when user was renamed/deleted", async function (assert) {
+    globalAssert = assert;
+
+    await setupEncryptedTopicPretender(pretender);
+    pretender.get("/encrypt/user", (request, helper) => {
+      return response({});
+    });
+
+    await visit("/t/a-secret-message/42");
+
+    assert.strictEqual(
+      query(".fancy-title").innerText.trim(),
+      "Top Secret Title"
+    );
+    assert.strictEqual(query(".cooked").innerText.trim(), "Top Secret Post");
+    assert.strictEqual(
+      document.title,
+      "Top Secret Title - QUnit Discourse Tests"
+    );
+    assert.ok(exists(".private_message.encrypted"), "encrypted class is added");
   });
 
   test("viewing encrypted topic escapes title correctly", async function (assert) {

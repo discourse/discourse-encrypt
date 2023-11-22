@@ -429,14 +429,15 @@ export default {
               userIdentitiesQueues = new DebouncedQueue(500, getUserIdentities);
             }
 
-            const ids = await userIdentitiesQueues.push(
-              plaintext.signed_by_name
-            );
-            const userIdentity = ids[plaintext.signed_by_name];
-
-            verified[attrs.id] = checkMetadata(attrs, plaintext);
-
             try {
+              const ids = await userIdentitiesQueues.push(
+                plaintext.signed_by_name
+              );
+
+              const userIdentity = ids[plaintext.signed_by_name];
+
+              verified[attrs.id] = checkMetadata(attrs, plaintext);
+
               const result = await verify(
                 userIdentity.signPublic,
                 plaintext,
