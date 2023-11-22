@@ -8,13 +8,15 @@ export default class DebouncedQueue {
     this.queue = null;
     this.promise = null;
     this.resolve = null;
+    this.reject = null;
   }
 
   push(...items) {
     if (!this.queue) {
       this.queue = [];
-      this.promise = new Promise((resolve) => {
+      this.promise = new Promise((resolve, reject) => {
         this.resolve = resolve;
+        this.reject = reject;
       });
       discourseDebounce(this, this.pop, this.wait);
     }
@@ -25,7 +27,7 @@ export default class DebouncedQueue {
 
   pop() {
     const items = Array.from(new Set(this.queue));
-    this.handler(items).then(this.resolve);
+    this.handler(items).then(this.resolve).catch(this.reject);
 
     this.queue = null;
     this.promise = null;
