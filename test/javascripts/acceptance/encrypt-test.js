@@ -858,9 +858,7 @@ acceptance("Encrypt - active", function (needs) {
     globalAssert = assert;
 
     await setupEncryptedTopicPretender(pretender);
-    pretender.get("/encrypt/user", (request, helper) => {
-      return response({});
-    });
+    pretender.get("/encrypt/user", () => response({}));
 
     await visit("/t/a-secret-message/42");
 
