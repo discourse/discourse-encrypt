@@ -55,5 +55,15 @@ describe Jobs::EncryptedPostTimerEvaluator do
       described_class.new.execute({})
       expect(encrypted_post_timer.reload.destroyed_at).not_to be nil
     end
+
+    it "does not error when user is deleted" do
+      post2.user.destroy
+      encrypted_post_timer =
+        EncryptedPostTimer.create!(post_id: post2.id, delete_at: 1.hour.from_now)
+      freeze_time 61.minutes.from_now
+      described_class.new.execute({})
+      expect(encrypted_post_timer.reload.destroyed_at).not_to be nil
+      expect { post2.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 end
