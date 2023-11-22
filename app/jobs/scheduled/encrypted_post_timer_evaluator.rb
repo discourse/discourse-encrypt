@@ -22,7 +22,12 @@ module Jobs
 
           posts_to_delete.each do |post|
             next if !post&.persisted?
-            PostDestroyer.new(post.user, post, permanent: true).destroy
+            PostDestroyer.new(
+              post.user || Discourse.system_user,
+              post,
+              permanent: true,
+              force_destroy: true,
+            ).destroy
           end
         end
       end
