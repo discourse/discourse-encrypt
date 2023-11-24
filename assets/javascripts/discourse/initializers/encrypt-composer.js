@@ -147,7 +147,12 @@ export default {
         },
 
         beforeSave() {
-          if (!this.showEncryptError || !this.encryptError) {
+          if (
+            !this.showEncryptError ||
+            !this.encryptError ||
+            this.isDestroying ||
+            this.isDestroyed
+          ) {
             return Promise.resolve();
           }
 
