@@ -27,7 +27,9 @@ export const DB_NAME = isTesting()
 /**
  * @var {String} DB_VERSION Version of IndexedDb schema user for storing key pairs
  */
-export const DB_VERSION = "discourse-encrypt-version";
+export const DB_VERSION = isTesting()
+  ? "discourse-encrypt-version-tests"
+  : "discourse-encrypt-version";
 
 /**
  * When truthy, it uses local storage instead of IndexedDb to store user
