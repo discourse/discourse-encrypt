@@ -16,6 +16,7 @@ import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
+  clearUserIdentities,
   getEncryptionStatus,
   getIdentity,
   putTopicTitle,
@@ -660,6 +661,10 @@ acceptance("Encrypt - active", function (needs) {
     await setEncryptionStatus(ENCRYPT_ACTIVE);
   });
 
+  needs.hooks.afterEach(function () {
+    clearUserIdentities();
+  });
+
   test("meta: leak checker works", async function (assert) {
     globalAssert = { notContains: () => assert.ok(true) };
 
@@ -729,6 +734,8 @@ acceptance("Encrypt - active", function (needs) {
     await usersSelector.fillInFilter("evilt");
     await usersSelector.selectRowByValue("eviltrout");
     await usersSelector.collapse();
+
+    assert.dom(".encrypt-controls .error").hasNoText();
 
     requests = [];
 
