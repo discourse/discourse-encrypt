@@ -17,6 +17,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { getOwner } from "@ember/application";
 
 /**
  * Adds metadata extracted from the composer.
@@ -54,8 +55,8 @@ export default {
   name: "encrypt-posts",
 
   initialize(container) {
-    const currentUser = container.lookup("service:current-user");
-    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    const user = container.lookup("service:current-user");
+    if (getEncryptionStatus(user) !== ENCRYPT_ACTIVE) {
       return;
     }
 
@@ -116,6 +117,9 @@ export default {
           if (args.target_recipients) {
             usernames = args.target_recipients.split(",");
           }
+
+          const currentUser = getOwner(this).lookup("service:current-user");
+
           if (usernames.length > 0) {
             usernames.push(currentUser.username);
             encryptedKeysPromise = Promise.all([
@@ -139,7 +143,7 @@ export default {
                 args.encrypted_keys = JSON.stringify(args.encrypted_keys);
               })
               .catch((username) => {
-                const dialog = container.lookup("service:dialog");
+                const dialog = getOwner(this).lookup("service:dialog");
                 dialog.alert(
                   I18n.t("encrypt.composer.user_has_no_key", { username })
                 );
@@ -203,7 +207,7 @@ export default {
           return Promise.all([getTopicKey(attrs.topic_id), getIdentity()])
             .then(([key, identity]) => {
               const metadata = addMetadata(
-                container.lookup("controller:composer"),
+                getOwner(this).lookup("controller:composer"),
                 {
                   raw: attrs.raw,
                 }

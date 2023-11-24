@@ -10,6 +10,7 @@ import {
   putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { Promise } from "rsvp";
+import { getOwner } from "@ember/application";
 
 const CACHE_KEY = "discourse-encrypt-bookmark-cache";
 
@@ -100,8 +101,6 @@ export default {
       return;
     }
 
-    const session = container.lookup("service:session");
-
     // Go through the `PreloadStore` and look for preloaded topic keys
     for (let storeKey in PreloadStore.data) {
       if (storeKey.includes("topic_")) {
@@ -164,32 +163,16 @@ export default {
         },
       });
 
-      // this can be removed in v2.8.0.beta7
-      api.modifyClass("model:bookmark", {
-        pluginId: "fetch-encrypt-keys",
-
-        loadItems(params) {
-          return this._super(...arguments).then((response) => {
-            return addEncryptedBookmarksFromCache(
-              session,
-              response,
-              params.q,
-              currentUser.username
-            );
-          });
-        },
-      });
-
       api.modifyClass("route:user-activity-bookmarks", {
         pluginId: "fetch-encrypt-keys",
 
         _loadBookmarks(params) {
           return this._super(...arguments).then((response) => {
             return addEncryptedBookmarksFromCache(
-              session,
+              getOwner(this).lookup("service:session"),
               response,
               params.q,
-              currentUser.username
+              getOwner(this).lookup("service:current-user").username
             );
           });
         },
