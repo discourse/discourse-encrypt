@@ -19,14 +19,15 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { getOwner } from "@ember/application";
 
 export default {
   name: "encrypt-composer",
 
   initialize(container) {
-    const currentUser = container.lookup("service:current-user");
+    const user = container.lookup("service:current-user");
 
-    if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
+    if (getEncryptionStatus(user) !== ENCRYPT_ACTIVE) {
       return;
     }
 
@@ -57,6 +58,7 @@ export default {
             // (serialization), this method is called and `isEncrypted` is
             // reset.
             if (!this.isEncryptedChanged) {
+              const currentUser = getOwner(this).lookup("service:current-user");
               isEncrypted = currentUser.encrypt_pms_default;
             }
           }
@@ -76,6 +78,7 @@ export default {
         @observes("targetRecipients")
         checkEncryptRecipients() {
           if (!this.targetRecipients || this.targetRecipients.length === 0) {
+            const currentUser = getOwner(this).lookup("service:current-user");
             this.setProperties({
               isEncrypted: currentUser.encrypt_pms_default,
               isEncryptedChanged: true,

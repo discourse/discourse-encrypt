@@ -2,17 +2,18 @@ import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import Post from "discourse/models/post";
 import I18n from "I18n";
+import { getOwner } from "@ember/application";
 
 export default {
   name: "encrypt-delete-topic",
 
-  initialize(container) {
+  initialize() {
     withPluginApi("0.11.3", (api) => {
       api.modifyClass("controller:topic", {
         pluginId: "encrypt-delete-topic",
 
         permanentDeleteConfirmation(callback) {
-          const dialog = container.lookup("service:dialog");
+          const dialog = getOwner(this).lookup("service:dialog");
           dialog.deleteConfirm({
             title: I18n.t("encrypt.post.delete.title"),
             message: I18n.t("encrypt.post.delete.confirm"),

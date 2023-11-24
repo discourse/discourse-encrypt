@@ -15,6 +15,7 @@ import {
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { getOwnerWithFallback } from "discourse-common/lib/get-owner";
 
 const ALLOWED_DRAFT_FIELDS = [
   "action",
@@ -30,26 +31,12 @@ const ALLOWED_DRAFT_FIELDS = [
   "whisper",
 ];
 
-let globalContainer;
-
 export default {
   name: "encrypt-drafts",
 
   initialize(container) {
     const currentUser = container.lookup("service:current-user");
     if (getEncryptionStatus(currentUser) !== ENCRYPT_ACTIVE) {
-      return;
-    }
-
-    // In testing environment, the initializer will be called on every `visit`
-    // call. As a result, `Draft` class will be patched multiple times. The
-    // following lines ensure that the patch is applied only once (the first
-    // time, when there is no old "container"). However, the reference to
-    // `container` must be updated every time the initializer is called
-    // because it is used inside the patched method.
-    let initializedBefore = !!globalContainer;
-    globalContainer = container;
-    if (initializedBefore) {
       return;
     }
 
@@ -61,17 +48,15 @@ export default {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
           let { _super } = this;
 
-          if (
-            !globalContainer ||
-            globalContainer.isDestroyed ||
-            globalContainer.isDestroying
-          ) {
+          if (this.isDestroying || this.isDestroyed) {
             // Since at this point we cannot be sure if it is an encrypted
             // topic or not, the draft is simply discarded.
             return Promise.reject();
           }
 
-          const controller = globalContainer.lookup("controller:composer");
+          const controller = getOwnerWithFallback(this).lookup(
+            "controller:composer"
+          );
           let encrypted = !!controller.get("model.isEncrypted");
           if (draftKey.indexOf("topic_") === 0) {
             const topicId = draftKey.substr("topic_".length);
