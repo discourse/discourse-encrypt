@@ -20,7 +20,9 @@ if (isTesting()) {
 /**
  * @var {String} DB_NAME Name of IndexedDb used for storing key pairs
  */
-export const DB_NAME = "discourse-encrypt";
+export const DB_NAME = isTesting()
+  ? "discourse-encrypt-tests"
+  : "discourse-encrypt";
 
 /**
  * @var {String} DB_VERSION Version of IndexedDb schema user for storing key pairs
