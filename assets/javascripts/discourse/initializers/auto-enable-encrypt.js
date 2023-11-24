@@ -22,9 +22,8 @@ export default {
         getEncryptionStatus(currentUser) === ENCRYPT_DISABLED
       ) {
         window.localStorage.setItem(AUTO_ENABLE_KEY, true);
-        const appEvents = container.lookup("service:app-events");
-
         enableEncrypt(currentUser).then(() => {
+          const appEvents = container.lookup("service:app-events");
           appEvents.trigger("encrypt:status-changed");
         });
       }
