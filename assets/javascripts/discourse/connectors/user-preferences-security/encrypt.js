@@ -16,7 +16,7 @@ import {
 } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import I18n from "I18n";
-import { getOwner } from "discourse-common/lib/get-owner";
+import { getOwner } from "@ember/application";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import GeneratePaperKey from "../../components/modal/generate-paper-key";

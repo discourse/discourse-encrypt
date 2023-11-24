@@ -38,7 +38,7 @@ import {
   lookupUncachedUploadUrls,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
-import { getOwner } from "discourse-common/lib/get-owner";
+import { getOwner } from "@ember/application";
 import ActivateEncrypt from "../components/modal/activate-encrypt";
 
 /*
