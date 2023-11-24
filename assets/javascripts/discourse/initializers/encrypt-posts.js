@@ -5,6 +5,7 @@ import {
   getEncryptionStatus,
   getIdentity,
   getTopicKey,
+  getTopicTitle,
   getUserIdentities,
   hasTopicKey,
   putTopicKey,
@@ -18,6 +19,8 @@ import {
 import I18n from "I18n";
 import { Promise } from "rsvp";
 import { getOwner } from "@ember/application";
+import { escapeExpression } from "discourse/lib/utilities";
+import { observes } from "discourse-common/utils/decorators";
 
 /**
  * Adds metadata extracted from the composer.
@@ -71,13 +74,19 @@ export default {
             return _super.call(this, ...arguments);
           }
 
+          const unencryptedTitle = props.title;
+
           return getTopicKey(topic.id)
             .then((key) => encrypt(key, { raw: props.title }))
             .then((encryptedTitle) => {
               props.title = I18n.t("encrypt.encrypted_title");
               props.encrypted_title = encryptedTitle;
             })
-            .then(() => _super.call(this, ...arguments));
+            .then(() => _super.call(this, ...arguments))
+            .then(() => {
+              topic.set("fancy_title", escapeExpression(unencryptedTitle));
+              topic.set("unicode_title", unencryptedTitle);
+            });
         },
       });
 
@@ -224,6 +233,22 @@ export default {
               attrs.raw = encryptedRaw;
             })
             .then(() => _super.call(this, ...arguments));
+        },
+      });
+
+      api.modifyClass("controller:topic", {
+        pluginId: "encrypt",
+
+        @observes("editingTopic")
+        _editingTopicChanged() {
+          if (this.get("editingTopic")) {
+            const topicId = this.get("model.id");
+
+            getTopicTitle(topicId).then((topicTitle) => {
+              // Update the title stored in buffered state
+              this.buffered.set("title", topicTitle);
+            });
+          }
         },
       });
     });

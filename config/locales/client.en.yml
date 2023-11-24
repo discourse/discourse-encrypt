@@ -21,7 +21,6 @@ en:
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
       encrypted_post_email: "This is a secret message with end to end encryption. You must visit the topic to view it."
       encrypted_post_email_timer_annotation: "This message will be permanently deleted at %{delete_at}"
-      encrypted_icon_title: "This message is end-to-end encrypted."
 
       encrypted_uploads: "Uploads cannot be encrypted at this time."
 
@@ -125,3 +124,8 @@ en:
         24_hours: "24 hours"
         3_days: "3 days"
         7_days: "7 days"
+
+    topic-statuses:
+      encrypted:
+        help: "This message is end-to-end encrypted."
+
