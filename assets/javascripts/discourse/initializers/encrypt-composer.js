@@ -147,18 +147,12 @@ export default {
         },
 
         beforeSave() {
-          if (
-            !this.showEncryptError ||
-            !this.encryptError ||
-            this.isDestroying ||
-            this.isDestroyed
-          ) {
+          if (!this.showEncryptError || !this.encryptError) {
             return Promise.resolve();
           }
 
-          const dialog = container.lookup("service:dialog");
           return new Promise((resolve, reject) => {
-            dialog.yesNoConfirm({
+            this.dialog.yesNoConfirm({
               message: I18n.t("encrypt.composer.confirm.message", {
                 error: this.encryptError,
               }),
