@@ -48,12 +48,6 @@ export default {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
           let { _super } = this;
 
-          if (this.isDestroying || this.isDestroyed) {
-            // Since at this point we cannot be sure if it is an encrypted
-            // topic or not, the draft is simply discarded.
-            return Promise.reject();
-          }
-
           const controller = getOwnerWithFallback(this).lookup(
             "controller:composer"
           );
