@@ -234,7 +234,7 @@ async function setupEncryptedTopicPretender(
             {
               id: 42,
               name: null,
-              username: "bar",
+              username: "eviltrout",
               avatar_template:
                 "/letter_avatar_proxy/v4/letter/b/000000/{size}.png",
               created_at: "2020-01-01T12:00:00.000Z",
