@@ -155,13 +155,15 @@ export default {
           }
 
           return new Promise((resolve, reject) => {
-            this.dialog.yesNoConfirm({
-              message: I18n.t("encrypt.composer.confirm.message", {
-                error: this.encryptError,
-              }),
-              didConfirm: () => resolve(),
-              didCancel: () => reject(),
-            });
+            getOwner(this)
+              .lookup("service:dialog")
+              .yesNoConfirm({
+                message: I18n.t("encrypt.composer.confirm.message", {
+                  error: this.encryptError,
+                }),
+                didConfirm: () => resolve(),
+                didCancel: () => reject(),
+              });
           });
         },
       });
