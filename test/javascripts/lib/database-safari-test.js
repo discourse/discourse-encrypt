@@ -41,6 +41,6 @@ module("discourse-encrypt:lib:database-safari", function (hooks) {
   test("IndexedDB is initialized in Safari", async function (assert) {
     await deleteDb();
     assert.rejects(loadDbIdentity());
-    assert.ok(indexedDbCalls > 0);
+    assert.true(indexedDbCalls > 0);
   });
 });

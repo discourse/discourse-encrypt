@@ -16,12 +16,12 @@ createWidget("encrypted-post-timer-counter", {
   },
 
   formattedClock(attrs) {
-    const miliseconds = Math.max(
+    const milliseconds = Math.max(
       moment(attrs.post.delete_at) - moment().utc(),
       60000
     );
 
-    return moment.duration(miliseconds).humanize();
+    return moment.duration(milliseconds).humanize();
   },
 
   html(attrs) {

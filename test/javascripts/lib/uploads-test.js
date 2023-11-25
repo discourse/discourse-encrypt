@@ -12,17 +12,17 @@ module("discourse-encrypt:lib:uploadHandler", function () {
       type: "image/png",
     });
     const data = await getMetadata(file, SITE_SETTINGS);
-    assert.equal(data.original_filename, "test.png");
-    assert.equal(data.width, 1);
-    assert.equal(data.height, 1);
-    assert.equal(data.thumbnail_width, 1);
-    assert.equal(data.thumbnail_height, 1);
-    assert.ok(data.url);
+    assert.strictEqual(data.original_filename, "test.png");
+    assert.strictEqual(data.width, 1);
+    assert.strictEqual(data.height, 1);
+    assert.strictEqual(data.thumbnail_width, 1);
+    assert.strictEqual(data.thumbnail_height, 1);
+    assert.true(data.url.length > 0);
   });
 
   test("getMetadata - other file", async function (assert) {
     const file = new File(["test"], "test.txt", { type: "text/plain" });
     const data = await getMetadata(file, SITE_SETTINGS);
-    assert.equal(data.original_filename, "test.txt");
+    assert.strictEqual(data.original_filename, "test.txt");
   });
 });

@@ -68,7 +68,7 @@ module("discourse-encrypt:lib:protocol_v0", function () {
 
   test("buffer to string", function (assert) {
     let check = (actual, expected) =>
-      assert.equal(_bufferToString(new Uint16Array(actual)), expected);
+      assert.strictEqual(_bufferToString(new Uint16Array(actual)), expected);
 
     check([], "");
     check([0x41], "A");
@@ -92,28 +92,28 @@ module("discourse-encrypt:lib:protocol_v0", function () {
   test("_exportPublicKey & _importPublicKey", async function (assert) {
     const { publicKey } = await generateIdentity();
     const exported = await _exportPublicKey(publicKey);
-    assert.ok((await _importPublicKey(exported)) instanceof CryptoKey);
+    assert.true((await _importPublicKey(exported)) instanceof CryptoKey);
   });
 
   test("_exportPrivateKey & _importPrivateKey", async function (assert) {
     const key = await _getPassphraseKey("passphrase", _getSalt());
     const { privateKey } = await generateIdentity();
     const exported = await _exportPrivateKey(privateKey, key);
-    assert.ok((await _importPrivateKey(exported, key)) instanceof CryptoKey);
+    assert.true((await _importPrivateKey(exported, key)) instanceof CryptoKey);
   });
 
   test("_getPassphraseKey", async function (assert) {
     const key = await _getPassphraseKey("passphrase", _getSalt());
-    assert.ok(key instanceof CryptoKey);
+    assert.true(key instanceof CryptoKey);
   });
 
   test("_getSalt", async function (assert) {
-    assert.equal(24, _getSalt().length);
+    assert.strictEqual(_getSalt().length, 24);
   });
 
   test("generateIdentity", async function (assert) {
     const { publicKey, privateKey } = await generateIdentity();
-    assert.ok(publicKey instanceof CryptoKey);
-    assert.ok(privateKey instanceof CryptoKey);
+    assert.true(publicKey instanceof CryptoKey);
+    assert.true(privateKey instanceof CryptoKey);
   });
 });

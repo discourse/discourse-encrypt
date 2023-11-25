@@ -11,14 +11,16 @@ import { module, test } from "qunit";
 module("discourse-encrypt:lib:protocol", function () {
   test("generateKey", async function (assert) {
     const key = await generateKey();
-    assert.ok(key instanceof CryptoKey);
+    assert.true(key instanceof CryptoKey);
   });
 
   test("exportKey & importKey", async function (assert) {
     const { encryptPublic, encryptPrivate } = await generateIdentity();
     const key = await generateKey();
     const exported = await exportKey(key, encryptPublic);
-    assert.ok((await importKey(exported, encryptPrivate)) instanceof CryptoKey);
+    assert.true(
+      (await importKey(exported, encryptPrivate)) instanceof CryptoKey
+    );
   });
 
   test("encrypt & decrypt", async function (assert) {
@@ -26,6 +28,6 @@ module("discourse-encrypt:lib:protocol", function () {
     const plaintext = "this is a message";
     const ciphertext = await encrypt(key, plaintext);
 
-    assert.equal(plaintext, await decrypt(key, ciphertext));
+    assert.strictEqual(plaintext, await decrypt(key, ciphertext));
   });
 });
