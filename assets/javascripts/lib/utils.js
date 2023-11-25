@@ -20,7 +20,7 @@ export function getCaseInsensitiveObj(object) {
 }
 
 /**
- * Creates a new object containing a subset of the boject keys.
+ * Creates a new object containing a subset of the object keys.
  *
  * @param {Object} obj
  * @param {Array<String>} keys

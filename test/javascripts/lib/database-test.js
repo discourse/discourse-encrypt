@@ -16,18 +16,18 @@ module("discourse-encrypt:lib:database", function () {
     assert.rejects(loadDbIdentity());
 
     await generateIdentity().then((id) => saveDbIdentity(id));
-    assert.ok(window.localStorage.getItem(DB_NAME));
+    assert.true(window.localStorage.getItem(DB_NAME).length > 0);
 
     const identity = await loadDbIdentity();
-    assert.ok(identity.encryptPublic instanceof CryptoKey);
-    assert.ok(identity.encryptPrivate instanceof CryptoKey);
-    assert.ok(identity.signPublic instanceof CryptoKey);
-    assert.ok(identity.signPrivate instanceof CryptoKey);
+    assert.true(identity.encryptPublic instanceof CryptoKey);
+    assert.true(identity.encryptPrivate instanceof CryptoKey);
+    assert.true(identity.signPublic instanceof CryptoKey);
+    assert.true(identity.signPrivate instanceof CryptoKey);
 
     await deleteDb();
 
     assert.rejects(loadDbIdentity());
-    assert.equal(window.localStorage.getItem(DB_NAME), null);
+    assert.strictEqual(window.localStorage.getItem(DB_NAME), null);
   });
 
   test("Web Storage (localStorage) backend", async function (assert) {
@@ -37,17 +37,17 @@ module("discourse-encrypt:lib:database", function () {
     assert.rejects(loadDbIdentity());
 
     await generateIdentity().then((id) => saveDbIdentity(id));
-    assert.ok(window.localStorage.getItem(DB_NAME));
+    assert.true(window.localStorage.getItem(DB_NAME).length > 0);
 
     const identity = await loadDbIdentity();
-    assert.ok(identity.encryptPublic instanceof CryptoKey);
-    assert.ok(identity.encryptPrivate instanceof CryptoKey);
-    assert.ok(identity.signPublic instanceof CryptoKey);
-    assert.ok(identity.signPrivate instanceof CryptoKey);
+    assert.true(identity.encryptPublic instanceof CryptoKey);
+    assert.true(identity.encryptPrivate instanceof CryptoKey);
+    assert.true(identity.signPublic instanceof CryptoKey);
+    assert.true(identity.signPrivate instanceof CryptoKey);
 
     await deleteDb();
 
     assert.rejects(loadDbIdentity());
-    assert.equal(window.localStorage.getItem(DB_NAME), null);
+    assert.strictEqual(window.localStorage.getItem(DB_NAME), null);
   });
 });

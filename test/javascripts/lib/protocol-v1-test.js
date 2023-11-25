@@ -10,10 +10,10 @@ module("discourse-encrypt:lib:protocol_v1", function () {
     const { encryptPublic, encryptPrivate, signPublic, signPrivate } =
       await generateIdentity();
 
-    assert.ok(encryptPublic instanceof CryptoKey);
-    assert.ok(encryptPrivate instanceof CryptoKey);
-    assert.ok(signPublic instanceof CryptoKey);
-    assert.ok(signPrivate instanceof CryptoKey);
+    assert.true(encryptPublic instanceof CryptoKey);
+    assert.true(encryptPrivate instanceof CryptoKey);
+    assert.true(signPublic instanceof CryptoKey);
+    assert.true(signPrivate instanceof CryptoKey);
   });
 
   test("exportIdentity & importIdentity", async function (assert) {
@@ -21,26 +21,26 @@ module("discourse-encrypt:lib:protocol_v1", function () {
 
     let exported = await exportIdentity(identity);
     let imported = await importIdentity(exported.private);
-    assert.ok(imported.encryptPublic instanceof CryptoKey);
-    assert.ok(imported.encryptPrivate instanceof CryptoKey);
-    assert.ok(imported.signPublic instanceof CryptoKey);
-    assert.ok(imported.signPrivate instanceof CryptoKey);
+    assert.true(imported.encryptPublic instanceof CryptoKey);
+    assert.true(imported.encryptPrivate instanceof CryptoKey);
+    assert.true(imported.signPublic instanceof CryptoKey);
+    assert.true(imported.signPrivate instanceof CryptoKey);
     imported = await importIdentity(exported.public);
-    assert.ok(imported.encryptPublic instanceof CryptoKey);
-    assert.equal(imported.encryptPrivate, null);
-    assert.ok(imported.signPublic instanceof CryptoKey);
-    assert.equal(imported.signPrivate, null);
+    assert.true(imported.encryptPublic instanceof CryptoKey);
+    assert.strictEqual(imported.encryptPrivate, undefined);
+    assert.true(imported.signPublic instanceof CryptoKey);
+    assert.strictEqual(imported.signPrivate, undefined);
 
     exported = await exportIdentity(identity, "test");
     imported = await importIdentity(exported.private, "test");
-    assert.ok(imported.encryptPublic instanceof CryptoKey);
-    assert.ok(imported.encryptPrivate instanceof CryptoKey);
-    assert.ok(imported.signPublic instanceof CryptoKey);
-    assert.ok(imported.signPrivate instanceof CryptoKey);
+    assert.true(imported.encryptPublic instanceof CryptoKey);
+    assert.true(imported.encryptPrivate instanceof CryptoKey);
+    assert.true(imported.signPublic instanceof CryptoKey);
+    assert.true(imported.signPrivate instanceof CryptoKey);
     imported = await importIdentity(exported.public);
-    assert.ok(imported.encryptPublic instanceof CryptoKey);
-    assert.equal(imported.encryptPrivate, null);
-    assert.ok(imported.signPublic instanceof CryptoKey);
-    assert.equal(imported.signPrivate, null);
+    assert.true(imported.encryptPublic instanceof CryptoKey);
+    assert.strictEqual(imported.encryptPrivate, undefined);
+    assert.true(imported.signPublic instanceof CryptoKey);
+    assert.strictEqual(imported.signPrivate, undefined);
   });
 });

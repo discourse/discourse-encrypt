@@ -61,7 +61,7 @@ module("discourse-encrypt:lib:base64", function () {
 
   test("buffer to base64", function (assert) {
     let check = (actual, expected) =>
-      assert.equal(bufferToBase64(new Uint8Array(actual)), expected);
+      assert.strictEqual(bufferToBase64(new Uint8Array(actual)), expected);
 
     check([], "");
     check([0x41], "QQ==");
