@@ -45,7 +45,7 @@ let userIdentity;
 /**
  * @var {Object} userIdentities Cached user identities.
  */
-const userIdentities = getCaseInsensitiveObj();
+let userIdentities = getCaseInsensitiveObj();
 
 /**
  * @var {Object} topicKeys Dictionary of all topic keys (topic_id => key).
@@ -73,6 +73,10 @@ class TopicTitle {
 
     return this._promise;
   }
+}
+
+export function clearUserIdentities() {
+  userIdentities = getCaseInsensitiveObj();
 }
 
 /**
