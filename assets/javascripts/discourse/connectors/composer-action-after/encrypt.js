@@ -1,10 +1,10 @@
 import { computed, defineProperty } from "@ember/object";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import I18n from "I18n";
 
 export default {
   setupComponent(args, component) {

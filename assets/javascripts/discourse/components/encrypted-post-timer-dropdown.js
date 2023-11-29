@@ -1,7 +1,7 @@
-import I18n from "I18n";
-import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
 import { computed } from "@ember/object";
 import { empty } from "@ember/object/computed";
+import I18n from "I18n";
+import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
 
 const TIMER_OPTIONS = [
   { id: "", name: I18n.t("encrypt.time_bomb.never") },

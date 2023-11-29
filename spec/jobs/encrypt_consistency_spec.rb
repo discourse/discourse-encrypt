@@ -3,10 +3,11 @@
 require "rails_helper"
 
 describe Jobs::EncryptConsistency do
-  let(:topic) { Fabricate(:encrypt_topic) }
+  subject(:job) { described_class.new }
 
-  let(:user_without_invite) { Fabricate(:user) }
-  let(:user_without_key) { Fabricate(:user) }
+  fab!(:topic) { Fabricate(:encrypt_topic) }
+  fab!(:user_without_invite) { Fabricate(:user) }
+  fab!(:user_without_key) { Fabricate(:user) }
 
   before do
     EncryptedTopicsUser.create!(
@@ -18,7 +19,7 @@ describe Jobs::EncryptConsistency do
   end
 
   it "ensures invites and topic keys are consistent" do
-    expect { subject.execute({}) }.to change {
+    expect { job.execute({}) }.to change {
       TopicAllowedUser.exists?(topic: topic, user: user_without_invite)
     }.from(false).to(true).and change {
             TopicAllowedUser.exists?(topic: topic, user: user_without_key)

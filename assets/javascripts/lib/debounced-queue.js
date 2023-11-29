@@ -1,5 +1,5 @@
-import discourseDebounce from "discourse-common/lib/debounce";
 import { Promise } from "rsvp";
+import discourseDebounce from "discourse-common/lib/debounce";
 
 export default class DebouncedQueue {
   constructor(wait, handler) {

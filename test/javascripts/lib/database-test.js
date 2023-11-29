@@ -1,3 +1,4 @@
+import { module, test } from "qunit";
 import {
   DB_NAME,
   deleteDb,
@@ -6,7 +7,6 @@ import {
   setUseLocalStorage,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import { generateIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { module, test } from "qunit";
 
 module("discourse-encrypt:lib:database", function () {
   test("IndexedDB backend", async function (assert) {

@@ -1,6 +1,9 @@
+import { Promise } from "rsvp";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
+import { getOwnerWithFallback } from "discourse-common/lib/get-owner";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -13,9 +16,6 @@ import {
   generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { filterObjectKeys } from "discourse/plugins/discourse-encrypt/lib/utils";
-import I18n from "I18n";
-import { Promise } from "rsvp";
-import { getOwnerWithFallback } from "discourse-common/lib/get-owner";
 
 const ALLOWED_DRAFT_FIELDS = [
   "action",

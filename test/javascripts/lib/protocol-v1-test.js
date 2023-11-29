@@ -1,9 +1,9 @@
+import { module, test } from "qunit";
 import {
   exportIdentity,
   generateIdentity,
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol-v1";
-import { module, test } from "qunit";
 
 module("discourse-encrypt:lib:protocol_v1", function () {
   test("generateIdentity", async function (assert) {

@@ -1,3 +1,6 @@
+import { registerWaiter } from "@ember/test";
+import { Promise } from "rsvp";
+import { isTesting } from "discourse-common/config/environment";
 import {
   base64ToBuffer,
   bufferToBase64,
@@ -18,9 +21,6 @@ import {
   importIdentity as importIdentityV1,
   verify as verifyV1,
 } from "discourse/plugins/discourse-encrypt/lib/protocol-v1";
-import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
-import { registerWaiter } from "@ember/test";
 
 let pendingOperationsCount = 0;
 

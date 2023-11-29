@@ -1,11 +1,12 @@
 import Component from "@ember/component";
 import EmberObject from "@ember/object";
-import { scheduleOnce } from "@ember/runloop";
-import discourseDebounce from "discourse-common/lib/debounce";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import { schedule } from "@ember/runloop";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
+import discourseDebounce from "discourse-common/lib/debounce";
+import { iconHTML } from "discourse-common/lib/icon-library";
+import { observes } from "discourse-common/utils/decorators";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -15,7 +16,6 @@ import {
   putTopicTitle,
   syncGetTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { observes } from "discourse-common/utils/decorators";
 
 const PLUGIN_ID = "discourse-encrypt";
 
@@ -120,7 +120,7 @@ export default {
       // Try to decrypt new titles that may appear after rendering a component
       EmberObject.reopen.call(Component, {
         didRender() {
-          scheduleOnce("afterRender", self, () => {
+          schedule("afterRender", self, () => {
             discourseDebounce(self, self.decryptTopicTitles, 500);
           });
           return this._super(...arguments);

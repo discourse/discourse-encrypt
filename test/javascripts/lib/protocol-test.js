@@ -1,3 +1,4 @@
+import { module, test } from "qunit";
 import {
   decrypt,
   encrypt,
@@ -6,7 +7,6 @@ import {
   generateKey,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { module, test } from "qunit";
 
 module("discourse-encrypt:lib:protocol", function () {
   test("generateKey", async function (assert) {
