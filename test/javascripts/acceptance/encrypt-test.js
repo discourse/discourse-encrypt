@@ -1,3 +1,4 @@
+import { registerWaiter, unregisterWaiter } from "@ember/test";
 import {
   click,
   fillIn,
@@ -5,18 +6,32 @@ import {
   visit,
   waitUntil,
 } from "@ember/test-helpers";
-import { registerWaiter, unregisterWaiter } from "@ember/test";
+import QUnit, { test } from "qunit";
 import User from "discourse/models/user";
+import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
+import userFixtures from "discourse/tests/fixtures/user-fixtures";
+import pretender, {
+  parsePostData,
+  response,
+} from "discourse/tests/helpers/create-pretender";
+import {
+  acceptance,
+  queryAll,
+  updateCurrentUser,
+} from "discourse/tests/helpers/qunit-helpers";
+import selectKit from "discourse/tests/helpers/select-kit-helper";
+import { cloneJSON } from "discourse-common/lib/object";
+import I18n from "I18n";
 import {
   deleteDb,
   loadDbIdentity,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
+  clearUserIdentities,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
-  clearUserIdentities,
   getEncryptionStatus,
   getIdentity,
   putTopicTitle,
@@ -30,21 +45,6 @@ import {
   generateKey,
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
-import userFixtures from "discourse/tests/fixtures/user-fixtures";
-import pretender, {
-  parsePostData,
-  response,
-} from "discourse/tests/helpers/create-pretender";
-import {
-  acceptance,
-  queryAll,
-  updateCurrentUser,
-} from "discourse/tests/helpers/qunit-helpers";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
-import I18n from "I18n";
-import QUnit, { test } from "qunit";
-import { cloneJSON } from "discourse-common/lib/object";
 
 /*
  * Checks if a string is not contained in a string.

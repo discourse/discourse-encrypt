@@ -1,5 +1,8 @@
+import { getOwner } from "@ember/application";
+import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -8,9 +11,6 @@ import {
   hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { exportKey } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import I18n from "I18n";
-import { Promise } from "rsvp";
-import { getOwner } from "@ember/application";
 
 export default {
   name: "invite-to-encrypted-topic",

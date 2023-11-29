@@ -1,3 +1,4 @@
+import { DEFAULT_LIST } from "pretty-text/allow-lister";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import {
@@ -5,7 +6,6 @@ import {
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import UppyUploadEncrypt from "discourse/plugins/discourse-encrypt/lib/uppy-upload-encrypt-plugin";
-import { DEFAULT_LIST } from "pretty-text/allow-lister";
 
 export default {
   name: "encrypt-uploads",

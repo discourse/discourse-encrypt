@@ -1,11 +1,11 @@
+import { module, test } from "qunit";
+import { Promise } from "rsvp";
 import {
   deleteDb,
   loadDbIdentity,
   setIndexedDb,
   setUserAgent,
 } from "discourse/plugins/discourse-encrypt/lib/database";
-import { module, test } from "qunit";
-import { Promise } from "rsvp";
 
 let indexedDbCalls = 0;
 

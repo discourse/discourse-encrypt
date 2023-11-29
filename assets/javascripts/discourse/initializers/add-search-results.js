@@ -1,8 +1,11 @@
-import { iconHTML } from "discourse-common/lib/icon-library";
+import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import Post from "discourse/models/post";
 import Topic from "discourse/models/topic";
+import { isTesting } from "discourse-common/config/environment";
+import { iconHTML } from "discourse-common/lib/icon-library";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -10,9 +13,6 @@ import {
   putTopicKey,
   putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import I18n from "I18n";
-import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
 
 const CACHE_KEY = "discourse-encrypt-cache";
 

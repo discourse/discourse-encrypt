@@ -1,7 +1,9 @@
-import { iconHTML } from "discourse-common/lib/icon-library";
+import { getOwner } from "@ember/application";
+import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import PreloadStore from "discourse/lib/preload-store";
+import { iconHTML } from "discourse-common/lib/icon-library";
 import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,
@@ -9,8 +11,6 @@ import {
   putTopicKey,
   putTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import { Promise } from "rsvp";
-import { getOwner } from "@ember/application";
 
 const CACHE_KEY = "discourse-encrypt-bookmark-cache";
 

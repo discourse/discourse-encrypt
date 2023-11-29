@@ -1,14 +1,14 @@
-import getURL from "discourse-common/lib/get-url";
+import { htmlSafe } from "@ember/template";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { isTesting } from "discourse-common/config/environment";
+import getURL from "discourse-common/lib/get-url";
+import I18n from "I18n";
 import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
-import I18n from "I18n";
-import { htmlSafe } from "@ember/template";
-import { isTesting } from "discourse-common/config/environment";
 
 export default {
   name: "encrypt-status",

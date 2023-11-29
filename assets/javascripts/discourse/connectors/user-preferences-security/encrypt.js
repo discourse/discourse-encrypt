@@ -1,13 +1,17 @@
+import { getOwner } from "@ember/application";
 import { action, computed, defineProperty } from "@ember/object";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import { isTesting } from "discourse-common/config/environment";
+import I18n from "I18n";
 import {
   deleteDb,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
-  ENCRYPT_ACTIVE,
-  ENCRYPT_DISABLED,
   activateEncrypt,
   enableEncrypt,
+  ENCRYPT_ACTIVE,
+  ENCRYPT_DISABLED,
   getEncryptionStatus,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
@@ -15,12 +19,8 @@ import {
   unpackIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import I18n from "I18n";
-import { getOwner } from "@ember/application";
-import { isTesting } from "discourse-common/config/environment";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ExportKeyPair from "../../components/modal/export-key-pair";
+import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ManagePaperKeys from "../../components/modal/manage-paper-keys";
 import ResetKeyPair from "../../components/modal/reset-key-pair";
 import RotateKeyPair from "../../components/modal/rotate-key-pair";

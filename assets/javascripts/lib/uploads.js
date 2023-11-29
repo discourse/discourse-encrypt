@@ -1,5 +1,5 @@
-import { isImage } from "discourse/lib/uploads";
 import { Promise } from "rsvp";
+import { isImage } from "discourse/lib/uploads";
 
 export function getMetadata(file, siteSettings) {
   if (!isImage(file.name)) {

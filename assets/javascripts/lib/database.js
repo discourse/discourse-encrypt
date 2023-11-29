@@ -1,10 +1,10 @@
+import { registerWaiter } from "@ember/test";
+import { Promise } from "rsvp";
 import { isTesting } from "discourse-common/config/environment";
 import {
   exportIdentity,
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { Promise } from "rsvp";
-import { registerWaiter } from "@ember/test";
 
 /**
  * Used to determine the waiter state

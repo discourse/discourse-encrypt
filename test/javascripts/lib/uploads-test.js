@@ -1,6 +1,6 @@
+import { module, test } from "qunit";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import { getMetadata } from "discourse/plugins/discourse-encrypt/lib/uploads";
-import { module, test } from "qunit";
 
 const TEST_IMG_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
