@@ -17,10 +17,10 @@ module OpenSSL
     # Page 18, https://www.ietf.org/rfc/rfc3447
     def oaep_mgf1(msg, k)
       m_len = msg.bytesize
-      h_len = OpenSSL::Digest::SHA256.new.digest_length
+      h_len = OpenSSL::Digest.new("SHA256").digest_length
       raise OpenSSL::PKey::RSAError, "message too long" if m_len > k - 2 * h_len - 2
 
-      l_hash = OpenSSL::Digest::SHA256.digest("") # label = ''
+      l_hash = OpenSSL::Digest.digest("SHA256", "") # label = ''
       ps = [0] * (k - m_len - 2 * h_len - 2)
       db = l_hash + ps.pack("C*") + [1].pack("C") + [msg].pack("a*")
       seed = SecureRandom.random_bytes(h_len)

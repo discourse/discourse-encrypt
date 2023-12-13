@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class EncryptedPostCreator < PostCreator
-  def initialize(user, opts)
-    super
-  end
-
   def create
     if encrypt_valid?
       topic_key = @opts[:topic_key] || SecureRandom.random_bytes(32)
@@ -69,7 +65,7 @@ class EncryptedPostCreator < PostCreator
   def self.encrypt(raw, key)
     iv = SecureRandom.random_bytes(12)
 
-    cipher = OpenSSL::Cipher::AES.new(256, :GCM).encrypt
+    cipher = OpenSSL::Cipher.new("aes-256-gcm").encrypt
     cipher.key = key
     cipher.iv = iv
     cipher.auth_data = ""
