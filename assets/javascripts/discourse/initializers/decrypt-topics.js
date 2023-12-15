@@ -14,7 +14,6 @@ import {
   hasTopicTitle,
   putTopicKey,
   putTopicTitle,
-  syncGetTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 const PLUGIN_ID = "discourse-encrypt";
