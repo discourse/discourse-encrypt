@@ -130,25 +130,6 @@ export default {
     }
 
     withPluginApi("0.11.3", (api) => {
-      // Full-screen notification list topic titles
-      api.reopenWidget("default-notification-item", {
-        description() {
-          if (
-            this.attrs.fancy_title &&
-            this.attrs.topic_id &&
-            this.attrs.topic_key
-          ) {
-            const decrypted = syncGetTopicTitle(this.attrs.topic_id);
-            if (decrypted) {
-              return `<span data-topic-id="${
-                this.attrs.topic_id
-              }">${emojiUnescape(escapeExpression(decrypted))}</span>`;
-            }
-          }
-          return this._super(...arguments);
-        },
-      });
-
       if (api.registerModelTransformer) {
         api.registerModelTransformer("topic", async (topics) => {
           for (const topic of topics) {
