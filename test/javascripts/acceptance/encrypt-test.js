@@ -1285,7 +1285,7 @@ acceptance("Encrypt - active", function (needs) {
     await click("#search-button");
 
     await fillIn("#search-term", "dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     const item = ".search-menu .results .item";
@@ -1295,7 +1295,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.dom(`${item} [data-topic-id='42']`).hasText("Top Secret Developer");
 
     await fillIn("#search-term", "group_messages:staff dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     assert
@@ -1304,7 +1304,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.dom(`${item} [data-topic-id='42']`).doesNotExist();
 
     await fillIn("#search-term", "in:messages after:2022-11-01 dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     assert
