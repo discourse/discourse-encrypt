@@ -7,11 +7,11 @@ import {
   waitUntil,
 } from "@ember/test-helpers";
 import QUnit, { test } from "qunit";
+import { DEFAULT_TYPE_FILTER } from "discourse/components/search-menu";
 import User from "discourse/models/user";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
-import userFixtures from "discourse/tests/fixtures/user-fixtures";
 import searchFixtures from "discourse/tests/fixtures/search-fixtures";
-import { DEFAULT_TYPE_FILTER } from "discourse/components/search-menu";
+import userFixtures from "discourse/tests/fixtures/user-fixtures";
 import pretender, {
   parsePostData,
   response,
