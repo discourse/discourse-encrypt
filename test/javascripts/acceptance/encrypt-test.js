@@ -7,8 +7,10 @@ import {
   waitUntil,
 } from "@ember/test-helpers";
 import QUnit, { test } from "qunit";
+import { DEFAULT_TYPE_FILTER } from "discourse/components/search-menu";
 import User from "discourse/models/user";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
+import searchFixtures from "discourse/tests/fixtures/search-fixtures";
 import userFixtures from "discourse/tests/fixtures/user-fixtures";
 import pretender, {
   parsePostData,
@@ -1141,8 +1143,18 @@ acceptance("Encrypt - active", function (needs) {
 
   test("searching in messages with filters", async function (assert) {
     // return only one result for PM search
-    pretender.get("/search/query", (request) =>
-      response({
+    pretender.get("/search/query", (request) => {
+      if (request.queryParams.type_filter === DEFAULT_TYPE_FILTER) {
+        // posts/topics are not present in the payload by default
+        return response({
+          users: searchFixtures["search/query"]["users"],
+          categories: searchFixtures["search/query"]["categories"],
+          groups: searchFixtures["search/query"]["groups"],
+          grouped_search_result:
+            searchFixtures["search/query"]["grouped_search_result"],
+        });
+      }
+      return response({
         posts: [
           {
             id: 3833,
@@ -1276,9 +1288,8 @@ acceptance("Encrypt - active", function (needs) {
           type_filter: "private_messages",
           post_ids: [3833],
         },
-      })
-    );
-
+      });
+    });
     await setupEncryptedSearchResultPretender(pretender);
 
     await visit("/");
