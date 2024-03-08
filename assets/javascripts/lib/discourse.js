@@ -1,5 +1,6 @@
-import { isTesting } from "discourse-common/config/environment";
+import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
+import { isTesting } from "discourse-common/config/environment";
 import {
   DB_NAME,
   DB_VERSION,
@@ -16,7 +17,6 @@ import {
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { getCaseInsensitiveObj } from "discourse/plugins/discourse-encrypt/lib/utils";
-import { Promise } from "rsvp";
 
 /*
  * Possible states of the encryption system.

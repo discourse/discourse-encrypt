@@ -23,7 +23,7 @@ describe DiscourseEncrypt::SiteSettingExtensions do
     expect(SiteSetting.authorized_extensions.split("|")).to match_array(
       default_extensions + %w[txt encrypted],
     )
-    expect(SiteSetting.provider.find(:authorized_extensions)&.value.split("|")).to match_array(
+    expect(SiteSetting.provider.find(:authorized_extensions)&.value&.split("|")).to match_array(
       default_extensions + ["txt"],
     )
   end

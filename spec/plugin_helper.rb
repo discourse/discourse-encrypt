@@ -116,11 +116,10 @@ module EncryptSystemHelpers
   end
 
   def enable_encrypt_for_user_in_session(user, user_preferences_page)
-    using_session("user_#{user.username}_enable_encrypt") do |session|
+    using_session("user_#{user.username}_enable_encrypt") do
       sign_in(user)
       enable_encrypt_with_keys_for_user(user, 2)
       activate_encrypt(user_preferences_page, user, 2)
-      session.quit
     end
   end
 end

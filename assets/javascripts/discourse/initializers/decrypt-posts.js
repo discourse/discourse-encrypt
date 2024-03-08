@@ -1,12 +1,19 @@
+import { getOwner } from "@ember/application";
 import { next } from "@ember/runloop";
-import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
+import $ from "jquery";
+import {
+  lookupCachedUploadUrl,
+  lookupUncachedUploadUrls,
+  MISSING,
+} from "pretty-text/upload-short-url";
+import { Promise } from "rsvp";
 import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
-import lightbox from "discourse/lib/lightbox";
 import {
   fetchUnseenHashtagsInContext,
   linkSeenHashtagsInContext,
 } from "discourse/lib/hashtag-autocomplete";
+import lightbox from "discourse/lib/lightbox";
 import {
   fetchUnseenMentions,
   linkSeenMentions,
@@ -15,6 +22,8 @@ import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cook } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
+import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
+import I18n from "I18n";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import DebouncedQueue from "discourse/plugins/discourse-encrypt/lib/debounced-queue";
 import {
@@ -31,14 +40,6 @@ import {
   verify,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { downloadEncryptedFile } from "discourse/plugins/discourse-encrypt/lib/uploads";
-import I18n from "I18n";
-import {
-  MISSING,
-  lookupCachedUploadUrl,
-  lookupUncachedUploadUrls,
-} from "pretty-text/upload-short-url";
-import { Promise } from "rsvp";
-import { getOwner } from "@ember/application";
 import ActivateEncrypt from "../components/modal/activate-encrypt";
 
 /*

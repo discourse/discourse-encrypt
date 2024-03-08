@@ -120,7 +120,7 @@ describe DiscourseEncrypt::EncryptController do
   describe "#update_post" do
     let!(:post) { Fabricate(:encrypt_post) }
 
-    before { SiteSetting.min_trust_to_edit_post = 2 }
+    before { SiteSetting.edit_post_allowed_groups = 12 }
 
     it "is not raising error when user cannot edit because min trust level" do
       sign_in(post.user)

@@ -1,3 +1,4 @@
+import QUnit, { module, test } from "qunit";
 import {
   _bufferToString,
   _exportPrivateKey,
@@ -9,7 +10,6 @@ import {
   _stringToBuffer,
   generateIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol-v0";
-import QUnit, { module, test } from "qunit";
 
 /*
  * Checks if two array-like objects are equal.

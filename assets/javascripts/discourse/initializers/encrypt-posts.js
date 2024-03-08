@@ -1,5 +1,8 @@
+import { getOwner } from "@ember/application";
+import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,

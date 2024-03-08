@@ -1,3 +1,4 @@
+import { registerWaiter, unregisterWaiter } from "@ember/test";
 import {
   click,
   fillIn,
@@ -5,18 +6,34 @@ import {
   visit,
   waitUntil,
 } from "@ember/test-helpers";
-import { registerWaiter, unregisterWaiter } from "@ember/test";
+import QUnit, { test } from "qunit";
+import { DEFAULT_TYPE_FILTER } from "discourse/components/search-menu";
 import User from "discourse/models/user";
+import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
+import searchFixtures from "discourse/tests/fixtures/search-fixtures";
+import userFixtures from "discourse/tests/fixtures/user-fixtures";
+import pretender, {
+  parsePostData,
+  response,
+} from "discourse/tests/helpers/create-pretender";
+import {
+  acceptance,
+  queryAll,
+  updateCurrentUser,
+} from "discourse/tests/helpers/qunit-helpers";
+import selectKit from "discourse/tests/helpers/select-kit-helper";
+import { cloneJSON } from "discourse-common/lib/object";
+import I18n from "I18n";
 import {
   deleteDb,
   loadDbIdentity,
   saveDbIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
+  clearUserIdentities,
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
   ENCRYPT_ENABLED,
-  clearUserIdentities,
   getEncryptionStatus,
   getIdentity,
   putTopicTitle,
@@ -30,21 +47,6 @@ import {
   generateKey,
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
-import userFixtures from "discourse/tests/fixtures/user-fixtures";
-import pretender, {
-  parsePostData,
-  response,
-} from "discourse/tests/helpers/create-pretender";
-import {
-  acceptance,
-  queryAll,
-  updateCurrentUser,
-} from "discourse/tests/helpers/qunit-helpers";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
-import I18n from "I18n";
-import QUnit, { test } from "qunit";
-import { cloneJSON } from "discourse-common/lib/object";
 
 /*
  * Checks if a string is not contained in a string.
@@ -1137,8 +1139,18 @@ acceptance("Encrypt - active", function (needs) {
 
   test("searching in messages with filters", async function (assert) {
     // return only one result for PM search
-    pretender.get("/search/query", (request) =>
-      response({
+    pretender.get("/search/query", (request) => {
+      if (request.queryParams.type_filter === DEFAULT_TYPE_FILTER) {
+        // posts/topics are not present in the payload by default
+        return response({
+          users: searchFixtures["search/query"]["users"],
+          categories: searchFixtures["search/query"]["categories"],
+          groups: searchFixtures["search/query"]["groups"],
+          grouped_search_result:
+            searchFixtures["search/query"]["grouped_search_result"],
+        });
+      }
+      return response({
         posts: [
           {
             id: 3833,
@@ -1272,16 +1284,15 @@ acceptance("Encrypt - active", function (needs) {
           type_filter: "private_messages",
           post_ids: [3833],
         },
-      })
-    );
-
+      });
+    });
     await setupEncryptedSearchResultPretender(pretender);
 
     await visit("/");
     await click("#search-button");
 
     await fillIn("#search-term", "dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     const item = ".search-menu .results .item";
@@ -1291,7 +1302,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.dom(`${item} [data-topic-id='42']`).hasText("Top Secret Developer");
 
     await fillIn("#search-term", "group_messages:staff dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     assert
@@ -1300,7 +1311,7 @@ acceptance("Encrypt - active", function (needs) {
     assert.dom(`${item} [data-topic-id='42']`).doesNotExist();
 
     await fillIn("#search-term", "in:messages after:2022-11-01 dev");
-    await triggerKeyEvent(".search-menu", "keydown", "ArrowDown");
+    await triggerKeyEvent("#search-term", "keyup", "ArrowDown");
     await click(document.activeElement);
 
     assert

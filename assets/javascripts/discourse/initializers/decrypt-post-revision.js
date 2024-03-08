@@ -1,3 +1,4 @@
+import { Promise } from "rsvp";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cook } from "discourse/lib/text";
 import {
@@ -7,7 +8,6 @@ import {
   hasTopicKey,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import { Promise } from "rsvp";
 
 export default {
   name: "decrypt-post-revisions",

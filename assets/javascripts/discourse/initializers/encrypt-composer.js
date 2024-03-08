@@ -1,9 +1,12 @@
+import { getOwner } from "@ember/application";
+import { Promise } from "rsvp";
+import { withPluginApi } from "discourse/lib/plugin-api";
+import Composer from "discourse/models/composer";
 import discourseComputed, {
   observes,
   on,
 } from "discourse-common/utils/decorators";
-import { withPluginApi } from "discourse/lib/plugin-api";
-import Composer from "discourse/models/composer";
+import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -17,9 +20,6 @@ import {
   decrypt,
   importKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import I18n from "I18n";
-import { Promise } from "rsvp";
-import { getOwner } from "@ember/application";
 
 export default {
   name: "encrypt-composer",
