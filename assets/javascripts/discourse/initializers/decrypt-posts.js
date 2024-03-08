@@ -476,7 +476,9 @@ export default {
           store.add(this);
 
           const modal = getOwner(this).lookup("service:modal");
-          modal.show(ActivateEncrypt);
+          next(() => {
+            modal.show(ActivateEncrypt);
+          });
         }
       }
 
