@@ -1,10 +1,9 @@
-import { apiInitializer } from "discourse/lib/api";
-import discourseComputed from "discourse-common/utils/decorators";
-import I18n from "discourse-i18n";
-import i18n from "discourse-common/helpers/i18n";
-import icon from "discourse-common/helpers/d-icon";
-import TopicStatusIcons from "discourse/helpers/topic-status-icons";
 import { computed } from "@ember/object";
+import TopicStatusIcons from "discourse/helpers/topic-status-icons";
+import { apiInitializer } from "discourse/lib/api";
+import icon from "discourse-common/helpers/d-icon";
+import i18n from "discourse-common/helpers/i18n";
+import I18n from "discourse-i18n";
 
 export default apiInitializer("0.8", (api) => {
   // Header icon

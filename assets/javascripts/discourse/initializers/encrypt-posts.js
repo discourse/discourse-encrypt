@@ -2,6 +2,8 @@ import { getOwner } from "@ember/application";
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { escapeExpression } from "discourse/lib/utilities";
+import { observes } from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
@@ -19,11 +21,6 @@ import {
   exportKey,
   generateKey,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
-import I18n from "I18n";
-import { Promise } from "rsvp";
-import { getOwner } from "@ember/application";
-import { escapeExpression } from "discourse/lib/utilities";
-import { observes } from "discourse-common/utils/decorators";
 
 /**
  * Adds metadata extracted from the composer.
