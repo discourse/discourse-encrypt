@@ -458,7 +458,7 @@ async function setupEncryptedSearchResultPretender(server) {
   const identity = await getIdentity();
   const topicKey = await generateKey();
   const exportedKey = await exportKey(topicKey, identity.encryptPublic);
-  const title = "Top Secret Developer <a> :male_detective:";
+  const title = "Top Secret Developer :male_detective:";
   const encryptedTitle = await encrypt(topicKey, { raw: title });
 
   server.get("/encrypt/posts", (request) => {
@@ -814,11 +814,9 @@ acceptance("Encrypt - active", function (needs) {
       document.title,
       "Top Secret Title - QUnit Discourse Tests"
     );
-    assert
-      .dom(".private_message")
-      .hasClass("encrypted", "encrypted class is added");
+    assert.dom(document.body).hasClass("encrypted-topic-page");
 
-    await click(".private_message.encrypted h1[data-topic-id] .edit-topic");
+    await click(".private_message h1[data-topic-id] .edit-topic");
 
     assert.dom("#edit-title").hasValue("Top Secret Title");
   });
@@ -837,9 +835,7 @@ acceptance("Encrypt - active", function (needs) {
       document.title,
       "Top Secret Title - QUnit Discourse Tests"
     );
-    assert
-      .dom(".private_message")
-      .hasClass("encrypted", "encrypted class is added");
+    assert.dom(document.body).hasClass("encrypted-topic-page");
   });
 
   test("viewing encrypted topic escapes title correctly", async function (assert) {

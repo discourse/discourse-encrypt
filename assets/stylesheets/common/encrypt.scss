@@ -184,9 +184,15 @@ pre.exported-key-pair {
   }
 }
 
-.private_message.encrypted {
+body.encrypted-topic-page {
+  // Hide dangerous post-admin menu options
   .move-to-topic,
   .topic-admin-convert {
+    display: none;
+  }
+
+  // Hide normal PM icon - we have an encrypt-specific one
+  .private-message-glyph-wrapper {
     display: none;
   }
 }

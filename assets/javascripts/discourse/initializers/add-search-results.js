@@ -1,10 +1,10 @@
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { escapeExpression } from "discourse/lib/utilities";
 import Post from "discourse/models/post";
 import Topic from "discourse/models/topic";
 import { isTesting } from "discourse-common/config/environment";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import I18n from "I18n";
 import {
   ENCRYPT_ACTIVE,
@@ -39,7 +39,7 @@ function addTopicToCache(cache, topic) {
   return getTopicTitle(topic.id)
     .then((title) => {
       topic.title = title;
-      topic.fancy_title = `${iconHTML("user-secret")} ${title}`;
+      topic.fancy_title = escapeExpression(title);
       topic.excerpt = null;
 
       addObjectToCache(cache, "topics", topic);
