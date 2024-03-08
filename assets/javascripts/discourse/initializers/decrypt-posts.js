@@ -7,7 +7,6 @@ import {
   MISSING,
 } from "pretty-text/upload-short-url";
 import { Promise } from "rsvp";
-import { renderSpinner } from "discourse/helpers/loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import {
   fetchUnseenHashtagsInContext,
@@ -22,7 +21,7 @@ import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cook } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
-import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
+import { iconNode } from "discourse-common/lib/icon-library";
 import I18n from "I18n";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import DebouncedQueue from "discourse/plugins/discourse-encrypt/lib/debounced-queue";
@@ -33,7 +32,6 @@ import {
   getTopicKey,
   getUserIdentities,
   hasTopicKey,
-  hasTopicTitle,
 } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import {
   decrypt,
@@ -52,17 +50,17 @@ let mentionsQueues = [];
 let hashtagsQueue;
 let shortUrlsQueue;
 
-function checkMetadata(attrs, expected) {
+function checkMetadata(post, expected) {
   const actual = {
-    signed_by_id: attrs.user_id,
-    signed_by_name: attrs.username,
-    user_id: attrs.user_id,
-    user_name: attrs.username,
-    created_at: attrs.created_at,
-    updated_at: attrs.updated_at,
-    topic_id: attrs.topicId,
-    post_id: attrs.id,
-    post_number: attrs.post_number,
+    signed_by_id: post.user_id,
+    signed_by_name: post.username,
+    user_id: post.user_id,
+    user_name: post.username,
+    created_at: post.created_at,
+    updated_at: post.updated_at,
+    topic_id: post.topic_id,
+    post_id: post.id,
+    post_number: post.post_number,
   };
 
   const diff = [];
@@ -295,20 +293,32 @@ export default {
           });
       });
 
+      // Add 'encrypted' badge to posts
+      api.decorateWidget("post-meta-data:after", (helper) => {
+        const post = helper.getModel();
+        if (alreadyDecrypted.has(post)) {
+          return helper.h(
+            "div.post-info.encrypted",
+            { title: I18n.t("encrypt.post_is_encrypted") },
+            iconNode("user-secret")
+          );
+        }
+      });
+
+      // Add integrity status to posts
       api.decorateWidget("post-meta-data:after", (helper) => {
         const result = verified[helper.attrs.id];
-
         if (result === undefined) {
           return;
         } else if (result === null) {
           return helper.h(
-            "div.post-info.integrity-warn",
+            "div.post-info.integrity.integrity-warn",
             { title: I18n.t("encrypt.integrity_check_skip") },
             iconNode("exclamation-triangle")
           );
         } else if (result.length === 0) {
           return helper.h(
-            "div.post-info.integrity-pass",
+            "div.post-info.integrity.integrity-pass",
             { title: I18n.t("encrypt.integrity_check_pass") },
             iconNode("check")
           );
@@ -351,67 +361,96 @@ export default {
 
         return helper.h(
           isError
-            ? "div.post-info.integrity-fail"
-            : "div.post-info.integrity-warn",
+            ? "div.post-info.integrity.integrity-fail"
+            : "div.post-info.integrity.integrity-warn",
           { title: messages.join(" ") },
           iconNode(isError ? "times" : "exclamation-triangle")
         );
       });
 
-      api.reopenWidget("post-contents", {
-        html(attrs, state) {
-          const topicId = attrs.topicId;
-          if (attrs.id !== -1 && hasTopicTitle(topicId)) {
-            decryptPost.call(this, attrs, state, topicId);
-            updateHtml.call(this, attrs, state, topicId);
-          }
+      api.modifyClass("model:post-stream", {
+        refresh() {
+          return this._super(...arguments).then(async (result) => {
+            await Promise.all(
+              this.posts.map((post) => decryptPost(post, getOwner(this)))
+            );
+            return result;
+          });
+        },
+        prependMore() {
+          return this._super(...arguments).then(async (result) => {
+            await Promise.all(
+              this.posts.map((post) => decryptPost(post, getOwner(this)))
+            );
+            return result;
+          });
+        },
+        appendMore() {
+          return this._super(...arguments).then(async (result) => {
+            await Promise.all(
+              this.posts.map((post) => decryptPost(post, getOwner(this)))
+            );
+            return result;
+          });
+        },
+        findPostsByIds() {
+          return this._super(...arguments).then(async (result) => {
+            await Promise.all(
+              result.map((post) => decryptPost(post, getOwner(this)))
+            );
+            return result;
+          });
+        },
+        stagePost(post) {
+          decryptPost(post);
           return this._super(...arguments);
         },
       });
 
-      api.reopenWidget("post-small-action", {
-        html(attrs, state) {
-          const topicId = attrs.topicId;
-          if (
-            attrs.id !== -1 &&
-            hasTopicTitle(topicId) &&
-            attrs.encrypted_raw !== ""
-          ) {
-            decryptPost.call(this, attrs, state, topicId);
-            updateHtml.call(this, attrs, state, topicId);
+      api.decorateCookedElement((postElement, helper) => {
+        if (helper) {
+          const post = helper.getModel();
+          if (alreadyDecrypted.has(post)) {
+            postProcessPost(
+              api.container.lookup("service:site-settings"),
+              api.container.lookup("service:site"),
+              post.topic_id,
+              postElement
+            );
           }
-          return this._super(...arguments);
-        },
+        }
       });
 
-      async function decryptPost(attrs, state, topicId) {
-        const ciphertext = attrs.encrypted_raw;
+      function errorHtml(key) {
+        return `<div class='alert alert-error'>${I18n.t(key)}</div>`;
+      }
 
-        if (!ciphertext || state.ciphertext === ciphertext) {
+      const alreadyDecrypted = new WeakMap();
+
+      async function decryptPost(post, owner) {
+        const ciphertext = post.encrypted_raw;
+
+        if (!ciphertext || alreadyDecrypted.has(post)) {
           return;
         } else if (!window.isSecureContext) {
-          state.encryptState = "error";
-          state.error = I18n.t("encrypt.preferences.insecure_context");
+          post.set("cooked", errorHtml("encrypt.preferences.insecure_context"));
           return;
-        } else if (ciphertext && !hasTopicKey(topicId)) {
-          state.encryptState = "error";
-          state.error = I18n.t("encrypt.missing_topic_key");
+        } else if (ciphertext && !hasTopicKey(post.topic_id)) {
+          post.set("cooked", errorHtml("encrypt.missing_topic_key"));
+
           return;
         }
 
-        state.encryptState = "decrypting";
-        state.ciphertext = ciphertext;
+        alreadyDecrypted.set(post, true);
 
         try {
           await getIdentity();
 
           let key;
           try {
-            key = await getTopicKey(topicId);
+            key = await getTopicKey(post.topic_id);
           } catch (error) {
-            state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_topic_key");
-            this.scheduleRerender();
+            post.set("cooked", errorHtml("encrypt.invalid_topic_key"));
             return;
           }
 
@@ -419,9 +458,7 @@ export default {
           try {
             plaintext = await decrypt(key, ciphertext);
           } catch (error) {
-            state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_ciphertext");
-            this.scheduleRerender();
+            post.set("cooked", errorHtml("encrypt.invalid_ciphertext"));
             return;
           }
 
@@ -437,7 +474,7 @@ export default {
 
               const userIdentity = ids[plaintext.signed_by_name];
 
-              verified[attrs.id] = checkMetadata(attrs, plaintext);
+              verified[post.id] = checkMetadata(post, plaintext);
 
               const result = await verify(
                 userIdentity.signPublic,
@@ -446,14 +483,14 @@ export default {
               );
 
               if (!result) {
-                verified[attrs.id].push({
+                verified[post.id].push({
                   attr: "signature",
                   actual: false,
                   expected: true,
                 });
               }
             } catch (error) {
-              verified[attrs.id] = [
+              verified[post.id] = [
                 {
                   attr: "signature",
                   actual: false,
@@ -461,56 +498,24 @@ export default {
                 },
               ];
             }
-
-            this.scheduleRerender();
           } else {
-            verified[attrs.id] = null;
+            verified[post.id] = null;
           }
 
           const cooked = await cook(plaintext.raw);
-          state.encryptState = "decrypted";
-          state.plaintext = cooked.toString();
-          this.scheduleRerender();
+
+          post.set("cooked", cooked.toString());
         } catch (error) {
-          const store = getOwner(this).lookup("service:encrypt-widget-store");
+          // eslint-disable-next-line no-console
+          console.error(error);
+          const store = owner.lookup("service:encrypt-widget-store");
           store.add(this);
 
-          const modal = getOwner(this).lookup("service:modal");
+          const modal = owner.lookup("service:modal");
           next(() => {
             modal.show(ActivateEncrypt);
           });
         }
-      }
-
-      function updateHtml(attrs, state, topicId) {
-        if (state.encryptState === "decrypting") {
-          attrs.cooked =
-            "<div class='alert alert-info'>" +
-            renderSpinner("small") +
-            " " +
-            I18n.t("encrypt.decrypting") +
-            "</div>";
-        } else if (state.encryptState === "decrypted") {
-          attrs.cooked = state.plaintext;
-          next(() => {
-            const post =
-              document.querySelector(`article[data-post-id='${attrs.id}']`) ||
-              document.querySelector(`#post_${attrs.post_number}.small-action`);
-
-            if (post) {
-              postProcessPost(this.siteSettings, this.site, topicId, post);
-            }
-          });
-        } else if (state.encryptState === "error") {
-          attrs.cooked =
-            "<div class='alert alert-error'>" +
-            iconHTML("times") +
-            " " +
-            state.error +
-            "</div>" +
-            attrs.cooked;
-        }
-        return attrs.cooked;
       }
 
       api.decorateWidget("post-meta-data:after", (dec) => {

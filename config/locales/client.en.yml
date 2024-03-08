@@ -17,6 +17,8 @@ en:
       integrity_check_warn_updated_at: "Post metadata was updated without being signed again."
       integrity_check_warn_signed_by: "This post was last signed by %{actual}, not %{expected}. It was likely edited by the former."
 
+      post_is_encrypted: "This post is encrypted"
+
       encrypted_title: "A secret message"
       encrypted_post: "This is a secret message with end to end encryption. To view it, you must be invited to this topic."
       encrypted_post_email: "This is a secret message with end to end encryption. You must visit the topic to view it."
@@ -125,7 +127,7 @@ en:
         3_days: "3 days"
         7_days: "7 days"
 
-    topic-statuses:
+    topic_statuses:
       encrypted:
         help: "This message is end-to-end encrypted."
 

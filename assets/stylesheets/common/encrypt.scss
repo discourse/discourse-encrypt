@@ -91,19 +91,25 @@ pre.exported-key-pair {
 }
 
 .post-info {
+  &.integrity,
+  &.encrypted {
+    margin: 0 0 0 0.5em;
+  }
+
+  &.encrypted {
+    color: var(--primary-medium);
+  }
+
   &.integrity-pass {
     color: var(--success);
-    margin: 0 0 0 0.5em;
   }
 
   &.integrity-warn {
     color: var(--encrypt-warn, mix($danger, #ffff00));
-    margin: 0 0 0 0.5em;
   }
 
   &.integrity-fail {
     color: var(--danger);
-    margin: 0 0 0 0.5em;
   }
 }
 
