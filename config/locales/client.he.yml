@@ -22,7 +22,6 @@ he:
       encrypted_post: "זו הודעה סודית עם הצפנה מקצה לקצה. כדי לצפות בה, עליך לקבל הזמנה לנושא הזה."
       encrypted_post_email: "זו הודעה פרטית עם הצפנה מקצה לקצה. עליך לבקר בנושא כדי לצפות בו."
       encrypted_post_email_timer_annotation: "הודעה זו תימחק לצמיתות ב־%{delete_at}"
-      encrypted_icon_title: "הודעה זו מוצפנת מקצה לקצה."
       encrypted_uploads: "לא ניתן להצפין קבצים שנשלחים עדיין."
       cannot_encrypt: "לא ניתן להצפין הודעות בשיחה זו."
       cannot_invite: "אי אפשר להזמין לשיחה הזאת."
@@ -112,3 +111,6 @@ he:
         24_hours: "24 שעות"
         3_days: "3 ימים"
         7_days: "7 ימים"
+    topic-statuses:
+      encrypted:
+        help: "הודעה זו מוצפנת מקצה לקצה."

@@ -23,7 +23,6 @@ fi:
       encrypted_post: "Tämä on salainen viesti päästä päähän -salauksella. Sinut täytyy kutsua tähän ketjuun, jotta voit katsoa sen."
       encrypted_post_email: "Tämä on salainen viesti päästä päähän -salauksella. Sinun täytyy vierailla ketjussa, jotta voit katsoa sen."
       encrypted_post_email_timer_annotation: "Tämä viesti poistetaan pysyvästi %{delete_at}"
-      encrypted_icon_title: "Tämä viesti on salattu päästä päähän."
       encrypted_uploads: "Latauksia ei voi tällä hetkellä salata."
       cannot_encrypt: "Et voi salata tämän keskustelun viestejä."
       cannot_invite: "Et voi kutsua tähän keskusteluun."
@@ -111,3 +110,6 @@ fi:
         24_hours: "24 tunnin"
         3_days: "3 päivän"
         7_days: "7 päivän"
+    topic-statuses:
+      encrypted:
+        help: "Tämä viesti on salattu päästä päähän."

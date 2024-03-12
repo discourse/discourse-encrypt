@@ -23,7 +23,6 @@ ar:
       encrypted_post: "هذه رسالة سرية ذات تشفير شامل. لعرضها، يجب أن تتم دعوتك إلى هذا الموضوع."
       encrypted_post_email: "هذه رسالة سرية ذات تشفير شامل. يجب عليك زيارة الموضوع لعرضها."
       encrypted_post_email_timer_annotation: "سيتم حذف هذه الرسالة بشكلٍ دائم في %{delete_at}"
-      encrypted_icon_title: "هذه الرسالة مشفرة بشكلٍ شامل."
       encrypted_uploads: "لا يمكن تشفير التحميلات في الوقت الحالي."
       cannot_encrypt: "لا يمكنك تشفير الرسائل في هذه المحادثة."
       cannot_invite: "لا يمكنك الدعوة إلى هذه المحادثة."
@@ -115,3 +114,6 @@ ar:
         24_hours: "24 ساعة"
         3_days: "3 أيام"
         7_days: "7 أيام"
+    topic-statuses:
+      encrypted:
+        help: "هذه الرسالة مشفرة بشكلٍ شامل."

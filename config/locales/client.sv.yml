@@ -22,7 +22,6 @@ sv:
       encrypted_post: "Detta är ett hemligt meddelande som krypterats från början till slut. För att visa det måste du vara inbjuden till detta ämne."
       encrypted_post_email: "Detta är ett hemligt meddelande som krypterats från början till slut. Du måste gå till ämnet för att visa det."
       encrypted_post_email_timer_annotation: "Detta meddelande raderas permanent efter %{delete_at}"
-      encrypted_icon_title: "Detta meddelande är krypterat från början till slut."
       encrypted_uploads: "Uppladdningar kan inte krypteras för tillfället."
       cannot_encrypt: "Du kan inte kryptera meddelanden i detta samtal."
       cannot_invite: "Du kan inte bjuda in till detta samtal."
@@ -104,3 +103,6 @@ sv:
         24_hours: "24 timmar"
         3_days: "3 dagar"
         7_days: "7 dagar"
+    topic-statuses:
+      encrypted:
+        help: "Detta meddelande är krypterat från början till slut."

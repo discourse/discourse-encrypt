@@ -23,7 +23,6 @@ nl:
       encrypted_post: "Dit is een geheim bericht met end-to-end versleuteling. Je moet voor dit topic zijn uitgenodigd om het te bekijken."
       encrypted_post_email: "Dit is een geheim bericht met end-to-end versleuteling. Je moet het topic bezoeken om het te bekijken."
       encrypted_post_email_timer_annotation: "Dit bericht wordt permanent verwijderd op %{delete_at}"
-      encrypted_icon_title: "Dit bericht is end-to-end versleuteld."
       encrypted_uploads: "Uploads kunnen momenteel niet worden versleuteld."
       cannot_encrypt: "Je kunt geen berichten versleutelen in deze conversatie."
       cannot_invite: "Je kunt geen uitnodigingen sturen voor deze conversatie."
@@ -111,3 +110,6 @@ nl:
         24_hours: "24 uur"
         3_days: "3 dagen"
         7_days: "7 dagen"
+    topic-statuses:
+      encrypted:
+        help: "Dit bericht is end-to-end versleuteld."

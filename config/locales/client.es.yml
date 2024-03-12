@@ -23,7 +23,6 @@ es:
       encrypted_post: "Este es un mensaje secreto con cifrado de extremo a extremo. Para verlo, debes estar invitado a este tema."
       encrypted_post_email: "Este es un mensaje secreto con cifrado de extremo a extremo. Debes visitar el tema para verlo."
       encrypted_post_email_timer_annotation: "Este mensaje se eliminará de forma permanente a las %{delete_at}"
-      encrypted_icon_title: "Este mensaje está cifrado de extremo a extremo."
       encrypted_uploads: "Las cargas no se pueden cifrar en este momento."
       cannot_encrypt: "No puedes cifrar los mensajes en esta conversación."
       cannot_invite: "No puedes invitar a esta conversación"
@@ -111,3 +110,6 @@ es:
         24_hours: "24 horas"
         3_days: "3 días"
         7_days: "7 días"
+    topic-statuses:
+      encrypted:
+        help: "Este mensaje está cifrado de extremo a extremo."
