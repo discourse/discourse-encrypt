@@ -23,7 +23,6 @@ tr_TR:
       encrypted_post: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için bu konuya davet edilmiş olmanız gerekiyor."
       encrypted_post_email: "Bu, uçtan uca şifrelenmiş gizli bir mesajdır. Görüntülemek için konuyu ziyaret etmelisiniz."
       encrypted_post_email_timer_annotation: "Bu mesaj %{delete_at} tarihinde kalıcı olarak silinecek."
-      encrypted_icon_title: "Bu mesaj uçtan uca şifreli."
       encrypted_uploads: "Yüklemeler şu anda şifrelenemiyor."
       cannot_encrypt: "Bu konuşmadaki mesajları şifreleyemezsiniz."
       cannot_invite: "Bu konuşmaya davet edemezsiniz."
@@ -111,3 +110,6 @@ tr_TR:
         24_hours: "24 saat"
         3_days: "3 gün"
         7_days: "7 gün"
+    topic-statuses:
+      encrypted:
+        help: "Bu mesaj uçtan uca şifreli."

@@ -23,7 +23,6 @@ pt_BR:
       encrypted_post: "Esta é uma mensagem secreta com criptografia ponta a ponta. Para visualizar, você deve receber convite para este tópico."
       encrypted_post_email: "Esta é uma mensagem secreta com criptografia ponta a ponta. Você deve acessar o tópico para visualizá-la."
       encrypted_post_email_timer_annotation: "Esta mensagem será excluída permanentemente em %{delete_at}"
-      encrypted_icon_title: "Esta mensagem usa criptografia ponta a ponta."
       encrypted_uploads: "Desta vez, envios não podem ser criptografados."
       cannot_encrypt: "Não é possível criptografar mensagens nesta conversa."
       cannot_invite: "Não é possível convidar para esta conversa."
@@ -111,3 +110,6 @@ pt_BR:
         24_hours: "24 horas"
         3_days: "3 dias"
         7_days: "7 dias"
+    topic-statuses:
+      encrypted:
+        help: "Esta mensagem usa criptografia ponta a ponta."

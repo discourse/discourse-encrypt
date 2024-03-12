@@ -23,7 +23,6 @@ pl_PL:
       encrypted_post: "To jest tajna wiadomość z szyfrowaniem end-to-end. Aby ją zobaczyć, musisz zostać zaproszony do tego tematu."
       encrypted_post_email: "To jest tajna wiadomość z szyfrowaniem end-to-end. Musisz odwiedzić temat, aby go wyświetlić."
       encrypted_post_email_timer_annotation: "Ta wiadomość zostanie trwale usunięta o %{delete_at}"
-      encrypted_icon_title: "Ta wiadomość jest zaszyfrowana end-to-end."
       encrypted_uploads: "Przesłanych plików nie można obecnie zaszyfrować."
       cannot_encrypt: "Nie możesz zaszyfrować wiadomości w tej rozmowie."
       cannot_invite: "Nie możesz zaprosić do tej rozmowy."
@@ -113,3 +112,6 @@ pl_PL:
         24_hours: "24 godziny"
         3_days: "3 dni"
         7_days: "7 dni"
+    topic-statuses:
+      encrypted:
+        help: "Ta wiadomość jest zaszyfrowana end-to-end."

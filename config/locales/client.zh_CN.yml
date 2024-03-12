@@ -23,7 +23,6 @@ zh_CN:
       encrypted_post: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"
       encrypted_post_email: "这是一条采用端到端加密的私密消息。您必须受邀加入此话题才能查看。"
       encrypted_post_email_timer_annotation: "此消息将在 %{delete_at} 被永久删除"
-      encrypted_icon_title: "此消息采用端到端加密。"
       encrypted_uploads: "目前无法加密上传的内容。"
       cannot_encrypt: "您无法加密此对话中的消息。"
       cannot_invite: "您无法邀请加入此对话。"
@@ -110,3 +109,6 @@ zh_CN:
         24_hours: "24 小时"
         3_days: "3 天"
         7_days: "7 天"
+    topic-statuses:
+      encrypted:
+        help: "此消息采用端到端加密。"

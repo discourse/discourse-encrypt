@@ -23,7 +23,6 @@ fr:
       encrypted_post: "Ceci est un message secret avec un chiffrement de bout en bout. Pour le visualiser, vous devez être invité(e) à participer à ce sujet."
       encrypted_post_email: "Ceci est un message secret avec un chiffrement de bout en bout. Vous devez visiter le sujet pour le visualiser."
       encrypted_post_email_timer_annotation: "Ce message sera définitivement supprimé le %{delete_at}"
-      encrypted_icon_title: "Ce message est chiffré de bout en bout."
       encrypted_uploads: "Les téléversements ne peuvent pas être chiffrés pour le moment."
       cannot_encrypt: "Vous ne pouvez pas chiffrer les messages de cette conversation."
       cannot_invite: "Vous ne pouvez inviter personne dans cette conversation."
@@ -111,3 +110,6 @@ fr:
         24_hours: "24 heures"
         3_days: "3 jours"
         7_days: "7 jours"
+    topic-statuses:
+      encrypted:
+        help: "Ce message est chiffré de bout en bout."

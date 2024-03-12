@@ -23,7 +23,6 @@ de:
       encrypted_post: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Um sie anzuzeigen, musst du zu diesem Thema eingeladen sein."
       encrypted_post_email: "Dies ist eine geheime Nachricht mit Ende-zu-Ende-Verschlüsselung. Du musst dieses Thema besuchen, um sie anzuzeigen."
       encrypted_post_email_timer_annotation: "Diese Nachricht wird dauerhaft gelöscht am %{delete_at}"
-      encrypted_icon_title: "Diese Nachricht ist Ende-zu-Ende verschlüsselt."
       encrypted_uploads: "Uploads können aktuell nicht verschlüsselt werden."
       cannot_encrypt: "Du kannst in dieser Unterhaltung keine Nachrichten verschlüsseln."
       cannot_invite: "Du kannst zu dieser Unterhaltung niemanden einladen."
@@ -111,3 +110,6 @@ de:
         24_hours: "24 Stunden"
         3_days: "3 Tage"
         7_days: "7 Tage"
+    topic-statuses:
+      encrypted:
+        help: "Diese Nachricht ist Ende-zu-Ende verschlüsselt."

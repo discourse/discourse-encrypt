@@ -23,7 +23,6 @@ it:
       encrypted_post: "Questo è un messaggio segreto con crittografia end to end. Per poterlo vedere, devi essere invitato a questo argomento."
       encrypted_post_email: "Questo è un messaggio segreto con crittografia end to end. Per poterlo vedere devi visitare questo argomento."
       encrypted_post_email_timer_annotation: "Questo messaggio verrà eliminato definitivamente il %{delete_at}"
-      encrypted_icon_title: "Questo è un messaggio con crittografia end to end."
       encrypted_uploads: "I caricamenti non possono essere crittografati al momento."
       cannot_encrypt: "Non è possibile crittografare i messaggi in questa conversazione."
       cannot_invite: "Non puoi invitare a questa conversazione."
@@ -111,3 +110,6 @@ it:
         24_hours: "24 ore"
         3_days: "3 giorni"
         7_days: "7 giorni"
+    topic-statuses:
+      encrypted:
+        help: "Questo è un messaggio con crittografia end to end."

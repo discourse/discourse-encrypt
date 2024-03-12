@@ -23,7 +23,6 @@ ja:
       encrypted_post: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、このトピックに招待されている必要があります。"
       encrypted_post_email: "これはエンドツーエンド暗号化を使用したシークレットメッセージです。これを表示するには、トピックにアクセスする必要があります。"
       encrypted_post_email_timer_annotation: "このメッセージは %{delete_at} に完全に削除されます"
-      encrypted_icon_title: "このメッセージはエンドツーエンドで暗号化されています。"
       encrypted_uploads: "現在、アップロードを暗号化できません。"
       cannot_encrypt: "この会話のメッセージを暗号化できません。"
       cannot_invite: "この会話に招待できません。"
@@ -110,3 +109,6 @@ ja:
         24_hours: "24 時間"
         3_days: "3 日"
         7_days: "7 日"
+    topic-statuses:
+      encrypted:
+        help: "このメッセージはエンドツーエンドで暗号化されています。"
