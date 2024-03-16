@@ -12,4 +12,4 @@ en:
     encrypt_pms_default: "Encrypt all new private messages by default."
 
     errors:
-      encrypt_unsafe_csp: "Unsafe CSP directives like 'unsafe-eval' and 'unsafe-inline' cannot be used when the Discourse Encrypt plugin is enabled. "
+      encrypt_unsafe_csp: "Unsafe CSP directives like 'unsafe-eval' and 'unsafe-inline' cannot be used when the Discourse Encrypt plugin is enabled."
