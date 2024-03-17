@@ -49,6 +49,7 @@ after_initialize do
   require_relative "app/models/encrypted_topics_data.rb"
   require_relative "app/models/encrypted_topics_user.rb"
   require_relative "app/models/user_encryption_key.rb"
+  require_relative "app/services/problem_check/unsafe_csp.rb"
   require_relative "lib/email_sender_extensions.rb"
   require_relative "lib/encrypted_post_creator.rb"
   require_relative "lib/encrypted_search.rb"
@@ -114,14 +115,6 @@ after_initialize do
   register_search_topic_eager_load do |opts|
     if SiteSetting.encrypt_enabled? && opts[:search_pms]
       %i[encrypted_topics_users encrypted_topics_data]
-    end
-  end
-
-  AdminDashboardData.add_problem_check do
-    if SiteSetting.content_security_policy? &&
-         !DiscourseEncrypt.safe_csp_src?(SiteSetting.content_security_policy_script_src) &&
-         SiteSetting.encrypt_enabled?
-      I18n.t("site_settings.errors.encrypt_unsafe_csp")
     end
   end
 
