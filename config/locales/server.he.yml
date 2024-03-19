@@ -16,4 +16,4 @@ he:
     encrypt_groups: "שמות הקבוצות שיכולים להשתמש בהצפנה (ריק כלומר כולן יכולות)."
     encrypt_pms_default: "להצפין את כל ההודעות הפרטיות החדשות כבררת מחדל."
     errors:
-      encrypt_unsafe_csp: "אי אפשר להשתמש בהנחיות CSP מפוקפקות כגון ‚unsafe-eval’ ו־‚unsafe-inline’ כאשר התוסף Encrypt של Discourse פעיל. "
+      encrypt_unsafe_csp: "אי אפשר להשתמש בהנחיות CSP מפוקפקות כגון ‚unsafe-eval’ ו־‚unsafe-inline’ כאשר התוסף Encrypt של Discourse פעיל."

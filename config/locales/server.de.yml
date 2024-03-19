@@ -16,4 +16,4 @@ de:
     encrypt_groups: "Der Name der Gruppen, die die Verschlüsselung nutzen können (leer bedeutet alle)."
     encrypt_pms_default: "Neue private Nachrichten standardmäßig verschlüsseln."
     errors:
-      encrypt_unsafe_csp: "Unsichere CSP-Direktiven wie „unsafe-eval“ und „unsafe-inline“ können nicht verwendet werden, wenn das Discourse-Encrypt-Plug-in aktiviert ist. "
+      encrypt_unsafe_csp: "Unsichere CSP-Direktiven wie „unsafe-eval“ und „unsafe-inline“ können nicht verwendet werden, wenn das Discourse-Encrypt-Plug-in aktiviert ist."
