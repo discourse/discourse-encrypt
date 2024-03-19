@@ -16,4 +16,4 @@ fr:
     encrypt_groups: "Le nom des groupes qui peuvent utiliser le chiffrement (laissez l'espace vide pour accorder cette autorisation à tout le monde)."
     encrypt_pms_default: "Chiffrez par défaut tous les nouveaux messages privés."
     errors:
-      encrypt_unsafe_csp: "Les directives CSP non sécurisées telles que « unsafe-eval » et « unsafe-inline » ne peuvent pas être utilisées lorsque l'extension Discourse Encrypt est activée. "
+      encrypt_unsafe_csp: "Les directives CSP non sécurisées telles que « unsafe-eval » et « unsafe-inline » ne peuvent pas être utilisées lorsque l'extension Discourse Encrypt est activée."

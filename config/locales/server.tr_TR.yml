@@ -16,4 +16,4 @@ tr_TR:
     encrypt_groups: "Şifreleme kullanabilen grupların adı (boş, herkes anlamına gelir)."
     encrypt_pms_default: "Tüm yeni özel mesajları varsayılan olarak şifreleyin."
     errors:
-      encrypt_unsafe_csp: "Discourse Encrypt eklentisi etkinleştirildiğinde \"unsafe-eval\" ve \"unsafe-inline\" gibi güvenli olmayan CSP yönergeleri kullanılamaz. "
+      encrypt_unsafe_csp: "Discourse Encrypt eklentisi etkinleştirildiğinde \"unsafe-eval\" ve \"unsafe-inline\" gibi güvenli olmayan CSP yönergeleri kullanılamaz."

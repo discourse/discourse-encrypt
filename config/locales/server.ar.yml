@@ -16,4 +16,4 @@ ar:
     encrypt_groups: "اسم المجموعات التي يمكنها استخدام التشفير (ترك الاسم فارغًا يعني أن الجميع يمكنهم استخدام التشفير)"
     encrypt_pms_default: "تشفير جميع الرسائل الخاصة الجديدة افتراضيًا"
     errors:
-      encrypt_unsafe_csp: "لا يمكن استخدام توجيهات CSP غير الآمنة مثل 'unsafe-eval' و'unsafe-inline' عند تفعيل المكوِّن الإضافي للتشفير في Discourse. "
+      encrypt_unsafe_csp: "لا يمكن استخدام توجيهات CSP غير الآمنة مثل 'unsafe-eval' و'unsafe-inline' عند تفعيل المكوِّن الإضافي للتشفير في Discourse."

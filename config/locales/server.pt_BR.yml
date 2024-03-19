@@ -16,4 +16,4 @@ pt_BR:
     encrypt_groups: "O nome dos grupos que podem usar criptografia (vazio quer dizer todas as pessoas)."
     encrypt_pms_default: "Criptografe todas as mensagens privadas por padrão."
     errors:
-      encrypt_unsafe_csp: "Diretivas CSP não seguras, como \"unsafe-eval\" e \"unsafe-inline\", não podem ser usadas quando o plugin Discourse Encrypt estiver ativado. "
+      encrypt_unsafe_csp: "Diretivas CSP não seguras, como \"unsafe-eval\" e \"unsafe-inline\", não podem ser usadas quando o plugin Discourse Encrypt estiver ativado."

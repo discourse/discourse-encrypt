@@ -16,4 +16,4 @@ sv:
     encrypt_groups: "Namnen på grupper som ska vara tillåtna att använda kryptering (tomt innebär samtliga)"
     encrypt_pms_default: "Kryptera alla nya privata meddelanden som standard."
     errors:
-      encrypt_unsafe_csp: "Osäkra CSP-direktiv som 'unsafe-eval' och 'unsafe-inline' kan inte användas när insticksprogrammet Discourse Encrypt är aktiverad. "
+      encrypt_unsafe_csp: "Osäkra CSP-direktiv som 'unsafe-eval' och 'unsafe-inline' kan inte användas när insticksprogrammet Discourse Encrypt är aktiverad."
