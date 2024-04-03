@@ -112,6 +112,8 @@ after_initialize do
     UserNotificationRenderer.singleton_class.prepend DiscourseEncrypt::UserNotificationRendererExtensions
   end
 
+  register_problem_check ProblemCheck::UnsafeCsp
+
   register_search_topic_eager_load do |opts|
     if SiteSetting.encrypt_enabled? && opts[:search_pms]
       %i[encrypted_topics_users encrypted_topics_data]
