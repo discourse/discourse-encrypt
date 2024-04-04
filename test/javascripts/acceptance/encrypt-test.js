@@ -892,7 +892,7 @@ acceptance("Encrypt - active", function (needs) {
     );
 
     await visit("/");
-    await click(".header-dropdown-toggle.current-user");
+    await click(".header-dropdown-toggle.current-user button");
 
     assert
       .dom(".quick-access-panel span[data-topic-id]")
@@ -945,7 +945,7 @@ acceptance("Encrypt - active", function (needs) {
     );
 
     await visit("/");
-    await click(".header-dropdown-toggle.current-user");
+    await click(".header-dropdown-toggle.current-user button");
 
     const notifications = queryAll(
       "#quick-access-all-notifications ul li.notification"
@@ -1022,7 +1022,7 @@ acceptance("Encrypt - active", function (needs) {
     );
 
     await visit("/");
-    await click(".header-dropdown-toggle.current-user");
+    await click(".header-dropdown-toggle.current-user button");
     await click("#user-menu-button-bookmarks");
 
     const bookmarks = queryAll("#quick-access-bookmarks ul li.bookmark");
@@ -1116,7 +1116,7 @@ acceptance("Encrypt - active", function (needs) {
     );
 
     await visit("/");
-    await click(".header-dropdown-toggle.current-user");
+    await click(".header-dropdown-toggle.current-user button");
     await click("#user-menu-button-messages");
 
     const messages = queryAll("#quick-access-messages ul li.message");
