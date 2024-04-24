@@ -14,9 +14,9 @@
 
       {{~#if model.isEncrypted}}
         {{~#unless model.editingPost~}}
-          <div class="composer-action-divider"></div>
-          {{~! ~}}
-          <EncryptedPostTimerDropdown
+          <div
+            class="composer-action-divider"
+          ></div>{{! inline to avoid whitespace}}<EncryptedPostTimerDropdown
             @topicDeleteAt={{this.model.topic.delete_at}}
             @onChange={{action "timerClicked"}}
           />
