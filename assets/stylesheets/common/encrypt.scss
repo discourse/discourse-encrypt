@@ -196,3 +196,11 @@ body.encrypted-topic-page {
     display: none;
   }
 }
+
+// Show a 🚫 on checklist items in encrypted posts/preview
+.encrypted-topic-page,
+.reply-area:has(.encrypt-toggle.enabled) {
+  span.chcklst-box {
+    cursor: not-allowed !important;
+  }
+}
