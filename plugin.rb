@@ -36,7 +36,7 @@ after_initialize do
     PLUGIN_NAME = "discourse-encrypt"
 
     def self.safe_csp_src?(value)
-      !value.include?("'unsafe-inline'") && !value.include?("'unsafe-eval'")
+      !value.include?("'unsafe-inline'")
     end
   end
 
