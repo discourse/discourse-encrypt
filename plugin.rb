@@ -91,25 +91,22 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:encrypt_pms_default)
 
   reloadable_patch do |plugin|
-    Email::Sender.class_eval { prepend DiscourseEncrypt::EmailSenderExtensions }
-    GroupedSearchResultSerializer.class_eval do
-      prepend DiscourseEncrypt::GroupedSearchResultSerializerExtension
-    end
-    Post.class_eval { prepend DiscourseEncrypt::PostExtensions }
-    PostActionsController.class_eval { prepend DiscourseEncrypt::PostActionsControllerExtensions }
-    SiteSettings::TypeSupervisor.class_eval do
-      prepend DiscourseEncrypt::SiteSettingsTypeSupervisorExtensions
-    end
-    Topic.class_eval { prepend DiscourseEncrypt::TopicExtensions }
-    TopicGuardian.class_eval { prepend DiscourseEncrypt::TopicGuardianExtension }
-    TopicsController.class_eval { prepend DiscourseEncrypt::TopicsControllerExtensions }
-    TopicViewSerializer.class_eval { prepend DiscourseEncrypt::TopicViewSerializerExtension }
-    UploadValidator.class_eval { prepend DiscourseEncrypt::UploadValidatorExtensions }
-    User.class_eval { prepend DiscourseEncrypt::UserExtensions }
-    UserNotifications.class_eval { prepend DiscourseEncrypt::UserNotificationsExtensions }
-
-    SiteSetting.singleton_class.prepend DiscourseEncrypt::SiteSettingExtensions
-    UserNotificationRenderer.singleton_class.prepend DiscourseEncrypt::UserNotificationRendererExtensions
+    Email::Sender.prepend(DiscourseEncrypt::EmailSenderExtensions)
+    GroupedSearchResultSerializer.prepend(DiscourseEncrypt::GroupedSearchResultSerializerExtension)
+    Post.prepend(DiscourseEncrypt::PostExtensions)
+    PostActionsController.prepend(DiscourseEncrypt::PostActionsControllerExtensions)
+    SiteSettings::TypeSupervisor.prepend(DiscourseEncrypt::SiteSettingsTypeSupervisorExtensions)
+    Topic.prepend(DiscourseEncrypt::TopicExtensions)
+    TopicGuardian.prepend(DiscourseEncrypt::TopicGuardianExtension)
+    TopicsController.prepend(DiscourseEncrypt::TopicsControllerExtensions)
+    TopicViewSerializer.prepend(DiscourseEncrypt::TopicViewSerializerExtension)
+    UploadValidator.prepend(DiscourseEncrypt::UploadValidatorExtensions)
+    User.prepend(DiscourseEncrypt::UserExtensions)
+    UserNotifications.prepend(DiscourseEncrypt::UserNotificationsExtensions)
+    SiteSetting.singleton_class.prepend(DiscourseEncrypt::SiteSettingExtensions)
+    UserNotificationRenderer.singleton_class.prepend(
+      DiscourseEncrypt::UserNotificationRendererExtensions,
+    )
   end
 
   register_problem_check ProblemCheck::UnsafeCsp

@@ -20,7 +20,7 @@ describe Email::Sender do
     )
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   before do
     user.user_option.update!(
@@ -76,7 +76,7 @@ describe Email::Sender do
   end
 
   context "with plain post" do
-    fab!(:post) { Fabricate(:post) }
+    fab!(:post)
     fab!(:reply) do
       raw = <<~RAW
       Hello world!
