@@ -7,6 +7,9 @@
 vi:
   js:
     encrypt:
+      post:
+        delete:
+          title: "Bạn có chắc không?"
       preferences:
         save: "Lưu thay đổi"
       manage_paper_keys:
@@ -24,3 +27,5 @@ vi:
         3_hours: "3 tiếng"
         12_hours: "12 tiếng"
         24_hours: "24 tiếng"
+        3_days: "3 ngày"
+        7_days: "7 ngày"

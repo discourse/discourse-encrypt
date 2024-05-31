@@ -24,3 +24,5 @@ sl:
         3_hours: "3 uri"
         12_hours: "12 uri"
         24_hours: "24 uri"
+        3_days: "3 dni"
+        7_days: "7 dni"

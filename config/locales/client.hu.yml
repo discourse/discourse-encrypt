@@ -7,6 +7,9 @@
 hu:
   js:
     encrypt:
+      post:
+        delete:
+          title: "Biztos vagy benne?"
       preferences:
         save: "Módosítások mentése"
       manage_paper_keys:
@@ -24,3 +27,5 @@ hu:
         3_hours: "3 óráig"
         12_hours: "12 óráig"
         24_hours: "24 óráig"
+        3_days: "3 nap"
+        7_days: "7 nap"

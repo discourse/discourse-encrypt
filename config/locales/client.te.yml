@@ -7,7 +7,22 @@
 te:
   js:
     encrypt:
+      post:
+        delete:
+          title: "ఖచితమేనా?"
       preferences:
         save: "మార్పులను భద్రపరచు"
       manage_paper_keys:
         delete: "తొలగించు"
+      export:
+        copy_to_clipboard: "క్లిప్‌బోర్డ్‌కు కాపీ చేయండి"
+        copied_to_clipboard: "క్లిప్‌బోర్డ్‌కి కాపీ చేయబడింది"
+      time_bomb:
+        never: "ఎప్పటికీ వద్దు"
+        3_minutes: "3 నిముషాలు"
+        1_hour: "1 గంట"
+        3_hours: "3 గంటలు"
+        12_hours: "12 గంటలు"
+        24_hours: "24 గంటలు"
+        3_days: "3 రోజులు"
+        7_days: "7 రోజులు"

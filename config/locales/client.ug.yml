@@ -1,0 +1,28 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+ug:
+  js:
+    encrypt:
+      post:
+        delete:
+          title: "راستىنلا شۇنداق قىلامسىز؟"
+      preferences:
+        save: "ئۆزگەرتىشنى ساقلا"
+      manage_paper_keys:
+        delete: "ئۆچۈر"
+      export:
+        copy_to_clipboard: "چاپلاش تاختىسىغا كۆچۈر"
+        copied_to_clipboard: "چاپلاش تاختىسىغا كۆچۈرۈلدى"
+      time_bomb:
+        never: "ھەرگىز"
+        3_minutes: "3 مىنۇت"
+        1_hour: "1 سائەت"
+        3_hours: "3 سائەت"
+        12_hours: "12 سائەت"
+        24_hours: "24 سائەت"
+        3_days: "3 كۈن"
+        7_days: "7 كۈن"
