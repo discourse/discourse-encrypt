@@ -11,5 +11,12 @@ id:
         save: "Simpan Perubahan"
       manage_paper_keys:
         delete: "Hapus"
+      export:
+        copy_to_clipboard: "Menyalin ke Clipboard"
       time_bomb:
         never: "Tidak pernah"
+        3_hours: "3 jam"
+        12_hours: "12 jam"
+        24_hours: "24 jam"
+        3_days: "3 hari"
+        7_days: "7 hari"

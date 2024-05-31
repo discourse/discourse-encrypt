@@ -9,14 +9,25 @@ sk:
     encrypt:
       decrypting: "Dešifrujem..."
       encrypted_title: "Tajná správa"
+      post:
+        delete:
+          title: "Ste si istý?"
       preferences:
         save: "Uložiť zmeny"
       manage_paper_keys:
         delete: "Odstrániť"
       export:
+        copy_to_clipboard: "Skopírovať do schránky"
         copied_to_clipboard: "Skopírované do schránky"
       rotate:
         loading_states:
           finished: "Hotovo!"
       time_bomb:
         never: "Nikdy"
+        3_minutes: "3 minút"
+        1_hour: "1 hodina"
+        3_hours: "3 hodiny"
+        12_hours: "12 hodiny"
+        24_hours: "24 hodín"
+        3_days: "3 dní"
+        7_days: "7 dní"

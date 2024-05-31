@@ -7,6 +7,9 @@
 cs:
   js:
     encrypt:
+      post:
+        delete:
+          title: "Jste si jisti?"
       preferences:
         save: "Uložit změny"
       manage_paper_keys:
@@ -19,3 +22,10 @@ cs:
           finished: "Hotovo!"
       time_bomb:
         never: "Nikdy"
+        3_minutes: "3 minut"
+        1_hour: "1 hodina"
+        3_hours: "3 hodin"
+        12_hours: "12 hodin"
+        24_hours: "24 hodin"
+        3_days: "3 dní"
+        7_days: "7 dní"

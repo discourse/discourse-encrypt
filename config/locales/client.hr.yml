@@ -24,3 +24,5 @@ hr:
         3_hours: "3 sata"
         12_hours: "12 sata"
         24_hours: "24 sata"
+        3_days: "3 dana"
+        7_days: "7 dana"
