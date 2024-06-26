@@ -50,7 +50,6 @@ after_initialize do
   require_relative "app/models/encrypted_topics_user.rb"
   require_relative "app/models/user_encryption_key.rb"
   require_relative "app/services/problem_check/unsafe_csp.rb"
-  require_relative "lib/email_sender_extensions.rb"
   require_relative "lib/encrypted_post_creator.rb"
   require_relative "lib/encrypted_search.rb"
   require_relative "lib/grouped_search_result_serializer_extension.rb"
@@ -91,7 +90,6 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:encrypt_pms_default)
 
   reloadable_patch do |plugin|
-    Email::Sender.prepend(DiscourseEncrypt::EmailSenderExtensions)
     GroupedSearchResultSerializer.prepend(DiscourseEncrypt::GroupedSearchResultSerializerExtension)
     Post.prepend(DiscourseEncrypt::PostExtensions)
     PostActionsController.prepend(DiscourseEncrypt::PostActionsControllerExtensions)
@@ -378,6 +376,9 @@ after_initialize do
       fragment
     end
   end
+
+  # Don't send encrypted posts attachments via email.
+  register_modifier(:should_add_email_attachments) { |post| !post&.is_encrypted? }
 
   #
   # Handle new post creation.
