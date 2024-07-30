@@ -16,4 +16,4 @@ es:
     encrypt_groups: "El nombre de los grupos que pueden usar cifrado (vacío significa todos)."
     encrypt_pms_default: "Cifrar todos los mensajes privados nuevos por defecto."
     errors:
-      encrypt_unsafe_csp: "Las directivas CSP inseguras, como 'unsafe-eval' y 'unsafe-inline', no pueden utilizarse cuando el complemento Discourse Encrypt está activado."
+      encrypt_unsafe_csp: "Las directivas CSP inseguras, como «unsafe-eval» y «unsafe-inline», no pueden utilizarse cuando el complemento Discourse Encrypt está activado."
