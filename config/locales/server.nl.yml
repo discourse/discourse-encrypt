@@ -16,4 +16,4 @@ nl:
     encrypt_groups: "De naam van groepen die versleuteling kunnen gebruiken (leeg betekent iedereen)."
     encrypt_pms_default: "Alle nieuwe privéberichten standaard versleutelen."
     errors:
-      encrypt_unsafe_csp: "Onveilige CSP-richtlijnen zoals 'unsafe-eval' en 'unsafe-inline' kunnen niet worden gebruikt als de Discourse Encrypt-plug-in is ingeschakeld."
+      encrypt_unsafe_csp: "Onveilige CSP-instructies zoals 'unsafe-eval' en 'unsafe-inline' kunnen niet worden gebruikt als de Discourse Encrypt-plug-in is ingeschakeld."
