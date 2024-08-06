@@ -15,3 +15,5 @@ ja:
     auto_enable_encrypt: "ログインしているすべてのユーザーに暗号化を自動的に有効にします。"
     encrypt_groups: "暗号化を使用できるグループの名前（全員の場合は空白にします）。"
     encrypt_pms_default: "デフォルトですべての新しいプライベートメッセージを暗号化します。"
+    errors:
+      encrypt_unsafe_csp: "Discourse Encrypt プラグインが有効である場合、「unsafe-eval」や「unsafe-inline」などの安全でない CSP ディレクティブを使用できません。"
