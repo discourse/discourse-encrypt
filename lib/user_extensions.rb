@@ -19,7 +19,8 @@ module DiscourseEncrypt::UserExtensions
         n = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk["n"]), 2)
         e = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk["e"]), 2)
 
-        OpenSSL::PKey::RSA.new.tap { |k| k.set_key(n, e, nil) }
+        data_sequence = OpenSSL::ASN1.Sequence([OpenSSL::ASN1.Integer(n), OpenSSL::ASN1.Integer(e)])
+        OpenSSL::PKey::RSA.new(data_sequence.to_der)
       end
   end
 
