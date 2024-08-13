@@ -112,4 +112,4 @@ pt_BR:
         7_days: "7 dias"
     topic-statuses:
       encrypted:
-        help: "Esta mensagem usa criptografia ponta a ponta."
+        help: "Esta mensagem usa criptografia de ponta a ponta."
