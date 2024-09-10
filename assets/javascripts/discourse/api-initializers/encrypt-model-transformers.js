@@ -31,7 +31,7 @@ export default apiInitializer("0.8", (api) => {
           console.warn(
             `Decrypting the title of encrypted message (topicId: ${topic.id}) failed with the following error:`,
             err,
-            err.stack
+            err?.stack
           );
         }
       }
@@ -54,7 +54,7 @@ export default apiInitializer("0.8", (api) => {
           console.warn(
             `Decrypting the title of encrypted message (topicId: ${bookmark.topic_id}) failed with the following error:`,
             err,
-            err.stack
+            err?.stack
           );
         }
       }
@@ -80,7 +80,7 @@ export default apiInitializer("0.8", (api) => {
           console.warn(
             `Decrypting the title of encrypted message (topicId: ${notification.topic_id}) failed with the following error:`,
             err,
-            err.stack
+            err?.stack
           );
         }
       }
