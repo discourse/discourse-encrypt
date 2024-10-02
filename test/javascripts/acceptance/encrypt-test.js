@@ -1,4 +1,3 @@
-import { registerWaiter, unregisterWaiter } from "@ember/test";
 import {
   click,
   fillIn,
@@ -135,30 +134,6 @@ async function setEncryptionStatus(status) {
 
   keys[user.username] = exported.public;
   return identity;
-}
-
-/**
- * Executes the given function and waits until current encryption status
- * changes or given waiter becomes true.
- *
- * @param statusOrWaiter
- * @param func
- */
-async function wait(statusOrWaiter, func) {
-  const waiter =
-    typeof statusOrWaiter === "function"
-      ? statusOrWaiter
-      : () => getEncryptionStatus(User.current()) === statusOrWaiter;
-
-  try {
-    registerWaiter(waiter);
-    await func();
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(`Caught exception while waiting: ${e.message}`, e);
-  } finally {
-    unregisterWaiter(waiter);
-  }
 }
 
 function setupEncryptTests(needs) {
@@ -713,15 +688,14 @@ acceptance("Encrypt - active", function (needs) {
   });
 
   test("new draft for public topic is not encrypted", async function (assert) {
-    let assertedTitle, assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
-        assertedTitle = true;
+        assert.step("title");
         assert.strictEqual(data.title, PLAINTEXT_TITLE);
       }
       if (data.reply) {
-        assertedReply = true;
+        assert.step("reply");
         assert.strictEqual(data.reply, PLAINTEXT_RAW);
       }
       return response({});
@@ -735,22 +709,19 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    await wait(
-      () => assertedTitle && assertedReply,
-      () => click(".toggler")
-    );
+    await click(".toggler");
+    assert.verifySteps(["title", "reply"]);
   });
 
   test("draft for new topics is encrypted", async function (assert) {
-    let assertedTitle, assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.title) {
-        assertedTitle = true;
+        assert.step("title");
         assert.notStrictEqual(data.title, PLAINTEXT_TITLE);
       }
       if (data.reply) {
-        assertedReply = true;
+        assert.step("reply");
         assert.notStrictEqual(data.reply, PLAINTEXT_RAW);
       }
       return response({});
@@ -761,18 +732,15 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn("#reply-title", PLAINTEXT_TITLE);
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    await wait(
-      () => assertedTitle && assertedReply,
-      () => click(".toggler")
-    );
+    await click(".toggler");
+    assert.verifySteps(["title", "reply"]);
   });
 
   test("draft for replies is encrypted", async function (assert) {
-    let assertedReply;
     pretender.post("/drafts.json", (request) => {
       const data = JSON.parse(parsePostData(request.requestBody).data);
       if (data.reply) {
-        assertedReply = true;
+        assert.step("reply");
         assert.notStrictEqual(data.reply, PLAINTEXT_RAW);
       }
       return response({});
@@ -784,10 +752,9 @@ acceptance("Encrypt - active", function (needs) {
     await click(".topic-footer-main-buttons .btn-primary.create");
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
-    await wait(
-      () => assertedReply,
-      () => click(".toggler")
-    );
+    await click(".toggler");
+
+    assert.verifySteps(["reply"]);
   });
 
   test("deactivation works", async function (assert) {

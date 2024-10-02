@@ -1,4 +1,4 @@
-import { registerWaiter } from "@ember/test";
+import { buildWaiter } from "@ember/test-waiters";
 import { Promise } from "rsvp";
 import { isTesting } from "discourse-common/config/environment";
 import {
@@ -6,16 +6,7 @@ import {
   importIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/protocol";
 
-/**
- * Used to determine the waiter state
- *
- * @var {Number}
- */
-let pendingOperationsCount = 0;
-
-if (isTesting()) {
-  registerWaiter(() => pendingOperationsCount === 0);
-}
+const WAITER = buildWaiter("discourse-encrypt-database");
 
 /**
  * @var {String} DB_NAME Name of IndexedDb used for storing key pairs
@@ -152,7 +143,7 @@ export function saveDbIdentity(identity) {
     return saveIdentityToLocalStorage(identity);
   }
 
-  pendingOperationsCount++;
+  const token = WAITER.beginAsync();
 
   return new Promise((resolve, reject) => {
     const req = openDb(true);
@@ -177,7 +168,7 @@ export function saveDbIdentity(identity) {
       };
     };
   }).finally(() => {
-    pendingOperationsCount--;
+    WAITER.endAsync(token);
   });
 }
 
@@ -198,7 +189,7 @@ export function loadDbIdentity() {
     return loadIdentityFromLocalStorage();
   }
 
-  pendingOperationsCount++;
+  const token = WAITER.beginAsync();
 
   return initIndexedDb()
     .then(() => {
@@ -232,7 +223,7 @@ export function loadDbIdentity() {
       });
     })
     .finally(() => {
-      pendingOperationsCount--;
+      WAITER.endAsync(token);
     });
 }
 
@@ -245,7 +236,7 @@ export function deleteDb() {
   window.localStorage.removeItem(DB_NAME);
   window.localStorage.removeItem(DB_VERSION);
 
-  pendingOperationsCount++;
+  const token = WAITER.beginAsync();
 
   return initIndexedDb()
     .then(() => {
@@ -258,6 +249,6 @@ export function deleteDb() {
       });
     })
     .finally(() => {
-      pendingOperationsCount--;
+      WAITER.endAsync(token);
     });
 }
