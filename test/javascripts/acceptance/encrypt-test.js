@@ -710,7 +710,7 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
     await click(".toggler");
-    assert.verifySteps(["title", "reply"]);
+    assert.verifySteps(["title", "title", "reply", "title", "reply"]);
   });
 
   test("draft for new topics is encrypted", async function (assert) {
@@ -733,7 +733,7 @@ acceptance("Encrypt - active", function (needs) {
     await fillIn(".d-editor-input", PLAINTEXT_RAW);
 
     await click(".toggler");
-    assert.verifySteps(["title", "reply"]);
+    assert.verifySteps(["title", "reply", "title", "reply", "title", "reply"]);
   });
 
   test("draft for replies is encrypted", async function (assert) {
@@ -754,7 +754,7 @@ acceptance("Encrypt - active", function (needs) {
 
     await click(".toggler");
 
-    assert.verifySteps(["reply"]);
+    assert.verifySteps(["reply", "reply"]);
   });
 
   test("deactivation works", async function (assert) {
