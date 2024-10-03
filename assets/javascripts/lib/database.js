@@ -246,6 +246,7 @@ export function deleteDb() {
         req.onsuccess = (evt) => resolve(evt);
         req.onerror = (evt) => resolve(evt);
         req.onblocked = (evt) => resolve(evt);
+        req.onupgradeneeded = (evt) => resolve(evt);
       });
     })
     .finally(() => {
