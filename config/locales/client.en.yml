@@ -40,6 +40,7 @@ en:
         no_topic_key: "You cannot encrypt messages in this topic."
         user_has_no_key: "%{username} did not enable encrypted messages."
         group_not_allowed: "You are not allowed to send encrypted messages to groups."
+        new_encrypted_pms_disabled: "New encrypted messages are disabled on this site."
 
         confirm:
           message: "%{error} Do you want to continue?"

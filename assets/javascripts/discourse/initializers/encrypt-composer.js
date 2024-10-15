@@ -58,8 +58,7 @@ export default {
             // (serialization), this method is called and `isEncrypted` is
             // reset.
             if (!this.isEncryptedChanged) {
-              const currentUser = getOwner(this).lookup("service:current-user");
-              isEncrypted = currentUser.encrypt_pms_default;
+              isEncrypted = this.encryptPmsDefault;
             }
           }
 
@@ -75,14 +74,21 @@ export default {
           });
         },
 
+        get encryptPmsDefault() {
+          if (!this.siteSettings.allow_new_encrypted_pms) {
+            return false;
+          }
+          const currentUser = getOwner(this).lookup("service:current-user");
+          return currentUser.encrypt_pms_default;
+        },
+
         @observes("targetRecipients")
         checkEncryptRecipients() {
           if (!this.targetRecipients || this.targetRecipients.length === 0) {
-            const currentUser = getOwner(this).lookup("service:current-user");
             this.setProperties({
-              isEncrypted: currentUser.encrypt_pms_default,
+              isEncrypted: this.encryptPmsDefault,
               isEncryptedChanged: true,
-              showEncryptError: true,
+              showEncryptError: this.encryptPmsDefault,
               encryptErrorUser: false,
               encryptErrorGroup: false,
             });
@@ -137,11 +143,15 @@ export default {
         @discourseComputed(
           "encryptErrorMissingKey",
           "encryptErrorUser",
-          "encryptErrorGroup"
+          "encryptErrorGroup",
+          "siteSettings.allow_new_encrypted_pms",
+          "isNew"
         )
         encryptError(missingKey, username, group) {
           if (missingKey) {
             return I18n.t("encrypt.composer.no_topic_key");
+          } else if (!this.siteSettings.allow_new_encrypted_pms && this.isNew) {
+            return I18n.t("encrypt.composer.new_encrypted_pms_disabled");
           } else if (username) {
             return I18n.t("encrypt.composer.user_has_no_key", { username });
           } else if (group) {
