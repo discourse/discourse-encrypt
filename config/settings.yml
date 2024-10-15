@@ -15,3 +15,6 @@ plugins:
   encrypt_pms_default:
     client: true
     default: false
+  allow_new_encrypted_pms:
+    default: true
+    client: true
