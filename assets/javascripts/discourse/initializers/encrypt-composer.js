@@ -145,12 +145,17 @@ export default {
           "encryptErrorUser",
           "encryptErrorGroup",
           "siteSettings.allow_new_encrypted_pms",
-          "isNew"
+          "isNew",
+          "creatingPrivateMessage"
         )
         encryptError(missingKey, username, group) {
           if (missingKey) {
             return I18n.t("encrypt.composer.no_topic_key");
-          } else if (!this.siteSettings.allow_new_encrypted_pms && this.isNew) {
+          } else if (
+            !this.siteSettings.allow_new_encrypted_pms &&
+            this.isNew &&
+            this.creatingPrivateMessage
+          ) {
             return I18n.t("encrypt.composer.new_encrypted_pms_disabled");
           } else if (username) {
             return I18n.t("encrypt.composer.user_has_no_key", { username });
