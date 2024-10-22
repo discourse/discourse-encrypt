@@ -38,6 +38,7 @@ he:
         no_topic_key: "לא ניתן להצפין הודעות בנושא זה."
         user_has_no_key: "לא הופעלו הודעות מוצפנות מצד %{username}."
         group_not_allowed: "אסור לך לשלוח הודעות מוצפנות לקבוצות."
+        new_encrypted_pms_disabled: "הודעות מוצפנות חדשות מושבתות באתר הזה."
         confirm:
           message: "%{error} להמשיך?"
           no_value: "לא, לחזור אחורה"

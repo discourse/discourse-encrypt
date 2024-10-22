@@ -15,5 +15,6 @@ he:
     auto_enable_encrypt: "להפעיל הצפנה אוטומטית לכל המשתמשים שנכנסו למערכת."
     encrypt_groups: "שמות הקבוצות שיכולים להשתמש בהצפנה (ריק כלומר כולן יכולות)."
     encrypt_pms_default: "להצפין את כל ההודעות הפרטיות החדשות כבררת מחדל."
+    allow_new_encrypted_pms: "לאפשר למשתמש ליצור הודעות מוצפנות חדשות. השבתת האפשרות הזאת תגביל את discourse-encrypt להשתמש בהודעות מוצפנות קיימות."
     errors:
       encrypt_unsafe_csp: "אי אפשר להשתמש בהנחיות CSP מפוקפקות כגון ‚unsafe-eval’ ו־‚unsafe-inline’ כאשר התוסף Encrypt של Discourse פעיל."
