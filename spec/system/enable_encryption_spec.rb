@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Encrypt | Enabling encrypted messages", type: :system, js: true do
+describe "Encrypt | Enabling encrypted messages", type: :system do
   fab!(:current_user) { Fabricate(:user) }
   before do
     encrypt_system_bootstrap(current_user)

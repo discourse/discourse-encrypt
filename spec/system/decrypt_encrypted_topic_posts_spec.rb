@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Encrypt | Decypting topic posts", type: :system, js: true do
+describe "Encrypt | Decypting topic posts", type: :system do
   fab!(:current_user) { Fabricate(:user) }
 
   let(:user_preferences_page) { PageObjects::Pages::UserPreferences.new }
