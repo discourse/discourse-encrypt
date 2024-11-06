@@ -35,7 +35,7 @@ en:
       decrypt_permanently:
         button: "Convert to unencrypted PM"
         modal_title: "Decrypt this PM permanently?"
-        modal_body: "This will decrypt all posts in this PM and convert it to a regular PM. This will apply to all participants. Are you sure you want to proceed?"
+        modal_body: "This will decrypt all posts in this PM and convert it to a regular PM. This will apply to all participants. Post content will be more easily accessible to community admins. Are you sure you want to proceed?"
         modal_confirm: "Yes, decrypt permanently"
         modal_cancel: "No, cancel"
         refresh_page: "Refresh"
