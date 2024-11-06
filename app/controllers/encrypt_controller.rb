@@ -266,17 +266,14 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       decrypted_posts.each do |post_id, raw|
         post = topic.posts.find(post_id)
 
-        revision = { raw: raw }
+        changes = { raw: raw, edit_reason: "Decrypting topic" }
 
-        revision[:title] = decrypted_title if post.post_number == 1
+        changes[:title] = decrypted_title if post.post_number == 1
 
         post.revise(
           current_user,
-          **revision,
-          skip_validations: true,
-          bypass_rate_limiter: true,
-          bypass_bump: true,
-          edit_reason: "Decrypting topic",
+          changes,
+          { skip_validations: true, bypass_rate_limiter: true, bypass_bump: true },
         )
       end
       topic.encrypted_topics_data.destroy!
