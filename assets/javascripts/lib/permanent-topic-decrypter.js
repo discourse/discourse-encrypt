@@ -109,7 +109,7 @@ export default class PermanentTopicDecrypter {
         decryptedPosts[id] = post;
       }
 
-      this.log(`Updating topic with decrypted data...`);
+      this.log("Updating topic with decrypted data...");
       await ajax("/encrypt/complete_decryption.json", {
         type: "POST",
         data: {
@@ -119,7 +119,7 @@ export default class PermanentTopicDecrypter {
         },
       });
 
-      this.log(`Done!`);
+      this.log("Done!");
       return true;
     } catch (e) {
       this.log(`Error: ${e}`);

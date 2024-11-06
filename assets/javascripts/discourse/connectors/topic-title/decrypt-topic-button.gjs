@@ -17,13 +17,6 @@ export default class DecryptTopicButton extends Component {
   @service currentUser;
   @service siteSettings;
 
-  @action
-  openDecryptModal() {
-    this.modal.show(DecryptTopicModal, {
-      model: { topic_id: this.args.outletArgs.model.id },
-    });
-  }
-
   get canDecrypt() {
     return (
       this.args.outletArgs.model.encrypted_title &&
@@ -31,6 +24,13 @@ export default class DecryptTopicButton extends Component {
       getEncryptionStatus(this.currentUser) !== ENCRYPT_DISABLED &&
       this.siteSettings.allow_decrypting_pms
     );
+  }
+
+  @action
+  openDecryptModal() {
+    this.modal.show(DecryptTopicModal, {
+      model: { topic_id: this.args.outletArgs.model.id },
+    });
   }
 
   <template>
@@ -46,8 +46,6 @@ export default class DecryptTopicButton extends Component {
 }
 
 class DecryptTopicModal extends Component {
-  @service router;
-
   @tracked running = false;
   @tracked done = false;
 
