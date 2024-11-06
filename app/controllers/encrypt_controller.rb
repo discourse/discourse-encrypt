@@ -265,7 +265,6 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     Topic.transaction do
       decrypted_posts.each do |post_id, raw|
         post = topic.posts.find(post_id)
-        raw += "\n\n---\n<small>(decrypted by `@#{current_user.username}`)</small>"
 
         revision = { raw: raw }
 
