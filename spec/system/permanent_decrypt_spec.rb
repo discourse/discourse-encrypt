@@ -60,6 +60,8 @@ describe "Encrypt | Decypting topic posts", type: :system do
       expect(upload.url).to end_with(".encrypted")
     end
 
+    initial_bump_date = Topic.last.bumped_at
+
     # Permanently decrypt the topic
     find(".decrypt-topic-button").click
     expect(page).to have_css(".decrypt-topic-modal")
@@ -78,5 +80,6 @@ describe "Encrypt | Decypting topic posts", type: :system do
     upload = Topic.last.posts.last.uploads.first
     expect(upload).to be_present
     expect(upload.url).not_to end_with(".encrypted")
+    expect(Topic.last.bumped_at).to eq(initial_bump_date) # rubocop:disable Discourse/TimeEqMatcher because it should be precisely the same
   end
 end
