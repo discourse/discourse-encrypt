@@ -238,6 +238,53 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
+  def data_for_decryption
+    raise Discourse::InvalidAccess if !SiteSetting.allow_decrypting_pms
+
+    topic = Topic.find(params[:topic_id])
+    guardian.ensure_can_see!(topic)
+    raise Discourse::NotFound if !topic.is_encrypted?
+
+    encrypted_data = topic.encrypted_topics_data
+
+    posts = topic.posts.where(post_type: Post.types[:regular], deleted_at: nil)
+
+    render json: { title: "#{encrypted_data.title}", posts: posts.map { |p| [p.id, p.raw] }.to_h }
+  end
+
+  def complete_decryption
+    raise Discourse::InvalidAccess if !SiteSetting.allow_decrypting_pms
+
+    topic = Topic.find(params[:topic_id])
+    guardian.ensure_can_see!(topic)
+    raise Discourse::NotFound if !topic.is_encrypted?
+
+    decrypted_title = params[:title]
+    decrypted_posts = params[:posts]
+
+    Topic.transaction do
+      decrypted_posts.each do |post_id, raw|
+        post = topic.posts.find(post_id)
+
+        revision = { raw: raw }
+
+        revision[:title] = decrypted_title if post.post_number == 1
+
+        post.revise(
+          current_user,
+          **revision,
+          skip_validations: true,
+          bypass_rate_limiter: true,
+          bypass_bump: true,
+          edit_reason: "Decrypting topic",
+        )
+      end
+      topic.encrypted_topics_data.destroy!
+    end
+
+    render json: success_json
+  end
+
   private
 
   def ensure_can_encrypt

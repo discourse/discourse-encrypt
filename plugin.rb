@@ -83,6 +83,8 @@ after_initialize do
     put "/encrypt/rotate" => "encrypt#update_all_keys"
     post "/encrypt/encrypted_post_timers" => "encrypted_post_timers#create"
     delete "/encrypt/encrypted_post_timers" => "encrypted_post_timers#destroy"
+    get "/encrypt/data_for_decryption" => "encrypt#data_for_decryption"
+    post "/encrypt/complete_decryption" => "encrypt#complete_decryption"
   end
 
   Discourse::Application.routes.prepend { mount DiscourseEncrypt::Engine, at: "/" }

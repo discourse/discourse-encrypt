@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Encrypt | Decypting topic posts", type: :system, js: true do
+describe "Encrypt | Decypting topic posts", type: :system do
   fab!(:current_user) { Fabricate(:user) }
 
   let(:user_preferences_page) { PageObjects::Pages::UserPreferences.new }
@@ -27,7 +27,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
     fab!(:tag) { Fabricate(:tag, name: "bugs") }
     fab!(:other_user) { Fabricate(:user) }
 
-    xit "decrypts the post" do
+    it "decrypts the post" do
       enable_encrypt_for_user_in_session(other_user, user_preferences_page)
 
       topic_page.open_new_message
@@ -42,7 +42,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
       # encryption loading and processing takes a little longer than usual
       using_wait_time(5) do
         expect(find(".fancy-title")).to have_content(topic_title)
-        expect(page).to have_css(".d-icon-user-secret.private-message-glyph")
+        expect(page).to have_css(".topic-status .d-icon-user-secret")
         expect(page).to have_content("Here are some hashtags for decryption later")
       end
 
@@ -57,7 +57,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
     fab!(:user_3) { Fabricate(:user) }
     fab!(:other_user) { Fabricate(:user) }
 
-    xit "decrypts the post" do
+    it "decrypts the post" do
       enable_encrypt_for_user_in_session(other_user, user_preferences_page)
 
       topic_page.open_new_message
@@ -74,7 +74,7 @@ describe "Encrypt | Decypting topic posts", type: :system, js: true do
       # encryption loading and processing takes a little longer than usual
       using_wait_time(5) do
         expect(find(".fancy-title")).to have_content(topic_title)
-        expect(page).to have_css(".d-icon-user-secret.private-message-glyph")
+        expect(page).to have_css(".topic-status .d-icon-user-secret")
         expect(page).to have_content("Here are some mentions for decryption later")
       end
 

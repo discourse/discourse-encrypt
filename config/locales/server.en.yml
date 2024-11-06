@@ -11,6 +11,7 @@ en:
     encrypt_groups: "The name of groups that are able to use encryption (empty means everyone)."
     encrypt_pms_default: "Encrypt all new private messages by default."
     allow_new_encrypted_pms: "Allow users to create new encrypted private messages. Disabling this will limit discourse-encrypt use to existing encrypted PMs."
+    allow_decrypting_pms: "Allow users to permanently decrypt encrypted private messages."
 
     errors:
       encrypt_unsafe_csp: "Unsafe CSP directives like 'unsafe-eval' and 'unsafe-inline' cannot be used when the Discourse Encrypt plugin is enabled."
