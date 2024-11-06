@@ -99,7 +99,7 @@ export default class PermanentTopicDecrypter {
           this.log(`    Re-uploading ${shortUrl}...`);
           const newShortUrl = await this.uploadBlob(
             decryptedDownloadedFile.blob,
-            decryptedDownloadedFile.name.replace(".encrypted", "")
+            decryptedDownloadedFile.name?.replace(".encrypted", "")
           );
           this.log(`    Uploaded as ${newShortUrl}.`);
 
