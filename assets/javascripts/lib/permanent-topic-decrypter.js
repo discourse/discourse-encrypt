@@ -1,3 +1,4 @@
+import { tracked } from "@glimmer/tracking";
 import { lookupCachedUploadUrl } from "pretty-text/upload-short-url";
 import { ajax } from "discourse/lib/ajax";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
@@ -8,16 +9,25 @@ import { downloadEncryptedFile } from "discourse/plugins/discourse-encrypt/lib/u
 const UPLOAD_REGEX = /\[(.+)\]\((upload:\/\/\w{27}.encrypted)\)/g;
 
 export default class PermanentTopicDecrypter {
-  topicId;
-  logCallback;
+  @tracked logContent = "";
+  @tracked success = false;
+  @tracked error = false;
+  @tracked running = false;
+  @tracked topicTitle;
 
-  constructor(topicId, logCallback) {
+  topicId;
+
+  constructor(topicId) {
     this.topicId = topicId;
-    this.log = logCallback;
+  }
+
+  log(msg) {
+    this.logContent += `${msg}\n`;
   }
 
   async run() {
     try {
+      this.running = true;
       this.log("Starting decryption...");
 
       const topicId = this.topicId;
@@ -32,6 +42,7 @@ export default class PermanentTopicDecrypter {
 
       this.log("Decrypting title...");
       const decryptedTitle = (await decrypt(topicKey, encryptedData.title)).raw;
+      this.topicTitle = decryptedTitle;
 
       const decryptedPosts = {};
       const decryptedPostPromises = [];
@@ -120,10 +131,14 @@ export default class PermanentTopicDecrypter {
       });
 
       this.log("Done!");
+      this.success = true;
       return true;
     } catch (e) {
       this.log(`Error: ${e}`);
+      this.error = true;
       throw e;
+    } finally {
+      this.running = false;
     }
   }
 

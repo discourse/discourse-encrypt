@@ -19,6 +19,7 @@ import {
   unpackIdentity,
 } from "discourse/plugins/discourse-encrypt/lib/pack";
 import { importIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";
+import DecryptAllModal from "../../components/modal/decrypt-all";
 import ExportKeyPair from "../../components/modal/export-key-pair";
 import GeneratePaperKey from "../../components/modal/generate-paper-key";
 import ManagePaperKeys from "../../components/modal/manage-paper-keys";
@@ -202,6 +203,9 @@ export default {
         break;
       case "reset":
         modal.show(ResetKeyPair, { model: { user: this.model } });
+        break;
+      case "decryptAll":
+        modal.show(DecryptAllModal);
         break;
     }
   },

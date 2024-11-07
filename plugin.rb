@@ -85,6 +85,7 @@ after_initialize do
     delete "/encrypt/encrypted_post_timers" => "encrypted_post_timers#destroy"
     get "/encrypt/data_for_decryption" => "encrypt#data_for_decryption"
     post "/encrypt/complete_decryption" => "encrypt#complete_decryption"
+    get "/encrypt/list" => "encrypt#list_encrypted_topics"
   end
 
   Discourse::Application.routes.prepend { mount DiscourseEncrypt::Engine, at: "/" }
