@@ -25,6 +25,7 @@ describe "Encrypt | Decypting topic posts", type: :system do
       current_user.username,
     )
     find(".email-group-user-chooser-row").click
+    find("#private-message-users").click
   end
 
   it "can permanently decrypt the topic" do
@@ -82,7 +83,7 @@ describe "Encrypt | Decypting topic posts", type: :system do
   end
 
   it "can permanently decrypt multiple topics" do
-    3.times do
+    3.times do |i|
       topic_page.open_new_message
       expect(page).to have_css(".encrypt-controls .d-icon-lock")
       select_self_as_recipient
@@ -90,6 +91,13 @@ describe "Encrypt | Decypting topic posts", type: :system do
       # Create encrypted PM
       topic_page.fill_in_composer_title(topic_title)
       topic_page.fill_in_composer("This is an initial post in the encrypted PM")
+      if i == 0
+        attach_file(file_from_fixtures("logo.png", "images").path) do
+          composer.click_toolbar_button("upload")
+        end
+        expect(page).to have_no_css("#file-uploading")
+      end
+
       topic_page.send_reply
       expect(find(".fancy-title")).to have_content(topic_title)
     end
