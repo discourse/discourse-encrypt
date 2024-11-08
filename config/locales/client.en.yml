@@ -39,6 +39,15 @@ en:
         modal_confirm: "Yes, decrypt permanently"
         modal_cancel: "No, cancel"
         refresh_page: "Refresh"
+    
+      decrypt_all:
+        button: "Permanently decrypt all PMs"
+        modal_title: "Decrypt all PMs permanently?"
+        modal_body: "This will decrypt all your encrypted PMs and convert them to regular PMs. This will apply to all participants. Post content will be more easily accessible to community admins. Are you sure you want to proceed?"
+        modal_count: "You have %{count} encrypted PMs."
+        modal_confirm: "Yes, decrypt all"
+        modal_cancel: "No, cancel"
+        done: "Done"
 
       post:
         delete:

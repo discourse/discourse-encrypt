@@ -19,21 +19,20 @@ describe "Encrypt | Decypting topic posts", type: :system do
     activate_encrypt(user_preferences_page, current_user)
   end
 
-  def select_other_user_for_pm
+  def select_self_as_recipient
     find("#private-message-users").click
     find("#private-message-users-filter input[name='filter-input-search']").send_keys(
-      other_user.username,
+      current_user.username,
     )
     find(".email-group-user-chooser-row").click
+    find("#private-message-users").click
   end
 
   it "can permanently decrypt the topic" do
-    enable_encrypt_for_user_in_session(other_user, user_preferences_page)
-
     topic_page.open_new_message
     expect(page).to have_css(".encrypt-controls .d-icon-lock")
 
-    select_other_user_for_pm
+    select_self_as_recipient
 
     # Create encrypted PM
     topic_page.fill_in_composer_title(topic_title)
@@ -66,7 +65,7 @@ describe "Encrypt | Decypting topic posts", type: :system do
     find(".decrypt-topic-button").click
     expect(page).to have_css(".decrypt-topic-modal")
     find(".d-modal__footer .btn-primary").click
-    expect(find(".d-modal__body pre")).to have_content("Refresh page to continue")
+    expect(find(".d-modal__body")).to have_content("Refresh page to continue")
     find(".d-modal__footer .btn-primary").click
 
     # Check the topic is decrypted
@@ -81,5 +80,40 @@ describe "Encrypt | Decypting topic posts", type: :system do
     expect(upload).to be_present
     expect(upload.url).not_to end_with(".encrypted")
     expect(Topic.last.bumped_at).to eq(initial_bump_date) # rubocop:disable Discourse/TimeEqMatcher because it should be precisely the same
+  end
+
+  it "can permanently decrypt multiple topics" do
+    3.times do |i|
+      topic_page.open_new_message
+      expect(page).to have_css(".encrypt-controls .d-icon-lock")
+      select_self_as_recipient
+
+      # Create encrypted PM
+      topic_page.fill_in_composer_title(topic_title)
+      topic_page.fill_in_composer("This is an initial post in the encrypted PM")
+      if i == 0
+        attach_file(file_from_fixtures("logo.png", "images").path) do
+          composer.click_toolbar_button("upload")
+        end
+        expect(page).to have_no_css("#file-uploading")
+      end
+
+      topic_page.send_reply
+      expect(find(".fancy-title")).to have_content(topic_title)
+    end
+
+    visit "/my/preferences/security"
+    find("#encrypt-preferences-header").click
+    find("[data-value='decryptAll']").click
+
+    expect(find(".d-modal__body")).to have_content(
+      I18n.t("js.encrypt.decrypt_all.modal_count", count: 3),
+    )
+
+    find(".d-modal__footer .btn-primary").click
+
+    expect(find(".d-modal__body")).to have_content("✅", count: 3)
+
+    expect(Topic.last(3).map(&:is_encrypted?)).to eq([false, false, false])
   end
 end

@@ -48,8 +48,7 @@ export default class DecryptTopicButton extends Component {
 class DecryptTopicModal extends Component {
   @tracked running = false;
   @tracked done = false;
-
-  @tracked logContent = "";
+  @tracked decrypter;
 
   @action
   async decryptTopic() {
@@ -59,10 +58,10 @@ class DecryptTopicModal extends Component {
       this.args.model.topic_id,
       this.log
     );
+    this.decrypter = decrypter;
 
     try {
       await decrypter.run();
-      this.log("Refresh page to continue");
       this.done = true;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -70,11 +69,6 @@ class DecryptTopicModal extends Component {
     } finally {
       this.running = false;
     }
-  }
-
-  @action
-  log(msg) {
-    this.logContent += msg + "\n";
   }
 
   @action
@@ -94,11 +88,14 @@ class DecryptTopicModal extends Component {
       class="decrypt-topic-modal"
     >
       <:body>
-        {{#if this.logContent}}
+        {{#if this.decrypter.logContent}}
           <pre
             style="width: 100%; height: 200px; overflow-y: scroll;"
-            {{didUpdate this.scrollBottom this.logContent}}
-          >{{this.logContent}}</pre>
+            {{didUpdate this.scrollBottom this.decrypter.logContent}}
+          >
+            {{~this.decrypter.logContent~}}
+          </pre>
+          {{if this.decrypter.success "Refresh page to continue"}}
         {{else}}
           <p>{{i18n "encrypt.decrypt_permanently.modal_body"}}</p>
         {{/if}}

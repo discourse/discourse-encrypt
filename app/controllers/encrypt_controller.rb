@@ -282,6 +282,23 @@ class DiscourseEncrypt::EncryptController < ApplicationController
     render json: success_json
   end
 
+  def list_encrypted_topics
+    raise Discourse::InvalidAccess if !SiteSetting.allow_decrypting_pms
+    topics =
+      Topic
+        .private_messages_for_user(current_user)
+        .where(deleted_at: nil)
+        .joins(:encrypted_topics_data)
+        .joins(:encrypted_topics_users)
+        .where("encrypted_topics_users.user_id = ?", current_user.id)
+        .where.not(encrypted_topics_data: nil)
+        .order("bumped_at DESC")
+        .pluck("topics.id", "encrypted_topics_users.key")
+        .to_h
+
+    render json: { topics: }
+  end
+
   private
 
   def ensure_can_encrypt
