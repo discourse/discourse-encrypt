@@ -65,7 +65,7 @@ describe "Encrypt | Decypting topic posts", type: :system do
     find(".decrypt-topic-button").click
     expect(page).to have_css(".decrypt-topic-modal")
     find(".d-modal__footer .btn-primary").click
-    expect(find(".d-modal__body pre")).to have_content("Refresh page to continue")
+    expect(find(".d-modal__body")).to have_content("Refresh page to continue")
     find(".d-modal__footer .btn-primary").click
 
     # Check the topic is decrypted
