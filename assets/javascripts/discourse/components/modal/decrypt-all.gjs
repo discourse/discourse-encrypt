@@ -107,6 +107,7 @@ export default class DecryptAllModal extends Component {
           errors)
 
           {{#each-in this.decrypters as |topicId decrypter|}}
+            {{! template-lint-disable no-nested-interactive }}
             <details open={{decrypter.running}}>
               <summary>
                 {{#if decrypter.error}}
@@ -121,6 +122,7 @@ export default class DecryptAllModal extends Component {
                 <a
                   href="/t/{{decrypter.topicId}}"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >{{decrypter.topicId}}</a>
                 {{#if decrypter.topicTitle}}
                   -

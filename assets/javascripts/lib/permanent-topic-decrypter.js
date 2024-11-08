@@ -86,7 +86,7 @@ export default class PermanentTopicDecrypter {
       this.log("Checking for encrypted uploads...");
 
       const shortUrls = [];
-      for (let [id, post] of Object.entries(decryptedPosts)) {
+      for (let [, post] of Object.entries(decryptedPosts)) {
         for (const [, , shortUrl] of [...post.matchAll(UPLOAD_REGEX)]) {
           shortUrls.push(shortUrl);
         }
