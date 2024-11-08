@@ -94,8 +94,8 @@ class DecryptTopicModal extends Component {
             {{didUpdate this.scrollBottom this.decrypter.logContent}}
           >
             {{~this.decrypter.logContent~}}
-            {{~if this.decrypter.success "\nRefresh page to continue"~}}
           </pre>
+          {{if this.decrypter.success "Refresh page to continue"}}
         {{else}}
           <p>{{i18n "encrypt.decrypt_permanently.modal_body"}}</p>
         {{/if}}
