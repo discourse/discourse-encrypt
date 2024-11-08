@@ -9,7 +9,7 @@ import { getTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { decrypt } from "discourse/plugins/discourse-encrypt/lib/protocol";
 import { downloadEncryptedFile } from "discourse/plugins/discourse-encrypt/lib/uploads";
 
-const UPLOAD_REGEX = /\[(.+)\]\((upload:\/\/\w{27}.encrypted)\)/g;
+const UPLOAD_REGEX = /\[([^\]]+)\]\((upload:\/\/\w{27}.encrypted)\)/g;
 
 export default class PermanentTopicDecrypter {
   @tracked logContent = "";
