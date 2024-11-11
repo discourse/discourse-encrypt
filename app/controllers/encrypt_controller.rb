@@ -266,12 +266,12 @@ class DiscourseEncrypt::EncryptController < ApplicationController
       decrypted_posts.each do |post_id, raw|
         post = topic.posts.find(post_id)
 
-        changes = { raw: raw, edit_reason: "Decrypting topic" }
+        changes = { raw: raw, edit_reason: "@#{current_user.username} decrypted topic" }
 
         changes[:title] = decrypted_title if post.post_number == 1
 
         post.revise(
-          current_user,
+          Discourse.system_user,
           changes,
           { skip_validations: true, bypass_rate_limiter: true, bypass_bump: true },
         )
