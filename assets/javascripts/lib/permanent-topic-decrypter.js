@@ -143,12 +143,28 @@ export default class PermanentTopicDecrypter {
           const decryptedDownloadedFile = await this.retryOnRateLimit(() =>
             downloadEncryptedFile(url, keyPromise, { type })
           );
+
+          this.log(`    Getting original filename of ${shortUrl}`);
+          const uploadMeta = await this.retryOnRateLimit(() =>
+            ajax(`/uploads/lookup-metadata.json`, {
+              data: { url: urlData.url },
+              type: "POST",
+            })
+          );
+
+          const originalFilename = uploadMeta.original_filename.replace(
+            ".encrypted",
+            ""
+          );
+          this.log(`    Original filename is ${originalFilename}`);
+
+          if (!originalFilename.split(".").filter(Boolean).length > 1) {
+            throw new Error("Original filename has no extension. Aborting.");
+          }
+
           this.log(`    Re-uploading ${shortUrl}...`);
           const newShortUrl = await this.retryOnRateLimit(() =>
-            this.uploadBlob(
-              decryptedDownloadedFile.blob,
-              decryptedDownloadedFile.name?.replace(".encrypted", "")
-            )
+            this.uploadBlob(decryptedDownloadedFile.blob, originalFilename)
           );
           this.log(`    Uploaded as ${newShortUrl}.`);
 
