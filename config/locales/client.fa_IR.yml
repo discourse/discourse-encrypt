@@ -13,6 +13,10 @@ fa_IR:
       invalid_ciphertext: "پیام قابل رمزگشایی نیست، زیرا متن رمز این پیام معتبر نیست."
       invalid_topic_key: "پیام قابل رمزگشایی نیست، زیرا کلید موضوع شما معتبر نیست."
       invalid_identity: "پیام قابل رمزگشایی نیست، زیرا هویت کاربر معتبر نیست."
+      decrypt_permanently:
+        refresh_page: "تازه‌سازی"
+      decrypt_all:
+        done: "انجام شد"
       post:
         delete:
           title: "مطمئنی؟"

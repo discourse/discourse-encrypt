@@ -29,6 +29,10 @@ sv:
       checkbox:
         checked: "Detta meddelande kommer att vara krypterat från början till slut."
         unchecked: "Klicka på låssymbolen för att kryptera detta meddelande."
+      decrypt_permanently:
+        refresh_page: "Uppdatera"
+      decrypt_all:
+        done: "Klar"
       post:
         delete:
           title: "Är du säker?"

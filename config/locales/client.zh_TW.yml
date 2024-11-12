@@ -7,6 +7,10 @@
 zh_TW:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "重新整理"
+      decrypt_all:
+        done: "完成"
       preferences:
         save: "儲存變更"
       manage_paper_keys:

@@ -30,6 +30,10 @@ it:
       checkbox:
         checked: "Questo messaggio verrà codificato con crittografia end to end."
         unchecked: "Clicca il lucchetto per crittografare questo messaggio."
+      decrypt_permanently:
+        refresh_page: "Aggiorna"
+      decrypt_all:
+        done: "Fatto"
       post:
         delete:
           title: "Sei sicuro?"

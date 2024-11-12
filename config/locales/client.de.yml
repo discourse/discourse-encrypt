@@ -30,6 +30,10 @@ de:
       checkbox:
         checked: "Diese Nachricht wird Ende-zu-Ende verschlüsselt."
         unchecked: "Klicke das Schloss-Symbol zum Verschlüsseln dieser Nachricht."
+      decrypt_permanently:
+        refresh_page: "Aktualisieren"
+      decrypt_all:
+        done: "Erledigt"
       post:
         delete:
           title: "Bist du sicher?"

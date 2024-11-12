@@ -30,6 +30,10 @@ zh_CN:
       checkbox:
         checked: "此消息将进行端到端加密。"
         unchecked: "点击锁符号来加密此消息。"
+      decrypt_permanently:
+        refresh_page: "刷新"
+      decrypt_all:
+        done: "完成"
       post:
         delete:
           title: "您确定吗？"

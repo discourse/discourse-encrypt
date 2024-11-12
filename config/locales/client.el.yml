@@ -7,6 +7,10 @@
 el:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Ανανέωση"
+      decrypt_all:
+        done: "Ολοκληρώθηκε"
       preferences:
         save: "Αποθήκευση αλλαγών"
       manage_paper_keys:

@@ -7,6 +7,10 @@
 lv:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Pārlādēt"
+      decrypt_all:
+        done: "Pabeigt"
       preferences:
         save: "Saglabāt izmaiņas"
       manage_paper_keys:

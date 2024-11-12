@@ -7,6 +7,10 @@
 ur:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "رِیفریش"
+      decrypt_all:
+        done: "مکمل"
       preferences:
         save: "تبدیلیاں محفوظ کریں"
       manage_paper_keys:

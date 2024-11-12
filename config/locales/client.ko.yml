@@ -7,6 +7,10 @@
 ko:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "새로 고침"
+      decrypt_all:
+        done: "완료"
       preferences:
         save: "변경사항 저장"
       manage_paper_keys:

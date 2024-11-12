@@ -7,6 +7,10 @@
 th:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "รีเฟรช"
+      decrypt_all:
+        done: "เสร็จ"
       preferences:
         save: "บันทึกการเปลี่ยนแปลง"
       manage_paper_keys:

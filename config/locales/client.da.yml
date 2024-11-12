@@ -7,6 +7,10 @@
 da:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Genindlæs"
+      decrypt_all:
+        done: "Færdig"
       preferences:
         save: "Gem ændringer"
       manage_paper_keys:

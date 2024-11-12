@@ -7,6 +7,10 @@
 hr:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Osvježi"
+      decrypt_all:
+        done: "Gotovo"
       preferences:
         save: "Zabilježi promjene"
       manage_paper_keys:

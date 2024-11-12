@@ -7,6 +7,10 @@
 ca:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Actualitza"
+      decrypt_all:
+        done: "Fet"
       preferences:
         save: "Desa els canvis"
       manage_paper_keys:

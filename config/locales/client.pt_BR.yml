@@ -30,6 +30,10 @@ pt_BR:
       checkbox:
         checked: "Esta mensagem usará criptografia ponta a ponta."
         unchecked: "Clique no símbolo de cadeado para criptografar esta mensagem."
+      decrypt_permanently:
+        refresh_page: "Atualizar"
+      decrypt_all:
+        done: "Concluído(a)"
       post:
         delete:
           title: "Você tem certeza?"

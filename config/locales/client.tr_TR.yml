@@ -30,6 +30,10 @@ tr_TR:
       checkbox:
         checked: "Bu mesaj uçtan uca şifrelenecek."
         unchecked: "Bu mesajı şifrelemek için kilit sembolüne tıklayın."
+      decrypt_permanently:
+        refresh_page: "Yenile"
+      decrypt_all:
+        done: "Bitti"
       post:
         delete:
           title: "Emin misiniz?"

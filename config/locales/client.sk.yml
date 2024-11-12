@@ -9,6 +9,10 @@ sk:
     encrypt:
       decrypting: "Dešifrujem..."
       encrypted_title: "Tajná správa"
+      decrypt_permanently:
+        refresh_page: "Obnoviť"
+      decrypt_all:
+        done: "Hotovo"
       post:
         delete:
           title: "Ste si istý?"

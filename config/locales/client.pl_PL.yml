@@ -30,6 +30,10 @@ pl_PL:
       checkbox:
         checked: "Ta wiadomość będzie zaszyfrowana end-to-end."
         unchecked: "Kliknij symbol kłódki, aby zaszyfrować tę wiadomość."
+      decrypt_permanently:
+        refresh_page: "Odśwież"
+      decrypt_all:
+        done: "Zrobione"
       post:
         delete:
           title: "Jesteś pewny(a)?"
