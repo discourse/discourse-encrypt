@@ -7,6 +7,10 @@
 ro:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Reîmprospătează"
+      decrypt_all:
+        done: "Terminat"
       preferences:
         save: "Salvează schimbările"
       manage_paper_keys:

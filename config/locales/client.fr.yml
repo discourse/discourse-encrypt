@@ -30,6 +30,10 @@ fr:
       checkbox:
         checked: "Ce message sera chiffré de bout en bout."
         unchecked: "Cliquez sur le symbole du cadenas pour chiffrer ce message."
+      decrypt_permanently:
+        refresh_page: "Actualiser"
+      decrypt_all:
+        done: "Terminé"
       post:
         delete:
           title: "Êtes-vous sûr(e) ?"

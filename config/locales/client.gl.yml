@@ -7,6 +7,10 @@
 gl:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Actualizar"
+      decrypt_all:
+        done: "Feito"
       preferences:
         save: "Gardar os cambios"
       manage_paper_keys:

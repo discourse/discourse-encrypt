@@ -30,6 +30,10 @@ nl:
       checkbox:
         checked: "Dit bericht wordt end-to-end versleuteld."
         unchecked: "Klik op het slotsymbool om dit bericht te versleutelen."
+      decrypt_permanently:
+        refresh_page: "Opnieuw laden"
+      decrypt_all:
+        done: "Gereed"
       post:
         delete:
           title: "Weet je het zeker?"

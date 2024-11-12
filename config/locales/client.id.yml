@@ -7,6 +7,8 @@
 id:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Segarkan"
       preferences:
         save: "Simpan Perubahan"
       manage_paper_keys:

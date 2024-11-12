@@ -30,6 +30,10 @@ es:
       checkbox:
         checked: "Este mensaje se cifrará de extremo a extremo."
         unchecked: "Pulsa el símbolo del candado para cifrar este mensaje."
+      decrypt_permanently:
+        refresh_page: "Volver a cargar"
+      decrypt_all:
+        done: "Hecho"
       post:
         delete:
           title: "¿Seguro?"

@@ -30,6 +30,10 @@ ja:
       checkbox:
         checked: "このメッセージはエンドツーエンドで暗号化されます。"
         unchecked: "このメッセージを暗号化するには、ロック記号をクリックします。"
+      decrypt_permanently:
+        refresh_page: "更新"
+      decrypt_all:
+        done: "完了"
       post:
         delete:
           title: "よろしいですか？"

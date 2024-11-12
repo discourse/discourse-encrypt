@@ -7,6 +7,10 @@
 te:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "రిఫ్రెష్ చేయండి"
+      decrypt_all:
+        done: "పూర్తయింది"
       post:
         delete:
           title: "ఖచితమేనా?"

@@ -22,6 +22,10 @@ uk:
       checkbox:
         checked: "Це повідомлення буде зашифровано."
         unchecked: "Клацніть символ замка, щоб зашифрувати це повідомлення."
+      decrypt_permanently:
+        refresh_page: "Оновити"
+      decrypt_all:
+        done: "Виконано"
       post:
         delete:
           title: "Ви впевнені?"

@@ -7,6 +7,10 @@
 hu:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Újratöltés"
+      decrypt_all:
+        done: "Kész"
       post:
         delete:
           title: "Biztos vagy benne?"

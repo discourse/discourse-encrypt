@@ -11,6 +11,10 @@ pt:
       decrypting: "A desencriptar..."
       integrity_check_pass: "A verificação de integridade para esta publicação expirou."
       integrity_check_fail: "A verificação de integridade para esta publicação falhou (disparidade %{fields})."
+      decrypt_permanently:
+        refresh_page: "Atualizar"
+      decrypt_all:
+        done: "Concluído"
       preferences:
         save: "Guardar alterações"
       manage_paper_keys:

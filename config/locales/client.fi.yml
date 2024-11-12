@@ -30,6 +30,10 @@ fi:
       checkbox:
         checked: "Tämä viesti salataan päästä päähän."
         unchecked: "Salaa tämä viesti napsauttamalla lukkokuvaketta."
+      decrypt_permanently:
+        refresh_page: "Päivitä"
+      decrypt_all:
+        done: "Valmis"
       post:
         delete:
           title: "Oletko varma?"

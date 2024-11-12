@@ -7,6 +7,10 @@
 vi:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Làm mới"
+      decrypt_all:
+        done: "Hoàn tất"
       post:
         delete:
           title: "Bạn có chắc không?"

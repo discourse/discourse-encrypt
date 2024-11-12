@@ -7,6 +7,10 @@
 lt:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Atnaujinti"
+      decrypt_all:
+        done: "Baigta"
       preferences:
         save: "Išsaugoti pakeitimus"
       manage_paper_keys:

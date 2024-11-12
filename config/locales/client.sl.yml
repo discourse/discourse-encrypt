@@ -7,6 +7,10 @@
 sl:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Osveži"
+      decrypt_all:
+        done: "Končano"
       preferences:
         save: "Shrani spremembe"
       manage_paper_keys:

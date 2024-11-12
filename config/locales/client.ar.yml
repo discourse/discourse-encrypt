@@ -30,6 +30,10 @@ ar:
       checkbox:
         checked: "سيتم تشفير هذه الرسالة بشكلٍ شامل."
         unchecked: "انقر على رمز القفل لتشفير هذه الرسالة."
+      decrypt_permanently:
+        refresh_page: "تحديث"
+      decrypt_all:
+        done: "تم"
       post:
         delete:
           title: "هل أنت متأكد؟"

@@ -30,6 +30,10 @@ ru:
       checkbox:
         checked: "Это сообщение будет зашифровано методом сквозного шифрования."
         unchecked: "Нажмите на значок замка для шифрования сообщения."
+      decrypt_permanently:
+        refresh_page: "Обновить"
+      decrypt_all:
+        done: "Готово"
       post:
         delete:
           title: "Вы уверены?"

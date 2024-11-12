@@ -7,6 +7,10 @@
 ug:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "يېڭىلا"
+      decrypt_all:
+        done: "تامام"
       post:
         delete:
           title: "راستىنلا شۇنداق قىلامسىز؟"

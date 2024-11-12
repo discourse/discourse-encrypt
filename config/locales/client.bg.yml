@@ -7,6 +7,10 @@
 bg:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Обнови"
+      decrypt_all:
+        done: "Готово"
       preferences:
         save: "Запазете промените"
       manage_paper_keys:

@@ -7,6 +7,10 @@
 hy:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Թարմացնել"
+      decrypt_all:
+        done: "Կատարված է"
       preferences:
         save: "Պահպանել Փոփոխությունները"
       manage_paper_keys:

@@ -7,6 +7,10 @@
 sw:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Rudisha Tena"
+      decrypt_all:
+        done: "Imekwisha"
       preferences:
         save: "Hifadhi Mabadiliko"
       manage_paper_keys:

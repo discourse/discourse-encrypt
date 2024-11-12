@@ -7,6 +7,10 @@
 sq:
   js:
     encrypt:
+      decrypt_permanently:
+        refresh_page: "Rifresko"
+      decrypt_all:
+        done: "Përfundo"
       preferences:
         save: "Ruaj ndryshimet"
       manage_paper_keys:
