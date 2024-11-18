@@ -65,7 +65,7 @@ export default class DecryptAllModal extends Component {
       try {
         await decrypter.run();
         this.successCount++;
-      } catch (e) {
+      } catch {
         this.errorCount++;
       }
       this.doneCount++;

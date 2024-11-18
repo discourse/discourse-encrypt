@@ -1,3 +1,4 @@
+/* eslint-disable ember/no-arrow-function-computed-properties */
 import { getOwner } from "@ember/application";
 import { action, computed, defineProperty } from "@ember/object";
 import { popupAjaxError } from "discourse/lib/ajax-error";

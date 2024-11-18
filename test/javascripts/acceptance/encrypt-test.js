@@ -101,7 +101,7 @@ async function setEncryptionStatus(status) {
   // Resetting IndexedDB.
   try {
     await deleteDb();
-  } catch (e) {}
+  } catch {}
 
   // Generating a new key pair if enabling or creating a dummy one if disabling.
   let identity = {};
