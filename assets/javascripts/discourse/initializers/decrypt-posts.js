@@ -408,7 +408,7 @@ export default {
           let key;
           try {
             key = await getTopicKey(topicId);
-          } catch (error) {
+          } catch {
             state.encryptState = "error";
             state.error = I18n.t("encrypt.invalid_topic_key");
             this.scheduleRerender();
@@ -418,7 +418,7 @@ export default {
           let plaintext;
           try {
             plaintext = await decrypt(key, ciphertext);
-          } catch (error) {
+          } catch {
             state.encryptState = "error";
             state.error = I18n.t("encrypt.invalid_ciphertext");
             this.scheduleRerender();
@@ -452,7 +452,7 @@ export default {
                   expected: true,
                 });
               }
-            } catch (error) {
+            } catch {
               verified[attrs.id] = [
                 {
                   attr: "signature",
@@ -471,7 +471,7 @@ export default {
           state.encryptState = "decrypted";
           state.plaintext = cooked.toString();
           this.scheduleRerender();
-        } catch (error) {
+        } catch {
           const store = getOwner(this).lookup("service:encrypt-widget-store");
           store.add(this);
 

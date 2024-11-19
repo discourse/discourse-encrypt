@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { extractError } from "discourse/lib/ajax-error";
 import { saveDbIdentity } from "discourse/plugins/discourse-encrypt/lib/database";
@@ -37,7 +37,6 @@ export default class RotateKeyPair extends Component {
     this.error = null;
 
     try {
-      // eslint-disable-next-line no-restricted-globals
       const [data, oldIdentity, newIdentity] = await Promise.all([
         ajax("/encrypt/rotate"),
         getIdentity(),
@@ -55,7 +54,7 @@ export default class RotateKeyPair extends Component {
       }
 
       const topicKeys = {};
-      // eslint-disable-next-line no-restricted-globals
+
       await Promise.all(
         Object.entries(data.topic_keys).map(async ([topicId, topicKey]) => {
           const key = await importKey(topicKey, oldIdentity.encryptPrivate);

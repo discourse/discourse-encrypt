@@ -1,3 +1,4 @@
+/* eslint-disable ember/no-arrow-function-computed-properties */
 import { computed, defineProperty } from "@ember/object";
 import I18n from "I18n";
 import {
