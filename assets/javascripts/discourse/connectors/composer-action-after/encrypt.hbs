@@ -1,19 +1,19 @@
-{{#if showEncryptControls}}
+{{#if this.showEncryptControls}}
   <div class="encrypt-controls">
-    {{#if isEncryptActive}}
+    {{#if this.isEncryptActive}}
       <a
         href
         {{action "clicked"}}
-        title={{title}}
+        title={{this.title}}
         class="btn btn-default btn-icon no-text encrypt-toggle
-          {{if model.isEncrypted 'enabled'}}
-          {{if disabled 'disabled'}}"
+          {{if this.model.isEncrypted 'enabled'}}
+          {{if this.disabled 'disabled'}}"
       >
-        {{d-icon (if model.isEncrypted "lock" "unlock")}}
+        {{d-icon (if this.model.isEncrypted "lock" "unlock")}}
       </a>
 
-      {{~#if model.isEncrypted}}
-        {{~#unless model.editingPost~}}
+      {{~#if this.model.isEncrypted}}
+        {{~#unless this.model.editingPost~}}
           <div
             class="composer-action-divider"
           ></div>{{! inline to avoid whitespace}}<EncryptedPostTimerDropdown
@@ -34,10 +34,10 @@
         {{/unless}}
       {{/if}}
 
-      {{#if model.showEncryptError}}
-        <span class="error">{{model.encryptError}}</span>
+      {{#if this.model.showEncryptError}}
+        <span class="error">{{this.model.encryptError}}</span>
       {{/if}}
-    {{else if isEncryptEnabled}}
+    {{else if this.isEncryptEnabled}}
       <span title={{i18n "encrypt.preferences.status_enabled_but_inactive"}}>
         {{d-icon "unlock" class="disabled"}}
       </span>

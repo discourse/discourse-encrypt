@@ -216,7 +216,7 @@ export default {
           return Promise.all([getTopicKey(attrs.topic_id), getIdentity()])
             .then(([key, identity]) => {
               const metadata = addMetadata(
-                getOwner(this).lookup("controller:composer"),
+                getOwner(this).lookup("service:composer"),
                 {
                   raw: attrs.raw,
                 }
