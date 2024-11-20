@@ -48,9 +48,8 @@ export default {
           // TODO: https://github.com/emberjs/ember.js/issues/15291
           let { _super } = this;
 
-          const controller = getOwnerWithFallback(this).lookup(
-            "controller:composer"
-          );
+          const controller =
+            getOwnerWithFallback(this).lookup("service:composer");
           let encrypted = !!controller.get("model.isEncrypted");
           if (draftKey.indexOf("topic_") === 0) {
             const topicId = draftKey.substr("topic_".length);

@@ -1,20 +1,20 @@
-{{#if canEnableEncrypt}}
+{{#if this.canEnableEncrypt}}
   <div class="control-group pref-title">
     <label class="control-label">{{i18n "encrypt.title"}}</label>
 
-    {{#if capabilities.isIE11}}
+    {{#if this.capabilities.isIE11}}
       <div class="alert alert-error">
         <p>{{i18n "encrypt.preferences.ie11"}}</p>
       </div>
-    {{else if isInsecureContext}}
+    {{else if this.isInsecureContext}}
       <div class="alert alert-error">
         <p>{{i18n "encrypt.preferences.insecure_context"}}</p>
       </div>
     {{else}}
       <div class="controls">
-        {{#if isCurrentUser}}
-          {{#if isEncryptEnabled}}
-            {{#if isEncryptActive}}
+        {{#if this.isCurrentUser}}
+          {{#if this.isEncryptEnabled}}
+            {{#if this.isEncryptActive}}
               <p>{{i18n "encrypt.preferences.status_enabled"}}</p>
               <fieldset class="control-group">
                 <DButton
@@ -42,13 +42,13 @@
               </fieldset>
               <PreferenceCheckbox
                 @labelKey="encrypt.preferences.encrypt_pms_default"
-                @checked={{model.user_option.encrypt_pms_default}}
+                @checked={{this.model.user_option.encrypt_pms_default}}
               />
               <SaveControls
                 @id="encrypt_preference_save"
-                @model={{model}}
+                @model={{this.model}}
                 @action={{action "savePreference"}}
-                @saved={{saved}}
+                @saved={{this.saved}}
               />
             {{else}}
               <form>
@@ -56,12 +56,12 @@
                   {{i18n "encrypt.preferences.status_enabled_but_inactive"}}
                 </p>
 
-                {{#if importIdentity}}
+                {{#if this.importIdentity}}
                   {{html-safe (i18n "encrypt.preferences.notice_import")}}
                   <Textarea
                     class="imported-key-pair"
-                    @value={{identity}}
-                    placeholder={{identityPlaceholder}}
+                    @value={{this.identity}}
+                    placeholder={{this.identityPlaceholder}}
                   />
                 {{else}}
                   {{html-safe (i18n "encrypt.preferences.notice_active")}}
@@ -72,13 +72,13 @@
 
                     <Input
                       @type="password"
-                      @value={{passphrase}}
+                      @value={{this.passphrase}}
                       placeholder={{i18n
                         "encrypt.preferences.paper_key_placeholder"
                       }}
                       id="passphrase"
                       autocomplete="current-password"
-                      disabled={{inProgress}}
+                      disabled={{this.inProgress}}
                     />
                   </p>
                 {{/if}}
@@ -90,12 +90,12 @@
                     @icon="unlock"
                     @action={{action "activateEncrypt"}}
                     @type="submit"
-                    @disabled={{inProgress}}
+                    @disabled={{this.inProgress}}
                     @label="encrypt.preferences.activate"
                   />
                   <EncryptEnableDropdown
-                    @isEncryptEnabled={{isEncryptEnabled}}
-                    @importIdentity={{importIdentity}}
+                    @isEncryptEnabled={{this.isEncryptEnabled}}
+                    @importIdentity={{this.importIdentity}}
                     @onChange={{action "selectEncryptEnableDropdownAction"}}
                   />
                 </p>
@@ -103,12 +103,12 @@
             {{/if}}
           {{else}}
             <p>{{i18n "encrypt.preferences.status_disabled"}}</p>
-            {{#if importIdentity}}
+            {{#if this.importIdentity}}
               {{html-safe (i18n "encrypt.preferences.notice_import")}}
               <Textarea
                 class="imported-key-pair"
-                @value={{identity}}
-                placeholder={{identityPlaceholder}}
+                @value={{this.identity}}
+                placeholder={{this.identityPlaceholder}}
               />
             {{/if}}
 
@@ -117,17 +117,17 @@
               id="enable-encrypted-messages"
               @icon="lock"
               @action={{action "enableEncrypt"}}
-              @disabled={{inProgress}}
+              @disabled={{this.inProgress}}
               @label="encrypt.preferences.enable"
             />
             <EncryptEnableDropdown
-              @isEncryptEnabled={{isEncryptEnabled}}
-              @importIdentity={{importIdentity}}
+              @isEncryptEnabled={{this.isEncryptEnabled}}
+              @importIdentity={{this.importIdentity}}
               @onChange={{action "selectEncryptEnableDropdownAction"}}
             />
           {{/if}}
         {{else}}
-          {{#if isEncryptEnabled}}
+          {{#if this.isEncryptEnabled}}
             <p>{{i18n "encrypt.preferences.status_enabled_other"}}</p>
             <p>
               <a
