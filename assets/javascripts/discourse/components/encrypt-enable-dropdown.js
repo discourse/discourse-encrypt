@@ -1,16 +1,17 @@
 import { computed } from "@ember/object";
+import { classNames } from "@ember-decorators/component";
 import I18n from "I18n";
 import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
+import { selectKitOptions } from "select-kit/components/select-kit";
 
-export default DropdownSelectBoxComponent.extend({
-  classNames: ["encrypt-enable-dropdown"],
-
-  selectKitOptions: {
-    icon: "bars",
-    showFullTitle: false,
-  },
-
-  content: computed("importIdentity", "isEncryptEnabled", function () {
+@selectKitOptions({
+  icon: "bars",
+  showFullTitle: false,
+})
+@classNames("encrypt-enable-dropdown")
+export default class EncryptEnableDropdown extends DropdownSelectBoxComponent {
+  @computed("importIdentity", "isEncryptEnabled")
+  get content() {
     const content = [];
 
     content.push({
@@ -32,5 +33,5 @@ export default DropdownSelectBoxComponent.extend({
     }
 
     return content;
-  }),
-});
+  }
+}
