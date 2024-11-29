@@ -1,15 +1,15 @@
+import { classNames } from "@ember-decorators/component";
 import I18n from "I18n";
 import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
+import { selectKitOptions } from "select-kit/components/select-kit";
 
-export default DropdownSelectBoxComponent.extend({
-  classNames: ["encrypt-preferences-dropdown"],
-
-  selectKitOptions: {
-    icon: "wrench",
-    showFullTitle: false,
-  },
-
-  content: [
+@selectKitOptions({
+  icon: "wrench",
+  showFullTitle: false,
+})
+@classNames("encrypt-preferences-dropdown")
+export default class EncryptPreferencesDropdown extends DropdownSelectBoxComponent {
+  content = [
     {
       id: "export",
       icon: "file-export",
@@ -35,5 +35,5 @@ export default DropdownSelectBoxComponent.extend({
       icon: "trash-alt",
       name: I18n.t("encrypt.reset.title"),
     },
-  ],
-});
+  ];
+}

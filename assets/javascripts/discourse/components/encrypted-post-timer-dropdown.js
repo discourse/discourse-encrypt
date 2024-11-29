@@ -1,7 +1,9 @@
 import { computed } from "@ember/object";
 import { empty } from "@ember/object/computed";
+import { classNameBindings, classNames } from "@ember-decorators/component";
 import I18n from "I18n";
 import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
+import { selectKitOptions } from "select-kit/components/select-kit";
 
 const TIMER_OPTIONS = [
   { id: "", name: I18n.t("encrypt.time_bomb.never") },
@@ -14,16 +16,17 @@ const TIMER_OPTIONS = [
   { id: "10080", name: I18n.t("encrypt.time_bomb.7_days") },
 ];
 
-export default DropdownSelectBoxComponent.extend({
-  classNames: ["encrypted-post-timer-dropdown"],
-  classNameBindings: ["hidden:hidden"],
+@selectKitOptions({
+  icon: "discourse-trash-clock",
+  showFullTitle: true,
+})
+@classNames("encrypted-post-timer-dropdown")
+@classNameBindings("hidden:hidden")
+export default class EncryptedPostTimerDropdown extends DropdownSelectBoxComponent {
+  @empty("content") hidden;
 
-  selectKitOptions: {
-    icon: "discourse-trash-clock",
-    showFullTitle: true,
-  },
-
-  content: computed("topicDeleteAt", function () {
+  @computed("topicDeleteAt")
+  get content() {
     if (this.topicDeleteAt) {
       return TIMER_OPTIONS.filter((option) => {
         return (
@@ -34,7 +37,5 @@ export default DropdownSelectBoxComponent.extend({
     } else {
       return TIMER_OPTIONS;
     }
-  }),
-
-  hidden: empty("content"),
-});
+  }
+}
