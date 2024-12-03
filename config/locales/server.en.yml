@@ -4,6 +4,7 @@ en:
     enabled_already: "You have already enabled encrypted messages."
     only_pms: "Only private messages can be encrypted."
     no_encrypt_keys: "Something went wrong. No encryption keys were included in the payload."
+    deprecated: The discourse-encrypt plugin is deprecated, and support will be dropped in Q1 2025. For more information, see <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>. Uninstall the plugin to remove this message.
 
   site_settings:
     encrypt_enabled: "Enable encrypted private messages."
