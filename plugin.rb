@@ -112,6 +112,20 @@ after_initialize do
 
   register_problem_check ProblemCheck::UnsafeCsp
 
+  class DiscourseEncrypt::DeprecatedCheck < ProblemCheck
+    self.priority = "high"
+
+    def call
+      problem
+    end
+
+    def translation_key
+      "encrypt.deprecated"
+    end
+  end
+
+  register_problem_check DiscourseEncrypt::DeprecatedCheck
+
   register_search_topic_eager_load do |opts|
     if SiteSetting.encrypt_enabled? && opts[:search_pms]
       %i[encrypted_topics_users encrypted_topics_data]
