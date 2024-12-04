@@ -304,7 +304,7 @@ export default {
           return helper.h(
             "div.post-info.integrity-warn",
             { title: I18n.t("encrypt.integrity_check_skip") },
-            iconNode("exclamation-triangle")
+            iconNode("triangle-exclamation")
           );
         } else if (result.length === 0) {
           return helper.h(
@@ -504,7 +504,7 @@ export default {
         } else if (state.encryptState === "error") {
           attrs.cooked =
             "<div class='alert alert-error'>" +
-            iconHTML("times") +
+            iconHTML("xmark") +
             " " +
             state.error +
             "</div>" +
