@@ -31,8 +31,19 @@ ja:
         checked: "このメッセージはエンドツーエンドで暗号化されます。"
         unchecked: "このメッセージを暗号化するには、ロック記号をクリックします。"
       decrypt_permanently:
+        button: "暗号化されていない PM に変換"
+        modal_title: "この PM を永久に復号化しますか？"
+        modal_body: "これにより、この PM のすべての投稿が復号化され、通常の PM に変換されます。これはすべての参加者に適用されます。コミュニティー管理者が投稿のコンテンツにより簡単にアクセスできるようになります。続行してもよろしいですか？"
+        modal_confirm: "はい。永久に復号化"
+        modal_cancel: "いいえ。キャンセル"
         refresh_page: "更新"
       decrypt_all:
+        button: "すべての PM を永久に復号化"
+        modal_title: "すべての PM を永久に復号化しますか？"
+        modal_body: "これにより、すべての暗号化された PM が復号化され、通常の PM に変換されます。これはすべての参加者に適用されます。コミュニティー管理者が投稿のコンテンツにより簡単にアクセスできるようになります。続行してもよろしいですか？"
+        modal_count: "暗号化された PM は %{count} 件あります"
+        modal_confirm: "はい。すべて復号化"
+        modal_cancel: "いいえ。キャンセル"
         done: "完了"
       post:
         delete:
@@ -42,6 +53,7 @@ ja:
         no_topic_key: "このトピックのメッセージを暗号化できません。"
         user_has_no_key: "%{username} は暗号化メッセージを有効にしませんでした。"
         group_not_allowed: "暗号化メッセージをグループに送信することはできません。"
+        new_encrypted_pms_disabled: "このサイトでは新しい暗号化されたメッセージは無効になっています。"
         confirm:
           message: "%{error} 続行しますか？"
           no_value: "いいえ、戻ります"

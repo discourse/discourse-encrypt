@@ -15,5 +15,7 @@ nl:
     auto_enable_encrypt: "Automatisch versleuteling inschakelen voor alle aangemelde gebruikers."
     encrypt_groups: "De naam van groepen die versleuteling kunnen gebruiken (leeg betekent iedereen)."
     encrypt_pms_default: "Alle nieuwe privéberichten standaard versleutelen."
+    allow_new_encrypted_pms: "Sta gebruikers toe om nieuwe versleutelde privéberichten te maken. Door dit uit te schakelen, wordt het gebruik van discourse-encrypt beperkt tot bestaande versleutelde PB's."
+    allow_decrypting_pms: "Sta gebruikers toestaan om versleutelde privéberichten permanent te ontsleutelen."
     errors:
       encrypt_unsafe_csp: "Onveilige CSP-instructies zoals 'unsafe-eval' en 'unsafe-inline' kunnen niet worden gebruikt als de Discourse Encrypt-plug-in is ingeschakeld."

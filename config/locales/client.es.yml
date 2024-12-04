@@ -31,8 +31,19 @@ es:
         checked: "Este mensaje se cifrará de extremo a extremo."
         unchecked: "Pulsa el símbolo del candado para cifrar este mensaje."
       decrypt_permanently:
+        button: "Convertir a MP sin cifrar"
+        modal_title: "¿Descifrar este MP de forma permanente?"
+        modal_body: "Esto desencriptará todos los mensajes de este MP y lo convertirá en un MP normal. Esto se aplicará a todos los participantes. Los administradores de la comunidad podrán acceder más fácilmente al contenido de los mensajes. ¿Seguro que quieres proceder?"
+        modal_confirm: "Sí, descifrar permanentemente"
+        modal_cancel: "No, cancelar"
         refresh_page: "Volver a cargar"
       decrypt_all:
+        button: "Descifrar permanentemente todos los MP"
+        modal_title: "¿Descifrar todos los MP de forma permanente?"
+        modal_body: "Esto descifrará todos tus MP cifrados y los convertirá en MP normales. Esto se aplicará a todos los participantes. Los administradores de la comunidad podrán acceder más fácilmente al contenido de los mensajes. ¿Seguro que quieres proceder?"
+        modal_count: "Tienes %{count} mensajes privados cifrados."
+        modal_confirm: "Sí, descifrarlo todo"
+        modal_cancel: "No, cancelar"
         done: "Hecho"
       post:
         delete:
@@ -42,6 +53,7 @@ es:
         no_topic_key: "No puedes cifrar mensajes en este tema."
         user_has_no_key: "%{username} no habilitó los mensajes cifrados."
         group_not_allowed: "No puedes enviar mensajes cifrados a grupos."
+        new_encrypted_pms_disabled: "Los nuevos mensajes cifrados están desactivados en este sitio."
         confirm:
           message: "%{error} ¿Quieres continuar?"
           no_value: "No, volver"

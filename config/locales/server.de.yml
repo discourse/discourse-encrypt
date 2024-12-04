@@ -15,5 +15,7 @@ de:
     auto_enable_encrypt: "Verschlüsselung für alle angemeldeten Benutzer automatisch aktivieren."
     encrypt_groups: "Der Name der Gruppen, die die Verschlüsselung nutzen können (leer bedeutet alle)."
     encrypt_pms_default: "Neue private Nachrichten standardmäßig verschlüsseln."
+    allow_new_encrypted_pms: "Erlaube Benutzern, neue verschlüsselte private Nachrichten zu erstellen. Wenn du diese Option deaktivierst, wird die Nutzung von discourse-encrypt auf bestehende verschlüsselte PN beschränkt."
+    allow_decrypting_pms: "Erlaube Benutzern, verschlüsselte private Nachrichten dauerhaft zu entschlüsseln."
     errors:
       encrypt_unsafe_csp: "Unsichere CSP-Direktiven wie „unsafe-eval“ und „unsafe-inline“ können nicht verwendet werden, wenn das Discourse-Encrypt-Plug-in aktiviert ist."

@@ -31,8 +31,19 @@ de:
         checked: "Diese Nachricht wird Ende-zu-Ende verschlüsselt."
         unchecked: "Klicke das Schloss-Symbol zum Verschlüsseln dieser Nachricht."
       decrypt_permanently:
+        button: "In unverschlüsselte PN konvertieren"
+        modal_title: "Diese PN dauerhaft entschlüsseln?"
+        modal_body: "Dadurch werden alle Beiträge in dieser PN entschlüsselt und sie wird in eine normale PN umgewandelt. Dies gilt für alle Teilnehmer. Der Inhalt der Beiträge wird für die Community-Administratoren leichter zugänglich sein. Bist du sicher, dass du fortfahren möchtest?"
+        modal_confirm: "Ja, dauerhaft entschlüsseln"
+        modal_cancel: "Nein, abbrechen"
         refresh_page: "Aktualisieren"
       decrypt_all:
+        button: "Alle PN dauerhaft entschlüsseln"
+        modal_title: "Alle PN dauerhaft entschlüsseln?"
+        modal_body: "Dadurch werden alle deine verschlüsselten PN entschlüsselt und in normale PN umgewandelt. Dies gilt für alle Teilnehmer. Der Inhalt der Beiträge wird für die Community-Administratoren leichter zugänglich sein. Bist du sicher, dass du fortfahren möchtest?"
+        modal_count: "Du hast %{count} verschlüsselte PN."
+        modal_confirm: "Ja, alle entschlüsseln"
+        modal_cancel: "Nein, abbrechen"
         done: "Erledigt"
       post:
         delete:
@@ -42,6 +53,7 @@ de:
         no_topic_key: "Du kannst keine Nachrichten in dieser Unterhaltung verschlüsseln."
         user_has_no_key: "%{username} hat verschlüsselte Nachrichten nicht aktiviert."
         group_not_allowed: "Du hast keine Berechtigung, verschlüsselte Nachrichten an Gruppen zu schicken."
+        new_encrypted_pms_disabled: "Neue verschlüsselte Nachrichten sind auf dieser Website deaktiviert."
         confirm:
           message: "%{error} Möchtest du fortfahren?"
           no_value: "Nein, zurück"

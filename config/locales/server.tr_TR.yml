@@ -15,5 +15,7 @@ tr_TR:
     auto_enable_encrypt: "Oturum açmış tüm kullanıcılar için şifrelemeyi otomatik olarak etkinleştirin."
     encrypt_groups: "Şifreleme kullanabilen grupların adı (boş, herkes anlamına gelir)."
     encrypt_pms_default: "Tüm yeni özel mesajları varsayılan olarak şifreleyin."
+    allow_new_encrypted_pms: "Kullanıcıların yeni şifreli kişisel mesajlar oluşturmasına izin verin. Bunu devre dışı bırakmak discourse-encrypt kullanımını mevcut şifrelenmiş kişisel mesajlarla sınırlar."
+    allow_decrypting_pms: "Kullanıcıların şifrelenmiş özel mesajların şifresini kalıcı olarak çözmesine izin verin."
     errors:
       encrypt_unsafe_csp: "Discourse Encrypt eklentisi etkinleştirildiğinde \"unsafe-eval\" ve \"unsafe-inline\" gibi güvenli olmayan CSP yönergeleri kullanılamaz."

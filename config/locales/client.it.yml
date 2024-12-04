@@ -31,8 +31,19 @@ it:
         checked: "Questo messaggio verrà codificato con crittografia end to end."
         unchecked: "Clicca il lucchetto per crittografare questo messaggio."
       decrypt_permanently:
+        button: "Converti in MP non crittografato"
+        modal_title: "Vuoi decifrare definitivamente questo MP?"
+        modal_body: "Questo decifrerà tutti i messaggi in questo MP e li convertirà in un MP normale. Questo si applicherà a tutti i partecipanti. Il contenuto del messaggio sarà più facilmente accessibile agli amministratori della community. Vuoi procedere?"
+        modal_confirm: "Sì, decifra in modo permanente"
+        modal_cancel: "No, annulla"
         refresh_page: "Aggiorna"
       decrypt_all:
+        button: "Decifra definitivamente tutti i MP"
+        modal_title: "Vuoi decifrare definitivamente tutti i MP?"
+        modal_body: "Questo decifrerà tutti i MP crittografati e li convertirà in MP normali. Questo si applicherà a tutti i partecipanti. Il contenuto del messaggio sarà più facilmente accessibile agli amministratori della community. Vuoi procedere?"
+        modal_count: "Hai %{count} MP crittografati."
+        modal_confirm: "Sì, decifra tutto"
+        modal_cancel: "No, annulla"
         done: "Fatto"
       post:
         delete:
@@ -42,6 +53,7 @@ it:
         no_topic_key: "Non è possibile crittografare i messaggi in questo argomento."
         user_has_no_key: "%{username} non ha abilitato i messaggi crittografati."
         group_not_allowed: "Non sei abilitato all'invio di messaggi crittografati ai gruppi."
+        new_encrypted_pms_disabled: "Su questo sito i nuovi messaggi crittografati sono disabilitati."
         confirm:
           message: "%{error} Vuoi continuare?"
           no_value: "No, torna indietro"
