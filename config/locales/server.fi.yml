@@ -15,5 +15,7 @@ fi:
     auto_enable_encrypt: "Ota salaus käyttöön automaattisesti kaikille kirjautuneille käyttäjille."
     encrypt_groups: "Niiden ryhmien nimet, jotka voivat käyttää salausta (tyhjä tarkoittaa kaikkia)."
     encrypt_pms_default: "Salaa kaikki uudet yksityisviestit oletuksena."
+    allow_new_encrypted_pms: "Salli käyttäjien luoda uusia salattuja yksityisviestejä. Tämän poistaminen käytöstä rajoittaa discourse-encryptin käytön olemassa oleviin salattuihin yksityisviesteihin."
+    allow_decrypting_pms: "Salli käyttäjien purkaa salattujen yksityisviestien salaus pysyvästi."
     errors:
       encrypt_unsafe_csp: "Turvattomia CSP-komentoja, kuten \"unsafe-eval\" ja \"unsafe-inline\", ei voida käyttää, kun Discoursen salauslisäosa on käytössä."

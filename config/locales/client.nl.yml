@@ -31,8 +31,19 @@ nl:
         checked: "Dit bericht wordt end-to-end versleuteld."
         unchecked: "Klik op het slotsymbool om dit bericht te versleutelen."
       decrypt_permanently:
-        refresh_page: "Opnieuw laden"
+        button: "Converteren naar onversleutelde PB"
+        modal_title: "Deze PB permanent ontsleutelen?"
+        modal_body: "Hierdoor worden alle berichten in deze PB ontsleuteld en omgezet in een gewone PB. Dit geldt voor alle deelnemers. De inhoud van berichten is dan gemakkelijker toegankelijk zijn voor communitybeheerders. Weet je zeker dat je door wilt gaan?"
+        modal_confirm: "Ja, permanent ontsleutelen"
+        modal_cancel: "Nee, annuleren"
+        refresh_page: "Vernieuwen"
       decrypt_all:
+        button: "Alle PB's permanent ontsleutelen"
+        modal_title: "Alle PB's permanent ontsleutelen?"
+        modal_body: "Hierdoor worden al je versleutelde PB's ontsleuteld en omgezet in gewone PB's. Dit geldt voor alle deelnemers. De inhoud van berichten is dan gemakkelijker toegankelijk zijn voor communitybeheerders. Weet je zeker dat je door wilt gaan?"
+        modal_count: "Je hebt %{count} versleutelde PB's."
+        modal_confirm: "Ja, alles ontsleutelen"
+        modal_cancel: "Nee, annuleren"
         done: "Gereed"
       post:
         delete:
@@ -42,6 +53,7 @@ nl:
         no_topic_key: "Je kunt berichten in dit topic niet versleutelen."
         user_has_no_key: "%{username} heeft versleutelde berichten niet ingeschakeld."
         group_not_allowed: "Je mag geen versleutelde berichten naar groepen sturen."
+        new_encrypted_pms_disabled: "Nieuwe versleutelde berichten zijn uitgeschakeld op deze site."
         confirm:
           message: "%{error} Wil je doorgaan?"
           no_value: "Nee, terug"

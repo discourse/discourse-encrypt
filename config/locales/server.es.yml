@@ -15,5 +15,7 @@ es:
     auto_enable_encrypt: "Habilitar automáticamente el cifrado para todos los usuarios que hayan iniciado sesión."
     encrypt_groups: "El nombre de los grupos que pueden usar cifrado (vacío significa todos)."
     encrypt_pms_default: "Cifrar todos los mensajes privados nuevos por defecto."
+    allow_new_encrypted_pms: "Permitir a los usuarios crear nuevos mensajes privados cifrados. Desactivar esta opción limitará el uso del cifrado de Discourse a los MP cifrados existentes."
+    allow_decrypting_pms: "Permitir a los usuarios descifrar permanentemente los mensajes privados cifrados."
     errors:
       encrypt_unsafe_csp: "Las directivas CSP inseguras, como «unsafe-eval» y «unsafe-inline», no pueden utilizarse cuando el complemento Discourse Encrypt está activado."

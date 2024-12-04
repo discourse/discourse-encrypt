@@ -15,5 +15,7 @@ pt_BR:
     auto_enable_encrypt: "Ative criptografia automaticamente para todos(as) os(as) usuários(as) que entraram."
     encrypt_groups: "O nome dos grupos que podem usar criptografia (vazio quer dizer todas as pessoas)."
     encrypt_pms_default: "Criptografe todas as mensagens privadas por padrão."
+    allow_new_encrypted_pms: "Permitir que usuários(as) criem novas mensagens privadas criptografadas. Desabilite essa opção para limitar o uso de criptografia do Discourse a todas as PM criptografadas."
+    allow_decrypting_pms: "Permitir que usuários(as) descriptografem permanentemente mensagens privadas criptografadas."
     errors:
       encrypt_unsafe_csp: "Diretivas CSP não seguras, como \"unsafe-eval\" e \"unsafe-inline\", não podem ser usadas quando o plugin Discourse Encrypt estiver ativado."

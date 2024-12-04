@@ -31,8 +31,19 @@ tr_TR:
         checked: "Bu mesaj uçtan uca şifrelenecek."
         unchecked: "Bu mesajı şifrelemek için kilit sembolüne tıklayın."
       decrypt_permanently:
+        button: "Şifrelenmemiş kişisel mesaja dönüştür"
+        modal_title: "Bu kişisel mesajın şifresi kalıcı olarak çözülsün mü?"
+        modal_body: "Bu, bu kişisel mesajda tüm gönderilerin şifresini çözer ve bunları normal kişisel mesajlara dönüştürür. Bu, tüm katılımcılar için geçerli olur. Gönderi içeriği topluluk yöneticileri tarafından daha kolay erişilebilir olur. Devam etmek istediğinizden emin misiniz?"
+        modal_confirm: "Evet, kalıcı olarak şifresini çöz"
+        modal_cancel: "Hayır, iptal et"
         refresh_page: "Yenile"
       decrypt_all:
+        button: "Tüm kişisel mesajların şifresini kalıcı olarak çöz"
+        modal_title: "Tüm kişisel mesajların şifresi kalıcı olarak çözülsün mü?"
+        modal_body: "Bu, tüm şifreli kişisel mesajların şifresini çözer ve bunları normal kişisel mesajlara dönüştürür. Bu, tüm katılımcılar için geçerli olur. Gönderi içeriği topluluk yöneticileri tarafından daha kolay erişilebilir olur. Devam etmek istediğinizden emin misiniz?"
+        modal_count: "%{count} şifreli kişisel mesajınız var."
+        modal_confirm: "Evet, tümünün şifresini çöz"
+        modal_cancel: "Hayır, iptal et"
         done: "Bitti"
       post:
         delete:
@@ -42,6 +53,7 @@ tr_TR:
         no_topic_key: "Bu konudaki mesajları şifreleyemezsiniz."
         user_has_no_key: "%{username} şifrelenmiş mesajları etkinleştirmedi."
         group_not_allowed: "Gruplara şifreli mesaj göndermenize izin verilmiyor."
+        new_encrypted_pms_disabled: "Bu sitede yeni şifreli mesajlar devre dışı bırakılmıştır."
         confirm:
           message: "%{error} Devam etmek istiyor musunuz?"
           no_value: "Hayır, geri dön."

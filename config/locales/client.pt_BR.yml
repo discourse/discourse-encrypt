@@ -31,8 +31,19 @@ pt_BR:
         checked: "Esta mensagem usará criptografia ponta a ponta."
         unchecked: "Clique no símbolo de cadeado para criptografar esta mensagem."
       decrypt_permanently:
+        button: "Converter em MP descriptografada"
+        modal_title: "Descriptografar permanentemente esta PM?"
+        modal_body: "Todas as postagens desta PM serão descriptografadas e convertidas em PM comuns. Aplica-se a todos os participantes. O conteúdo da postagem poderá ser acessado com mais facilidade pela administração da comunidade. Quer mesmo continuar?"
+        modal_confirm: "Sim, descriptografar permanentemente"
+        modal_cancel: "Não, cancelar"
         refresh_page: "Atualizar"
       decrypt_all:
+        button: "Descriptografar permentemente todas as PM"
+        modal_title: "Descriptografar permanentemente todas as PM?"
+        modal_body: "Todas as suas PM criptografadas serão descriptografadas e convertidas em PM comuns. Aplica-se a todos os participantes. O conteúdo da postagem poderá ser acessado com mais facilidade pela administração da comunidade. Quer mesmo continuar?"
+        modal_count: "Você tem %{count} PM criptografadas."
+        modal_confirm: "Sim, descriptografar tudo"
+        modal_cancel: "Não, cancelar"
         done: "Concluído(a)"
       post:
         delete:
@@ -42,6 +53,7 @@ pt_BR:
         no_topic_key: "Não é possível criptografar mensagens neste tópico."
         user_has_no_key: "%{username} não ativou mensagens criptografadas."
         group_not_allowed: "Você não tem permissão para enviar mensagens criptografadas a grupos."
+        new_encrypted_pms_disabled: "Novas mensagens criptografadas estão desabilitadas neste site."
         confirm:
           message: "%{error} Quer continuar?"
           no_value: "Não, voltar"

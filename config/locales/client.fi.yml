@@ -31,8 +31,19 @@ fi:
         checked: "Tämä viesti salataan päästä päähän."
         unchecked: "Salaa tämä viesti napsauttamalla lukkokuvaketta."
       decrypt_permanently:
+        button: "Muunna salaamattomaksi yksityisviestiksi"
+        modal_title: "Puretaanko tämän yksityisviestin salaus pysyvästi?"
+        modal_body: "Tämä purkaa kaikkien tämän yksityisviestin viestien salauksen ja muuntaa sen tavalliseksi yksityisviestiksi. Tämä koskee kaikkia osallistujia. Viestin sisältö on helpommin yhteisön ylläpitäjien saatavilla. Haluatko varmasti jatkaa?"
+        modal_confirm: "Kyllä, pura salaus pysyvästi"
+        modal_cancel: "Ei, peruuta"
         refresh_page: "Päivitä"
       decrypt_all:
+        button: "Pura pysyvästi kaikkien yksityisviestien salaus"
+        modal_title: "Puretaanko kaikkien yksityisviestien salaus pysyvästi?"
+        modal_body: "Tämä purkaa kaikkien salattujen yksityisviestien salauksen ja muuntaa ne tavallisiksi yksityisviesteiksi. Tämä koskee kaikkia osallistujia. Viestien sisältö on helpommin yhteisön ylläpitäjien saatavilla. Haluatko varmasti jatkaa?"
+        modal_count: "Sinulla on %{count} salattua yksityisviestiä."
+        modal_confirm: "Kyllä, pura kaikkien salaus"
+        modal_cancel: "Ei, peruuta"
         done: "Valmis"
       post:
         delete:
@@ -42,6 +53,7 @@ fi:
         no_topic_key: "Et voi salata tämän ketjun viestejä."
         user_has_no_key: "%{username} ei ottanut salattuja viestejä käyttöön."
         group_not_allowed: "Et voi lähettää salattuja viestejä ryhmille."
+        new_encrypted_pms_disabled: "Uudet salatut viestit on poistettu käytöstä tällä sivustolla."
         confirm:
           message: "%{error} Haluatko jatkaa?"
           no_value: "Ei, palaa takaisin"

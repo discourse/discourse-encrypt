@@ -15,5 +15,7 @@ zh_CN:
     auto_enable_encrypt: "自动为所有登录用户启用加密。"
     encrypt_groups: "能够使用加密的群组的名称（留空表示所有人都可以使用）。"
     encrypt_pms_default: "默认情况下加密所有新的私信。"
+    allow_new_encrypted_pms: "允许用户创建新的加密私信。禁用此功能会将 discourse-encrypt 的使用限定为现有加密私信。"
+    allow_decrypting_pms: "允许用户永久解密加密私信。"
     errors:
       encrypt_unsafe_csp: "启用 Discourse Encrypt 插件后，将无法使用诸如 'unsafe-eval' 和 'unsafe-inline' 等不安全的 CSP 指令。"

@@ -15,5 +15,7 @@ fr:
     auto_enable_encrypt: "Activez automatiquement le chiffrement pour tous les utilisateurs connectés."
     encrypt_groups: "Le nom des groupes qui peuvent utiliser le chiffrement (laissez l'espace vide pour accorder cette autorisation à tout le monde)."
     encrypt_pms_default: "Chiffrez par défaut tous les nouveaux messages privés."
+    allow_new_encrypted_pms: "Autoriser les utilisateurs à créer de nouveaux messages privés chiffrés. La désactivation de cette option limitera l'utilisation de discourse-encrypt aux MD chiffrés existants."
+    allow_decrypting_pms: "Permettre aux utilisateurs de déchiffrer de façon permanente les messages privés chiffrés."
     errors:
       encrypt_unsafe_csp: "Les directives CSP non sécurisées telles que « unsafe-eval » et « unsafe-inline » ne peuvent pas être utilisées lorsque l'extension Discourse Encrypt est activée."

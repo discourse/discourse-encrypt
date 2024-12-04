@@ -31,8 +31,19 @@ zh_CN:
         checked: "此消息将进行端到端加密。"
         unchecked: "点击锁符号来加密此消息。"
       decrypt_permanently:
+        button: "转换为未加密私信"
+        modal_title: "是否永久解密此私信？"
+        modal_body: "这会解密此私信中的所有帖子并将其转换为常规私信。此操作对所有参与者均适用。帖子内容对社区管理员来说将更容易访问。确定要继续吗？"
+        modal_confirm: "是，永久解密"
+        modal_cancel: "否，取消"
         refresh_page: "刷新"
       decrypt_all:
+        button: "永久解密所有私信"
+        modal_title: "是否永久解密所有私信？"
+        modal_body: "这会解密您所有加密私信并将其转换为常规私信。此操作对所有参与者均适用。帖子内容对社区管理员来说将更容易访问。确定要继续吗？"
+        modal_count: "您有 %{count} 条加密私信。"
+        modal_confirm: "是，全部解密"
+        modal_cancel: "否，取消"
         done: "完成"
       post:
         delete:
@@ -42,6 +53,7 @@ zh_CN:
         no_topic_key: "您无法加密此话题中的消息。"
         user_has_no_key: "%{username} 未启用加密消息。"
         group_not_allowed: "您未被允许向群组发送加密消息。"
+        new_encrypted_pms_disabled: "此网站已禁用新的加密消息。"
         confirm:
           message: "%{error} 是否要继续？"
           no_value: "不，返回"

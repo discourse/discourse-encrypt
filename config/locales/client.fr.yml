@@ -31,8 +31,19 @@ fr:
         checked: "Ce message sera chiffré de bout en bout."
         unchecked: "Cliquez sur le symbole du cadenas pour chiffrer ce message."
       decrypt_permanently:
+        button: "Convertir en MD non chiffré"
+        modal_title: "Déchiffrer ce MD de façon permanente ?"
+        modal_body: "Cette opération déchiffrera toutes les publications de ce MD et le convertira en MD normal. Cela s'appliquera à tous les participants. Le contenu des publications sera plus facilement accessible aux administrateurs de la communauté. Voulez-vous continuer ?"
+        modal_confirm: "Oui, déchiffrer de façon permanente"
+        modal_cancel: "Non, annuler"
         refresh_page: "Actualiser"
       decrypt_all:
+        button: "Déchiffrer définitivement tous les MD"
+        modal_title: "Déchiffrer tous les MD de façon permanente ?"
+        modal_body: "Cette opération déchiffrera tous vos MD chiffrés et les convertira en MD normaux. Cela s'appliquera à tous les participants. Le contenu des publications sera plus facilement accessible aux administrateurs de la communauté. Voulez-vous continuer ?"
+        modal_count: "Vous avez %{count} MD chiffrés."
+        modal_confirm: "Oui, tout déchiffrer"
+        modal_cancel: "Non, annuler"
         done: "Terminé"
       post:
         delete:
@@ -42,6 +53,7 @@ fr:
         no_topic_key: "Vous ne pouvez pas chiffrer les messages dans ce sujet."
         user_has_no_key: "%{username} n'a pas activé les messages chiffrés."
         group_not_allowed: "Vous n'avez pas l'autorisation d'envoyer des messages chiffrés aux groupes."
+        new_encrypted_pms_disabled: "Les nouveaux messages chiffrés sont désactivés sur ce site."
         confirm:
           message: "%{error} Voulez-vous continuer ?"
           no_value: "Non, revenir en arrière"
