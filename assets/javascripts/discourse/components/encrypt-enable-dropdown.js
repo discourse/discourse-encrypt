@@ -27,7 +27,7 @@ export default class EncryptEnableDropdown extends DropdownSelectBoxComponent {
     if (this.isEncryptEnabled) {
       content.push({
         id: "reset",
-        icon: "trash-alt",
+        icon: "trash-can",
         name: I18n.t("encrypt.reset.title"),
       });
     }

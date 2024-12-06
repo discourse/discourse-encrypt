@@ -13,16 +13,16 @@ register_asset "stylesheets/common/encrypt.scss"
 register_asset "stylesheets/colors.scss", :color_definitions
 %w[
   bars
-  exchange-alt
+  right-left
   far-clipboard
   file-export
   file-import
   lock
   plus
   discourse-trash-clock
-  ticket-alt
-  times
-  trash-alt
+  ticket-simple
+  xmark
+  trash-can
   unlock
   wrench
 ].each { |i| register_svg_icon(i) }
