@@ -354,7 +354,7 @@ export default {
             ? "div.post-info.integrity-fail"
             : "div.post-info.integrity-warn",
           { title: messages.join(" ") },
-          iconNode(isError ? "times" : "exclamation-triangle")
+          iconNode(isError ? "xmark" : "triangle-exclamation")
         );
       });
 

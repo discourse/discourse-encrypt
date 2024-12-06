@@ -18,7 +18,7 @@
               <p>{{i18n "encrypt.preferences.status_enabled"}}</p>
               <fieldset class="control-group">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @action={{action "deactivateEncrypt"}}
                   @label="encrypt.preferences.deactivate"
                   id="encrypt-deactivate"
@@ -31,7 +31,7 @@
                 />
                 <DButton
                   id="encrypt-generate-paper-key"
-                  @icon="ticket-alt"
+                  @icon="ticket-simple"
                   @action={{action "generatePaperKey"}}
                   @label="encrypt.generate_paper_key.title"
                 />

@@ -26,7 +26,7 @@
 
               <td>
                 <DButton
-                  @icon="far-trash-alt"
+                  @icon="far-trash-can"
                   @action={{fn this.delete key.label}}
                   @title="encrypt.manage_paper_keys.delete"
                   class="btn-danger pull-right"
@@ -43,7 +43,7 @@
 
   <:footer>
     <DButton
-      @icon="ticket-alt"
+      @icon="ticket-simple"
       @action={{this.generatePaperKey}}
       @label="encrypt.generate_paper_key.title"
     />

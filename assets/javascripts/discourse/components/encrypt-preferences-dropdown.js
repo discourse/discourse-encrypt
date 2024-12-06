@@ -17,7 +17,7 @@ export default class EncryptPreferencesDropdown extends DropdownSelectBoxCompone
     },
     {
       id: "managePaperKeys",
-      icon: "ticket-alt",
+      icon: "ticket-simple",
       name: I18n.t("encrypt.manage_paper_keys.title"),
     },
     {
@@ -27,12 +27,12 @@ export default class EncryptPreferencesDropdown extends DropdownSelectBoxCompone
     },
     {
       id: "rotate",
-      icon: "sync",
+      icon: "arrows-rotate",
       name: I18n.t("encrypt.rotate.title"),
     },
     {
       id: "reset",
-      icon: "trash-alt",
+      icon: "trash-can",
       name: I18n.t("encrypt.reset.title"),
     },
   ];
