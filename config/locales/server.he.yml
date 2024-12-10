@@ -19,3 +19,6 @@ he:
     allow_decrypting_pms: "לאפשר למשתמשים לפענח הודעות פרטיות מוצפנות לצמיתות."
     errors:
       encrypt_unsafe_csp: "אי אפשר להשתמש בהנחיות CSP מפוקפקות כגון ‚unsafe-eval’ ו־‚unsafe-inline’ כאשר התוסף Encrypt של Discourse פעיל."
+  dashboard:
+    problem:
+      encrypt_deprecated: תוסף discourse-encrypt לא בפיתוח עוד והתמיכה תוסר ברבעון הראשון של 2025. למידע נוסף, נא לגשת אל <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>. הסרת התקנת התוסף תסיר את ההודעה הזאת.
