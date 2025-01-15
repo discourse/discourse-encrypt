@@ -15,9 +15,9 @@ export default apiInitializer("2.0.0", (api) => {
 
     if (
       topicStatusIcons &&
-      !topicStatusIcons.find(([prop]) => prop === "encrypted_title")
+      !topicStatusIcons.entries.find(([prop]) => prop === "encrypted_title")
     ) {
-      topicStatusIcons.addObject([
+      topicStatusIcons?.addObject([
         "encrypted_title",
         "user-secret",
         "encrypted",
