@@ -1,35 +1,51 @@
 import { computed } from "@ember/object";
-import TopicStatusIcons from "discourse/helpers/topic-status-icons";
 import { apiInitializer } from "discourse/lib/api";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
+import { withSilencedDeprecations } from "discourse-common/lib/deprecated";
 import I18n from "discourse-i18n";
 
-export default apiInitializer("0.8", (api) => {
-  // Header icon
-  if (!TopicStatusIcons.find(([prop]) => prop === "encrypted_title")) {
-    TopicStatusIcons.addObject(["encrypted_title", "user-secret", "encrypted"]);
-  }
+export default apiInitializer("2.0.0", (api) => {
+  withSilencedDeprecations("discourse.hbr-topic-list-overrides", () => {
+    let topicStatusIcons;
+    try {
+      topicStatusIcons =
+        require("discourse/helpers/topic-status-icons").default;
+    } catch {}
 
-  // topic-list-item icon
-  api.modifyClass("raw-view:topic-status", {
-    pluginId: "encrypt",
+    if (
+      topicStatusIcons &&
+      !topicStatusIcons.entries.find(
+        ({ attribute }) => attribute === "encrypted_title"
+      )
+    ) {
+      topicStatusIcons?.addObject([
+        "encrypted_title",
+        "user-secret",
+        "encrypted",
+      ]);
+    }
 
-    statuses: computed(function () {
-      const results = this._super(...arguments);
+    // topic-list-item icon
+    api.modifyClass("raw-view:topic-status", {
+      pluginId: "encrypt",
 
-      if (this.topic.encrypted_title) {
-        results.push({
-          openTag: "span",
-          closeTag: "span",
-          title: I18n.t("topic-statuses.encrypted.help"),
-          icon: "user-secret",
-          key: "encrypted",
-        });
-      }
+      statuses: computed(function () {
+        const results = this._super(...arguments);
 
-      return results;
-    }),
+        if (this.topic.encrypted_title) {
+          results.push({
+            openTag: "span",
+            closeTag: "span",
+            title: I18n.t("topic-statuses.encrypted.help"),
+            icon: "user-secret",
+            key: "encrypted",
+          });
+        }
+
+        return results;
+      }),
+    });
   });
 
   // Main topic title
