@@ -19,3 +19,6 @@ ja:
     allow_decrypting_pms: "ユーザーが暗号化されたプライベートメッセージを永久的に復号化することを許可する。"
     errors:
       encrypt_unsafe_csp: "Discourse Encrypt プラグインが有効である場合、「unsafe-eval」や「unsafe-inline」などの安全でない CSP ディレクティブを使用できません。"
+  dashboard:
+    problem:
+      encrypt_deprecated: discourse-encrypt プラグインは使用廃止であり、2025 年第 1 四半期にサポート終了となる予定です。詳細については、<a href="https://meta.discourse.org/t/107918">Discourse Meta</a> をご覧ください。このメッセージを削除するには、プラグインをアンインストールしてください。

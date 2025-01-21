@@ -19,3 +19,6 @@ tr_TR:
     allow_decrypting_pms: "Kullanıcıların şifrelenmiş özel mesajların şifresini kalıcı olarak çözmesine izin verin."
     errors:
       encrypt_unsafe_csp: "Discourse Encrypt eklentisi etkinleştirildiğinde \"unsafe-eval\" ve \"unsafe-inline\" gibi güvenli olmayan CSP yönergeleri kullanılamaz."
+  dashboard:
+    problem:
+      encrypt_deprecated: discourse-encrypt eklentisi kullanımdan kaldırıldı ve destek, 2025'in 1. çeyreğinde sona erecek. Daha fazla bilgi için <a href="https://meta.discourse.org/t/107918">Discourse Meta</a> bölümüne bakın. Bu mesajı silmek için eklentiyi kaldırın.

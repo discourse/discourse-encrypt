@@ -19,3 +19,6 @@ fi:
     allow_decrypting_pms: "Salli käyttäjien purkaa salattujen yksityisviestien salaus pysyvästi."
     errors:
       encrypt_unsafe_csp: "Turvattomia CSP-komentoja, kuten \"unsafe-eval\" ja \"unsafe-inline\", ei voida käyttää, kun Discoursen salauslisäosa on käytössä."
+  dashboard:
+    problem:
+      encrypt_deprecated: Discourse-encrypt-lisäosa on vanhentunut, ja sen tuki lopetetaan vuoden 2025 ensimmäisellä neljänneksellä. Lisätietoja on <a href="https://meta.discourse.org/t/107918">Discourse Metassa</a>. Poista lisäosa poistaaksesi tämän viestin.

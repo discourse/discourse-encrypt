@@ -19,3 +19,6 @@ nl:
     allow_decrypting_pms: "Sta gebruikers toestaan om versleutelde privéberichten permanent te ontsleutelen."
     errors:
       encrypt_unsafe_csp: "Onveilige CSP-instructies zoals 'unsafe-eval' en 'unsafe-inline' kunnen niet worden gebruikt als de Discourse Encrypt-plug-in is ingeschakeld."
+  dashboard:
+    problem:
+      encrypt_deprecated: De plug-in discourse-encrypt is verouderd en de ondersteuning wordt gestopt in het eerste kwartaal van 2025. Zie <a href="https://meta.discourse.org/t/107918">Discourse Meta</a> voor meer informatie. Verwijder de plug-in om deze melding niet meer te zien.

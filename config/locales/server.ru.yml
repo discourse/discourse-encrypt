@@ -19,3 +19,6 @@ ru:
     allow_decrypting_pms: "Разрешает пользователям навсегда расшифровать зашифрованные личные сообщения."
     errors:
       encrypt_unsafe_csp: "Небезопасные директивы CSP, такие как 'unsafe-eval' и 'unsafe-inline', нельзя использовать с включенным плагином Discourse Encrypt."
+  dashboard:
+    problem:
+      encrypt_deprecated: Плагин discourse-encrypt устарел, и его поддержка будет прекращена в первом квартале 2025 года. Для получения дополнительной информации см. <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>. Удалите плагин, чтобы убрать это сообщение.
