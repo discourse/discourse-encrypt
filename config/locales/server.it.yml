@@ -19,3 +19,6 @@ it:
     allow_decrypting_pms: "Consenti agli utenti di decifrare in modo permanente i messaggi privati crittografati."
     errors:
       encrypt_unsafe_csp: "Le direttive CSP non sicure come \"unsafe-eval\" e \"unsafe-inline\" non possono essere utilizzate quando il plug-in Discourse Encrypt è abilitato."
+  dashboard:
+    problem:
+      encrypt_deprecated: Il plugin discourse-encrypt è deprecato e il supporto verrà interrotto nel primo trimestre del 2025. Per maggiori informazioni, consulta il <a href="https://meta.discourse.org/t/107918">Meta di Discourse</a>. Disinstalla il plugin per far sparire questo messaggio.

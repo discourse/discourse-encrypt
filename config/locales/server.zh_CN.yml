@@ -19,3 +19,6 @@ zh_CN:
     allow_decrypting_pms: "允许用户永久解密加密私信。"
     errors:
       encrypt_unsafe_csp: "启用 Discourse Encrypt 插件后，将无法使用诸如 'unsafe-eval' 和 'unsafe-inline' 等不安全的 CSP 指令。"
+  dashboard:
+    problem:
+      encrypt_deprecated: discourse-encrypt 插件已弃用，并将于 2025 年第一季度停止提供支持。有关详情，请参阅 <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>。请卸载该插件以移除此消息。

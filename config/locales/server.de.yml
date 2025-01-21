@@ -19,3 +19,6 @@ de:
     allow_decrypting_pms: "Erlaube Benutzern, verschlüsselte private Nachrichten dauerhaft zu entschlüsseln."
     errors:
       encrypt_unsafe_csp: "Unsichere CSP-Direktiven wie „unsafe-eval“ und „unsafe-inline“ können nicht verwendet werden, wenn das Discourse-Encrypt-Plug-in aktiviert ist."
+  dashboard:
+    problem:
+      encrypt_deprecated: Das Plug-in „discourse-encrypt“ ist veraltet und wird ab dem 1. Quartal 2025 nicht mehr unterstützt. Weitere Informationen findest du unter <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>. Deinstalliere das Plug-in, um diese Meldung zu entfernen.

@@ -19,3 +19,6 @@ pt_BR:
     allow_decrypting_pms: "Permitir que usuários(as) descriptografem permanentemente mensagens privadas criptografadas."
     errors:
       encrypt_unsafe_csp: "Diretivas CSP não seguras, como \"unsafe-eval\" e \"unsafe-inline\", não podem ser usadas quando o plugin Discourse Encrypt estiver ativado."
+  dashboard:
+    problem:
+      encrypt_deprecated: O plugin discourse-encrypt está obsoleto, e o suporte será descontinuado no primeiro trimestre de 2025. Para obter mais informações, consulte <a href="https://meta.discourse.org/t/107918">Discourse Meta</a>. Desinstale o plugin para remover esta mensagem.
