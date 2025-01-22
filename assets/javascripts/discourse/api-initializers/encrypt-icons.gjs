@@ -50,11 +50,11 @@ export default apiInitializer("2.0.0", (api) => {
 
   // Main topic title
   api.renderInOutlet("after-topic-status", <template>
-    {{#if @outletArgs.topic.encrypted_title}}
+    {{~#if @outletArgs.topic.encrypted_title~}}
       <span
         title={{i18n "topic-statuses.encrypted.help"}}
         class="topic-status encrypted"
       >{{icon "user-secret"}}</span>
-    {{/if}}
+    {{~/if~}}
   </template>);
 });
