@@ -1,9 +1,8 @@
 import { computed } from "@ember/object";
+import icon from "discourse/helpers/d-icon";
 import { apiInitializer } from "discourse/lib/api";
-import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
-import { withSilencedDeprecations } from "discourse-common/lib/deprecated";
-import I18n from "discourse-i18n";
+import { withSilencedDeprecations } from "discourse/lib/deprecated";
+import { i18n } from "discourse-i18n";
 
 export default apiInitializer("2.0.0", (api) => {
   withSilencedDeprecations("discourse.hbr-topic-list-overrides", () => {
@@ -37,7 +36,7 @@ export default apiInitializer("2.0.0", (api) => {
           results.push({
             openTag: "span",
             closeTag: "span",
-            title: I18n.t("topic-statuses.encrypted.help"),
+            title: i18n("topic-statuses.encrypted.help"),
             icon: "user-secret",
             key: "encrypted",
           });

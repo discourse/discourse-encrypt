@@ -1,6 +1,6 @@
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
-import { isTesting } from "discourse-common/config/environment";
+import { isTesting } from "discourse/lib/environment";
 import {
   DB_NAME,
   DB_VERSION,

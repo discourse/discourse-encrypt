@@ -2,7 +2,7 @@ import { getOwner } from "@ember/application";
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -45,7 +45,7 @@ export default {
             .catch((username) => {
               const dialog = getOwner(this).lookup("service:dialog");
               dialog.alert(
-                I18n.t("encrypt.composer.user_has_no_key", { username })
+                i18n("encrypt.composer.user_has_no_key", { username })
               );
               return Promise.reject(username);
             });

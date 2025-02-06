@@ -1,12 +1,9 @@
 import { getOwner } from "@ember/application";
 import { Promise } from "rsvp";
+import discourseComputed, { observes, on } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import Composer from "discourse/models/composer";
-import discourseComputed, {
-  observes,
-  on,
-} from "discourse-common/utils/decorators";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -150,17 +147,17 @@ export default {
         )
         encryptError(missingKey, username, group) {
           if (missingKey) {
-            return I18n.t("encrypt.composer.no_topic_key");
+            return i18n("encrypt.composer.no_topic_key");
           } else if (
             !this.siteSettings.allow_new_encrypted_pms &&
             this.isNew &&
             this.creatingPrivateMessage
           ) {
-            return I18n.t("encrypt.composer.new_encrypted_pms_disabled");
+            return i18n("encrypt.composer.new_encrypted_pms_disabled");
           } else if (username) {
-            return I18n.t("encrypt.composer.user_has_no_key", { username });
+            return i18n("encrypt.composer.user_has_no_key", { username });
           } else if (group) {
-            return I18n.t("encrypt.composer.group_not_allowed");
+            return i18n("encrypt.composer.group_not_allowed");
           }
         },
 
@@ -173,7 +170,7 @@ export default {
             getOwner(this)
               .lookup("service:dialog")
               .yesNoConfirm({
-                message: I18n.t("encrypt.composer.confirm.message", {
+                message: i18n("encrypt.composer.confirm.message", {
                   error: this.encryptError,
                 }),
                 didConfirm: () => resolve(),

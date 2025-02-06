@@ -13,6 +13,7 @@ import {
   fetchUnseenHashtagsInContext,
   linkSeenHashtagsInContext,
 } from "discourse/lib/hashtag-decorator";
+import { iconHTML, iconNode } from "discourse/lib/icon-library";
 import lightbox from "discourse/lib/lightbox";
 import {
   fetchUnseenMentions,
@@ -22,8 +23,7 @@ import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { cook } from "discourse/lib/text";
 import { markdownNameFromFileName } from "discourse/lib/uploads";
-import { iconHTML, iconNode } from "discourse-common/lib/icon-library";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import { base64ToBuffer } from "discourse/plugins/discourse-encrypt/lib/base64";
 import DebouncedQueue from "discourse/plugins/discourse-encrypt/lib/debounced-queue";
 import {
@@ -303,13 +303,13 @@ export default {
         } else if (result === null) {
           return helper.h(
             "div.post-info.integrity-warn",
-            { title: I18n.t("encrypt.integrity_check_skip") },
+            { title: i18n("encrypt.integrity_check_skip") },
             iconNode("triangle-exclamation")
           );
         } else if (result.length === 0) {
           return helper.h(
             "div.post-info.integrity-pass",
-            { title: I18n.t("encrypt.integrity_check_pass") },
+            { title: i18n("encrypt.integrity_check_pass") },
             iconNode("check")
           );
         }
@@ -322,7 +322,7 @@ export default {
         const signedError = result.find((x) => x.attr === "signed_by_name");
         if (signedError) {
           messages.push(
-            I18n.t("encrypt.integrity_check_warn_signed_by", {
+            i18n("encrypt.integrity_check_warn_signed_by", {
               actual: signedError.actual,
               expected: signedError.expected,
             })
@@ -331,7 +331,7 @@ export default {
 
         const updatedAtError = result.find((x) => x.attr === "updated_at");
         if (updatedAtError) {
-          messages.push(I18n.t("encrypt.integrity_check_warn_updated_at"));
+          messages.push(i18n("encrypt.integrity_check_warn_updated_at"));
         }
 
         const otherFields = result
@@ -339,7 +339,7 @@ export default {
           .filter((attr) => attr !== "signed_by_name" && attr !== "updated_at");
         if (otherFields.length > 0) {
           messages.push(
-            I18n.t("encrypt.integrity_check_fail", {
+            i18n("encrypt.integrity_check_fail", {
               fields: otherFields.join(", "),
             })
           );
@@ -391,11 +391,11 @@ export default {
           return;
         } else if (!window.isSecureContext) {
           state.encryptState = "error";
-          state.error = I18n.t("encrypt.preferences.insecure_context");
+          state.error = i18n("encrypt.preferences.insecure_context");
           return;
         } else if (ciphertext && !hasTopicKey(topicId)) {
           state.encryptState = "error";
-          state.error = I18n.t("encrypt.missing_topic_key");
+          state.error = i18n("encrypt.missing_topic_key");
           return;
         }
 
@@ -410,7 +410,7 @@ export default {
             key = await getTopicKey(topicId);
           } catch {
             state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_topic_key");
+            state.error = i18n("encrypt.invalid_topic_key");
             this.scheduleRerender();
             return;
           }
@@ -420,7 +420,7 @@ export default {
             plaintext = await decrypt(key, ciphertext);
           } catch {
             state.encryptState = "error";
-            state.error = I18n.t("encrypt.invalid_ciphertext");
+            state.error = i18n("encrypt.invalid_ciphertext");
             this.scheduleRerender();
             return;
           }
@@ -488,7 +488,7 @@ export default {
             "<div class='alert alert-info'>" +
             renderSpinner("small") +
             " " +
-            I18n.t("encrypt.decrypting") +
+            i18n("encrypt.decrypting") +
             "</div>";
         } else if (state.encryptState === "decrypted") {
           attrs.cooked = state.plaintext;

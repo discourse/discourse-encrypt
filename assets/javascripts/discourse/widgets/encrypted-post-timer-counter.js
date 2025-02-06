@@ -1,8 +1,8 @@
 import { later } from "@ember/runloop";
 import { h } from "virtual-dom";
+import { iconNode } from "discourse/lib/icon-library";
 import { createWidget } from "discourse/widgets/widget";
-import { iconNode } from "discourse-common/lib/icon-library";
-import i18n from "I18n";
+import i18n from "discourse-i18n";
 
 createWidget("encrypted-post-timer-counter", {
   tagName: "div.encrypted-post-timer-counter",

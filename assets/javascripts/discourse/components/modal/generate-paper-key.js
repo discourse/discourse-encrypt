@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
-import { bind } from "discourse-common/utils/decorators";
+import { bind } from "discourse/lib/decorators";
 import { getIdentity } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import { generatePaperKey } from "discourse/plugins/discourse-encrypt/lib/paper-key";
 import { exportIdentity } from "discourse/plugins/discourse-encrypt/lib/protocol";

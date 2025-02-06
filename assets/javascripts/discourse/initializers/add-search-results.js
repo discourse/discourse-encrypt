@@ -1,11 +1,11 @@
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
+import { isTesting } from "discourse/lib/environment";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { escapeExpression } from "discourse/lib/utilities";
 import Post from "discourse/models/post";
 import Topic from "discourse/models/topic";
-import { isTesting } from "discourse-common/config/environment";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -114,7 +114,7 @@ function addEncryptedSearchResultsFromCache(cache, results) {
     post = Post.create(post);
     post.setProperties({
       topic: topics[post.topic_id],
-      blurb: I18n.t("encrypt.encrypted_post"),
+      blurb: i18n("encrypt.encrypted_post"),
     });
 
     results.posts.unshift(post);

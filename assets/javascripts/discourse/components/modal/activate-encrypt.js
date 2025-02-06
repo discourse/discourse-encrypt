@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import { activateEncrypt } from "discourse/plugins/discourse-encrypt/lib/discourse";
 
 export default class ActivateEncrypt extends Component {
@@ -31,7 +31,7 @@ export default class ActivateEncrypt extends Component {
       this.encryptWidgetStore.reset();
       this.args.closeModal();
     } catch {
-      this.error = I18n.t("encrypt.preferences.paper_key_invalid");
+      this.error = i18n("encrypt.preferences.paper_key_invalid");
     } finally {
       this.inProgress = false;
     }
@@ -41,7 +41,7 @@ export default class ActivateEncrypt extends Component {
   close() {
     for (const widget of this.encryptWidgetStore.widgets) {
       widget.state.encryptState = "error";
-      widget.state.error = I18n.t(
+      widget.state.error = i18n(
         "encrypt.preferences.status_enabled_but_inactive"
       );
       widget.scheduleRerender();

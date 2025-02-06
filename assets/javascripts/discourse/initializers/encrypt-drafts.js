@@ -1,9 +1,9 @@
 import { Promise } from "rsvp";
+import { getOwnerWithFallback } from "discourse/lib/get-owner";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
-import { getOwnerWithFallback } from "discourse-common/lib/get-owner";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -102,10 +102,10 @@ export default {
                 draft.setProperties({
                   title: emojiUnescape(
                     escapeExpression(
-                      ":lock: " + I18n.t("encrypt.encrypted_title")
+                      ":lock: " + i18n("encrypt.encrypted_title")
                     )
                   ),
-                  excerpt: I18n.t("encrypt.encrypted_post"),
+                  excerpt: i18n("encrypt.encrypted_post"),
                 });
               }
             });

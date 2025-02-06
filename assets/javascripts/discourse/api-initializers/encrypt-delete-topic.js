@@ -3,7 +3,7 @@ import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { apiInitializer } from "discourse/lib/api";
 import Post from "discourse/models/post";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 
 export default apiInitializer("0.8", (api) => {
   api.modifyClass(
@@ -13,8 +13,8 @@ export default apiInitializer("0.8", (api) => {
         permanentDeleteConfirmation(callback) {
           const dialog = getOwner(this).lookup("service:dialog");
           dialog.deleteConfirm({
-            title: I18n.t("encrypt.post.delete.title"),
-            message: I18n.t("encrypt.post.delete.confirm"),
+            title: i18n("encrypt.post.delete.title"),
+            message: i18n("encrypt.post.delete.confirm"),
             didConfirm: () => callback(),
           });
         }

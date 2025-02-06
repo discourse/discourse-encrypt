@@ -1,8 +1,8 @@
 import { htmlSafe } from "@ember/template";
+import { isTesting } from "discourse/lib/environment";
+import getURL from "discourse/lib/get-url";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { isTesting } from "discourse-common/config/environment";
-import getURL from "discourse-common/lib/get-url";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import { deleteDb } from "discourse/plugins/discourse-encrypt/lib/database";
 import {
   ENCRYPT_ACTIVE,
@@ -35,7 +35,7 @@ export default {
     ) {
       withPluginApi("0.11.3", (api) => {
         let basePath = getURL("/").replace(/\/$/, "");
-        const warning = I18n.t("encrypt.no_backup_warn", { basePath });
+        const warning = i18n("encrypt.no_backup_warn", { basePath });
 
         api.addGlobalNotice(htmlSafe(warning), "key-backup-notice", {
           level: "warn",

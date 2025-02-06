@@ -7,7 +7,7 @@ import { or } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 import { putTopicKey } from "discourse/plugins/discourse-encrypt/lib/discourse";
 import PermanentTopicDecrypter from "discourse/plugins/discourse-encrypt/lib/permanent-topic-decrypter";
 

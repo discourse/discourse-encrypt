@@ -1,10 +1,10 @@
 import { getOwner } from "@ember/application";
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
+import { observes } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { escapeExpression } from "discourse/lib/utilities";
-import { observes } from "discourse-common/utils/decorators";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   getEncryptionStatus,
@@ -79,7 +79,7 @@ export default {
           return getTopicKey(topic.id)
             .then((key) => encrypt(key, { raw: props.title }))
             .then((encryptedTitle) => {
-              props.title = I18n.t("encrypt.encrypted_title");
+              props.title = i18n("encrypt.encrypted_title");
               props.encrypted_title = encryptedTitle;
             })
             .then(() => _super.call(this, ...arguments))
@@ -112,13 +112,13 @@ export default {
                 .then(
                   (encryptedTitle) => (args.encrypted_title = encryptedTitle)
                 )
-                .finally(() => (args.title = I18n.t("encrypt.encrypted_title")))
+                .finally(() => (args.title = i18n("encrypt.encrypted_title")))
             : Promise.resolve();
           const replyPromise = raw
             ? topicKeyPromise
                 .then((key) => encrypt(key, { raw }, { includeUploads: true }))
                 .then((encryptedRaw) => (args.encrypted_raw = encryptedRaw))
-                .finally(() => (args.raw = I18n.t("encrypt.encrypted_post")))
+                .finally(() => (args.raw = i18n("encrypt.encrypted_post")))
             : Promise.resolve();
 
           let encryptedKeysPromise = Promise.resolve();
@@ -154,7 +154,7 @@ export default {
               .catch((username) => {
                 const dialog = getOwner(this).lookup("service:dialog");
                 dialog.alert(
-                  I18n.t("encrypt.composer.user_has_no_key", { username })
+                  i18n("encrypt.composer.user_has_no_key", { username })
                 );
                 return Promise.reject(username);
               });

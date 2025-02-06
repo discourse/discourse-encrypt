@@ -1,9 +1,9 @@
 import { getOwner } from "@ember/application";
 import { Promise } from "rsvp";
 import { ajax } from "discourse/lib/ajax";
+import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import PreloadStore from "discourse/lib/preload-store";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import {
   ENCRYPT_DISABLED,
   getEncryptionStatus,

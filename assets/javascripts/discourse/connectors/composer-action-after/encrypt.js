@@ -1,6 +1,6 @@
 /* eslint-disable ember/no-arrow-function-computed-properties */
 import { computed, defineProperty } from "@ember/object";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   ENCRYPT_ACTIVE,
   ENCRYPT_DISABLED,
@@ -104,9 +104,9 @@ export default {
         if (this.model.encryptError) {
           return this.model.encryptError;
         } else if (this.model.isEncrypted) {
-          return I18n.t("encrypt.checkbox.checked");
+          return i18n("encrypt.checkbox.checked");
         } else {
-          return I18n.t("encrypt.checkbox.unchecked");
+          return i18n("encrypt.checkbox.unchecked");
         }
       })
     );

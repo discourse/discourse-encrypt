@@ -1,5 +1,5 @@
 import { classNames } from "@ember-decorators/component";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
 import { selectKitOptions } from "select-kit/components/select-kit";
 
@@ -13,27 +13,27 @@ export default class EncryptPreferencesDropdown extends DropdownSelectBoxCompone
     {
       id: "export",
       icon: "file-export",
-      name: I18n.t("encrypt.export.title"),
+      name: i18n("encrypt.export.title"),
     },
     {
       id: "managePaperKeys",
       icon: "ticket-simple",
-      name: I18n.t("encrypt.manage_paper_keys.title"),
+      name: i18n("encrypt.manage_paper_keys.title"),
     },
     {
       id: "decryptAll",
       icon: "unlock",
-      name: I18n.t("encrypt.decrypt_all.button"),
+      name: i18n("encrypt.decrypt_all.button"),
     },
     {
       id: "rotate",
       icon: "arrows-rotate",
-      name: I18n.t("encrypt.rotate.title"),
+      name: i18n("encrypt.rotate.title"),
     },
     {
       id: "reset",
       icon: "trash-can",
-      name: I18n.t("encrypt.reset.title"),
+      name: i18n("encrypt.reset.title"),
     },
   ];
 }

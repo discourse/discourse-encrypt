@@ -2,8 +2,8 @@
 import { getOwner } from "@ember/application";
 import { action, computed, defineProperty } from "@ember/object";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { isTesting } from "discourse-common/config/environment";
-import I18n from "I18n";
+import { isTesting } from "discourse/lib/environment";
+import { i18n } from "discourse-i18n";
 import {
   deleteDb,
   saveDbIdentity,
@@ -112,7 +112,7 @@ export default {
       .then(() => {
         this.appEvents.trigger("encrypt:status-changed");
       })
-      .catch(() => dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid")))
+      .catch(() => dialog.alert(i18n("encrypt.preferences.key_pair_invalid")))
       .finally(() => {
         this.setProperties({
           passphrase: "",
@@ -140,9 +140,9 @@ export default {
       })
       .catch(() => {
         if (this.importIdentity) {
-          dialog.alert(I18n.t("encrypt.preferences.key_pair_invalid"));
+          dialog.alert(i18n("encrypt.preferences.key_pair_invalid"));
         } else {
-          dialog.alert(I18n.t("encrypt.preferences.paper_key_invalid"));
+          dialog.alert(i18n("encrypt.preferences.paper_key_invalid"));
         }
       })
       .finally(() =>

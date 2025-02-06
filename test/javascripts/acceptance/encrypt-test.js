@@ -7,6 +7,7 @@ import {
 } from "@ember/test-helpers";
 import QUnit, { test } from "qunit";
 import { DEFAULT_TYPE_FILTER } from "discourse/components/search-menu";
+import { cloneJSON } from "discourse/lib/object";
 import User from "discourse/models/user";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
 import searchFixtures from "discourse/tests/fixtures/search-fixtures";
@@ -21,8 +22,7 @@ import {
   updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { cloneJSON } from "discourse-common/lib/object";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import {
   deleteDb,
   loadDbIdentity,
@@ -561,7 +561,7 @@ acceptance("Encrypt - disabled", function (needs) {
 
     assert
       .dom(".user-preferences-security-outlet.encrypt")
-      .includesText(I18n.t("encrypt.preferences.status_enabled_other"));
+      .includesText(i18n("encrypt.preferences.status_enabled_other"));
   });
 });
 
@@ -650,8 +650,8 @@ acceptance("Encrypt - active", function (needs) {
     pretender.post("/posts", (request) => {
       const body = parsePostData(request.requestBody);
 
-      assert.strictEqual(body.raw, I18n.t("encrypt.encrypted_post"));
-      assert.strictEqual(body.title, I18n.t("encrypt.encrypted_title"));
+      assert.strictEqual(body.raw, i18n("encrypt.encrypted_post"));
+      assert.strictEqual(body.title, i18n("encrypt.encrypted_title"));
       assert.strictEqual(body.archetype, "private_message");
       assert.strictEqual(body.target_recipients, "eviltrout");
       assert.strictEqual(body.draft_key, "new_private_message");

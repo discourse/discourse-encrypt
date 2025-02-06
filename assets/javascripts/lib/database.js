@@ -1,6 +1,6 @@
 import { buildWaiter } from "@ember/test-waiters";
 import { Promise } from "rsvp";
-import { isTesting } from "discourse-common/config/environment";
+import { isTesting } from "discourse/lib/environment";
 import {
   exportIdentity,
   importIdentity,
